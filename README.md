@@ -9,7 +9,7 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
     - Inverted or removed empty if statements
     
 - How can I be sure you didn't break anything?
-    - I am very careful. In other words:you can't.
+    - I am very careful. In other words: you can't.
     
 - What does this have over other releases?
     - A release with cleaned up code and no refactoring/renaming.
@@ -23,3 +23,6 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
         - Occlusion
         - Animation/Transforms
         - ClientScript 1
+
+- What are you basing the naming on?
+    - Common sense & research on current industry standard definitions. e.g. VertexGroup/FaceGroup not SkinList..
