@@ -22,3 +22,4 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
         - Triangle Sorting
         - Occlusion
         - Animation/Transforms
+        - ClientScript 1
