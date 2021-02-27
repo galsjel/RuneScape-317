@@ -10,6 +10,7 @@ public class Class30_Sub2_Sub4_Sub2 extends Class30_Sub2_Sub4 {
 	public Class30_Sub2_Sub4_Sub2() {
 	}
 
+	@Override
 	public Class30_Sub2_Sub4_Sub6 method444() {
 		Class8 class8 = Class8.method198(anInt1558);
 		return class8.method201(anInt1559);

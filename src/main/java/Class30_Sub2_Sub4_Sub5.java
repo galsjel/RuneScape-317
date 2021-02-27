@@ -42,6 +42,7 @@ public class Class30_Sub2_Sub4_Sub5 extends Class30_Sub2_Sub4 {
 		anIntArray1600 = class46.anIntArray759;
 	}
 
+	@Override
 	public Class30_Sub2_Sub4_Sub6 method444() {
 		int j = -1;
 		if (aClass20_1607 != null) {

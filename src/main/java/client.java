@@ -759,6 +759,7 @@ public class client extends Applet_Sub1 {
 		Class30_Sub2_Sub1_Sub3.anIntArray1472 = anIntArray1182;
 	}
 
+	@Override
 	public void init() {
 		anInt957 = Integer.parseInt(getParameter("nodeid"));
 		anInt958 = Integer.parseInt(getParameter("portoff"));
@@ -773,6 +774,7 @@ public class client extends Applet_Sub1 {
 		method2(503, 765);
 	}
 
+	@Override
 	public void method12(Runnable runnable, int i) {
 		if (i > 10) {
 			i = 10;
@@ -2149,7 +2151,7 @@ public class client extends Applet_Sub1 {
 		return i2 * (128 - l1) + j2 * l1 >> 7;
 	}
 
-	public void method44(boolean flag) {
+	public void method44() {
 		try {
 			if (aClass24_1168 != null) {
 				aClass24_1168.method267();
@@ -2157,9 +2159,6 @@ public class client extends Applet_Sub1 {
 		} catch (Exception ignored) {
 		}
 		aClass24_1168 = null;
-		if (!flag) {
-			return;
-		}
 		aBoolean1157 = false;
 		anInt833 = 0;
 		aString1173 = "";
@@ -2229,6 +2228,7 @@ public class client extends Applet_Sub1 {
 		class30_sub2_sub2.method420();
 	}
 
+	@Override
 	public void method7() {
 		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
 			return;
@@ -2713,6 +2713,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public AppletContext getAppletContext() {
 		if (signlink.mainapp != null) {
 			return signlink.mainapp.getAppletContext();
@@ -3198,7 +3199,7 @@ public class client extends Applet_Sub1 {
 		} catch (IOException _ex) {
 			method68();
 		} catch (Exception exception) {
-			method44(true);
+			method44();
 		}
 	}
 
@@ -3250,6 +3251,7 @@ public class client extends Applet_Sub1 {
 		aBoolean1255 = true;
 	}
 
+	@Override
 	public void method13(int i, String s) {
 		anInt1079 = i;
 		aString1049 = s;
@@ -3474,7 +3476,7 @@ public class client extends Applet_Sub1 {
 
 	public void method68() {
 		if (anInt1011 > 0) {
-			method44(true);
+			method44();
 			return;
 		}
 		aClass15_1165.method237();
@@ -3490,7 +3492,7 @@ public class client extends Applet_Sub1 {
 		anInt1038 = 0;
 		method84(aString1173, aString1174, true);
 		if (!aBoolean1157) {
-			method44(true);
+			method44();
 		}
 		try {
 			class24.method267();
@@ -4287,6 +4289,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public void run() {
 		if (aBoolean880) {
 			method136();
@@ -4478,6 +4481,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public void method8() {
 		signlink.reporterror = false;
 		try {
@@ -4626,6 +4630,7 @@ public class client extends Applet_Sub1 {
 		super.aBoolean9 = true;
 	}
 
+	@Override
 	public Component method11() {
 		if (signlink.mainapp != null) {
 			return signlink.mainapp;
@@ -6339,6 +6344,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public void method6() {
 		method13(20, "Starting up");
 		if (signlink.sunjava) {
@@ -6877,6 +6883,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public URL getCodeBase() {
 		if (signlink.mainapp != null) {
 			return signlink.mainapp.getCodeBase();
@@ -7472,9 +7479,8 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	public void method104(boolean flag) {
+	public void method104() {
 		Class30_Sub2_Sub4_Sub3 class30_sub2_sub4_sub3 = (Class30_Sub2_Sub4_Sub3) aClass19_1056.method252();
-		aBoolean1157 &= flag;
 		for (; class30_sub2_sub4_sub3 != null; class30_sub2_sub4_sub3 = (Class30_Sub2_Sub4_Sub3) aClass19_1056.method254()) {
 			if (class30_sub2_sub4_sub3.anInt1560 != anInt918 || class30_sub2_sub4_sub3.aBoolean1567) {
 				class30_sub2_sub4_sub3.method329();
@@ -8028,6 +8034,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public void method9() {
 		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
 			method94();
@@ -8478,6 +8485,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
+	@Override
 	public String getParameter(String s) {
 		if (signlink.mainapp != null) {
 			return signlink.mainapp.getParameter(s);
@@ -9151,6 +9159,7 @@ public class client extends Applet_Sub1 {
 		aBoolean962 = false;
 	}
 
+	@Override
 	public void method10() {
 		aBoolean1255 = true;
 	}
@@ -9930,7 +9939,7 @@ public class client extends Applet_Sub1 {
 				return true;
 			}
 			if (anInt1008 == 109) {
-				method44(true);
+				method44();
 				anInt1008 = -1;
 				return false;
 			}
@@ -10826,7 +10835,7 @@ public class client extends Applet_Sub1 {
 				return true;
 			}
 			signlink.reporterror("T1 - " + anInt1008 + "," + anInt1007 + " - " + anInt842 + "," + anInt843);
-			method44(true);
+			method44();
 		} catch (IOException _ex) {
 			method68();
 		} catch (Exception exception) {
@@ -10836,7 +10845,7 @@ public class client extends Applet_Sub1 {
 			}
 
 			signlink.reporterror(s2.toString());
-			method44(true);
+			method44();
 		}
 		return true;
 	}
@@ -10848,7 +10857,7 @@ public class client extends Applet_Sub1 {
 		method47(false);
 		method26(false);
 		method55();
-		method104(true);
+		method104();
 		if (!aBoolean1160) {
 			int i = anInt1184;
 			if (anInt984 / 256 > i) {

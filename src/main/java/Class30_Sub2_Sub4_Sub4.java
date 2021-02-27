@@ -62,6 +62,7 @@ public class Class30_Sub2_Sub4_Sub4 extends Class30_Sub2_Sub4 {
 		aDouble1578 = (2D * ((double) k - aDouble1587 - aDouble1577 * d1)) / (d1 * d1);
 	}
 
+	@Override
 	public Class30_Sub2_Sub4_Sub6 method444() {
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = aClass23_1592.method266();
 		if (class30_sub2_sub4_sub6 == null) {

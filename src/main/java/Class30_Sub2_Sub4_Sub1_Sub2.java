@@ -33,6 +33,7 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 	public Class30_Sub2_Sub4_Sub1_Sub2() {
 	}
 
+	@Override
 	public Class30_Sub2_Sub4_Sub6 method444() {
 		if (!aBoolean1710) {
 			return null;
@@ -305,6 +306,7 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 		return class30_sub2_sub4_sub6_2;
 	}
 
+	@Override
 	public boolean method449() {
 		return aBoolean1710;
 	}

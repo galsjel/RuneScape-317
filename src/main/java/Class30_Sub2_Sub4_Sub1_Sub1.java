@@ -25,6 +25,7 @@ public class Class30_Sub2_Sub4_Sub1_Sub1 extends Class30_Sub2_Sub4_Sub1 {
 		return aClass5_1696.method164(-1, l, null);
 	}
 
+	@Override
 	public Class30_Sub2_Sub4_Sub6 method444() {
 		if (aClass5_1696 == null) {
 			return null;
@@ -59,6 +60,7 @@ public class Class30_Sub2_Sub4_Sub1_Sub1 extends Class30_Sub2_Sub4_Sub1 {
 		return class30_sub2_sub4_sub6;
 	}
 
+	@Override
 	public boolean method449() {
 		return aClass5_1696 != null;
 	}

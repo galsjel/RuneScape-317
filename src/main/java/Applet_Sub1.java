@@ -173,18 +173,21 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 		anInt5 = 1000 / i;
 	}
 
+	@Override
 	public void start() {
 		if (anInt4 >= 0) {
 			anInt4 = 0;
 		}
 	}
 
+	@Override
 	public void stop() {
 		if (anInt4 >= 0) {
 			anInt4 = 4000 / anInt5;
 		}
 	}
 
+	@Override
 	public void destroy() {
 		anInt4 = -1;
 		try {
@@ -196,6 +199,7 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 		}
 	}
 
+	@Override
 	public void update(Graphics g) {
 		if (aGraphics12 == null) {
 			aGraphics12 = g;
@@ -204,6 +208,7 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 		method10();
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		if (aGraphics12 == null) {
 			aGraphics12 = g;

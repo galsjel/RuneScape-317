@@ -496,6 +496,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		return -1;
 	}
 
+	@Override
 	public void method548(int i) {
 		method558(0, i);
 	}

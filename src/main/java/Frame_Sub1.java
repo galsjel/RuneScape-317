@@ -17,16 +17,19 @@ public class Frame_Sub1 extends Frame {
 		resize(i + 8, j + 28);
 	}
 
+	@Override
 	public Graphics getGraphics() {
 		Graphics g = super.getGraphics();
 		g.translate(4, 24);
 		return g;
 	}
 
+	@Override
 	public void update(Graphics g) {
 		anApplet_Sub1_36.update(g);
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		anApplet_Sub1_36.paint(g);
 	}
