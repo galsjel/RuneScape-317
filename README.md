@@ -34,3 +34,11 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
         - Y- = Up
         - Z+ = Forward
     - To maintain naming between 2D/3D accesses to heightmaps or conversions from world space to 2D space will maintain the same naming scheme, meaning being accessed as X/Z instead of X/Y.
+    
+# Semantics
+- Refactored
+    - To change the structure of the code but have the same exact result.
+- Renamed
+    - To give meaningful names to classes, fields, and methods.
+- Clean Deob
+    - A clean deob is one that hasn't been refactored or renamed in any way, but has had dummy code removed.
