@@ -26,3 +26,11 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
 
 - What are you basing the naming on?
     - Common sense & research on current industry standard definitions. e.g. VertexGroup/FaceGroup not SkinList..
+    
+- XYZ? XZY?
+    - XZY
+    - The coordinate system goes as follows:
+        - X+ = Right
+        - Y- = Up
+        - Z+ = Forward
+    - To maintain naming between 2D/3D accesses to heightmaps or conversions from world space to 2D space will maintain the same naming scheme, meaning being accessed as X/Z instead of X/Y.
