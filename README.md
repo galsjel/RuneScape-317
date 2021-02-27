@@ -9,7 +9,7 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
     - Inverted or removed empty if statements
     
 - How can I be sure you didn't break anything?
-    - I am very careful. 
+    - I am very careful. In other words: you can't.
     
 - What does this have over other releases?
     - A release with no refactoring/renaming and cleaning operations done.
