@@ -12,7 +12,6 @@ public class Class30_Sub2_Sub4_Sub1 extends Class30_Sub2_Sub4 {
 	public int anInt1505 = -1;
 	public String aString1506;
 	public int anInt1507 = 200;
-	public boolean aBoolean1508 = false;
 	public int anInt1510;
 	public int anInt1511 = -1;
 	public int anInt1512 = -1;
@@ -160,7 +159,7 @@ public class Class30_Sub2_Sub4_Sub1 extends Class30_Sub2_Sub4 {
 		aBooleanArray1553[0] = flag;
 	}
 
-	public boolean method449(boolean flag) {
+	public boolean method449() {
 		return false;
 	}
 

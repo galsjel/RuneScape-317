@@ -27,7 +27,6 @@ public class Class46 {
 	public int[] anIntArray747;
 	public int anInt748;
 	public int anInt749;
-	public int anInt750;
 	public boolean aBoolean751;
 	public int anInt754 = -1;
 	public boolean aBoolean757;

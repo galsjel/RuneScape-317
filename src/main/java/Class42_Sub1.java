@@ -14,7 +14,6 @@ import java.util.zip.GZIPInputStream;
 
 public class Class42_Sub1 extends Class42 implements Runnable {
 
-	public static int anInt1345;
 	public int anInt1330;
 	public final Class19 aClass19_1331 = new Class19();
 	public int anInt1332;
@@ -24,7 +23,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public int[] anIntArray1337;
 	public final CRC32 aCRC32_1338 = new CRC32();
 	public final byte[] aByteArray1339 = new byte[500];
-	public int anInt1340 = 923;
 	public int anInt1341;
 	public final byte[][] aByteArrayArray1342 = new byte[4][];
 	public client aClient1343;
@@ -35,10 +33,8 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public int anInt1349;
 	public int[] anIntArray1350;
 	public int anInt1351;
-	public int anInt1352 = 13603;
 	public boolean aBoolean1353 = true;
 	public OutputStream anOutputStream1354;
-	public boolean aBoolean1355 = false;
 	public int[] anIntArray1356;
 	public boolean aBoolean1357 = false;
 	public final Class19 aClass19_1358 = new Class19();

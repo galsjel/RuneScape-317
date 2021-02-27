@@ -6,11 +6,9 @@ import java.awt.*;
 
 public class Frame_Sub1 extends Frame {
 
-	public final boolean aBoolean35;
 	public final Applet_Sub1 anApplet_Sub1_36;
 
 	public Frame_Sub1(Applet_Sub1 applet_sub1, int i, int j) {
-		aBoolean35 = true;
 		anApplet_Sub1_36 = applet_sub1;
 		setTitle("Jagex");
 		setResizable(false);

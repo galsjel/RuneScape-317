@@ -8,16 +8,12 @@ import java.io.RandomAccessFile;
 public class Class14 {
 
 	public static final byte[] aByteArray308 = new byte[520];
-	public final int anInt306;
-	public final boolean aBoolean307;
 	public final RandomAccessFile aRandomAccessFile309;
 	public final RandomAccessFile aRandomAccessFile310;
 	public final int anInt311;
 	public int anInt312;
 
 	public Class14(int i, RandomAccessFile randomaccessfile, RandomAccessFile randomaccessfile1, int j) {
-		anInt306 = 923;
-		aBoolean307 = true;
 		anInt312 = 65000;
 		anInt311 = j;
 		aRandomAccessFile309 = randomaccessfile;

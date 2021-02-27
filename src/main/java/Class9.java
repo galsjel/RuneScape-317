@@ -10,9 +10,8 @@ public class Class9 {
 	public Class30_Sub2_Sub1_Sub1 aClass30_Sub2_Sub1_Sub1_207;
 	public int anInt208;
 	public Class30_Sub2_Sub1_Sub1[] aClass30_Sub2_Sub1_Sub1Array209;
-	public int anInt211;
+	public int unusedInt;
 	public int[] anIntArray212;
-	public int anInt213 = 9;
 	public int anInt214;
 	public int[] anIntArray215;
 	public int anInt216;
@@ -28,7 +27,6 @@ public class Class9 {
 	public int[][] anIntArrayArray226;
 	public boolean aBoolean227;
 	public String aString228;
-	public int anInt229 = 891;
 	public int anInt230;
 	public int anInt231;
 	public int anInt232;
@@ -49,7 +47,7 @@ public class Class9 {
 	public String aString248;
 	public boolean aBoolean249;
 	public int anInt250;
-	public boolean aBoolean251;
+	public boolean unusedBool;
 	public int[] anIntArray252;
 	public int[] anIntArray253;
 	public byte aByte254;
@@ -135,8 +133,8 @@ public class Class9 {
 				}
 			}
 			if (class9.anInt262 == 1) {
-				class9.anInt211 = class30_sub2_sub2.method410();
-				class9.aBoolean251 = class30_sub2_sub2.method408() == 1;
+				class9.unusedInt = class30_sub2_sub2.method410();
+				class9.unusedBool = class30_sub2_sub2.method408() == 1;
 			}
 			if (class9.anInt262 == 2) {
 				class9.anIntArray253 = new int[class9.anInt220 * class9.anInt267];

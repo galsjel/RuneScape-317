@@ -4,12 +4,8 @@
 
 public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 
-	public int anInt1446;
-	public boolean aBoolean1447;
-	public final int anInt1448;
-	public final byte aByte1449;
-	public byte[] aByteArray1450;
 	public final int[] anIntArray1451;
+	public byte[] aByteArray1450;
 	public int anInt1452;
 	public int anInt1453;
 	public int anInt1454;
@@ -18,9 +14,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 	public int anInt1457;
 
 	public Class30_Sub2_Sub1_Sub2(Class44 class44, String s, int i) {
-		aBoolean1447 = false;
-		anInt1448 = 360;
-		aByte1449 = 3;
 		Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(class44.method571(s + ".dat", null));
 		Class30_Sub2_Sub2 class30_sub2_sub2_1 = new Class30_Sub2_Sub2(class44.method571("index.dat", null));
 		class30_sub2_sub2_1.anInt1406 = class30_sub2_sub2.method410();
@@ -61,7 +54,7 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		}
 	}
 
-	public void method356(boolean flag) {
+	public void method356() {
 		anInt1456 /= 2;
 		anInt1457 /= 2;
 		byte[] abyte0 = new byte[anInt1456 * anInt1457];
@@ -76,20 +69,14 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		anInt1452 = anInt1456;
 		anInt1453 = anInt1457;
 		anInt1454 = 0;
-		if (flag) {
-		} else {
-			anInt1455 = 0;
-		}
+		anInt1455 = 0;
 	}
 
-	public void method357(boolean flag) {
+	public void method357() {
 		if (anInt1452 == anInt1456 && anInt1453 == anInt1457) {
 			return;
 		}
 		byte[] abyte0 = new byte[anInt1456 * anInt1457];
-		if (flag) {
-			return;
-		}
 		int i = 0;
 		for (int j = 0; j < anInt1453; j++) {
 			for (int k = 0; k < anInt1452; k++) {
@@ -104,10 +91,7 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		anInt1455 = 0;
 	}
 
-	public void method358(int i) {
-		if (i != 0) {
-			return;
-		}
+	public void method358() {
 		byte[] abyte0 = new byte[anInt1452 * anInt1453];
 		int j = 0;
 		for (int k = 0; k < anInt1453; k++) {
@@ -120,7 +104,7 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		anInt1454 = anInt1456 - anInt1452 - anInt1454;
 	}
 
-	public void method359(boolean flag) {
+	public void method359() {
 		byte[] abyte0 = new byte[anInt1452 * anInt1453];
 		int i = 0;
 		for (int j = anInt1453 - 1; j >= 0; j--) {
@@ -130,13 +114,10 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		}
 
 		aByteArray1450 = abyte0;
-		if (!flag) {
-			anInt1446 = -48;
-		}
 		anInt1455 = anInt1457 - anInt1453 - anInt1455;
 	}
 
-	public void method360(int i, int j, int k, int l) {
+	public void method360(int i, int j, int k) {
 		for (int i1 = 0; i1 < anIntArray1451.length; i1++) {
 			int j1 = anIntArray1451[i1] >> 16 & 0xff;
 			j1 += i;
@@ -161,20 +142,13 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 			}
 			anIntArray1451[i1] = (j1 << 16) + (k1 << 8) + l1;
 		}
-
-		if (l != 0) {
-			anInt1446 = 69;
-		}
 	}
 
-	public void method361(int i, int j, int k) {
+	public void method361(int i, int k) {
 		i += anInt1454;
 		k += anInt1455;
 		int l = i + k * Class30_Sub2_Sub1.anInt1379;
 		int i1 = 0;
-		if (j != 16083) {
-			return;
-		}
 		int j1 = anInt1453;
 		int k1 = anInt1452;
 		int l1 = Class30_Sub2_Sub1.anInt1379 - k1;
@@ -204,16 +178,12 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 			i2 += l2;
 			l1 += l2;
 		}
-		if (k1 <= 0 || j1 <= 0) {
-		} else {
-			method362(j1, (byte) 9, Class30_Sub2_Sub1.anIntArray1378, aByteArray1450, l1, l, k1, i1, anIntArray1451, i2);
+		if (k1 > 0 && j1 > 0) {
+			method362(j1, Class30_Sub2_Sub1.anIntArray1378, aByteArray1450, l1, l, k1, i1, anIntArray1451, i2);
 		}
 	}
 
-	public void method362(int i, byte byte0, int[] ai, byte[] abyte0, int j, int k, int l, int i1, int[] ai1, int j1) {
-		if (byte0 != 9) {
-			aBoolean1447 = !aBoolean1447;
-		}
+	public void method362(int i, int[] ai, byte[] abyte0, int j, int k, int l, int i1, int[] ai1, int j1) {
 		int k1 = -(l >> 2);
 		l = -(l & 3);
 		for (int l1 = -i; l1 < 0; l1++) {

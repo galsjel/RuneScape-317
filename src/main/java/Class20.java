@@ -6,9 +6,6 @@ public class Class20 {
 
 	public static int anInt350;
 	public static Class20[] aClass20Array351;
-	public static int anInt367;
-	public int anInt348 = 9;
-	public boolean aBoolean349 = false;
 	public int anInt352;
 	public int[] anIntArray353;
 	public int[] anIntArray354;

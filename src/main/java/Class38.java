@@ -6,7 +6,6 @@ public class Class38 {
 
 	public static int anInt655;
 	public static Class38[] aClass38Array656;
-	public int anInt654 = 9;
 	public int anInt657 = -1;
 	public int[] anIntArray658;
 	public final int[] anIntArray659 = new int[6];

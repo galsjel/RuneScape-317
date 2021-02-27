@@ -7,8 +7,6 @@ import java.awt.image.*;
 
 public class Class15 implements ImageProducer, ImageObserver {
 
-	public int anInt313;
-	public final boolean aBoolean314;
 	public final int[] anIntArray315;
 	public final int anInt316;
 	public final int anInt317;
@@ -16,8 +14,7 @@ public class Class15 implements ImageProducer, ImageObserver {
 	public ImageConsumer anImageConsumer319;
 	public final Image anImage320;
 
-	public Class15(int i, int j, Component component, int k) {
-		aBoolean314 = true;
+	public Class15(int i, int j, Component component) {
 		anInt316 = i;
 		anInt317 = j;
 		anIntArray315 = new int[i * j];
@@ -36,7 +33,7 @@ public class Class15 implements ImageProducer, ImageObserver {
 		Class30_Sub2_Sub1.method331(anInt317, anInt316, anIntArray315);
 	}
 
-	public void method238(int i, int j, Graphics g, int k) {
+	public void method238(int i, Graphics g, int k) {
 		method239();
 		g.drawImage(anImage320, k, i, this);
 	}

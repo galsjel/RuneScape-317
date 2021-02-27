@@ -6,13 +6,13 @@ public class Class37 {
 
 	public static int anInt645;
 	public static Class37[] aClass37Array646;
-	public String aString647;
+	public String unusedString;
 	public int anInt648;
 	public int anInt649;
 	public int anInt650;
 	public boolean aBoolean651 = false;
-	public int anInt652 = -1;
-	public int anInt653;
+	public int unusedInt0 = -1;
+	public int unusedInt1;
 
 	public Class37() {
 	}
@@ -27,9 +27,9 @@ public class Class37 {
 			if (aClass37Array646[j] == null) {
 				aClass37Array646[j] = new Class37();
 			}
-			aClass37Array646[j].method534(class30_sub2_sub2, j);
+			aClass37Array646[j].method534(class30_sub2_sub2);
 			if (aClass37Array646[j].aBoolean651) {
-				Class41.aClass41Array701[aClass37Array646[j].anInt648].aBoolean713 = true;
+				Class41.aClass41Array701[aClass37Array646[j].anInt648].unusedBool3 = true;
 			}
 		}
 
@@ -38,7 +38,7 @@ public class Class37 {
 		}
 	}
 
-	public void method534(Class30_Sub2_Sub2 class30_sub2_sub2, int i) {
+	public void method534(Class30_Sub2_Sub2 class30_sub2_sub2) {
 		do {
 			int j = class30_sub2_sub2.method408();
 			if (j == 0) {
@@ -49,13 +49,13 @@ public class Class37 {
 				anInt649 = class30_sub2_sub2.method408();
 				anInt650 = class30_sub2_sub2.method408();
 			} else if (j == 10) {
-				aString647 = class30_sub2_sub2.method415();
+				unusedString = class30_sub2_sub2.method415();
 			} else if (j == 2) {
 				aBoolean651 = true;
 			} else if (j == 3) {
-				anInt652 = class30_sub2_sub2.method413();
+				unusedInt0 = class30_sub2_sub2.method413();
 			} else if (j == 4) {
-				anInt653 = class30_sub2_sub2.method413();
+				unusedInt1 = class30_sub2_sub2.method413();
 			} else {
 				System.out.println("Error unrecognised config code: " + j);
 			}

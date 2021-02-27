@@ -4,11 +4,9 @@
 
 public class Class23 {
 
-	public static boolean aBoolean401 = true;
 	public static int anInt402;
 	public static Class23[] aClass23Array403;
 	public static Class12 aClass12_415 = new Class12(30);
-	public int anInt400 = 9;
 	public int anInt404;
 	public int anInt405;
 	public int anInt406 = -1;

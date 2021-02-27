@@ -4,10 +4,6 @@
 
 public class Class30_Sub2_Sub1 extends Class30_Sub2 {
 
-	public static int anInt1374 = 1;
-	public static boolean aBoolean1375 = true;
-	public static int anInt1376 = -12499;
-	public static boolean aBoolean1377;
 	public static int[] anIntArray1378;
 	public static int anInt1379;
 	public static int anInt1380;
@@ -18,7 +14,6 @@ public class Class30_Sub2_Sub1 extends Class30_Sub2 {
 	public static int anInt1385;
 	public static int anInt1386;
 	public static int anInt1387;
-	public static boolean aBoolean1388;
 
 	public Class30_Sub2_Sub1() {
 	}

@@ -4,7 +4,7 @@
 
 public class Class27 {
 
-	public static Class27[] aClass27Array507;
+	public static Class27[] unused;
 
 	public Class27() {
 	}

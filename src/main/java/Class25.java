@@ -56,8 +56,6 @@ public class Class25 {
 	public static int anInt497;
 	public static int anInt498;
 
-	public int anInt430;
-	public boolean aBoolean434 = true;
 	public final int anInt437;
 	public final int anInt438;
 	public final int anInt439;
@@ -687,12 +685,9 @@ public class Class25 {
 		return -1;
 	}
 
-	public void method305(int i, byte byte0, int j, int k, int l, int i1) {
+	public void method305(int i, int j, int k, int l, int i1) {
 		int j1 = (int) Math.sqrt(k * k + i * i + i1 * i1);
 		int k1 = l * j1 >> 8;
-		if (byte0 != 3) {
-			aBoolean434 = !aBoolean434;
-		}
 		for (int l1 = 0; l1 < anInt437; l1++) {
 			for (int i2 = 0; i2 < anInt438; i2++) {
 				for (int j2 = 0; j2 < anInt439; j2++) {

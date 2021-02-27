@@ -11,9 +11,6 @@ public class Class40 {
 	public static final int[] anIntArray690 = new int[6];
 	public static final int[] anIntArray691 = new int[6];
 	public static final int[] anIntArray692 = new int[6];
-	public static int[] anIntArray693 = {1, 0};
-	public static int[] anIntArray694 = {2, 1};
-	public static int[] anIntArray695 = {3, 3};
 	public final int[] anIntArray673;
 	public final int[] anIntArray674;
 	public final int[] anIntArray675;

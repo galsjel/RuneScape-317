@@ -16,14 +16,12 @@ public class Class5 {
 	public int anInt58 = -1;
 	public int anInt59 = -1;
 	public int anInt61 = -1;
-	public int anInt63 = 9;
 	public String aString65;
 	public String[] aStringArray66;
 	public int anInt67 = -1;
 	public byte aByte68 = 1;
-	public int anInt69 = 9;
 	public int[] anIntArray70;
-	public int anInt71 = -1;
+	public int unusedInt0 = -1;
 	public int[] anIntArray73;
 	public int anInt75 = -1;
 	public int[] anIntArray76;
@@ -37,12 +35,12 @@ public class Class5 {
 	public boolean aBoolean87 = true;
 	public int[] anIntArray88;
 	public byte[] aByteArray89;
-	public int anInt90 = -1;
+	public int unusedInt1 = -1;
 	public int anInt91 = 128;
 	public int anInt92;
 	public boolean aBoolean93 = false;
 	public int[] anIntArray94;
-	public int anInt96 = -1;
+	public int unusedInt2 = -1;
 
 	public Class5() {
 	}
@@ -255,11 +253,11 @@ public class Class5 {
 					anIntArray73[l1] = class30_sub2_sub2.method410();
 				}
 			} else if (i == 90) {
-				anInt96 = class30_sub2_sub2.method410();
+				unusedInt2 = class30_sub2_sub2.method410();
 			} else if (i == 91) {
-				anInt71 = class30_sub2_sub2.method410();
+				unusedInt0 = class30_sub2_sub2.method410();
 			} else if (i == 92) {
-				anInt90 = class30_sub2_sub2.method410();
+				unusedInt1 = class30_sub2_sub2.method410();
 			} else if (i == 93) {
 				aBoolean87 = false;
 			} else if (i == 95) {

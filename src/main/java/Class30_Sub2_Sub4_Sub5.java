@@ -18,7 +18,6 @@ public class Class30_Sub2_Sub4_Sub5 extends Class30_Sub2_Sub4 {
 	public final int anInt1610;
 	public final int anInt1611;
 	public final int anInt1612;
-	public int anInt1613;
 
 	public Class30_Sub2_Sub4_Sub5(int i, int j, int k, int l, int i1, int j1, int k1, int l1, boolean flag) {
 		anInt1610 = i;
@@ -43,11 +42,8 @@ public class Class30_Sub2_Sub4_Sub5 extends Class30_Sub2_Sub4 {
 		anIntArray1600 = class46.anIntArray759;
 	}
 
-	public Class30_Sub2_Sub4_Sub6 method444(int i) {
+	public Class30_Sub2_Sub4_Sub6 method444() {
 		int j = -1;
-		if (i != 4016) {
-			anInt1613 = -272;
-		}
 		if (aClass20_1607 != null) {
 			int k = client.anInt1161 - anInt1608;
 			if (k > 100 && aClass20_1607.anInt356 > 0) {
@@ -73,7 +69,7 @@ public class Class30_Sub2_Sub4_Sub5 extends Class30_Sub2_Sub4 {
 		}
 		Class46 class46;
 		if (anIntArray1600 != null) {
-			class46 = method457(true);
+			class46 = method457();
 		} else {
 			class46 = Class46.method572(anInt1610);
 		}
@@ -84,7 +80,7 @@ public class Class30_Sub2_Sub4_Sub5 extends Class30_Sub2_Sub4 {
 		}
 	}
 
-	public Class46 method457(boolean flag) {
+	public Class46 method457() {
 		int i = -1;
 		if (anInt1601 != -1) {
 			Class37 class37 = Class37.aClass37Array646[anInt1601];

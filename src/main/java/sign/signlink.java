@@ -43,7 +43,6 @@ public class signlink implements Runnable {
 	public static String wave = null;
 	public static int wavevol;
 	public static boolean reporterror = true;
-	public static String errorname = "";
 
 	public signlink() {
 	}

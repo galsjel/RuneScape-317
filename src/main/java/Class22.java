@@ -4,13 +4,12 @@
 
 public class Class22 {
 
-	public static int anInt386;
 	public static int anInt387;
 	public static Class22[] aClass22Array388;
-	public String aString389;
+	public String unusedString;
 	public int anInt390;
 	public int anInt391 = -1;
-	public boolean aBoolean392 = false;
+	public boolean unusedBool = false;
 	public boolean aBoolean393 = true;
 	public int anInt394;
 	public int anInt395;
@@ -48,11 +47,11 @@ public class Class22 {
 			} else if (i == 2) {
 				anInt391 = class30_sub2_sub2.method408();
 			} else if (i == 3) {
-				aBoolean392 = true;
+				unusedBool = true;
 			} else if (i == 5) {
 				aBoolean393 = false;
 			} else if (i == 6) {
-				aString389 = class30_sub2_sub2.method415();
+				unusedString = class30_sub2_sub2.method415();
 			} else if (i == 7) {
 				int j = anInt394;
 				int k = anInt395;

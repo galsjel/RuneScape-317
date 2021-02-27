@@ -101,15 +101,15 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 		}
 	}
 
-	public static void method368(Class44 class44, int i) {
+	public static void method368(Class44 class44) {
 		anInt1473 = 0;
 		for (int j = 0; j < 50; j++) {
 			try {
 				aClass30_Sub2_Sub1_Sub2Array1474[j] = new Class30_Sub2_Sub1_Sub2(class44, String.valueOf(j), 0);
 				if (aBoolean1461 && aClass30_Sub2_Sub1_Sub2Array1474[j].anInt1456 == 128) {
-					aClass30_Sub2_Sub1_Sub2Array1474[j].method356(false);
+					aClass30_Sub2_Sub1_Sub2Array1474[j].method356();
 				} else {
-					aClass30_Sub2_Sub1_Sub2Array1474[j].method357(false);
+					aClass30_Sub2_Sub1_Sub2Array1474[j].method357();
 				}
 				anInt1473++;
 			} catch (Exception ignored) {

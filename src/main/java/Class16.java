@@ -4,14 +4,10 @@
 
 public class Class16 {
 
-	public static boolean aBoolean322;
-	public static boolean aBoolean323 = true;
 	public static final Class16[] aClass16Array325 = new Class16[5000];
 	public static final int[] anIntArray326 = new int[5000];
 	public static byte[] aByteArray327;
 	public static Class30_Sub2_Sub2 aClass30_Sub2_Sub2_328;
-	public boolean aBoolean321 = true;
-	public int anInt324;
 	public final Class6[] aClass6Array329 = new Class6[10];
 	public int anInt330;
 	public int anInt331;

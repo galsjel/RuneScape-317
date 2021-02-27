@@ -4,14 +4,6 @@
 
 public class Class11 {
 
-	public boolean aBoolean282 = true;
-	public int anInt283 = -32357;
-	public boolean aBoolean284 = false;
-	public int anInt285 = 7;
-	public boolean aBoolean286 = true;
-	public boolean aBoolean287 = true;
-	public byte aByte288 = 2;
-	public byte aByte289 = -101;
 	public final int anInt290 = 0;
 	public final int anInt291 = 0;
 	public final int anInt292;
@@ -183,11 +175,8 @@ public class Class11 {
 		}
 	}
 
-	public void method213(int i, int j, int k) {
+	public void method213(int i, int k) {
 		k -= anInt290;
-		if (j != 0) {
-			aBoolean282 = !aBoolean282;
-		}
 		i -= anInt291;
 		anIntArrayArray294[k][i] |= 0x200000;
 	}

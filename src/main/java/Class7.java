@@ -11,11 +11,9 @@ public class Class7 {
 	public static int anInt123 = (int) (Math.random() * 17.0) - 8;
 	public static int anInt131;
 	public static int anInt133 = (int) (Math.random() * 33.0) - 16;
-	public static int anInt138 = 323;
 	public static boolean aBoolean141;
 	public static int anInt145 = 99;
 	public static boolean aBoolean151 = true;
-	public static int anInt153 = -388;
 	public final int[] anIntArray124;
 	public final int[] anIntArray125;
 	public final int[] anIntArray126;
@@ -23,18 +21,15 @@ public class Class7 {
 	public final int[] anIntArray128;
 	public final int[][][] anIntArrayArrayArray129;
 	public final byte[][][] aByteArrayArrayArray130;
-	public boolean aBoolean132 = true;
 	public final byte[][][] aByteArrayArrayArray134;
 	public final int[][][] anIntArrayArrayArray135;
 	public final byte[][][] aByteArrayArrayArray136;
 	public final int[][] anIntArrayArray139;
 	public final byte[][][] aByteArrayArrayArray142;
-	public boolean aBoolean143 = false;
 	public final int anInt146;
 	public final int anInt147;
 	public final byte[][][] aByteArrayArrayArray148;
 	public final byte[][][] aByteArrayArrayArray149;
-	public int anInt150 = -53;
 
 	public Class7(byte[][][] is, int i_0_, int i_1_, int[][][] is_2_) {
 		anInt145 = 99;
@@ -168,7 +163,7 @@ public class Class7 {
 			}
 			class25.method280(i_231_, i_237_, i_226_, class30_sub2_sub4, i_239_, i_238_, i_229_);
 			if (class46.aBoolean767 && class46.aBoolean778) {
-				class11.method213(i_226_, 0, i_229_);
+				class11.method213(i_226_, i_229_);
 			}
 		} else if (i_227_ == 10 || i_227_ == 11) {
 			Class30_Sub2_Sub4 class30_sub2_sub4;
@@ -391,7 +386,7 @@ public class Class7 {
 							i_9_--;
 						}
 						if (i_9_ >= 0) {
-							class11s[i_9_].method213(i_8_, 0, i_7_);
+							class11s[i_9_].method213(i_8_, i_7_);
 						}
 					}
 				}
@@ -570,7 +565,7 @@ public class Class7 {
 				}
 			}
 		}
-		class25.method305(-10, (byte) 3, 64, -50, 768, -50);
+		class25.method305(-10, 64, -50, 768, -50);
 		for (int i_66_ = 0; i_66_ < anInt146; i_66_++) {
 			for (int i_67_ = 0; i_67_ < anInt147; i_67_++) {
 				if ((aByteArrayArrayArray149[1][i_66_][i_67_] & 0x2) == 2) {
@@ -778,7 +773,7 @@ public class Class7 {
 					}
 					class25.method280(i_120_, i_128_, i, class30_sub2_sub4, i_130_, i_129_, i_121_);
 					if (class46.aBoolean767 && class46.aBoolean778 && class11 != null) {
-						class11.method213(i, 0, i_121_);
+						class11.method213(i, i_121_);
 					}
 				}
 			} else if (i_119_ == 10 || i_119_ == 11) {

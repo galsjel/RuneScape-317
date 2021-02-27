@@ -11,14 +11,14 @@ public class Class30_Sub2_Sub4 extends Class30_Sub2 {
 	}
 
 	public void method443(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2) {
-		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = method444(4016);
+		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = method444();
 		if (class30_sub2_sub4_sub6 != null) {
 			anInt1426 = class30_sub2_sub4_sub6.anInt1426;
 			class30_sub2_sub4_sub6.method443(i, j, k, l, i1, j1, k1, l1, i2);
 		}
 	}
 
-	public Class30_Sub2_Sub4_Sub6 method444(int i) {
+	public Class30_Sub2_Sub4_Sub6 method444() {
 		return null;
 	}
 

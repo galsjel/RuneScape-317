@@ -9,9 +9,6 @@ import java.net.Socket;
 
 public class Class24 implements Runnable {
 
-	public int anInt416 = -53;
-	public boolean aBoolean417 = true;
-	public int anInt418 = 519;
 	public InputStream anInputStream419;
 	public OutputStream anOutputStream420;
 	public final Socket aSocket421;

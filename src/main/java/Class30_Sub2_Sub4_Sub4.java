@@ -16,7 +16,6 @@ public class Class30_Sub2_Sub4_Sub4 extends Class30_Sub2_Sub4 {
 	public final int anInt1581;
 	public final int anInt1582;
 	public final int anInt1583;
-	public int anInt1584;
 	public double aDouble1585;
 	public double aDouble1586;
 	public double aDouble1587;
@@ -63,7 +62,7 @@ public class Class30_Sub2_Sub4_Sub4 extends Class30_Sub2_Sub4 {
 		aDouble1578 = (2D * ((double) k - aDouble1587 - aDouble1577 * d1)) / (d1 * d1);
 	}
 
-	public Class30_Sub2_Sub4_Sub6 method444(int i) {
+	public Class30_Sub2_Sub4_Sub6 method444() {
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = aClass23_1592.method266();
 		if (class30_sub2_sub4_sub6 == null) {
 			return null;

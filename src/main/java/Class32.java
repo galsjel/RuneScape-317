@@ -5,15 +5,6 @@
 public class Class32 {
 
 	public static int[] anIntArray587;
-	public final int anInt554 = 4096;
-	public final int anInt555 = 16;
-	public final int anInt556 = 258;
-	public final int anInt557 = 23;
-	public final int anInt558 = 1;
-	public final int anInt559 = 6;
-	public final int anInt560 = 50;
-	public final int anInt561 = 4;
-	public final int anInt562 = 18002;
 	public byte[] aByteArray563;
 	public int anInt564;
 	public int anInt565;
@@ -37,7 +28,6 @@ public class Class32 {
 	public final int[] anIntArray583 = new int[256];
 	public int anInt584;
 	public final int[] anIntArray585 = new int[257];
-	public int[] anIntArray586 = new int[257];
 	public int anInt588;
 	public final boolean[] aBooleanArray589 = new boolean[256];
 	public final boolean[] aBooleanArray590 = new boolean[16];

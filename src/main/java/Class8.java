@@ -10,7 +10,6 @@ public class Class8 {
 	public static int anInt180;
 	public static boolean aBoolean182 = true;
 	public static Class30_Sub2_Sub2 aClass30_Sub2_Sub2_183;
-	public static boolean aBoolean187;
 	public static int[] anIntArray195;
 	public static int anInt203;
 	public byte aByte154;
@@ -28,18 +27,15 @@ public class Class8 {
 	public String[] aStringArray168;
 	public int anInt169;
 	public String aString170;
-	public int anInt171 = 9;
 	public int anInt173;
 	public int anInt174;
 	public int anInt175;
 	public boolean aBoolean176;
-	public int anInt177 = 9;
 	public byte[] aByteArray178;
 	public int anInt179;
 	public int anInt181;
 	public int anInt184;
 	public int anInt185;
-	public boolean aBoolean186 = false;
 	public int anInt188;
 	public String[] aStringArray189;
 	public int anInt190;
@@ -50,13 +46,12 @@ public class Class8 {
 	public int anInt196;
 	public int anInt197;
 	public int anInt198;
-	public int anInt199;
+	public int unusedInt;
 	public int anInt200;
 	public int[] anIntArray201;
 	public int anInt202;
 	public int anInt204;
 	public byte aByte205;
-	public boolean aBoolean206 = false;
 
 	public Class8() {
 	}
@@ -363,7 +358,7 @@ public class Class8 {
 		anInt204 = 0;
 		anInt169 = 0;
 		anInt194 = 0;
-		anInt199 = -1;
+		unusedInt = -1;
 		aBoolean176 = false;
 		anInt155 = 1;
 		aBoolean161 = false;
@@ -506,7 +501,7 @@ public class Class8 {
 					anInt194 -= 0x10000;
 				}
 			} else if (i == 10) {
-				anInt199 = class30_sub2_sub2.method410();
+				unusedInt = class30_sub2_sub2.method410();
 			} else if (i == 11) {
 				aBoolean176 = true;
 			} else if (i == 12) {
