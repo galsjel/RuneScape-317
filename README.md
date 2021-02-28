@@ -27,14 +27,29 @@ Based on [Moparisthebest's release](https://www.moparisthebest.com/downloads/rs3
 - What are you basing the naming on?
     - Common sense & research on current industry standard definitions. e.g. VertexGroup/FaceGroup not SkinList..
     
+# Conventions/Standards
+    
 - XYZ? XZY?
-    - XZY
+    - **XZY**
     - The coordinate system goes as follows:
         - X+ = Right
         - Y- = Up
         - Z+ = Forward
     - To maintain naming between 2D/3D accesses to heightmaps or conversions from world space to 2D space will maintain the same naming scheme, meaning being accessed as X/Z instead of X/Y.
     
+Since there are a lot of different types of coordinates used, I'll be standardizing some acronyms to better identify their usages and ranges using [interval notation](https://en.wikipedia.org/wiki/Interval_(mathematics)#Integer_intervals).
+
+```glsl
+int rx, ry;     // A region.            (50, 50)            [0...65536]
+int tx, ty;     // A tile.              (3222, 3222)        [0...65536]
+int cx, cy, cz; // A chunk.             (402, 0, 402)       [0...65536]
+int ctx, ctz;   // A chunk tile.        (3, 3)              [0...7]
+int stx, sty;   // A scene tile.        (50, 50)            [0...103]
+int sx, sy, sz; // A scene coordinate.  (6400, -104, 6400)  [0...13312] see note 1
+```
+
+<sub><sup><sup>1</sup>The y coordinate is generally between 0 and -960 depending on the terrain height. Technically the limit is created by the use of 16.16 fixed point math with sin/cos allowing overflow for scene values over 32768.</sup></sub>
+
 # Semantics
 - Refactored
     - To change the structure of the code but have the same exact result.
