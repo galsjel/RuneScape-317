@@ -216,7 +216,7 @@ public class Class8 {
 			int j6 = class30_sub2_sub1_sub1_2.anInt1445;
 			class30_sub2_sub1_sub1_2.anInt1444 = 32;
 			class30_sub2_sub1_sub1_2.anInt1445 = 32;
-			class30_sub2_sub1_sub1_2.method348(0, 16083, 0);
+			class30_sub2_sub1_sub1_2.method348(0, 0);
 			class30_sub2_sub1_sub1_2.anInt1444 = l5;
 			class30_sub2_sub1_sub1_2.anInt1445 = j6;
 		}

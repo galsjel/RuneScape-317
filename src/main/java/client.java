@@ -444,6 +444,698 @@ public class client extends Applet_Sub1 {
 	public client() {
 	}
 
+	@Override
+	public void init() {
+		anInt957 = Integer.parseInt(getParameter("nodeid"));
+		anInt958 = Integer.parseInt(getParameter("portoff"));
+		String s = getParameter("lowmem");
+		if (s != null && s.equals("1")) {
+			method138();
+		} else {
+			method52();
+		}
+		String s1 = getParameter("free");
+		aBoolean959 = s1 == null || !s1.equals("1");
+		method2(503, 765);
+	}
+
+	@Override
+	public void run() {
+		if (aBoolean880) {
+			method136();
+		} else {
+			super.run();
+		}
+	}
+
+	@Override
+	public AppletContext getAppletContext() {
+		if (signlink.mainapp != null) {
+			return signlink.mainapp.getAppletContext();
+		} else {
+			return super.getAppletContext();
+		}
+	}
+
+	@Override
+	public URL getCodeBase() {
+		if (signlink.mainapp != null) {
+			return signlink.mainapp.getCodeBase();
+		}
+		try {
+			if (super.aFrame_Sub1_15 != null) {
+				return new URL("http://127.0.0.1:" + (80 + anInt958));
+			}
+		} catch (Exception ignored) {
+		}
+		return super.getCodeBase();
+	}
+
+	@Override
+	public String getParameter(String s) {
+		if (signlink.mainapp != null) {
+			return signlink.mainapp.getParameter(s);
+		} else {
+			return super.getParameter(s);
+		}
+	}
+
+	@Override
+	public void method6() {
+		method13(20, "Starting up");
+		if (signlink.sunjava) {
+			super.anInt6 = 5;
+		}
+		if (aBoolean993) {
+			aBoolean1252 = true;
+			return;
+		}
+		aBoolean993 = true;
+		boolean flag = false;
+		String s = method80();
+		if (s.endsWith("jagex.com")) {
+			flag = true;
+		}
+		if (s.endsWith("runescape.com")) {
+			flag = true;
+		}
+		if (s.endsWith("192.168.1.2")) {
+			flag = true;
+		}
+		if (s.endsWith("192.168.1.229")) {
+			flag = true;
+		}
+		if (s.endsWith("192.168.1.228")) {
+			flag = true;
+		}
+		if (s.endsWith("192.168.1.227")) {
+			flag = true;
+		}
+		if (s.endsWith("192.168.1.226")) {
+			flag = true;
+		}
+		if (s.endsWith("127.0.0.1")) {
+			flag = true;
+		}
+		if (!flag) {
+			aBoolean1176 = true;
+			return;
+		}
+		if (signlink.cache_dat != null) {
+			for (int i = 0; i < 5; i++) {
+				aClass14Array970[i] = new Class14(0x7a120, signlink.cache_dat, signlink.cache_idx[i], i + 1);
+			}
+		}
+		try {
+			method16();
+			aClass44_1053 = method67(1, "title screen", "title", anIntArray1090[1], 25);
+			aClass30_Sub2_Sub1_Sub4_1270 = new Class30_Sub2_Sub1_Sub4(false, "p11_full", aClass44_1053);
+			aClass30_Sub2_Sub1_Sub4_1271 = new Class30_Sub2_Sub1_Sub4(false, "p12_full", aClass44_1053);
+			aClass30_Sub2_Sub1_Sub4_1272 = new Class30_Sub2_Sub1_Sub4(false, "b12_full", aClass44_1053);
+			aClass30_Sub2_Sub1_Sub4_1273 = new Class30_Sub2_Sub1_Sub4(true, "q8_full", aClass44_1053);
+			method56();
+			method51();
+			Class44 class44 = method67(2, "config", "config", anIntArray1090[2], 30);
+			Class44 class44_1 = method67(3, "interface", "interface", anIntArray1090[3], 35);
+			Class44 class44_2 = method67(4, "2d graphics", "media", anIntArray1090[4], 40);
+			Class44 class44_3 = method67(6, "textures", "textures", anIntArray1090[6], 45);
+			Class44 class44_4 = method67(7, "chat system", "wordenc", anIntArray1090[7], 50);
+			Class44 class44_5 = method67(8, "sound effects", "sounds", anIntArray1090[8], 55);
+			aByteArrayArrayArray1258 = new byte[4][104][104];
+			anIntArrayArrayArray1214 = new int[4][105][105];
+			aClass25_946 = new Class25(104, 104, anIntArrayArrayArray1214, 4);
+			for (int j = 0; j < 4; j++) {
+				aClass11Array1230[j] = new Class11(104, 104);
+			}
+
+			aClass30_Sub2_Sub1_Sub1_1263 = new Class30_Sub2_Sub1_Sub1(512, 512);
+			Class44 class44_6 = method67(5, "update list", "versionlist", anIntArray1090[5], 60);
+			method13(60, "Connecting to update server");
+			aClass42_Sub1_1068 = new Class42_Sub1();
+			aClass42_Sub1_1068.method551(class44_6, this);
+			Class36.method528(aClass42_Sub1_1068.method557());
+			Class30_Sub2_Sub4_Sub6.method459(aClass42_Sub1_1068.method555(0), aClass42_Sub1_1068);
+			if (!aBoolean960) {
+				anInt1227 = 0;
+				try {
+					anInt1227 = Integer.parseInt(getParameter("music"));
+				} catch (Exception ignored) {
+				}
+				aBoolean1228 = true;
+				aClass42_Sub1_1068.method558(2, anInt1227);
+				while (aClass42_Sub1_1068.method552() > 0) {
+					method57();
+					try {
+						Thread.sleep(100L);
+					} catch (Exception ignored) {
+					}
+					if (aClass42_Sub1_1068.anInt1349 > 3) {
+						method28("ondemand");
+						return;
+					}
+				}
+			}
+			method13(65, "Requesting animations");
+			int k = aClass42_Sub1_1068.method555(1);
+			for (int i1 = 0; i1 < k; i1++) {
+				aClass42_Sub1_1068.method558(1, i1);
+			}
+
+			while (aClass42_Sub1_1068.method552() > 0) {
+				int j1 = k - aClass42_Sub1_1068.method552();
+				if (j1 > 0) {
+					method13(65, "Loading animations - " + (j1 * 100) / k + "%");
+				}
+				method57();
+				try {
+					Thread.sleep(100L);
+				} catch (Exception ignored) {
+				}
+				if (aClass42_Sub1_1068.anInt1349 > 3) {
+					method28("ondemand");
+					return;
+				}
+			}
+			method13(70, "Requesting models");
+			k = aClass42_Sub1_1068.method555(0);
+			for (int k1 = 0; k1 < k; k1++) {
+				int l1 = aClass42_Sub1_1068.method559(k1);
+				if ((l1 & 1) != 0) {
+					aClass42_Sub1_1068.method558(0, k1);
+				}
+			}
+
+			k = aClass42_Sub1_1068.method552();
+			while (aClass42_Sub1_1068.method552() > 0) {
+				int i2 = k - aClass42_Sub1_1068.method552();
+				if (i2 > 0) {
+					method13(70, "Loading models - " + (i2 * 100) / k + "%");
+				}
+				method57();
+				try {
+					Thread.sleep(100L);
+				} catch (Exception ignored) {
+				}
+			}
+			if (aClass14Array970[0] != null) {
+				method13(75, "Requesting maps");
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 47));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 47));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 48));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 48));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 49));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 49));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 47, 47));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 47, 47));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 47, 48));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 47, 48));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 148, 48));
+				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 148, 48));
+				k = aClass42_Sub1_1068.method552();
+				while (aClass42_Sub1_1068.method552() > 0) {
+					int j2 = k - aClass42_Sub1_1068.method552();
+					if (j2 > 0) {
+						method13(75, "Loading maps - " + (j2 * 100) / k + "%");
+					}
+					method57();
+					try {
+						Thread.sleep(100L);
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			k = aClass42_Sub1_1068.method555(0);
+			for (int k2 = 0; k2 < k; k2++) {
+				int l2 = aClass42_Sub1_1068.method559(k2);
+				byte byte0 = 0;
+				if ((l2 & 8) != 0) {
+					byte0 = 10;
+				} else if ((l2 & 0x20) != 0) {
+					byte0 = 9;
+				} else if ((l2 & 0x10) != 0) {
+					byte0 = 8;
+				} else if ((l2 & 0x40) != 0) {
+					byte0 = 7;
+				} else if ((l2 & 0x80) != 0) {
+					byte0 = 6;
+				} else if ((l2 & 2) != 0) {
+					byte0 = 5;
+				} else if ((l2 & 4) != 0) {
+					byte0 = 4;
+				}
+				if ((l2 & 1) != 0) {
+					byte0 = 3;
+				}
+				if (byte0 != 0) {
+					aClass42_Sub1_1068.method563(byte0, 0, k2);
+				}
+			}
+
+			aClass42_Sub1_1068.method554(aBoolean959);
+			if (!aBoolean960) {
+				int l = aClass42_Sub1_1068.method555(2);
+				for (int i3 = 1; i3 < l; i3++) {
+					if (aClass42_Sub1_1068.method569(i3)) {
+						aClass42_Sub1_1068.method563((byte) 1, 2, i3);
+					}
+				}
+			}
+			method13(80, "Unpacking media");
+			aClass30_Sub2_Sub1_Sub2_1196 = new Class30_Sub2_Sub1_Sub2(class44_2, "invback", 0);
+			aClass30_Sub2_Sub1_Sub2_1198 = new Class30_Sub2_Sub1_Sub2(class44_2, "chatback", 0);
+			aClass30_Sub2_Sub1_Sub2_1197 = new Class30_Sub2_Sub1_Sub2(class44_2, "mapback", 0);
+			aClass30_Sub2_Sub1_Sub2_1027 = new Class30_Sub2_Sub1_Sub2(class44_2, "backbase1", 0);
+			aClass30_Sub2_Sub1_Sub2_1028 = new Class30_Sub2_Sub1_Sub2(class44_2, "backbase2", 0);
+			aClass30_Sub2_Sub1_Sub2_1029 = new Class30_Sub2_Sub1_Sub2(class44_2, "backhmid1", 0);
+			for (int j3 = 0; j3 < 13; j3++) {
+				aClass30_Sub2_Sub1_Sub2Array947[j3] = new Class30_Sub2_Sub1_Sub2(class44_2, "sideicons", j3);
+			}
+
+			aClass30_Sub2_Sub1_Sub1_1122 = new Class30_Sub2_Sub1_Sub1(class44_2, "compass", 0);
+			aClass30_Sub2_Sub1_Sub1_1001 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapedge", 0);
+			aClass30_Sub2_Sub1_Sub1_1001.method345();
+			try {
+				for (int k3 = 0; k3 < 100; k3++) {
+					aClass30_Sub2_Sub1_Sub2Array1060[k3] = new Class30_Sub2_Sub1_Sub2(class44_2, "mapscene", k3);
+				}
+			} catch (Exception ignored) {
+			}
+			try {
+				for (int l3 = 0; l3 < 100; l3++) {
+					aClass30_Sub2_Sub1_Sub1Array1033[l3] = new Class30_Sub2_Sub1_Sub1(class44_2, "mapfunction", l3);
+				}
+			} catch (Exception ignored) {
+			}
+			try {
+				for (int i4 = 0; i4 < 20; i4++) {
+					aClass30_Sub2_Sub1_Sub1Array987[i4] = new Class30_Sub2_Sub1_Sub1(class44_2, "hitmarks", i4);
+				}
+			} catch (Exception ignored) {
+			}
+			try {
+				for (int j4 = 0; j4 < 20; j4++) {
+					aClass30_Sub2_Sub1_Sub1Array1095[j4] = new Class30_Sub2_Sub1_Sub1(class44_2, "headicons", j4);
+				}
+			} catch (Exception ignored) {
+			}
+			aClass30_Sub2_Sub1_Sub1_870 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapmarker", 0);
+			aClass30_Sub2_Sub1_Sub1_871 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapmarker", 1);
+			for (int k4 = 0; k4 < 8; k4++) {
+				aClass30_Sub2_Sub1_Sub1Array1150[k4] = new Class30_Sub2_Sub1_Sub1(class44_2, "cross", k4);
+			}
+
+			aClass30_Sub2_Sub1_Sub1_1074 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 0);
+			aClass30_Sub2_Sub1_Sub1_1075 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 1);
+			aClass30_Sub2_Sub1_Sub1_1076 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 2);
+			aClass30_Sub2_Sub1_Sub1_1077 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 3);
+			aClass30_Sub2_Sub1_Sub1_1078 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 4);
+			aClass30_Sub2_Sub1_Sub2_1024 = new Class30_Sub2_Sub1_Sub2(class44_2, "scrollbar", 0);
+			aClass30_Sub2_Sub1_Sub2_1025 = new Class30_Sub2_Sub1_Sub2(class44_2, "scrollbar", 1);
+			aClass30_Sub2_Sub1_Sub2_1143 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
+			aClass30_Sub2_Sub1_Sub2_1144 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
+			aClass30_Sub2_Sub1_Sub2_1145 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone3", 0);
+			aClass30_Sub2_Sub1_Sub2_1146 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
+			aClass30_Sub2_Sub1_Sub2_1146.method358();
+			aClass30_Sub2_Sub1_Sub2_1147 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
+			aClass30_Sub2_Sub1_Sub2_1147.method358();
+			aClass30_Sub2_Sub1_Sub2_865 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
+			aClass30_Sub2_Sub1_Sub2_865.method359();
+			aClass30_Sub2_Sub1_Sub2_866 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
+			aClass30_Sub2_Sub1_Sub2_866.method359();
+			aClass30_Sub2_Sub1_Sub2_867 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone3", 0);
+			aClass30_Sub2_Sub1_Sub2_867.method359();
+			aClass30_Sub2_Sub1_Sub2_868 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
+			aClass30_Sub2_Sub1_Sub2_868.method358();
+			aClass30_Sub2_Sub1_Sub2_868.method359();
+			aClass30_Sub2_Sub1_Sub2_869 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
+			aClass30_Sub2_Sub1_Sub2_869.method358();
+			aClass30_Sub2_Sub1_Sub2_869.method359();
+			for (int l4 = 0; l4 < 2; l4++) {
+				aClass30_Sub2_Sub1_Sub2Array1219[l4] = new Class30_Sub2_Sub1_Sub2(class44_2, "mod_icons", l4);
+			}
+
+			Class30_Sub2_Sub1_Sub1 class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backleft1", 0);
+			aClass15_903 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backleft2", 0);
+			aClass15_904 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backright1", 0);
+			aClass15_905 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backright2", 0);
+			aClass15_906 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backtop1", 0);
+			aClass15_907 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid1", 0);
+			aClass15_908 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid2", 0);
+			aClass15_909 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid3", 0);
+			aClass15_910 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backhmid2", 0);
+			aClass15_911 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
+			class30_sub2_sub1_sub1.method346(0, 0);
+			int i5 = (int) (Math.random() * 21D) - 10;
+			int j5 = (int) (Math.random() * 21D) - 10;
+			int k5 = (int) (Math.random() * 21D) - 10;
+			int l5 = (int) (Math.random() * 41D) - 20;
+			for (int i6 = 0; i6 < 100; i6++) {
+				if (aClass30_Sub2_Sub1_Sub1Array1033[i6] != null) {
+					aClass30_Sub2_Sub1_Sub1Array1033[i6].method344(i5 + l5, j5 + l5, k5 + l5);
+				}
+				if (aClass30_Sub2_Sub1_Sub2Array1060[i6] != null) {
+					aClass30_Sub2_Sub1_Sub2Array1060[i6].method360(i5 + l5, j5 + l5, k5 + l5);
+				}
+			}
+
+			method13(83, "Unpacking textures");
+			Class30_Sub2_Sub1_Sub3.method368(class44_3);
+			Class30_Sub2_Sub1_Sub3.method372(0.80000000000000004D);
+			Class30_Sub2_Sub1_Sub3.method367(20);
+			method13(86, "Unpacking config");
+			Class20.method257(class44);
+			Class46.method576(class44);
+			Class22.method260(class44);
+			Class8.method193(class44);
+			Class5.method162(class44);
+			Class38.method535(class44);
+			Class23.method264(class44);
+			Class41.method546(class44);
+			Class37.method533(class44);
+			Class8.aBoolean182 = aBoolean959;
+			if (!aBoolean960) {
+				method13(90, "Unpacking sounds");
+				byte[] abyte0 = class44_5.method571("sounds.dat", null);
+				Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(abyte0);
+				Class16.method240(class30_sub2_sub2);
+			}
+			method13(95, "Unpacking interfaces");
+			Class30_Sub2_Sub1_Sub4[] aclass30_sub2_sub1_sub4 = {aClass30_Sub2_Sub1_Sub4_1270, aClass30_Sub2_Sub1_Sub4_1271, aClass30_Sub2_Sub1_Sub4_1272, aClass30_Sub2_Sub1_Sub4_1273};
+			Class9.method205(class44_1, aclass30_sub2_sub1_sub4, class44_2);
+			method13(100, "Preparing game engine");
+			for (int j6 = 0; j6 < 33; j6++) {
+				int k6 = 999;
+				int i7 = 0;
+				for (int k7 = 0; k7 < 34; k7++) {
+					if (aClass30_Sub2_Sub1_Sub2_1197.aByteArray1450[k7 + j6 * aClass30_Sub2_Sub1_Sub2_1197.anInt1452] == 0) {
+						if (k6 == 999) {
+							k6 = k7;
+						}
+						continue;
+					}
+					if (k6 == 999) {
+						continue;
+					}
+					i7 = k7;
+					break;
+				}
+
+				anIntArray968[j6] = k6;
+				anIntArray1057[j6] = i7 - k6;
+			}
+
+			for (int l6 = 5; l6 < 156; l6++) {
+				int j7 = 999;
+				int l7 = 0;
+				for (int j8 = 25; j8 < 172; j8++) {
+					if (aClass30_Sub2_Sub1_Sub2_1197.aByteArray1450[j8 + l6 * aClass30_Sub2_Sub1_Sub2_1197.anInt1452] == 0 && (j8 > 34 || l6 > 34)) {
+						if (j7 == 999) {
+							j7 = j8;
+						}
+						continue;
+					}
+					if (j7 == 999) {
+						continue;
+					}
+					l7 = j8;
+					break;
+				}
+
+				anIntArray1052[l6 - 5] = j7 - 25;
+				anIntArray1229[l6 - 5] = l7 - j7;
+			}
+
+			Class30_Sub2_Sub1_Sub3.method365(479, 96);
+			anIntArray1180 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
+			Class30_Sub2_Sub1_Sub3.method365(190, 261);
+			anIntArray1181 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
+			Class30_Sub2_Sub1_Sub3.method365(512, 334);
+			anIntArray1182 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
+			int[] ai = new int[9];
+			for (int i8 = 0; i8 < 9; i8++) {
+				int k8 = 128 + i8 * 32 + 15;
+				int l8 = 600 + k8 * 3;
+				int i9 = Class30_Sub2_Sub1_Sub3.anIntArray1470[k8];
+				ai[i8] = l8 * i9 >> 16;
+			}
+
+			Class25.method310(500, 800, 512, 334, ai);
+			Class34.method487(class44_4);
+			aClass48_879 = new Class48(this);
+			method12(aClass48_879, 10);
+			Class30_Sub2_Sub4_Sub5.aClient1609 = this;
+			Class46.aClient765 = this;
+			Class5.aClient82 = this;
+			return;
+		} catch (Exception exception) {
+			signlink.reporterror("loaderror " + aString1049 + " " + anInt1079);
+		}
+		aBoolean926 = true;
+	}
+
+	@Override
+	public void method7() {
+		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
+			return;
+		}
+		anInt1161++;
+		if (!aBoolean1157) {
+			method140();
+		} else {
+			method62();
+		}
+		method57();
+	}
+
+	@Override
+	public void method8() {
+		signlink.reporterror = false;
+		try {
+			if (aClass24_1168 != null) {
+				aClass24_1168.method267();
+			}
+		} catch (Exception ignored) {
+		}
+		aClass24_1168 = null;
+		method15();
+		if (aClass48_879 != null) {
+			aClass48_879.aBoolean808 = false;
+		}
+		aClass48_879 = null;
+		aClass42_Sub1_1068.method553();
+		aClass42_Sub1_1068 = null;
+		aClass30_Sub2_Sub2_834 = null;
+		aClass30_Sub2_Sub2_1192 = null;
+		aClass30_Sub2_Sub2_847 = null;
+		aClass30_Sub2_Sub2_1083 = null;
+		anIntArray1234 = null;
+		aByteArrayArray1183 = null;
+		aByteArrayArray1247 = null;
+		anIntArray1235 = null;
+		anIntArray1236 = null;
+		anIntArrayArrayArray1214 = null;
+		aByteArrayArrayArray1258 = null;
+		aClass25_946 = null;
+		aClass11Array1230 = null;
+		anIntArrayArray901 = null;
+		anIntArrayArray825 = null;
+		anIntArray1280 = null;
+		anIntArray1281 = null;
+		aByteArray912 = null;
+		aClass15_1163 = null;
+		aClass15_1164 = null;
+		aClass15_1165 = null;
+		aClass15_1166 = null;
+		aClass15_1123 = null;
+		aClass15_1124 = null;
+		aClass15_1125 = null;
+		aClass15_903 = null;
+		aClass15_904 = null;
+		aClass15_905 = null;
+		aClass15_906 = null;
+		aClass15_907 = null;
+		aClass15_908 = null;
+		aClass15_909 = null;
+		aClass15_910 = null;
+		aClass15_911 = null;
+		aClass30_Sub2_Sub1_Sub2_1196 = null;
+		aClass30_Sub2_Sub1_Sub2_1197 = null;
+		aClass30_Sub2_Sub1_Sub2_1198 = null;
+		aClass30_Sub2_Sub1_Sub2_1027 = null;
+		aClass30_Sub2_Sub1_Sub2_1028 = null;
+		aClass30_Sub2_Sub1_Sub2_1029 = null;
+		aClass30_Sub2_Sub1_Sub2Array947 = null;
+		aClass30_Sub2_Sub1_Sub2_1143 = null;
+		aClass30_Sub2_Sub1_Sub2_1144 = null;
+		aClass30_Sub2_Sub1_Sub2_1145 = null;
+		aClass30_Sub2_Sub1_Sub2_1146 = null;
+		aClass30_Sub2_Sub1_Sub2_1147 = null;
+		aClass30_Sub2_Sub1_Sub2_865 = null;
+		aClass30_Sub2_Sub1_Sub2_866 = null;
+		aClass30_Sub2_Sub1_Sub2_867 = null;
+		aClass30_Sub2_Sub1_Sub2_868 = null;
+		aClass30_Sub2_Sub1_Sub2_869 = null;
+		aClass30_Sub2_Sub1_Sub1_1122 = null;
+		aClass30_Sub2_Sub1_Sub1Array987 = null;
+		aClass30_Sub2_Sub1_Sub1Array1095 = null;
+		aClass30_Sub2_Sub1_Sub1Array1150 = null;
+		aClass30_Sub2_Sub1_Sub1_1074 = null;
+		aClass30_Sub2_Sub1_Sub1_1075 = null;
+		aClass30_Sub2_Sub1_Sub1_1076 = null;
+		aClass30_Sub2_Sub1_Sub1_1077 = null;
+		aClass30_Sub2_Sub1_Sub1_1078 = null;
+		aClass30_Sub2_Sub1_Sub2Array1060 = null;
+		aClass30_Sub2_Sub1_Sub1Array1033 = null;
+		anIntArrayArray929 = null;
+		aClass30_Sub2_Sub4_Sub1_Sub2Array890 = null;
+		anIntArray892 = null;
+		anIntArray894 = null;
+		aClass30_Sub2_Sub2Array895 = null;
+		anIntArray840 = null;
+		aClass30_Sub2_Sub4_Sub1_Sub1Array835 = null;
+		anIntArray837 = null;
+		aClass19ArrayArrayArray827 = null;
+		aClass19_1179 = null;
+		aClass19_1013 = null;
+		aClass19_1056 = null;
+		anIntArray1091 = null;
+		anIntArray1092 = null;
+		anIntArray1093 = null;
+		anIntArray1094 = null;
+		aStringArray1199 = null;
+		anIntArray971 = null;
+		anIntArray1072 = null;
+		anIntArray1073 = null;
+		aClass30_Sub2_Sub1_Sub1Array1140 = null;
+		aClass30_Sub2_Sub1_Sub1_1263 = null;
+		aStringArray1082 = null;
+		aLongArray955 = null;
+		anIntArray826 = null;
+		aClass15_1110 = null;
+		aClass15_1111 = null;
+		aClass15_1107 = null;
+		aClass15_1108 = null;
+		aClass15_1109 = null;
+		aClass15_1112 = null;
+		aClass15_1113 = null;
+		aClass15_1114 = null;
+		aClass15_1115 = null;
+		method118();
+		Class46.method575();
+		Class5.method163();
+		Class8.method191();
+		Class22.aClass22Array388 = null;
+		Class38.aClass38Array656 = null;
+		Class9.aClass9Array210 = null;
+		Class27.unused = null;
+		Class20.aClass20Array351 = null;
+		Class23.aClass23Array403 = null;
+		Class23.aClass12_415 = null;
+		Class41.aClass41Array701 = null;
+		Class30_Sub2_Sub4_Sub1_Sub2.aClass12_1704 = null;
+		Class30_Sub2_Sub1_Sub3.method363();
+		Class25.method273();
+		Class30_Sub2_Sub4_Sub6.method458();
+		Class36.method530();
+		System.gc();
+	}
+
+	@Override
+	public void method9() {
+		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
+			method94();
+			return;
+		}
+		anInt1061++;
+		if (!aBoolean1157) {
+			method135(false);
+		} else {
+			method102();
+		}
+		anInt1213 = 0;
+	}
+
+	@Override
+	public void method10() {
+		aBoolean1255 = true;
+	}
+
+	@Override
+	public Component method11() {
+		if (signlink.mainapp != null) {
+			return signlink.mainapp;
+		}
+		if (super.aFrame_Sub1_15 != null) {
+			return super.aFrame_Sub1_15;
+		} else {
+			return this;
+		}
+	}
+
+	@Override
+	public void method12(Runnable runnable, int i) {
+		if (i > 10) {
+			i = 10;
+		}
+		if (signlink.mainapp != null) {
+			signlink.startthread(runnable, i);
+		} else {
+			super.method12(runnable, i);
+		}
+	}
+
+	@Override
+	public void method13(int i, String s) {
+		anInt1079 = i;
+		aString1049 = s;
+		method64();
+		if (aClass44_1053 == null) {
+			super.method13(i, s);
+			return;
+		}
+		aClass15_1109.method237();
+		char c = '\u0168';
+		char c1 = '\310';
+		byte byte1 = 20;
+		aClass30_Sub2_Sub1_Sub4_1272.method381(0xffffff, "RuneScape is loading - please wait...", c1 / 2 - 26 - byte1, c / 2);
+		int j = c1 / 2 - 18 - byte1;
+		Class30_Sub2_Sub1.method337(c / 2 - 152, 304, 34, 0x8c1111, j);
+		Class30_Sub2_Sub1.method337(c / 2 - 151, 302, 32, 0, j + 1);
+		Class30_Sub2_Sub1.method336(30, j + 2, c / 2 - 150, 0x8c1111, i * 3);
+		Class30_Sub2_Sub1.method336(30, j + 2, (c / 2 - 150) + i * 3, 0, 300 - i * 3);
+		aClass30_Sub2_Sub1_Sub4_1272.method381(0xffffff, s, (c1 / 2 + 5) - byte1, c / 2);
+		aClass15_1109.method238(171, super.aGraphics12, 202);
+		if (aBoolean1255) {
+			aBoolean1255 = false;
+			if (!aBoolean831) {
+				aClass15_1110.method238(0, super.aGraphics12, 0);
+				aClass15_1111.method238(0, super.aGraphics12, 637);
+			}
+			aClass15_1107.method238(0, super.aGraphics12, 128);
+			aClass15_1108.method238(371, super.aGraphics12, 202);
+			aClass15_1112.method238(265, super.aGraphics12, 0);
+			aClass15_1113.method238(265, super.aGraphics12, 562);
+			aClass15_1114.method238(171, super.aGraphics12, 128);
+			aClass15_1115.method238(171, super.aGraphics12, 562);
+		}
+	}
+
 	public static String method14(int i) {
 		String s = String.valueOf(i);
 		for (int k = s.length() - 3; k > 0; k -= 3) {
@@ -671,7 +1363,7 @@ public class client extends Applet_Sub1 {
 						}
 						j++;
 					}
-					if ((l == 1 || l == 2) && (l == 1 || anInt1287 == 0 || anInt1287 == 1 && method109(false, s1))) {
+					if ((l == 1 || l == 2) && (l == 1 || anInt1287 == 0 || anInt1287 == 1 && method109(s1))) {
 						if (i1 > 0 && i1 < 110) {
 							int j1 = 4;
 							if (byte0 == 1) {
@@ -688,7 +1380,7 @@ public class client extends Applet_Sub1 {
 						}
 						j++;
 					}
-					if ((l == 3 || l == 7) && anInt1195 == 0 && (l == 7 || anInt845 == 0 || anInt845 == 1 && method109(false, s1))) {
+					if ((l == 3 || l == 7) && anInt1195 == 0 && (l == 7 || anInt845 == 0 || anInt845 == 1 && method109(s1))) {
 						if (i1 > 0 && i1 < 110) {
 							int k1 = 4;
 							class30_sub2_sub1_sub4.method385(0, "From", i1, k1);
@@ -707,7 +1399,7 @@ public class client extends Applet_Sub1 {
 						}
 						j++;
 					}
-					if (l == 4 && (anInt1248 == 0 || anInt1248 == 1 && method109(false, s1))) {
+					if (l == 4 && (anInt1248 == 0 || anInt1248 == 1 && method109(s1))) {
 						if (i1 > 0 && i1 < 110) {
 							class30_sub2_sub1_sub4.method385(0x800080, s1 + " " + aStringArray944[k], i1, 4);
 						}
@@ -726,7 +1418,7 @@ public class client extends Applet_Sub1 {
 						}
 						j++;
 					}
-					if (l == 8 && (anInt1248 == 0 || anInt1248 == 1 && method109(false, s1))) {
+					if (l == 8 && (anInt1248 == 0 || anInt1248 == 1 && method109(s1))) {
 						if (i1 > 0 && i1 < 110) {
 							class30_sub2_sub1_sub4.method385(0x7e3200, s1 + " " + aStringArray944[k], i1, 4);
 						}
@@ -757,33 +1449,6 @@ public class client extends Applet_Sub1 {
 		aClass15_1166.method238(357, super.aGraphics12, 17);
 		aClass15_1165.method237();
 		Class30_Sub2_Sub1_Sub3.anIntArray1472 = anIntArray1182;
-	}
-
-	@Override
-	public void init() {
-		anInt957 = Integer.parseInt(getParameter("nodeid"));
-		anInt958 = Integer.parseInt(getParameter("portoff"));
-		String s = getParameter("lowmem");
-		if (s != null && s.equals("1")) {
-			method138();
-		} else {
-			method52();
-		}
-		String s1 = getParameter("free");
-		aBoolean959 = s1 == null || !s1.equals("1");
-		method2(503, 765);
-	}
-
-	@Override
-	public void method12(Runnable runnable, int i) {
-		if (i > 10) {
-			i = 10;
-		}
-		if (signlink.mainapp != null) {
-			signlink.startthread(runnable, i);
-		} else {
-			super.method12(runnable, i);
-		}
 	}
 
 	public Socket method19(int i) throws IOException {
@@ -1664,7 +2329,7 @@ public class client extends Applet_Sub1 {
 					if (anInt963 > -1) {
 						for (int i2 = 0; i2 < 8; i2++) {
 							if ((class30_sub2_sub4_sub1_sub2.anInt1706 & 1 << i2) != 0) {
-								aClass30_Sub2_Sub1_Sub1Array1095[i2].method348(anInt963 - 12, 16083, anInt964 - l);
+								aClass30_Sub2_Sub1_Sub1Array1095[i2].method348(anInt963 - 12, anInt964 - l);
 								l -= 25;
 							}
 						}
@@ -1673,7 +2338,7 @@ public class client extends Applet_Sub1 {
 				if (j >= 0 && anInt855 == 10 && anInt933 == anIntArray892[j]) {
 					method127(obj, obj.anInt1507 + 15);
 					if (anInt963 > -1) {
-						aClass30_Sub2_Sub1_Sub1Array1095[7].method348(anInt963 - 12, 16083, anInt964 - l);
+						aClass30_Sub2_Sub1_Sub1Array1095[7].method348(anInt963 - 12, anInt964 - l);
 					}
 				}
 			} else {
@@ -1681,17 +2346,17 @@ public class client extends Applet_Sub1 {
 				if (class5_1.anInt75 >= 0 && class5_1.anInt75 < aClass30_Sub2_Sub1_Sub1Array1095.length) {
 					method127(obj, obj.anInt1507 + 15);
 					if (anInt963 > -1) {
-						aClass30_Sub2_Sub1_Sub1Array1095[class5_1.anInt75].method348(anInt963 - 12, 16083, anInt964 - 30);
+						aClass30_Sub2_Sub1_Sub1Array1095[class5_1.anInt75].method348(anInt963 - 12, anInt964 - 30);
 					}
 				}
 				if (anInt855 == 1 && anInt1222 == anIntArray837[j - anInt891] && anInt1161 % 20 < 10) {
 					method127(obj, obj.anInt1507 + 15);
 					if (anInt963 > -1) {
-						aClass30_Sub2_Sub1_Sub1Array1095[2].method348(anInt963 - 12, 16083, anInt964 - 28);
+						aClass30_Sub2_Sub1_Sub1Array1095[2].method348(anInt963 - 12, anInt964 - 28);
 					}
 				}
 			}
-			if (obj.aString1506 != null && (j >= anInt891 || anInt1287 == 0 || anInt1287 == 3 || anInt1287 == 1 && method109(false, ((Class30_Sub2_Sub4_Sub1_Sub2) obj).aString1703))) {
+			if (obj.aString1506 != null && (j >= anInt891 || anInt1287 == 0 || anInt1287 == 3 || anInt1287 == 1 && method109(((Class30_Sub2_Sub4_Sub1_Sub2) obj).aString1703))) {
 				method127(obj, obj.anInt1507);
 				if (anInt963 > -1 && anInt974 < anInt975) {
 					anIntArray979[anInt974] = aClass30_Sub2_Sub1_Sub4_1272.method384(obj.aString1506) / 2;
@@ -1740,7 +2405,7 @@ public class client extends Applet_Sub1 {
 							anInt963 += 15;
 							anInt964 -= 10;
 						}
-						aClass30_Sub2_Sub1_Sub1Array987[obj.anIntArray1515[j1]].method348(anInt963 - 12, 16083, anInt964 - 12);
+						aClass30_Sub2_Sub1_Sub1Array987[obj.anIntArray1515[j1]].method348(anInt963 - 12, anInt964 - 12);
 						aClass30_Sub2_Sub1_Sub4_1270.method381(0, String.valueOf(obj.anIntArray1514[j1]), anInt964 + 4, anInt963);
 						aClass30_Sub2_Sub1_Sub4_1270.method381(0xffffff, String.valueOf(obj.anIntArray1514[j1]), anInt964 + 3, anInt963 - 1);
 					}
@@ -2228,20 +2893,6 @@ public class client extends Applet_Sub1 {
 		class30_sub2_sub2.method420();
 	}
 
-	@Override
-	public void method7() {
-		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
-			return;
-		}
-		anInt1161++;
-		if (!aBoolean1157) {
-			method140();
-		} else {
-			method62();
-		}
-		method57();
-	}
-
 	public void method47(boolean flag) {
 		if (aClass30_Sub2_Sub4_Sub1_Sub2_1126.anInt1550 >> 7 == anInt1261 && aClass30_Sub2_Sub4_Sub1_Sub2_1126.anInt1551 >> 7 == anInt1262) {
 			anInt1261 = 0;
@@ -2713,15 +3364,6 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public AppletContext getAppletContext() {
-		if (signlink.mainapp != null) {
-			return signlink.mainapp.getAppletContext();
-		} else {
-			return super.getAppletContext();
-		}
-	}
-
 	public void method56() {
 		byte[] abyte0 = aClass44_1053.method571("title.dat", null);
 		Class30_Sub2_Sub1_Sub1 class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(abyte0, this);
@@ -2774,7 +3416,7 @@ public class client extends Applet_Sub1 {
 		class30_sub2_sub1_sub1.method346(-180, -171);
 		class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(aClass44_1053, "logo", 0);
 		aClass15_1107.method237();
-		class30_sub2_sub1_sub1.method348(382 - class30_sub2_sub1_sub1.anInt1440 / 2 - 128, 16083, 18);
+		class30_sub2_sub1_sub1.method348(382 - class30_sub2_sub1_sub1.anInt1440 / 2 - 128, 18);
 		System.gc();
 	}
 
@@ -2916,7 +3558,7 @@ public class client extends Applet_Sub1 {
 		}
 		method128((anInt934 - anInt1034 << 7) + anInt937, anInt936 * 2, (anInt935 - anInt1035 << 7) + anInt938);
 		if (anInt963 > -1 && anInt1161 % 20 < 10) {
-			aClass30_Sub2_Sub1_Sub1Array1095[2].method348(anInt963 - 12, 16083, anInt964 - 28);
+			aClass30_Sub2_Sub1_Sub1Array1095[2].method348(anInt963 - 12, anInt964 - 28);
 		}
 	}
 
@@ -3249,42 +3891,6 @@ public class client extends Applet_Sub1 {
 			method51();
 		}
 		aBoolean1255 = true;
-	}
-
-	@Override
-	public void method13(int i, String s) {
-		anInt1079 = i;
-		aString1049 = s;
-		method64();
-		if (aClass44_1053 == null) {
-			super.method13(i, s);
-			return;
-		}
-		aClass15_1109.method237();
-		char c = '\u0168';
-		char c1 = '\310';
-		byte byte1 = 20;
-		aClass30_Sub2_Sub1_Sub4_1272.method381(0xffffff, "RuneScape is loading - please wait...", c1 / 2 - 26 - byte1, c / 2);
-		int j = c1 / 2 - 18 - byte1;
-		Class30_Sub2_Sub1.method337(c / 2 - 152, 304, 34, 0x8c1111, j);
-		Class30_Sub2_Sub1.method337(c / 2 - 151, 302, 32, 0, j + 1);
-		Class30_Sub2_Sub1.method336(30, j + 2, c / 2 - 150, 0x8c1111, i * 3);
-		Class30_Sub2_Sub1.method336(30, j + 2, (c / 2 - 150) + i * 3, 0, 300 - i * 3);
-		aClass30_Sub2_Sub1_Sub4_1272.method381(0xffffff, s, (c1 / 2 + 5) - byte1, c / 2);
-		aClass15_1109.method238(171, super.aGraphics12, 202);
-		if (aBoolean1255) {
-			aBoolean1255 = false;
-			if (!aBoolean831) {
-				aClass15_1110.method238(0, super.aGraphics12, 0);
-				aClass15_1111.method238(0, super.aGraphics12, 637);
-			}
-			aClass15_1107.method238(0, super.aGraphics12, 128);
-			aClass15_1108.method238(371, super.aGraphics12, 202);
-			aClass15_1112.method238(265, super.aGraphics12, 0);
-			aClass15_1113.method238(265, super.aGraphics12, 562);
-			aClass15_1114.method238(171, super.aGraphics12, 128);
-			aClass15_1115.method238(171, super.aGraphics12, 562);
-		}
 	}
 
 	public void method65(int i, int j, int k, int l, Class9 class9, int i1, boolean flag, int j1) {
@@ -4289,15 +4895,6 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public void run() {
-		if (aBoolean880) {
-			method136();
-		} else {
-			super.run();
-		}
-	}
-
 	public void method71() {
 		if (anInt1282 == 0 && anInt1136 == 0) {
 			aStringArray1199[anInt1133] = "Walk here";
@@ -4481,139 +5078,6 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public void method8() {
-		signlink.reporterror = false;
-		try {
-			if (aClass24_1168 != null) {
-				aClass24_1168.method267();
-			}
-		} catch (Exception ignored) {
-		}
-		aClass24_1168 = null;
-		method15();
-		if (aClass48_879 != null) {
-			aClass48_879.aBoolean808 = false;
-		}
-		aClass48_879 = null;
-		aClass42_Sub1_1068.method553();
-		aClass42_Sub1_1068 = null;
-		aClass30_Sub2_Sub2_834 = null;
-		aClass30_Sub2_Sub2_1192 = null;
-		aClass30_Sub2_Sub2_847 = null;
-		aClass30_Sub2_Sub2_1083 = null;
-		anIntArray1234 = null;
-		aByteArrayArray1183 = null;
-		aByteArrayArray1247 = null;
-		anIntArray1235 = null;
-		anIntArray1236 = null;
-		anIntArrayArrayArray1214 = null;
-		aByteArrayArrayArray1258 = null;
-		aClass25_946 = null;
-		aClass11Array1230 = null;
-		anIntArrayArray901 = null;
-		anIntArrayArray825 = null;
-		anIntArray1280 = null;
-		anIntArray1281 = null;
-		aByteArray912 = null;
-		aClass15_1163 = null;
-		aClass15_1164 = null;
-		aClass15_1165 = null;
-		aClass15_1166 = null;
-		aClass15_1123 = null;
-		aClass15_1124 = null;
-		aClass15_1125 = null;
-		aClass15_903 = null;
-		aClass15_904 = null;
-		aClass15_905 = null;
-		aClass15_906 = null;
-		aClass15_907 = null;
-		aClass15_908 = null;
-		aClass15_909 = null;
-		aClass15_910 = null;
-		aClass15_911 = null;
-		aClass30_Sub2_Sub1_Sub2_1196 = null;
-		aClass30_Sub2_Sub1_Sub2_1197 = null;
-		aClass30_Sub2_Sub1_Sub2_1198 = null;
-		aClass30_Sub2_Sub1_Sub2_1027 = null;
-		aClass30_Sub2_Sub1_Sub2_1028 = null;
-		aClass30_Sub2_Sub1_Sub2_1029 = null;
-		aClass30_Sub2_Sub1_Sub2Array947 = null;
-		aClass30_Sub2_Sub1_Sub2_1143 = null;
-		aClass30_Sub2_Sub1_Sub2_1144 = null;
-		aClass30_Sub2_Sub1_Sub2_1145 = null;
-		aClass30_Sub2_Sub1_Sub2_1146 = null;
-		aClass30_Sub2_Sub1_Sub2_1147 = null;
-		aClass30_Sub2_Sub1_Sub2_865 = null;
-		aClass30_Sub2_Sub1_Sub2_866 = null;
-		aClass30_Sub2_Sub1_Sub2_867 = null;
-		aClass30_Sub2_Sub1_Sub2_868 = null;
-		aClass30_Sub2_Sub1_Sub2_869 = null;
-		aClass30_Sub2_Sub1_Sub1_1122 = null;
-		aClass30_Sub2_Sub1_Sub1Array987 = null;
-		aClass30_Sub2_Sub1_Sub1Array1095 = null;
-		aClass30_Sub2_Sub1_Sub1Array1150 = null;
-		aClass30_Sub2_Sub1_Sub1_1074 = null;
-		aClass30_Sub2_Sub1_Sub1_1075 = null;
-		aClass30_Sub2_Sub1_Sub1_1076 = null;
-		aClass30_Sub2_Sub1_Sub1_1077 = null;
-		aClass30_Sub2_Sub1_Sub1_1078 = null;
-		aClass30_Sub2_Sub1_Sub2Array1060 = null;
-		aClass30_Sub2_Sub1_Sub1Array1033 = null;
-		anIntArrayArray929 = null;
-		aClass30_Sub2_Sub4_Sub1_Sub2Array890 = null;
-		anIntArray892 = null;
-		anIntArray894 = null;
-		aClass30_Sub2_Sub2Array895 = null;
-		anIntArray840 = null;
-		aClass30_Sub2_Sub4_Sub1_Sub1Array835 = null;
-		anIntArray837 = null;
-		aClass19ArrayArrayArray827 = null;
-		aClass19_1179 = null;
-		aClass19_1013 = null;
-		aClass19_1056 = null;
-		anIntArray1091 = null;
-		anIntArray1092 = null;
-		anIntArray1093 = null;
-		anIntArray1094 = null;
-		aStringArray1199 = null;
-		anIntArray971 = null;
-		anIntArray1072 = null;
-		anIntArray1073 = null;
-		aClass30_Sub2_Sub1_Sub1Array1140 = null;
-		aClass30_Sub2_Sub1_Sub1_1263 = null;
-		aStringArray1082 = null;
-		aLongArray955 = null;
-		anIntArray826 = null;
-		aClass15_1110 = null;
-		aClass15_1111 = null;
-		aClass15_1107 = null;
-		aClass15_1108 = null;
-		aClass15_1109 = null;
-		aClass15_1112 = null;
-		aClass15_1113 = null;
-		aClass15_1114 = null;
-		aClass15_1115 = null;
-		method118();
-		Class46.method575();
-		Class5.method163();
-		Class8.method191();
-		Class22.aClass22Array388 = null;
-		Class38.aClass38Array656 = null;
-		Class9.aClass9Array210 = null;
-		Class27.unused = null;
-		Class20.aClass20Array351 = null;
-		Class23.aClass23Array403 = null;
-		Class23.aClass12_415 = null;
-		Class41.aClass41Array701 = null;
-		Class30_Sub2_Sub4_Sub1_Sub2.aClass12_1704 = null;
-		Class30_Sub2_Sub1_Sub3.method363();
-		Class25.method273();
-		Class30_Sub2_Sub4_Sub6.method458();
-		Class36.method530();
-		System.gc();
-	}
-
 	public void method72() {
 		System.out.println("============");
 		System.out.println("flame-cycle:" + anInt1208);
@@ -4628,18 +5092,6 @@ public class client extends Applet_Sub1 {
 			aClass24_1168.method272();
 		}
 		super.aBoolean9 = true;
-	}
-
-	@Override
-	public Component method11() {
-		if (signlink.mainapp != null) {
-			return signlink.mainapp;
-		}
-		if (super.aFrame_Sub1_15 != null) {
-			return super.aFrame_Sub1_15;
-		} else {
-			return this;
-		}
 	}
 
 	@SuppressWarnings("StringConcatenationInLoop")
@@ -4902,7 +5354,7 @@ public class client extends Applet_Sub1 {
 			if (j1 == 0) {
 				l++;
 			}
-			if ((j1 == 1 || j1 == 2) && (j1 == 1 || anInt1287 == 0 || anInt1287 == 1 && method109(false, s))) {
+			if ((j1 == 1 || j1 == 2) && (j1 == 1 || anInt1287 == 0 || anInt1287 == 1 && method109(s))) {
 				if (j > k1 - 14 && j <= k1 && !s.equals(aClass30_Sub2_Sub4_Sub1_Sub2_1126.aString1703)) {
 					if (anInt863 >= 1) {
 						aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
@@ -4918,7 +5370,7 @@ public class client extends Applet_Sub1 {
 				}
 				l++;
 			}
-			if ((j1 == 3 || j1 == 7) && anInt1195 == 0 && (j1 == 7 || anInt845 == 0 || anInt845 == 1 && method109(false, s))) {
+			if ((j1 == 3 || j1 == 7) && anInt1195 == 0 && (j1 == 7 || anInt845 == 0 || anInt845 == 1 && method109(s))) {
 				if (j > k1 - 14 && j <= k1) {
 					if (anInt863 >= 1) {
 						aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
@@ -4934,7 +5386,7 @@ public class client extends Applet_Sub1 {
 				}
 				l++;
 			}
-			if (j1 == 4 && (anInt1248 == 0 || anInt1248 == 1 && method109(false, s))) {
+			if (j1 == 4 && (anInt1248 == 0 || anInt1248 == 1 && method109(s))) {
 				if (j > k1 - 14 && j <= k1) {
 					aStringArray1199[anInt1133] = "Accept trade @whi@" + s;
 					anIntArray1093[anInt1133] = 484;
@@ -4945,7 +5397,7 @@ public class client extends Applet_Sub1 {
 			if ((j1 == 5 || j1 == 6) && anInt1195 == 0 && anInt845 < 2) {
 				l++;
 			}
-			if (j1 == 8 && (anInt1248 == 0 || anInt1248 == 1 && method109(false, s))) {
+			if (j1 == 8 && (anInt1248 == 0 || anInt1248 == 1 && method109(s))) {
 				if (j > k1 - 14 && j <= k1) {
 					aStringArray1199[anInt1133] = "Accept challenge @whi@" + s;
 					anIntArray1093[anInt1133] = 6;
@@ -5247,7 +5699,7 @@ public class client extends Applet_Sub1 {
 					s = s.substring(5);
 					byte1 = 2;
 				}
-				if ((k == 3 || k == 7) && (k == 7 || anInt845 == 0 || anInt845 == 1 && method109(false, s))) {
+				if ((k == 3 || k == 7) && (k == 7 || anInt845 == 0 || anInt845 == 1 && method109(s))) {
 					int l = 329 - i * 13;
 					int k1 = 4;
 					class30_sub2_sub1_sub4.method385(0, "From", l, k1);
@@ -5432,7 +5884,7 @@ public class client extends Applet_Sub1 {
 			double d = Math.atan2(l1, i2);
 			int j2 = (int) (Math.sin(d) * 63D);
 			int k2 = (int) (Math.cos(d) * 57D);
-			aClass30_Sub2_Sub1_Sub1_1001.method353(83 - k2 - 20, 15, 20, 15, 41960, 256, 20, d, (94 + j2 + 4) - 10);
+			aClass30_Sub2_Sub1_Sub1_1001.method353(83 - k2 - 20, 15, 20, 15, 256, 20, d, (94 + j2 + 4) - 10);
 		} else {
 			method141(class30_sub2_sub1_sub1, k, j);
 		}
@@ -6344,415 +6796,6 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public void method6() {
-		method13(20, "Starting up");
-		if (signlink.sunjava) {
-			super.anInt6 = 5;
-		}
-		if (aBoolean993) {
-			aBoolean1252 = true;
-			return;
-		}
-		aBoolean993 = true;
-		boolean flag = false;
-		String s = method80();
-		if (s.endsWith("jagex.com")) {
-			flag = true;
-		}
-		if (s.endsWith("runescape.com")) {
-			flag = true;
-		}
-		if (s.endsWith("192.168.1.2")) {
-			flag = true;
-		}
-		if (s.endsWith("192.168.1.229")) {
-			flag = true;
-		}
-		if (s.endsWith("192.168.1.228")) {
-			flag = true;
-		}
-		if (s.endsWith("192.168.1.227")) {
-			flag = true;
-		}
-		if (s.endsWith("192.168.1.226")) {
-			flag = true;
-		}
-		if (s.endsWith("127.0.0.1")) {
-			flag = true;
-		}
-		if (!flag) {
-			aBoolean1176 = true;
-			return;
-		}
-		if (signlink.cache_dat != null) {
-			for (int i = 0; i < 5; i++) {
-				aClass14Array970[i] = new Class14(0x7a120, signlink.cache_dat, signlink.cache_idx[i], i + 1);
-			}
-		}
-		try {
-			method16();
-			aClass44_1053 = method67(1, "title screen", "title", anIntArray1090[1], 25);
-			aClass30_Sub2_Sub1_Sub4_1270 = new Class30_Sub2_Sub1_Sub4(false, "p11_full", aClass44_1053);
-			aClass30_Sub2_Sub1_Sub4_1271 = new Class30_Sub2_Sub1_Sub4(false, "p12_full", aClass44_1053);
-			aClass30_Sub2_Sub1_Sub4_1272 = new Class30_Sub2_Sub1_Sub4(false, "b12_full", aClass44_1053);
-			aClass30_Sub2_Sub1_Sub4_1273 = new Class30_Sub2_Sub1_Sub4(true, "q8_full", aClass44_1053);
-			method56();
-			method51();
-			Class44 class44 = method67(2, "config", "config", anIntArray1090[2], 30);
-			Class44 class44_1 = method67(3, "interface", "interface", anIntArray1090[3], 35);
-			Class44 class44_2 = method67(4, "2d graphics", "media", anIntArray1090[4], 40);
-			Class44 class44_3 = method67(6, "textures", "textures", anIntArray1090[6], 45);
-			Class44 class44_4 = method67(7, "chat system", "wordenc", anIntArray1090[7], 50);
-			Class44 class44_5 = method67(8, "sound effects", "sounds", anIntArray1090[8], 55);
-			aByteArrayArrayArray1258 = new byte[4][104][104];
-			anIntArrayArrayArray1214 = new int[4][105][105];
-			aClass25_946 = new Class25(104, 104, anIntArrayArrayArray1214, 4);
-			for (int j = 0; j < 4; j++) {
-				aClass11Array1230[j] = new Class11(104, 104);
-			}
-
-			aClass30_Sub2_Sub1_Sub1_1263 = new Class30_Sub2_Sub1_Sub1(512, 512);
-			Class44 class44_6 = method67(5, "update list", "versionlist", anIntArray1090[5], 60);
-			method13(60, "Connecting to update server");
-			aClass42_Sub1_1068 = new Class42_Sub1();
-			aClass42_Sub1_1068.method551(class44_6, this);
-			Class36.method528(aClass42_Sub1_1068.method557());
-			Class30_Sub2_Sub4_Sub6.method459(aClass42_Sub1_1068.method555(0), aClass42_Sub1_1068);
-			if (!aBoolean960) {
-				anInt1227 = 0;
-				try {
-					anInt1227 = Integer.parseInt(getParameter("music"));
-				} catch (Exception ignored) {
-				}
-				aBoolean1228 = true;
-				aClass42_Sub1_1068.method558(2, anInt1227);
-				while (aClass42_Sub1_1068.method552() > 0) {
-					method57();
-					try {
-						Thread.sleep(100L);
-					} catch (Exception ignored) {
-					}
-					if (aClass42_Sub1_1068.anInt1349 > 3) {
-						method28("ondemand");
-						return;
-					}
-				}
-			}
-			method13(65, "Requesting animations");
-			int k = aClass42_Sub1_1068.method555(1);
-			for (int i1 = 0; i1 < k; i1++) {
-				aClass42_Sub1_1068.method558(1, i1);
-			}
-
-			while (aClass42_Sub1_1068.method552() > 0) {
-				int j1 = k - aClass42_Sub1_1068.method552();
-				if (j1 > 0) {
-					method13(65, "Loading animations - " + (j1 * 100) / k + "%");
-				}
-				method57();
-				try {
-					Thread.sleep(100L);
-				} catch (Exception ignored) {
-				}
-				if (aClass42_Sub1_1068.anInt1349 > 3) {
-					method28("ondemand");
-					return;
-				}
-			}
-			method13(70, "Requesting models");
-			k = aClass42_Sub1_1068.method555(0);
-			for (int k1 = 0; k1 < k; k1++) {
-				int l1 = aClass42_Sub1_1068.method559(k1);
-				if ((l1 & 1) != 0) {
-					aClass42_Sub1_1068.method558(0, k1);
-				}
-			}
-
-			k = aClass42_Sub1_1068.method552();
-			while (aClass42_Sub1_1068.method552() > 0) {
-				int i2 = k - aClass42_Sub1_1068.method552();
-				if (i2 > 0) {
-					method13(70, "Loading models - " + (i2 * 100) / k + "%");
-				}
-				method57();
-				try {
-					Thread.sleep(100L);
-				} catch (Exception ignored) {
-				}
-			}
-			if (aClass14Array970[0] != null) {
-				method13(75, "Requesting maps");
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 47));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 47));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 48));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 48));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 48, 49));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 48, 49));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 47, 47));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 47, 47));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 47, 48));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 47, 48));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(0, 148, 48));
-				aClass42_Sub1_1068.method558(3, aClass42_Sub1_1068.method562(1, 148, 48));
-				k = aClass42_Sub1_1068.method552();
-				while (aClass42_Sub1_1068.method552() > 0) {
-					int j2 = k - aClass42_Sub1_1068.method552();
-					if (j2 > 0) {
-						method13(75, "Loading maps - " + (j2 * 100) / k + "%");
-					}
-					method57();
-					try {
-						Thread.sleep(100L);
-					} catch (Exception ignored) {
-					}
-				}
-			}
-			k = aClass42_Sub1_1068.method555(0);
-			for (int k2 = 0; k2 < k; k2++) {
-				int l2 = aClass42_Sub1_1068.method559(k2);
-				byte byte0 = 0;
-				if ((l2 & 8) != 0) {
-					byte0 = 10;
-				} else if ((l2 & 0x20) != 0) {
-					byte0 = 9;
-				} else if ((l2 & 0x10) != 0) {
-					byte0 = 8;
-				} else if ((l2 & 0x40) != 0) {
-					byte0 = 7;
-				} else if ((l2 & 0x80) != 0) {
-					byte0 = 6;
-				} else if ((l2 & 2) != 0) {
-					byte0 = 5;
-				} else if ((l2 & 4) != 0) {
-					byte0 = 4;
-				}
-				if ((l2 & 1) != 0) {
-					byte0 = 3;
-				}
-				if (byte0 != 0) {
-					aClass42_Sub1_1068.method563(byte0, 0, k2);
-				}
-			}
-
-			aClass42_Sub1_1068.method554(aBoolean959);
-			if (!aBoolean960) {
-				int l = aClass42_Sub1_1068.method555(2);
-				for (int i3 = 1; i3 < l; i3++) {
-					if (aClass42_Sub1_1068.method569(i3)) {
-						aClass42_Sub1_1068.method563((byte) 1, 2, i3);
-					}
-				}
-			}
-			method13(80, "Unpacking media");
-			aClass30_Sub2_Sub1_Sub2_1196 = new Class30_Sub2_Sub1_Sub2(class44_2, "invback", 0);
-			aClass30_Sub2_Sub1_Sub2_1198 = new Class30_Sub2_Sub1_Sub2(class44_2, "chatback", 0);
-			aClass30_Sub2_Sub1_Sub2_1197 = new Class30_Sub2_Sub1_Sub2(class44_2, "mapback", 0);
-			aClass30_Sub2_Sub1_Sub2_1027 = new Class30_Sub2_Sub1_Sub2(class44_2, "backbase1", 0);
-			aClass30_Sub2_Sub1_Sub2_1028 = new Class30_Sub2_Sub1_Sub2(class44_2, "backbase2", 0);
-			aClass30_Sub2_Sub1_Sub2_1029 = new Class30_Sub2_Sub1_Sub2(class44_2, "backhmid1", 0);
-			for (int j3 = 0; j3 < 13; j3++) {
-				aClass30_Sub2_Sub1_Sub2Array947[j3] = new Class30_Sub2_Sub1_Sub2(class44_2, "sideicons", j3);
-			}
-
-			aClass30_Sub2_Sub1_Sub1_1122 = new Class30_Sub2_Sub1_Sub1(class44_2, "compass", 0);
-			aClass30_Sub2_Sub1_Sub1_1001 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapedge", 0);
-			aClass30_Sub2_Sub1_Sub1_1001.method345();
-			try {
-				for (int k3 = 0; k3 < 100; k3++) {
-					aClass30_Sub2_Sub1_Sub2Array1060[k3] = new Class30_Sub2_Sub1_Sub2(class44_2, "mapscene", k3);
-				}
-			} catch (Exception ignored) {
-			}
-			try {
-				for (int l3 = 0; l3 < 100; l3++) {
-					aClass30_Sub2_Sub1_Sub1Array1033[l3] = new Class30_Sub2_Sub1_Sub1(class44_2, "mapfunction", l3);
-				}
-			} catch (Exception ignored) {
-			}
-			try {
-				for (int i4 = 0; i4 < 20; i4++) {
-					aClass30_Sub2_Sub1_Sub1Array987[i4] = new Class30_Sub2_Sub1_Sub1(class44_2, "hitmarks", i4);
-				}
-			} catch (Exception ignored) {
-			}
-			try {
-				for (int j4 = 0; j4 < 20; j4++) {
-					aClass30_Sub2_Sub1_Sub1Array1095[j4] = new Class30_Sub2_Sub1_Sub1(class44_2, "headicons", j4);
-				}
-			} catch (Exception ignored) {
-			}
-			aClass30_Sub2_Sub1_Sub1_870 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapmarker", 0);
-			aClass30_Sub2_Sub1_Sub1_871 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapmarker", 1);
-			for (int k4 = 0; k4 < 8; k4++) {
-				aClass30_Sub2_Sub1_Sub1Array1150[k4] = new Class30_Sub2_Sub1_Sub1(class44_2, "cross", k4);
-			}
-
-			aClass30_Sub2_Sub1_Sub1_1074 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 0);
-			aClass30_Sub2_Sub1_Sub1_1075 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 1);
-			aClass30_Sub2_Sub1_Sub1_1076 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 2);
-			aClass30_Sub2_Sub1_Sub1_1077 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 3);
-			aClass30_Sub2_Sub1_Sub1_1078 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 4);
-			aClass30_Sub2_Sub1_Sub2_1024 = new Class30_Sub2_Sub1_Sub2(class44_2, "scrollbar", 0);
-			aClass30_Sub2_Sub1_Sub2_1025 = new Class30_Sub2_Sub1_Sub2(class44_2, "scrollbar", 1);
-			aClass30_Sub2_Sub1_Sub2_1143 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
-			aClass30_Sub2_Sub1_Sub2_1144 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
-			aClass30_Sub2_Sub1_Sub2_1145 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone3", 0);
-			aClass30_Sub2_Sub1_Sub2_1146 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
-			aClass30_Sub2_Sub1_Sub2_1146.method358();
-			aClass30_Sub2_Sub1_Sub2_1147 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
-			aClass30_Sub2_Sub1_Sub2_1147.method358();
-			aClass30_Sub2_Sub1_Sub2_865 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
-			aClass30_Sub2_Sub1_Sub2_865.method359();
-			aClass30_Sub2_Sub1_Sub2_866 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
-			aClass30_Sub2_Sub1_Sub2_866.method359();
-			aClass30_Sub2_Sub1_Sub2_867 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone3", 0);
-			aClass30_Sub2_Sub1_Sub2_867.method359();
-			aClass30_Sub2_Sub1_Sub2_868 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone1", 0);
-			aClass30_Sub2_Sub1_Sub2_868.method358();
-			aClass30_Sub2_Sub1_Sub2_868.method359();
-			aClass30_Sub2_Sub1_Sub2_869 = new Class30_Sub2_Sub1_Sub2(class44_2, "redstone2", 0);
-			aClass30_Sub2_Sub1_Sub2_869.method358();
-			aClass30_Sub2_Sub1_Sub2_869.method359();
-			for (int l4 = 0; l4 < 2; l4++) {
-				aClass30_Sub2_Sub1_Sub2Array1219[l4] = new Class30_Sub2_Sub1_Sub2(class44_2, "mod_icons", l4);
-			}
-
-			Class30_Sub2_Sub1_Sub1 class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backleft1", 0);
-			aClass15_903 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backleft2", 0);
-			aClass15_904 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backright1", 0);
-			aClass15_905 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backright2", 0);
-			aClass15_906 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backtop1", 0);
-			aClass15_907 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid1", 0);
-			aClass15_908 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid2", 0);
-			aClass15_909 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backvmid3", 0);
-			aClass15_910 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backhmid2", 0);
-			aClass15_911 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
-			class30_sub2_sub1_sub1.method346(0, 0);
-			int i5 = (int) (Math.random() * 21D) - 10;
-			int j5 = (int) (Math.random() * 21D) - 10;
-			int k5 = (int) (Math.random() * 21D) - 10;
-			int l5 = (int) (Math.random() * 41D) - 20;
-			for (int i6 = 0; i6 < 100; i6++) {
-				if (aClass30_Sub2_Sub1_Sub1Array1033[i6] != null) {
-					aClass30_Sub2_Sub1_Sub1Array1033[i6].method344(i5 + l5, j5 + l5, k5 + l5);
-				}
-				if (aClass30_Sub2_Sub1_Sub2Array1060[i6] != null) {
-					aClass30_Sub2_Sub1_Sub2Array1060[i6].method360(i5 + l5, j5 + l5, k5 + l5);
-				}
-			}
-
-			method13(83, "Unpacking textures");
-			Class30_Sub2_Sub1_Sub3.method368(class44_3);
-			Class30_Sub2_Sub1_Sub3.method372(0.80000000000000004D);
-			Class30_Sub2_Sub1_Sub3.method367(20);
-			method13(86, "Unpacking config");
-			Class20.method257(class44);
-			Class46.method576(class44);
-			Class22.method260(class44);
-			Class8.method193(class44);
-			Class5.method162(class44);
-			Class38.method535(class44);
-			Class23.method264(class44);
-			Class41.method546(class44);
-			Class37.method533(class44);
-			Class8.aBoolean182 = aBoolean959;
-			if (!aBoolean960) {
-				method13(90, "Unpacking sounds");
-				byte[] abyte0 = class44_5.method571("sounds.dat", null);
-				Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(abyte0);
-				Class16.method240(class30_sub2_sub2);
-			}
-			method13(95, "Unpacking interfaces");
-			Class30_Sub2_Sub1_Sub4[] aclass30_sub2_sub1_sub4 = {aClass30_Sub2_Sub1_Sub4_1270, aClass30_Sub2_Sub1_Sub4_1271, aClass30_Sub2_Sub1_Sub4_1272, aClass30_Sub2_Sub1_Sub4_1273};
-			Class9.method205(class44_1, aclass30_sub2_sub1_sub4, class44_2);
-			method13(100, "Preparing game engine");
-			for (int j6 = 0; j6 < 33; j6++) {
-				int k6 = 999;
-				int i7 = 0;
-				for (int k7 = 0; k7 < 34; k7++) {
-					if (aClass30_Sub2_Sub1_Sub2_1197.aByteArray1450[k7 + j6 * aClass30_Sub2_Sub1_Sub2_1197.anInt1452] == 0) {
-						if (k6 == 999) {
-							k6 = k7;
-						}
-						continue;
-					}
-					if (k6 == 999) {
-						continue;
-					}
-					i7 = k7;
-					break;
-				}
-
-				anIntArray968[j6] = k6;
-				anIntArray1057[j6] = i7 - k6;
-			}
-
-			for (int l6 = 5; l6 < 156; l6++) {
-				int j7 = 999;
-				int l7 = 0;
-				for (int j8 = 25; j8 < 172; j8++) {
-					if (aClass30_Sub2_Sub1_Sub2_1197.aByteArray1450[j8 + l6 * aClass30_Sub2_Sub1_Sub2_1197.anInt1452] == 0 && (j8 > 34 || l6 > 34)) {
-						if (j7 == 999) {
-							j7 = j8;
-						}
-						continue;
-					}
-					if (j7 == 999) {
-						continue;
-					}
-					l7 = j8;
-					break;
-				}
-
-				anIntArray1052[l6 - 5] = j7 - 25;
-				anIntArray1229[l6 - 5] = l7 - j7;
-			}
-
-			Class30_Sub2_Sub1_Sub3.method365(479, 96);
-			anIntArray1180 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
-			Class30_Sub2_Sub1_Sub3.method365(190, 261);
-			anIntArray1181 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
-			Class30_Sub2_Sub1_Sub3.method365(512, 334);
-			anIntArray1182 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
-			int[] ai = new int[9];
-			for (int i8 = 0; i8 < 9; i8++) {
-				int k8 = 128 + i8 * 32 + 15;
-				int l8 = 600 + k8 * 3;
-				int i9 = Class30_Sub2_Sub1_Sub3.anIntArray1470[k8];
-				ai[i8] = l8 * i9 >> 16;
-			}
-
-			Class25.method310(500, 800, 512, 334, ai);
-			Class34.method487(class44_4);
-			aClass48_879 = new Class48(this);
-			method12(aClass48_879, 10);
-			Class30_Sub2_Sub4_Sub5.aClient1609 = this;
-			Class46.aClient765 = this;
-			Class5.aClient82 = this;
-			return;
-		} catch (Exception exception) {
-			signlink.reporterror("loaderror " + aString1049 + " " + anInt1079);
-		}
-		aBoolean926 = true;
-	}
-
 	public void method91(Class30_Sub2_Sub2 class30_sub2_sub2, int i) {
 		while (class30_sub2_sub2.anInt1407 + 10 < i * 8) {
 			int j = class30_sub2_sub2.method419(11);
@@ -6881,20 +6924,6 @@ public class client extends Applet_Sub1 {
 			l += 30;
 			g.drawString("2: Try rebooting your computer, and reloading", 30, l);
 		}
-	}
-
-	@Override
-	public URL getCodeBase() {
-		if (signlink.mainapp != null) {
-			return signlink.mainapp.getCodeBase();
-		}
-		try {
-			if (super.aFrame_Sub1_15 != null) {
-				return new URL("http://127.0.0.1:" + (80 + anInt958));
-			}
-		} catch (Exception ignored) {
-		}
-		return super.getCodeBase();
 	}
 
 	public void method95() {
@@ -7589,7 +7618,7 @@ public class client extends Applet_Sub1 {
 										} else if (anInt1246 != 0 && anInt1245 == i3 && anInt1244 == class9_1.anInt250) {
 											class30_sub2_sub1_sub1_2.method350(k5, j6, 128);
 										} else {
-											class30_sub2_sub1_sub1_2.method348(k5, 16083, j6);
+											class30_sub2_sub1_sub1_2.method348(k5, j6);
 										}
 										if (class30_sub2_sub1_sub1_2.anInt1444 == 33 || class9_1.anIntArray252[i3] != 1) {
 											int k10 = class9_1.anIntArray252[i3];
@@ -7601,7 +7630,7 @@ public class client extends Applet_Sub1 {
 							} else if (class9_1.aClass30_Sub2_Sub1_Sub1Array209 != null && i3 < 20) {
 								Class30_Sub2_Sub1_Sub1 class30_sub2_sub1_sub1_1 = class9_1.aClass30_Sub2_Sub1_Sub1Array209[i3];
 								if (class30_sub2_sub1_sub1_1 != null) {
-									class30_sub2_sub1_sub1_1.method348(k5, 16083, j6);
+									class30_sub2_sub1_sub1_1.method348(k5, j6);
 								}
 							}
 							i3++;
@@ -7730,7 +7759,7 @@ public class client extends Applet_Sub1 {
 						class30_sub2_sub1_sub1 = class9_1.aClass30_Sub2_Sub1_Sub1_207;
 					}
 					if (class30_sub2_sub1_sub1 != null) {
-						class30_sub2_sub1_sub1.method348(k2, 16083, l2);
+						class30_sub2_sub1_sub1.method348(k2, l2);
 					}
 				} else if (class9_1.anInt262 == 6) {
 					int k3 = Class30_Sub2_Sub1_Sub3.anInt1466;
@@ -8034,22 +8063,7 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public void method9() {
-		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
-			method94();
-			return;
-		}
-		anInt1061++;
-		if (!aBoolean1157) {
-			method135(false);
-		} else {
-			method102();
-		}
-		anInt1213 = 0;
-	}
-
-	public boolean method109(boolean flag, String s) {
+	public boolean method109(String s) {
 		if (s == null) {
 			return false;
 		}
@@ -8059,9 +8073,6 @@ public class client extends Applet_Sub1 {
 			}
 		}
 
-		if (flag) {
-			aClass30_Sub2_Sub2_1192.method398(138);
-		}
 		return s.equalsIgnoreCase(aClass30_Sub2_Sub4_Sub1_Sub2_1126.aString1703);
 	}
 
@@ -8072,10 +8083,10 @@ public class client extends Applet_Sub1 {
 	public void method112() {
 		method76();
 		if (anInt917 == 1) {
-			aClass30_Sub2_Sub1_Sub1Array1150[anInt916 / 100].method348(anInt914 - 8 - 4, 16083, anInt915 - 8 - 4);
+			aClass30_Sub2_Sub1_Sub1Array1150[anInt916 / 100].method348(anInt914 - 8 - 4, anInt915 - 8 - 4);
 		}
 		if (anInt917 == 2) {
-			aClass30_Sub2_Sub1_Sub1Array1150[4 + anInt916 / 100].method348(anInt914 - 8 - 4, 16083, anInt915 - 8 - 4);
+			aClass30_Sub2_Sub1_Sub1Array1150[4 + anInt916 / 100].method348(anInt914 - 8 - 4, anInt915 - 8 - 4);
 		}
 		if (anInt1018 != -1) {
 			method119(anInt945, anInt1018);
@@ -8093,7 +8104,7 @@ public class client extends Applet_Sub1 {
 			method40();
 		}
 		if (anInt1055 == 1) {
-			aClass30_Sub2_Sub1_Sub1Array1095[1].method348(472, 16083, 296);
+			aClass30_Sub2_Sub1_Sub1Array1095[1].method348(472, 296);
 		}
 		if (aBoolean1156) {
 			char c = '\u01FB';
@@ -8485,15 +8496,6 @@ public class client extends Applet_Sub1 {
 		}
 	}
 
-	@Override
-	public String getParameter(String s) {
-		if (signlink.mainapp != null) {
-			return signlink.mainapp.getParameter(s);
-		} else {
-			return super.getParameter(s);
-		}
-	}
-
 	public void method123(boolean flag, int i) {
 		signlink.midivol = i;
 		if (flag) {
@@ -8813,7 +8815,7 @@ public class client extends Applet_Sub1 {
 				if (s != null && s.startsWith("@cr2@")) {
 					s = s.substring(5);
 				}
-				if ((k == 3 || k == 7) && (k == 7 || anInt845 == 0 || anInt845 == 1 && method109(false, s))) {
+				if ((k == 3 || k == 7) && (k == 7 || anInt845 == 0 || anInt845 == 1 && method109(s))) {
 					int l = 329 - i * 13;
 					if (super.anInt20 > 4 && super.anInt21 - 4 > l - 10 && super.anInt21 - 4 <= l + 3) {
 						int i1 = aClass30_Sub2_Sub1_Sub4_1271.method383("From:  " + s + aStringArray944[j]) + 25;
@@ -9157,11 +9159,6 @@ public class client extends Applet_Sub1 {
 		} catch (Exception ignored) {
 		}
 		aBoolean962 = false;
-	}
-
-	@Override
-	public void method10() {
-		aBoolean1255 = true;
 	}
 
 	public void method137(Class30_Sub2_Sub2 class30_sub2_sub2, int j) {
@@ -9610,7 +9607,7 @@ public class client extends Applet_Sub1 {
 		if (l > 2500) {
 			class30_sub2_sub1_sub1.method354(aClass30_Sub2_Sub1_Sub2_1197, 83 - l1 - class30_sub2_sub1_sub1.anInt1445 / 2 - 4, ((94 + k1) - class30_sub2_sub1_sub1.anInt1444 / 2) + 4);
 		} else {
-			class30_sub2_sub1_sub1.method348(((94 + k1) - class30_sub2_sub1_sub1.anInt1444 / 2) + 4, 16083, 83 - l1 - class30_sub2_sub1_sub1.anInt1445 / 2 - 4);
+			class30_sub2_sub1_sub1.method348(((94 + k1) - class30_sub2_sub1_sub1.anInt1444 / 2) + 4, 83 - l1 - class30_sub2_sub1_sub1.anInt1445 / 2 - 4);
 		}
 	}
 

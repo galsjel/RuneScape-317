@@ -195,12 +195,9 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 		}
 	}
 
-	public void method348(int i, int j, int k) {
+	public void method348(int i, int k) {
 		i += anInt1442;
 		k += anInt1443;
-		if (j != 16083) {
-			return;
-		}
 		int l = i + k * Class30_Sub2_Sub1.anInt1379;
 		int i1 = 0;
 		int j1 = anInt1441;
@@ -372,10 +369,7 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 		}
 	}
 
-	public void method353(int i, int j, int k, int l, int i1, int j1, int k1, double d, int l1) {
-		if (i1 != 41960) {
-			return;
-		}
+	public void method353(int i, int j, int k, int l, int j1, int k1, double d, int l1) {
 		try {
 			int i2 = -k / 2;
 			int j2 = -k1 / 2;

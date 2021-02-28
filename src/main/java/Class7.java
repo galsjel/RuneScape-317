@@ -542,7 +542,7 @@ public class Class7 {
 									int i_62_;
 									int i_63_;
 									if (i_61_ >= 0) {
-										i_62_ = Class30_Sub2_Sub1_Sub3.method369(i_61_, 12660);
+										i_62_ = Class30_Sub2_Sub1_Sub3.method369(i_61_);
 										i_63_ = -1;
 									} else if (class22.anInt390 == 16711935) {
 										i_62_ = 0;

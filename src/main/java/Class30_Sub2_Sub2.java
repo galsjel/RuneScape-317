@@ -26,7 +26,6 @@ public class Class30_Sub2_Sub2 extends Class30_Sub2 {
 					i >>>= 1;
 				}
 			}
-
 			anIntArray1408[j] = i;
 		}
 	}

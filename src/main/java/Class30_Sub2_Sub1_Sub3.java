@@ -64,18 +64,15 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 		for (int j = 0; j < Class30_Sub2_Sub1.anInt1380; j++) {
 			anIntArray1472[j] = Class30_Sub2_Sub1.anInt1379 * j;
 		}
-
 		anInt1466 = Class30_Sub2_Sub1.anInt1379 / 2;
 		anInt1467 = Class30_Sub2_Sub1.anInt1380 / 2;
 	}
 
 	public static void method365(int j, int k) {
 		anIntArray1472 = new int[k];
-
 		for (int l = 0; l < k; l++) {
 			anIntArray1472[l] = j * l;
 		}
-
 		anInt1466 = j / 2;
 		anInt1467 = k / 2;
 	}
@@ -117,10 +114,7 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 		}
 	}
 
-	public static int method369(int i, int j) {
-		if (j != 12660) {
-			return 2;
-		}
+	public static int method369(int i) {
 		if (anIntArray1476[i] != 0) {
 			return anIntArray1476[i];
 		}
