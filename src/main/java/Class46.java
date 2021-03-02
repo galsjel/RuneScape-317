@@ -62,7 +62,6 @@ public class Class46 {
 				return aClass46Array782[j];
 			}
 		}
-
 		anInt771 = (anInt771 + 1) % 20;
 		Class46 class46 = aClass46Array782[anInt771];
 		aClass30_Sub2_Sub2_753.anInt1406 = anIntArray755[i];
@@ -90,7 +89,6 @@ public class Class46 {
 			anIntArray755[j] = i;
 			i += class30_sub2_sub2.method410();
 		}
-
 		aClass46Array782 = new Class46[20];
 		for (int k = 0; k < 20; k++) {
 			aClass46Array782[k] = new Class46();
@@ -157,7 +155,6 @@ public class Class46 {
 			for (int j : anIntArray773) {
 				flag1 &= Class30_Sub2_Sub4_Sub6.method463(j & 0xffff);
 			}
-
 			return flag1;
 		}
 		for (int j = 0; j < anIntArray776.length; j++) {
@@ -165,7 +162,6 @@ public class Class46 {
 				return Class30_Sub2_Sub4_Sub6.method463(anIntArray773[j] & 0xffff);
 			}
 		}
-
 		return true;
 	}
 
@@ -187,7 +183,6 @@ public class Class46 {
 				int j3 = l2 + ((i3 - l2) * (k2 + 64)) / 128;
 				class30_sub2_sub4_sub6.anIntArray1628[i2] += j3 - l1;
 			}
-
 			class30_sub2_sub4_sub6.method467();
 		}
 		return class30_sub2_sub4_sub6;
@@ -201,7 +196,6 @@ public class Class46 {
 		for (int j : anIntArray773) {
 			flag1 &= Class30_Sub2_Sub4_Sub6.method463(j & 0xffff);
 		}
-
 		return flag1;
 	}
 
@@ -261,7 +255,6 @@ public class Class46 {
 					aClass30_Sub2_Sub4_Sub6Array741[i2] = class30_sub2_sub4_sub6;
 				}
 			}
-
 			if (k1 > 1) {
 				class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(k1, aClass30_Sub2_Sub4_Sub6Array741);
 			}
@@ -274,7 +267,6 @@ public class Class46 {
 				i1 = j1;
 				break;
 			}
-
 			if (i1 == -1) {
 				return null;
 			}

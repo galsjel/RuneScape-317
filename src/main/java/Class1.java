@@ -24,7 +24,6 @@ public class Class1 {
 				return class30_1;
 			}
 		}
-
 		return null;
 	}
 

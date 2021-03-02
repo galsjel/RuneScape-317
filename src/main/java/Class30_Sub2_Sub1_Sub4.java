@@ -52,7 +52,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 			for (int i3 = j1 / 7; i3 < j1; i3++) {
 				k2 += aByteArrayArray1491[l][i3 * i1];
 			}
-
 			if (k2 <= j1 / 7) {
 				anIntArray1496[l]--;
 				anIntArray1494[l] = 0;
@@ -61,12 +60,10 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 			for (int j3 = j1 / 7; j3 < j1; j3++) {
 				k2 += aByteArrayArray1491[l][(i1 - 1) + j3 * i1];
 			}
-
 			if (k2 <= j1 / 7) {
 				anIntArray1496[l]--;
 			}
 		}
-
 		if (flag) {
 			anIntArray1496[32] = anIntArray1496[73];
 		} else {
@@ -98,7 +95,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 				j += anIntArray1496[s.charAt(k)];
 			}
 		}
-
 		return j;
 	}
 
@@ -110,7 +106,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 		for (int k = 0; k < s.length(); k++) {
 			j += anIntArray1496[s.charAt(k)];
 		}
-
 		return j;
 	}
 
@@ -202,7 +197,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 				i += anIntArray1496[c];
 			}
 		}
-
 		if (aBoolean1499) {
 			Class30_Sub2_Sub1.method339(k + (int) ((double) anInt1497 * 0.69999999999999996D), 0x800000, i - l, l);
 		}
@@ -361,7 +355,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			for (int k2 = l; k2 < 0; k2++) {
 				if (abyte0[j++] != 0) {
 					ai[k++] = i;
@@ -369,7 +362,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			k += j1;
 			j += k1;
 		}
@@ -423,7 +415,6 @@ public class Class30_Sub2_Sub1_Sub4 extends Class30_Sub2_Sub1 {
 					j++;
 				}
 			}
-
 			j += k1;
 			l += j1;
 		}

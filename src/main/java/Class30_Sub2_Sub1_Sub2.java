@@ -24,13 +24,11 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 		for (int k = 0; k < j - 1; k++) {
 			anIntArray1451[k + 1] = class30_sub2_sub2_1.method412();
 		}
-
 		for (int l = 0; l < i; l++) {
 			class30_sub2_sub2_1.anInt1406 += 2;
 			class30_sub2_sub2.anInt1406 += class30_sub2_sub2_1.method410() * class30_sub2_sub2_1.method410();
 			class30_sub2_sub2_1.anInt1406++;
 		}
-
 		anInt1454 = class30_sub2_sub2_1.method408();
 		anInt1455 = class30_sub2_sub2_1.method408();
 		anInt1452 = class30_sub2_sub2_1.method410();
@@ -42,7 +40,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 			for (int k1 = 0; k1 < j1; k1++) {
 				aByteArray1450[k1] = class30_sub2_sub2.method409();
 			}
-
 			return;
 		}
 		if (i1 == 1) {
@@ -64,7 +61,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 				abyte0[(k + anInt1454 >> 1) + (j + anInt1455 >> 1) * anInt1456] = aByteArray1450[i++];
 			}
 		}
-
 		aByteArray1450 = abyte0;
 		anInt1452 = anInt1456;
 		anInt1453 = anInt1457;
@@ -83,7 +79,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 				abyte0[k + anInt1454 + (j + anInt1455) * anInt1456] = aByteArray1450[i++];
 			}
 		}
-
 		aByteArray1450 = abyte0;
 		anInt1452 = anInt1456;
 		anInt1453 = anInt1457;
@@ -99,7 +94,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 				abyte0[j++] = aByteArray1450[l + k * anInt1452];
 			}
 		}
-
 		aByteArray1450 = abyte0;
 		anInt1454 = anInt1456 - anInt1452 - anInt1454;
 	}
@@ -112,7 +106,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 				abyte0[i++] = aByteArray1450[k + j * anInt1452];
 			}
 		}
-
 		aByteArray1450 = abyte0;
 		anInt1455 = anInt1457 - anInt1453 - anInt1455;
 	}
@@ -213,7 +206,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			for (int j2 = l; j2 < 0; j2++) {
 				byte byte2 = abyte0[i1++];
 				if (byte2 != 0) {
@@ -222,7 +214,6 @@ public class Class30_Sub2_Sub1_Sub2 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			k += j;
 			i1 += j1;
 		}

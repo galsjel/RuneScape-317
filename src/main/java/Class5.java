@@ -51,7 +51,6 @@ public class Class5 {
 				return aClass5Array80[j];
 			}
 		}
-
 		anInt56 = (anInt56 + 1) % 20;
 		Class5 class5 = aClass5Array80[anInt56] = new Class5();
 		aClass30_Sub2_Sub2_60.anInt1406 = anIntArray72[i];
@@ -70,7 +69,6 @@ public class Class5 {
 			anIntArray72[j] = i;
 			i += class30_sub2_sub2.method410();
 		}
-
 		aClass5Array80 = new Class5[20];
 		for (int k = 0; k < 20; k++) {
 			aClass5Array80[k] = new Class5();
@@ -102,7 +100,6 @@ public class Class5 {
 				flag1 = true;
 			}
 		}
-
 		if (flag1) {
 			return null;
 		}
@@ -110,7 +107,6 @@ public class Class5 {
 		for (int j = 0; j < anIntArray73.length; j++) {
 			aclass30_sub2_sub4_sub6[j] = Class30_Sub2_Sub4_Sub6.method462(anIntArray73[j]);
 		}
-
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
 			class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
@@ -161,7 +157,6 @@ public class Class5 {
 					flag = true;
 				}
 			}
-
 			if (flag) {
 				return null;
 			}
@@ -169,7 +164,6 @@ public class Class5 {
 			for (int j1 = 0; j1 < anIntArray94.length; j1++) {
 				aclass30_sub2_sub4_sub6[j1] = Class30_Sub2_Sub4_Sub6.method462(anIntArray94[j1]);
 			}
-
 			if (aclass30_sub2_sub4_sub6.length == 1) {
 				class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
 			} else {

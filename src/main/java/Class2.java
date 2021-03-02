@@ -60,7 +60,6 @@ public class Class2 {
 		for (Class30_Sub2 class30_sub2 = aClass30_Sub2_43.aClass30_Sub2_1303; class30_sub2 != aClass30_Sub2_43; class30_sub2 = class30_sub2.aClass30_Sub2_1303) {
 			i++;
 		}
-
 		return i;
 	}
 

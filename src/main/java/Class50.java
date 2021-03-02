@@ -19,7 +19,6 @@ public class Class50 {
 				l += (27 + c) - 48;
 			}
 		}
-
 		for (; l % 37L == 0L && l != 0L; l /= 37L) {
 		}
 		return l;
@@ -49,7 +48,6 @@ public class Class50 {
 			l = (l * 61L + (long) s.charAt(i)) - 32L;
 			l = l + (l >> 56) & 0xffffffffffffffL;
 		}
-
 		return l;
 	}
 
@@ -68,7 +66,6 @@ public class Class50 {
 					}
 				}
 			}
-
 			if (ac[0] >= 'a' && ac[0] <= 'z') {
 				ac[0] = (char) ((ac[0] + 65) - 97);
 			}
@@ -83,7 +80,6 @@ public class Class50 {
 		for (int j = 0; j < s.length(); j++) {
 			stringbuffer.append("*");
 		}
-
 		return stringbuffer.toString();
 	}
 

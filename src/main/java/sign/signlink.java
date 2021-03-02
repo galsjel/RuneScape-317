@@ -94,7 +94,6 @@ public class signlink implements Runnable {
 			} catch (Exception ignored) {
 			}
 		}
-
 		return null;
 	}
 
@@ -125,7 +124,6 @@ public class signlink implements Runnable {
 			} catch (Exception ignored) {
 			}
 		}
-
 		if (socket == null) {
 			throw new IOException("could not open socket");
 		} else {
@@ -140,7 +138,6 @@ public class signlink implements Runnable {
 			} catch (Exception ignored) {
 			}
 		}
-
 		if (urlstream == null) {
 			throw new IOException("could not open: " + s);
 		} else {

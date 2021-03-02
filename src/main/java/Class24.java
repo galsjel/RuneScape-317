@@ -100,7 +100,6 @@ public class Class24 implements Runnable {
 					throw new IOException("buffer overflow");
 				}
 			}
-
 			if (!aBoolean427) {
 				aBoolean427 = true;
 				anApplet_Sub1_423.method12(this, 3);

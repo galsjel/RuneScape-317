@@ -79,7 +79,6 @@ public class Class30_Sub2_Sub4_Sub1 extends Class30_Sub2_Sub4 {
 					anIntArray1501[i1] = anIntArray1501[i1 - 1];
 					aBooleanArray1553[i1] = aBooleanArray1553[i1 - 1];
 				}
-
 				anIntArray1500[0] = i;
 				anIntArray1501[0] = j;
 				aBooleanArray1553[0] = false;
@@ -153,7 +152,6 @@ public class Class30_Sub2_Sub4_Sub1 extends Class30_Sub2_Sub4 {
 			anIntArray1501[l] = anIntArray1501[l - 1];
 			aBooleanArray1553[l] = aBooleanArray1553[l - 1];
 		}
-
 		anIntArray1500[0] = j;
 		anIntArray1501[0] = k;
 		aBooleanArray1553[0] = flag;

@@ -55,11 +55,9 @@ public class Class39 {
 			for (int j1 = k * 2 - 1; j1 >= 2; j1--) {
 				aFloatArrayArray669[i][j1] += aFloatArrayArray669[i][j1 - 1] * f4 + aFloatArrayArray669[i][j1 - 2] * f5;
 			}
-
 			aFloatArrayArray669[i][1] += aFloatArrayArray669[i][0] * f4 + f5;
 			aFloatArrayArray669[i][0] += f4;
 		}
-
 		if (i == 0) {
 			for (int l = 0; l < anIntArray665[0] * 2; l++) {
 				aFloatArrayArray669[0][l] *= aFloat671;
@@ -68,7 +66,6 @@ public class Class39 {
 		for (int i1 = 0; i1 < anIntArray665[i] * 2; i1++) {
 			anIntArrayArray670[i][i1] = (int) (aFloatArrayArray669[i][i1] * 65536F);
 		}
-
 		return anIntArray665[i] * 2;
 	}
 
@@ -86,7 +83,6 @@ public class Class39 {
 					anIntArrayArrayArray667[k][0][l] = class30_sub2_sub2.method410();
 				}
 			}
-
 			for (int i1 = 0; i1 < 2; i1++) {
 				for (int j1 = 0; j1 < anIntArray665[i1]; j1++) {
 					if ((j & 1 << i1 * 4 << j1) != 0) {
@@ -98,7 +94,6 @@ public class Class39 {
 					}
 				}
 			}
-
 			if (j != 0 || anIntArray668[1] != anIntArray668[0]) {
 				class29.method326(class30_sub2_sub2);
 			}

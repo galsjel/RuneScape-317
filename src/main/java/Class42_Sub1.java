@@ -92,7 +92,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 						class30_sub2_sub3.anInt1423 = 0;
 					}
 				}
-
 				if (aClass30_Sub2_Sub3_1369 != null) {
 					anInt1373 = 0;
 					if (l1 == 0) {
@@ -173,7 +172,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				anIntArrayArray1364[i][l] = class30_sub2_sub2.method410();
 			}
 		}
-
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 		for (int k = 0; k < 4; k++) {
 			byte[] abyte1 = class44.method571(as1[k], null);
@@ -184,7 +182,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				anIntArrayArray1365[k][l1] = class30_sub2_sub2_1.method413();
 			}
 		}
-
 		byte[] abyte2 = class44.method571("model_index", null);
 		int j1 = anIntArrayArray1364[0].length;
 		aByteArray1372 = new byte[j1];
@@ -195,7 +192,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				aByteArray1372[k1] = 0;
 			}
 		}
-
 		abyte2 = class44.method571("map_index", null);
 		Class30_Sub2_Sub2 class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
 		j1 = abyte2.length / 7;
@@ -209,7 +205,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			anIntArray1337[i2] = class30_sub2_sub2_2.method410();
 			anIntArray1356[i2] = class30_sub2_sub2_2.method408();
 		}
-
 		abyte2 = class44.method571("anim_index", null);
 		class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
 		j1 = abyte2.length / 2;
@@ -217,7 +212,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		for (int j2 = 0; j2 < j1; j2++) {
 			anIntArray1360[j2] = class30_sub2_sub2_2.method410();
 		}
-
 		abyte2 = class44.method571("midi_index", null);
 		class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
 		j1 = abyte2.length;
@@ -225,7 +219,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		for (int k2 = 0; k2 < j1; k2++) {
 			anIntArray1348[k2] = class30_sub2_sub2_2.method408();
 		}
-
 		aClient1343 = client1;
 		aBoolean1353 = true;
 		aClient1343.method12(this, 2);
@@ -270,7 +263,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				for (int j = 0; j < 8; j++) {
 					anInputStream1362.read();
 				}
-
 				anInt1373 = 0;
 			}
 			aByteArray1339[0] = (byte) class30_sub2_sub3.anInt1419;
@@ -317,7 +309,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 					return;
 				}
 			}
-
 			Class30_Sub2_Sub3 class30_sub2_sub3_1 = new Class30_Sub2_Sub3();
 			class30_sub2_sub3_1.anInt1419 = i;
 			class30_sub2_sub3_1.anInt1421 = j;
@@ -361,7 +352,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 						method550();
 					}
 				}
-
 				boolean flag = false;
 				for (Class30_Sub2_Sub3 class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3 != null; class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
 					if (class30_sub2_sub3.aBoolean1422) {
@@ -373,7 +363,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 						}
 					}
 				}
-
 				if (!flag) {
 					for (Class30_Sub2_Sub3 class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3_1 != null; class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
 						flag = true;
@@ -477,7 +466,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		for (int j = 0; j < i; j++) {
 			class30_sub2_sub3.aByteArray1420[j] = aByteArray1359[j];
 		}
-
 		return class30_sub2_sub3;
 	}
 
@@ -492,7 +480,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				}
 			}
 		}
-
 		return -1;
 	}
 
@@ -525,7 +512,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -539,7 +525,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				anInt1367++;
 			}
 		}
-
 		while (anInt1366 < 10) {
 			Class30_Sub2_Sub3 class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1368.method251();
 			if (class30_sub2_sub3_1 == null) {
@@ -642,7 +627,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 					}
 				}
 			}
-
 			anInt1332--;
 		}
 	}

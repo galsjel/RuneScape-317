@@ -74,7 +74,6 @@ public class Class8 {
 			anIntArray195[j] = i;
 			i += class30_sub2_sub2.method410();
 		}
-
 		aClass8Array172 = new Class8[10];
 		for (int k = 0; k < 10; k++) {
 			aClass8Array172[k] = new Class8();
@@ -87,7 +86,6 @@ public class Class8 {
 				return aClass8Array172[j];
 			}
 		}
-
 		anInt180 = (anInt180 + 1) % 10;
 		Class8 class8 = aClass8Array172[anInt180];
 		aClass30_Sub2_Sub2_183.anInt1406 = anIntArray195[i];
@@ -129,7 +127,6 @@ public class Class8 {
 					i1 = class8.anIntArray193[j1];
 				}
 			}
-
 			if (i1 != -1) {
 				class8 = method198(i1);
 			}
@@ -185,7 +182,6 @@ public class Class8 {
 				}
 			}
 		}
-
 		if (k > 0) {
 			for (int j5 = 31; j5 >= 0; j5--) {
 				for (int k4 = 31; k4 >= 0; k4--) {
@@ -420,7 +416,6 @@ public class Class8 {
 					j = anIntArray193[k];
 				}
 			}
-
 			if (j != -1) {
 				return method198(j).method201(1);
 			}
@@ -455,7 +450,6 @@ public class Class8 {
 					j = anIntArray193[k];
 				}
 			}
-
 			if (j != -1) {
 				return method198(j).method202(1);
 			}

@@ -42,12 +42,10 @@ public class Class6 {
 				anIntArray116[i] = -1;
 			}
 		}
-
 		anIntArray117 = new int[32768];
 		for (int j = 0; j < 32768; j++) {
 			anIntArray117[j] = (int) (Math.sin((double) j / 5215.1903000000002D) * 16384D);
 		}
-
 		anIntArray115 = new int[0x35d54];
 	}
 
@@ -55,7 +53,6 @@ public class Class6 {
 		for (int k = 0; k < i; k++) {
 			anIntArray115[k] = 0;
 		}
-
 		if (j < 10) {
 			return anIntArray115;
 		}
@@ -89,7 +86,6 @@ public class Class6 {
 				anIntArray122[j2] = (int) (((double) aClass29_98.anInt538 * 32.768000000000001D) / d);
 			}
 		}
-
 		for (int k2 = 0; k2 < i; k2++) {
 			int l2 = aClass29_98.method328(i);
 			int j4 = aClass29_99.method328(i);
@@ -115,7 +111,6 @@ public class Class6 {
 				}
 			}
 		}
-
 		if (aClass29_104 != null) {
 			aClass29_104.method327();
 			aClass29_105.method327();
@@ -161,15 +156,12 @@ public class Class6 {
 					for (int k8 = 0; k8 < i5; k8++) {
 						j8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k8] * (long) Class39.anIntArrayArray670[0][k8] >> 16);
 					}
-
 					for (int j9 = 0; j9 < j7; j9++) {
 						j8 -= (int) ((long) anIntArray115[j7 - 1 - j9] * (long) Class39.anIntArrayArray670[1][j9] >> 16);
 					}
-
 					anIntArray115[j7] = j8;
 					k3 = aClass29_112.method328(i + 1);
 				}
-
 				char c = '\200';
 				l7 = c;
 				do {
@@ -181,15 +173,12 @@ public class Class6 {
 						for (int k9 = 0; k9 < i5; k9++) {
 							l8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k9] * (long) Class39.anIntArrayArray670[0][k9] >> 16);
 						}
-
 						for (int i10 = 0; i10 < i6; i10++) {
 							l8 -= (int) ((long) anIntArray115[j7 - 1 - i10] * (long) Class39.anIntArrayArray670[1][i10] >> 16);
 						}
-
 						anIntArray115[j7] = l8;
 						k3 = aClass29_112.method328(i + 1);
 					}
-
 					if (j7 >= i - i5) {
 						break;
 					}
@@ -202,11 +191,9 @@ public class Class6 {
 					for (int l9 = (j7 + i5) - i; l9 < i5; l9++) {
 						i9 += (int) ((long) anIntArray115[(j7 + i5) - 1 - l9] * (long) Class39.anIntArrayArray670[0][l9] >> 16);
 					}
-
 					for (int j10 = 0; j10 < i6; j10++) {
 						i9 -= (int) ((long) anIntArray115[j7 - 1 - j10] * (long) Class39.anIntArrayArray670[1][j10] >> 16);
 					}
-
 					anIntArray115[j7] = i9;
 					aClass29_112.method328(i + 1);
 				}
@@ -220,7 +207,6 @@ public class Class6 {
 				anIntArray115[i4] = 32767;
 			}
 		}
-
 		return anIntArray115;
 	}
 
@@ -283,7 +269,6 @@ public class Class6 {
 			anIntArray107[j] = class30_sub2_sub2.method421();
 			anIntArray108[j] = class30_sub2_sub2.method422();
 		}
-
 		anInt109 = class30_sub2_sub2.method422();
 		anInt110 = class30_sub2_sub2.method422();
 		anInt113 = class30_sub2_sub2.method410();

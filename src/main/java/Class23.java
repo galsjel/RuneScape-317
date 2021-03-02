@@ -84,7 +84,6 @@ public class Class23 {
 				class30_sub2_sub4_sub6.method476(anIntArray408[i], anIntArray409[i]);
 			}
 		}
-
 		aClass12_415.method223(class30_sub2_sub4_sub6, anInt404);
 		return class30_sub2_sub4_sub6;
 	}

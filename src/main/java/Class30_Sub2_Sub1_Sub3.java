@@ -32,11 +32,9 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 		for (int i = 1; i < 512; i++) {
 			anIntArray1468[i] = 32768 / i;
 		}
-
 		for (int j = 1; j < 2048; j++) {
 			anIntArray1469[j] = 0x10000 / j;
 		}
-
 		for (int k = 0; k < 2048; k++) {
 			anIntArray1470[k] = (int) (65536D * Math.sin((double) k * 0.0030679614999999999D));
 			anIntArray1471[k] = (int) (65536D * Math.cos((double) k * 0.0030679614999999999D));
@@ -127,7 +125,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 			l += anIntArrayArray1483[i][k1] >> 8 & 0xff;
 			i1 += anIntArrayArray1483[i][k1] & 0xff;
 		}
-
 		int l1 = (k / j1 << 16) + (l / j1 << 8) + i1 / j1;
 		l1 = method373(l1, 1.3999999999999999D);
 		if (l1 == 0) {
@@ -163,7 +160,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					k = l;
 				}
 			}
-
 			ai = anIntArrayArray1479[k];
 			anIntArrayArray1479[k] = null;
 		}
@@ -274,7 +270,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				anIntArray1482[j++] = k2;
 			}
 		}
-
 		for (int l = 0; l < 50; l++) {
 			if (aClass30_Sub2_Sub1_Sub2Array1474[l] != null) {
 				int[] ai = aClass30_Sub2_Sub1_Sub2Array1474[l].anIntArray1451;
@@ -287,7 +282,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				}
 			}
 		}
-
 		for (int i1 = 0; i1 < 50; i1++) {
 			method370(i1);
 		}
@@ -362,7 +356,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 						i2 += k3;
 						k1 += k2;
 					}
-
 					while (--k >= 0) {
 						method375(Class30_Sub2_Sub1.anIntArray1378, i, j1 >> 16, i1 >> 16, i2 >> 7, l1 >> 7);
 						j1 += j3;
@@ -382,7 +375,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					i2 += k3;
 					k1 += k2;
 				}
-
 				while (--k >= 0) {
 					method375(Class30_Sub2_Sub1.anIntArray1378, i, i1 >> 16, j1 >> 16, l1 >> 7, i2 >> 7);
 					j1 += j3;
@@ -419,7 +411,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					l1 += k3;
 					k1 += k2;
 				}
-
 				while (--j >= 0) {
 					method375(Class30_Sub2_Sub1.anIntArray1378, i, j1 >> 16, l >> 16, i2 >> 7, k1 >> 7);
 					j1 += l2;
@@ -439,7 +430,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				l1 += k3;
 				k1 += k2;
 			}
-
 			while (--j >= 0) {
 				method375(Class30_Sub2_Sub1.anIntArray1378, i, l >> 16, j1 >> 16, k1 >> 7, i2 >> 7);
 				j1 += l2;
@@ -487,7 +477,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 						k1 += k2;
 						l1 += i3;
 					}
-
 					while (--i >= 0) {
 						method375(Class30_Sub2_Sub1.anIntArray1378, j, l >> 16, j1 >> 16, k1 >> 7, i2 >> 7);
 						l += j2;
@@ -507,7 +496,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					k1 += k2;
 					l1 += i3;
 				}
-
 				while (--i >= 0) {
 					method375(Class30_Sub2_Sub1.anIntArray1378, j, j1 >> 16, l >> 16, i2 >> 7, k1 >> 7);
 					l += j2;
@@ -544,7 +532,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					i2 += k2;
 					l1 += i3;
 				}
-
 				while (--k >= 0) {
 					method375(Class30_Sub2_Sub1.anIntArray1378, j, l >> 16, i1 >> 16, k1 >> 7, l1 >> 7);
 					l += j3;
@@ -564,7 +551,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				i2 += k2;
 				l1 += i3;
 			}
-
 			while (--k >= 0) {
 				method375(Class30_Sub2_Sub1.anIntArray1378, j, i1 >> 16, l >> 16, l1 >> 7, k1 >> 7);
 				l += j3;
@@ -611,7 +597,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					l1 += i3;
 					i2 += k3;
 				}
-
 				while (--j >= 0) {
 					method375(Class30_Sub2_Sub1.anIntArray1378, k, i1 >> 16, l >> 16, l1 >> 7, k1 >> 7);
 					i1 += l2;
@@ -631,7 +616,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				l1 += i3;
 				i2 += k3;
 			}
-
 			while (--j >= 0) {
 				method375(Class30_Sub2_Sub1.anIntArray1378, k, l >> 16, i1 >> 16, k1 >> 7, l1 >> 7);
 				i1 += l2;
@@ -668,7 +652,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				k1 += i3;
 				i2 += k3;
 			}
-
 			while (--i >= 0) {
 				method375(Class30_Sub2_Sub1.anIntArray1378, k, i1 >> 16, j1 >> 16, l1 >> 7, i2 >> 7);
 				i1 += j2;
@@ -688,7 +671,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 			k1 += i3;
 			i2 += k3;
 		}
-
 		while (--i >= 0) {
 			method375(Class30_Sub2_Sub1.anIntArray1378, k, j1 >> 16, i1 >> 16, i2 >> 7, l1 >> 7);
 			i1 += j2;
@@ -853,7 +835,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 						j1 += j2;
 						l += l1;
 					}
-
 					while (--k >= 0) {
 						method377(Class30_Sub2_Sub1.anIntArray1378, i, k1, j1 >> 16, i1 >> 16);
 						j1 += j2;
@@ -869,7 +850,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					j1 += j2;
 					l += l1;
 				}
-
 				while (--k >= 0) {
 					method377(Class30_Sub2_Sub1.anIntArray1378, i, k1, i1 >> 16, j1 >> 16);
 					j1 += j2;
@@ -897,7 +877,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					i1 += j2;
 					l += l1;
 				}
-
 				while (--j >= 0) {
 					method377(Class30_Sub2_Sub1.anIntArray1378, i, k1, j1 >> 16, l >> 16);
 					j1 += i2;
@@ -913,7 +892,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				i1 += j2;
 				l += l1;
 			}
-
 			while (--j >= 0) {
 				method377(Class30_Sub2_Sub1.anIntArray1378, i, k1, l >> 16, j1 >> 16);
 				j1 += i2;
@@ -952,7 +930,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 						l += l1;
 						i1 += i2;
 					}
-
 					while (--i >= 0) {
 						method377(Class30_Sub2_Sub1.anIntArray1378, j, k1, l >> 16, j1 >> 16);
 						l += l1;
@@ -968,7 +945,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					l += l1;
 					i1 += i2;
 				}
-
 				while (--i >= 0) {
 					method377(Class30_Sub2_Sub1.anIntArray1378, j, k1, j1 >> 16, l >> 16);
 					l += l1;
@@ -996,7 +972,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					j1 += l1;
 					i1 += i2;
 				}
-
 				while (--k >= 0) {
 					method377(Class30_Sub2_Sub1.anIntArray1378, j, k1, l >> 16, i1 >> 16);
 					l += j2;
@@ -1012,7 +987,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				j1 += l1;
 				i1 += i2;
 			}
-
 			while (--k >= 0) {
 				method377(Class30_Sub2_Sub1.anIntArray1378, j, k1, i1 >> 16, l >> 16);
 				l += j2;
@@ -1050,7 +1024,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					i1 += i2;
 					j1 += j2;
 				}
-
 				while (--j >= 0) {
 					method377(Class30_Sub2_Sub1.anIntArray1378, k, k1, i1 >> 16, l >> 16);
 					i1 += i2;
@@ -1066,7 +1039,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				i1 += i2;
 				j1 += j2;
 			}
-
 			while (--j >= 0) {
 				method377(Class30_Sub2_Sub1.anIntArray1378, k, k1, l >> 16, i1 >> 16);
 				i1 += i2;
@@ -1094,7 +1066,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				l += i2;
 				j1 += j2;
 			}
-
 			while (--i >= 0) {
 				method377(Class30_Sub2_Sub1.anIntArray1378, k, k1, i1 >> 16, j1 >> 16);
 				i1 += l1;
@@ -1110,7 +1081,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 			l += i2;
 			j1 += j2;
 		}
-
 		while (--i >= 0) {
 			method377(Class30_Sub2_Sub1.anIntArray1378, k, k1, j1 >> 16, i1 >> 16);
 			i1 += l1;
@@ -1143,7 +1113,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 			for (k = i1 - l & 3; --k >= 0; ) {
 				ai[i++] = j;
 			}
-
 			return;
 		}
 		int j1 = anInt1465;
@@ -1793,7 +1762,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 					i += i7;
 					j += k7;
 				}
-
 				return;
 			}
 			while (k3-- > 0) {
@@ -1874,7 +1842,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				i += i7;
 				j += k7;
 			}
-
 			return;
 		}
 		int j4 = 0;
@@ -1960,7 +1927,6 @@ public class Class30_Sub2_Sub1_Sub3 extends Class30_Sub2_Sub1 {
 				i += j7;
 				j += l7;
 			}
-
 			return;
 		}
 		while (k3-- > 0) {

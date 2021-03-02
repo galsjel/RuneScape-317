@@ -73,7 +73,6 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 		for (int k1 = 0; k1 < 10; k1++) {
 			aLongArray7[k1] = System.currentTimeMillis();
 		}
-
 		while (anInt4 >= 0) {
 			if (anInt4 > 0) {
 				anInt4--;
@@ -129,7 +128,6 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 				method7();
 				anInt32 = anInt33;
 			}
-
 			i1 &= 0xff;
 			if (anInt5 > 0) {
 				anInt8 = (1000 * j) / (anInt5 * 256);
@@ -141,7 +139,6 @@ public class Applet_Sub1 extends Applet implements Runnable, MouseListener, Mous
 					int i3 = ((i - l2 - 1) + 20) % 10;
 					System.out.println("otim" + i3 + ":" + aLongArray7[i3]);
 				}
-
 				System.out.println("fps:" + anInt8 + " ratio:" + j + " count:" + i1);
 				System.out.println("del:" + k + " deltime:" + anInt5 + " mindel:" + anInt6);
 				System.out.println("intex:" + j1 + " opos:" + i);

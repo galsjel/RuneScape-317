@@ -68,7 +68,6 @@ public class Class38 {
 				flag = false;
 			}
 		}
-
 		return flag;
 	}
 
@@ -80,7 +79,6 @@ public class Class38 {
 		for (int i = 0; i < anIntArray658.length; i++) {
 			aclass30_sub2_sub4_sub6[i] = Class30_Sub2_Sub4_Sub6.method462(anIntArray658[i]);
 		}
-
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
 			class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
@@ -93,7 +91,6 @@ public class Class38 {
 			}
 			class30_sub2_sub4_sub6.method476(anIntArray659[j], anIntArray660[j]);
 		}
-
 		return class30_sub2_sub4_sub6;
 	}
 
@@ -115,7 +112,6 @@ public class Class38 {
 				aclass30_sub2_sub4_sub6[j++] = Class30_Sub2_Sub4_Sub6.method462(anIntArray661[k]);
 			}
 		}
-
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(j, aclass30_sub2_sub4_sub6);
 		for (int l = 0; l < 6; l++) {
 			if (anIntArray659[l] == 0) {
@@ -123,7 +119,6 @@ public class Class38 {
 			}
 			class30_sub2_sub4_sub6.method476(anIntArray659[l], anIntArray660[l]);
 		}
-
 		return class30_sub2_sub4_sub6;
 	}
 

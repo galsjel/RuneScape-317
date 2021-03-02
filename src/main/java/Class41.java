@@ -40,7 +40,6 @@ public class Class41 {
 			}
 			aClass41Array701[j].method547(class30_sub2_sub2, j);
 		}
-
 		if (class30_sub2_sub2.anInt1406 != class30_sub2_sub2.aByteArray1405.length) {
 			System.out.println("varptype load mismatch");
 		}

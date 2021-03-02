@@ -126,7 +126,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 				}
 			}
 		}
-
 		for (int l = 0; l < 5; l++) {
 			int j1 = class30_sub2_sub2.method408();
 			if (j1 < 0 || j1 >= client.anIntArrayArray1003[l].length) {
@@ -134,7 +133,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 			}
 			anIntArray1700[l] = j1;
 		}
-
 		super.anInt1511 = class30_sub2_sub2.method410();
 		if (super.anInt1511 == 65535) {
 			super.anInt1511 = -1;
@@ -174,7 +172,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 				aLong1718 += anIntArray1717[k1] - 256;
 			}
 		}
-
 		if (anIntArray1717[0] >= 256) {
 			aLong1718 += anIntArray1717[0] - 256 >> 4;
 		}
@@ -185,7 +182,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 			aLong1718 <<= 3;
 			aLong1718 += anIntArray1700[i2];
 		}
-
 		aLong1718 <<= 1;
 		aLong1718 += anInt1702;
 	}
@@ -240,7 +236,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 					flag = true;
 				}
 			}
-
 			if (flag) {
 				if (aLong1697 != -1L) {
 					class30_sub2_sub4_sub6_1 = (Class30_Sub2_Sub4_Sub6) aClass12_1704.method222(aLong1697);
@@ -274,7 +269,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 					}
 				}
 			}
-
 			class30_sub2_sub4_sub6_1 = new Class30_Sub2_Sub4_Sub6(j2, aclass30_sub2_sub4_sub6);
 			for (int j3 = 0; j3 < 5; j3++) {
 				if (anIntArray1700[j3] != 0) {
@@ -284,7 +278,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 					}
 				}
 			}
-
 			class30_sub2_sub4_sub6_1.method469();
 			class30_sub2_sub4_sub6_1.method479(64, 850, -30, -50, -30, true);
 			aClass12_1704.method223(class30_sub2_sub4_sub6_1, l);
@@ -328,7 +321,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 				flag = true;
 			}
 		}
-
 		if (flag) {
 			return null;
 		}
@@ -349,7 +341,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 				}
 			}
 		}
-
 		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(k, aclass30_sub2_sub4_sub6);
 		for (int j1 = 0; j1 < 5; j1++) {
 			if (anIntArray1700[j1] != 0) {
@@ -359,7 +350,6 @@ public class Class30_Sub2_Sub4_Sub1_Sub2 extends Class30_Sub2_Sub4_Sub1 {
 				}
 			}
 		}
-
 		return class30_sub2_sub4_sub6;
 	}
 

@@ -165,7 +165,6 @@ public class Class40 {
 			ai1[k6] = k8;
 			ai2[k6] = j9;
 		}
-
 		int[] ai3 = anIntArrayArray697[j3];
 		int j7 = ai3.length / 4;
 		anIntArray679 = new int[j7];

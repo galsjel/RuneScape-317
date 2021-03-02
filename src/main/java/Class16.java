@@ -48,7 +48,6 @@ public class Class16 {
 				aClass6Array329[i].method169(class30_sub2_sub2);
 			}
 		}
-
 		anInt330 = class30_sub2_sub2.method410();
 		anInt331 = class30_sub2_sub2.method410();
 	}
@@ -60,7 +59,6 @@ public class Class16 {
 				j = aClass6Array329[k].anInt114 / 20;
 			}
 		}
-
 		if (anInt330 < anInt331 && anInt330 / 20 < j) {
 			j = anInt330 / 20;
 		}
@@ -72,7 +70,6 @@ public class Class16 {
 				aClass6Array329[l].anInt114 -= j * 20;
 			}
 		}
-
 		if (anInt330 < anInt331) {
 			anInt330 -= j * 20;
 			anInt331 -= j * 20;
@@ -107,7 +104,6 @@ public class Class16 {
 				j = aClass6Array329[k].anInt113 + aClass6Array329[k].anInt114;
 			}
 		}
-
 		if (j == 0) {
 			return 0;
 		}
@@ -121,7 +117,6 @@ public class Class16 {
 		for (int l1 = 44; l1 < k1 + 44; l1++) {
 			aByteArray327[l1] = -128;
 		}
-
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (aClass6Array329[i2] != null) {
 				int j2 = (aClass6Array329[i2].anInt113 * 22050) / 1000;
@@ -132,7 +127,6 @@ public class Class16 {
 				}
 			}
 		}
-
 		if (i > 1) {
 			i1 += 44;
 			j1 += 44;
@@ -141,14 +135,12 @@ public class Class16 {
 			for (int j3 = l - 1; j3 >= j1; j3--) {
 				aByteArray327[j3 + k2] = aByteArray327[j3];
 			}
-
 			for (int k3 = 1; k3 < i; k3++) {
 				int l2 = (j1 - i1) * k3;
 				for (int i4 = i1; i4 < j1; i4++) {
 					aByteArray327[i4 + l2] = aByteArray327[i4];
 				}
 			}
-
 			k1 -= 44;
 		}
 		return k1;

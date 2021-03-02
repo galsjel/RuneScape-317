@@ -15,7 +15,6 @@ public class Class18 {
 		for (int j = 0; j < anInt341; j++) {
 			anIntArray342[j] = class30_sub2_sub2.method408();
 		}
-
 		for (int k = 0; k < anInt341; k++) {
 			int l = class30_sub2_sub2.method408();
 			anIntArrayArray343[k] = new int[l];

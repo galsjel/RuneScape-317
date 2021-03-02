@@ -83,7 +83,6 @@ public class Class17 {
 			j1 += k2;
 			l += i1;
 		}
-
 		for (int j = 0; j < 256; j += 8) {
 			l += anIntArray335[j];
 			i1 += anIntArray335[j + 1];
@@ -126,7 +125,6 @@ public class Class17 {
 			anIntArray336[j + 6] = j2;
 			anIntArray336[j + 7] = k2;
 		}
-
 		for (int k = 0; k < 256; k += 8) {
 			l += anIntArray336[k];
 			i1 += anIntArray336[k + 1];
@@ -169,7 +167,6 @@ public class Class17 {
 			anIntArray336[k + 6] = j2;
 			anIntArray336[k + 7] = k2;
 		}
-
 		method247();
 		anInt334 = 256;
 	}

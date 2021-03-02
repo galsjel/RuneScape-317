@@ -191,7 +191,6 @@ public class Class30_Sub2_Sub2 extends Class30_Sub2 {
 		for (int j = i; j < anInt1406 - 1; j++) {
 			abyte0[j - i] = aByteArray1405[j];
 		}
-
 		return abyte0;
 	}
 
@@ -214,7 +213,6 @@ public class Class30_Sub2_Sub2 extends Class30_Sub2 {
 			i1 += (aByteArray1405[k++] & anIntArray1409[l]) << i - l;
 			i -= l;
 		}
-
 		if (i == l) {
 			i1 += aByteArray1405[k] & anIntArray1409[l];
 		} else {

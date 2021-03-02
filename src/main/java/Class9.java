@@ -160,7 +160,6 @@ public class Class9 {
 						}
 					}
 				}
-
 				class9.aStringArray225 = new String[5];
 				for (int l3 = 0; l3 < 5; l3++) {
 					class9.aStringArray225[l3] = class30_sub2_sub2.method415();

@@ -31,7 +31,6 @@ public class Class14 {
 					return null;
 				}
 			}
-
 			int i1 = ((aByteArray308[0] & 0xff) << 16) + ((aByteArray308[1] & 0xff) << 8) + (aByteArray308[2] & 0xff);
 			int j1 = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
 			if (i1 < 0 || i1 > anInt312) {
@@ -59,7 +58,6 @@ public class Class14 {
 						return null;
 					}
 				}
-
 				int k2 = ((aByteArray308[0] & 0xff) << 8) + (aByteArray308[1] & 0xff);
 				int l2 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
 				int i3 = ((aByteArray308[4] & 0xff) << 16) + ((aByteArray308[5] & 0xff) << 8) + (aByteArray308[6] & 0xff);
@@ -73,10 +71,8 @@ public class Class14 {
 				for (int k3 = 0; k3 < i2; k3++) {
 					abyte0[k1++] = aByteArray308[k3 + 8];
 				}
-
 				j1 = i3;
 			}
-
 			return abyte0;
 		} catch (IOException _ex) {
 			return null;
@@ -103,7 +99,6 @@ public class Class14 {
 						return false;
 					}
 				}
-
 				l = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
 				if (l <= 0 || (long) l > aRandomAccessFile309.length() / 520L) {
 					return false;
@@ -135,7 +130,6 @@ public class Class14 {
 							break;
 						}
 					}
-
 					if (j2 == 8) {
 						int i3 = ((aByteArray308[0] & 0xff) << 8) + (aByteArray308[1] & 0xff);
 						int j3 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
@@ -180,7 +174,6 @@ public class Class14 {
 				j1 += k2;
 				l = i2;
 			}
-
 			return true;
 		} catch (IOException _ex) {
 			return false;

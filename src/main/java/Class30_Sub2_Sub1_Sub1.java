@@ -56,13 +56,11 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 				ai[k + 1] = 1;
 			}
 		}
-
 		for (int l = 0; l < i; l++) {
 			class30_sub2_sub2_1.anInt1406 += 2;
 			class30_sub2_sub2.anInt1406 += class30_sub2_sub2_1.method410() * class30_sub2_sub2_1.method410();
 			class30_sub2_sub2_1.anInt1406++;
 		}
-
 		anInt1442 = class30_sub2_sub2_1.method408();
 		anInt1443 = class30_sub2_sub2_1.method408();
 		anInt1440 = class30_sub2_sub2_1.method410();
@@ -74,7 +72,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 			for (int k1 = 0; k1 < j1; k1++) {
 				anIntArray1439[k1] = ai[class30_sub2_sub2.method408()];
 			}
-
 			return;
 		}
 		if (i1 == 1) {
@@ -127,7 +124,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 				ai[(j + anInt1443) * anInt1444 + (k + anInt1442)] = anIntArray1439[j * anInt1440 + k];
 			}
 		}
-
 		anIntArray1439 = ai;
 		anInt1440 = anInt1444;
 		anInt1441 = anInt1445;
@@ -185,11 +181,9 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 				ai1[i++] = ai[i1++];
 				ai1[i++] = ai[i1++];
 			}
-
 			for (int k2 = j; k2 < 0; k2++) {
 				ai1[i++] = ai[i1++];
 			}
-
 			i += k1;
 			i1 += l;
 		}
@@ -266,7 +260,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			for (int k2 = l; k2 < 0; k2++) {
 				i = ai1[j++];
 				if (i != 0) {
@@ -275,7 +268,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					k++;
 				}
 			}
-
 			k += j1;
 			j += k1;
 		}
@@ -333,7 +325,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					l1++;
 				}
 			}
-
 			l1 += j1;
 			i += l;
 		}
@@ -360,7 +351,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					k4 += i3;
 					l4 -= l2;
 				}
-
 				j3 += l2;
 				k3 += i3;
 				l3 += Class30_Sub2_Sub1.anInt1379;
@@ -394,7 +384,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					i4 += l2;
 					j4 -= k2;
 				}
-
 				i3 += k2;
 				j3 += l2;
 				k3 += Class30_Sub2_Sub1.anInt1379;
@@ -474,7 +463,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					i1++;
 				}
 			}
-
 			for (int l2 = i; l2 < 0; l2++) {
 				k = ai[k1++];
 				if (k != 0 && abyte0[i1] == 0) {
@@ -483,7 +471,6 @@ public class Class30_Sub2_Sub1_Sub1 extends Class30_Sub2_Sub1 {
 					i1++;
 				}
 			}
-
 			i1 += l;
 			k1 += j1;
 		}

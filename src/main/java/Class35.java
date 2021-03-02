@@ -36,7 +36,6 @@ public class Class35 {
 				k = -1;
 			}
 		}
-
 		boolean flag1 = true;
 		for (int k1 = 0; k1 < j; k1++) {
 			char c = aCharArray631[k1];
@@ -48,7 +47,6 @@ public class Class35 {
 				flag1 = true;
 			}
 		}
-
 		return new String(aCharArray631, 0, j);
 	}
 
@@ -68,7 +66,6 @@ public class Class35 {
 				k = l;
 				break;
 			}
-
 			if (k > 12) {
 				k += 195;
 			}
@@ -86,7 +83,6 @@ public class Class35 {
 				i = k & 0xf;
 			}
 		}
-
 		if (i != -1) {
 			class30_sub2_sub2.method398(i << 4);
 		}

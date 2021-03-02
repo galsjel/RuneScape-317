@@ -11,7 +11,6 @@ public class Class7 {
 	public static int anInt123 = (int) (Math.random() * 17.0) - 8;
 	public static int anInt131;
 	public static int anInt133 = (int) (Math.random() * 33.0) - 16;
-	public static boolean aBoolean141;
 	public static int anInt145 = 99;
 	public static boolean aBoolean151 = true;
 	public final int[] anIntArray124;
@@ -69,11 +68,8 @@ public class Class7 {
 		return i_109_;
 	}
 
-	public static void method173(byte i, Class30_Sub2_Sub2 class30_sub2_sub2, Class42_Sub1 class42_sub1) {
+	public static void method173(Class30_Sub2_Sub2 class30_sub2_sub2, Class42_Sub1 class42_sub1) {
 		int i_110_ = -1;
-		if (i != -107) {
-			aBoolean141 = !aBoolean141;
-		}
 		for (; ; ) {
 			int i_111_ = class30_sub2_sub2.method422();
 			if (i_111_ == 0) {
@@ -746,11 +742,9 @@ public class Class7 {
 		if (aBoolean151 && (aByteArrayArrayArray149[0][i_121_][i] & 0x2) == 0 && ((aByteArrayArrayArray149[i_120_][i_121_][i] & 0x10) != 0 || method182(i, i_120_, i_121_, 0) != anInt131)) {
 			return;
 		}
-
 		if (i_120_ < anInt145) {
 			anInt145 = i_120_;
 		}
-
 		int i_124_ = anIntArrayArrayArray129[i_120_][i_121_][i];
 		int i_125_ = anIntArrayArrayArray129[i_120_][i_121_ + 1][i];
 		int i_126_ = anIntArrayArrayArray129[i_120_][i_121_ + 1][i + 1];

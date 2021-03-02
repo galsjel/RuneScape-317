@@ -134,13 +134,11 @@ public class Class25 {
 							flag2 = true;
 							break;
 						}
-
 						aflag[l1][j2][l2 + 25 + 1][j3 + 25 + 1] = flag2;
 					}
 				}
 			}
 		}
-
 		for (int k1 = 0; k1 < 8; k1++) {
 			for (int i2 = 0; i2 < 32; i2++) {
 				for (int k2 = -25; k2 < 25; k2++) {
@@ -164,7 +162,6 @@ public class Class25 {
 								break label0;
 							}
 						}
-
 						aBooleanArrayArrayArrayArray491[k1][i2][k2 + 25][i3 + 25] = flag1;
 					}
 				}
@@ -193,19 +190,15 @@ public class Class25 {
 				}
 			}
 		}
-
 		for (int l = 0; l < anInt472; l++) {
 			for (int j1 = 0; j1 < anIntArray473[l]; j1++) {
 				aClass47ArrayArray474[l][j1] = null;
 			}
-
 			anIntArray473[l] = 0;
 		}
-
 		for (int k1 = 0; k1 < anInt443; k1++) {
 			aClass28Array444[k1] = null;
 		}
-
 		anInt443 = 0;
 		Arrays.fill(aClass28Array462, null);
 	}
@@ -235,7 +228,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		if (aClass30_Sub3ArrayArrayArray441[0][j][i] == null) {
 			aClass30_Sub3ArrayArrayArray441[0][j][i] = new Class30_Sub3(0, j, i);
 		}
@@ -259,7 +251,6 @@ public class Class25 {
 					aClass30_Sub3ArrayArrayArray441[i5][j][k] = new Class30_Sub3(i5, j, k);
 				}
 			}
-
 			aClass30_Sub3ArrayArrayArray441[i][j][k].aClass43_1311 = class43;
 			return;
 		}
@@ -270,7 +261,6 @@ public class Class25 {
 					aClass30_Sub3ArrayArrayArray441[j5][j][k] = new Class30_Sub3(j5, j, k);
 				}
 			}
-
 			aClass30_Sub3ArrayArrayArray441[i][j][k].aClass43_1311 = class43_1;
 			return;
 		}
@@ -280,7 +270,6 @@ public class Class25 {
 				aClass30_Sub3ArrayArrayArray441[k5][j][k] = new Class30_Sub3(k5, j, k);
 			}
 		}
-
 		aClass30_Sub3ArrayArrayArray441[i][j][k].aClass40_1312 = class40;
 	}
 
@@ -351,7 +340,6 @@ public class Class25 {
 				aClass30_Sub3ArrayArrayArray441[l1][l][k] = new Class30_Sub3(l1, l, k);
 			}
 		}
-
 		aClass30_Sub3ArrayArrayArray441[k1][l][k].aClass10_1313 = class10;
 	}
 
@@ -373,7 +361,6 @@ public class Class25 {
 				aClass30_Sub3ArrayArrayArray441[k2][l1][j] = new Class30_Sub3(k2, l1, j);
 			}
 		}
-
 		aClass30_Sub3ArrayArrayArray441[i1][l1][j].aClass26_1314 = class26;
 	}
 
@@ -436,7 +423,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		Class28 class28 = new Class28();
 		class28.anInt529 = j2;
 		class28.aByte530 = byte0;
@@ -470,7 +456,6 @@ public class Class25 {
 						aClass30_Sub3ArrayArrayArray441[l3][i3][j3] = new Class30_Sub3(l3, i3, j3);
 					}
 				}
-
 				Class30_Sub3 class30_sub3_1 = aClass30_Sub3ArrayArrayArray441[i][i3][j3];
 				class30_sub3_1.aClass28Array1318[class30_sub3_1.anInt1317] = class28;
 				class30_sub3_1.anIntArray1319[class30_sub3_1.anInt1317] = k3;
@@ -478,7 +463,6 @@ public class Class25 {
 				class30_sub3_1.anInt1317++;
 			}
 		}
-
 		if (flag) {
 			aClass28Array444[anInt443++] = class28;
 		}
@@ -491,7 +475,6 @@ public class Class25 {
 			method289(class28);
 			aClass28Array444[i] = null;
 		}
-
 		anInt443 = 0;
 	}
 
@@ -509,11 +492,9 @@ public class Class25 {
 							class30_sub3.aClass28Array1318[i1] = class30_sub3.aClass28Array1318[i1 + 1];
 							class30_sub3.anIntArray1319[i1] = class30_sub3.anIntArray1319[i1 + 1];
 						}
-
 						class30_sub3.aClass28Array1318[class30_sub3.anInt1317] = null;
 						break;
 					}
-
 					class30_sub3.anInt1320 = 0;
 					for (int j1 = 0; j1 < class30_sub3.anInt1317; j1++) {
 						class30_sub3.anInt1320 |= class30_sub3.anIntArray1319[j1];
@@ -649,7 +630,6 @@ public class Class25 {
 				return class28.anInt529;
 			}
 		}
-
 		return 0;
 	}
 
@@ -681,7 +661,6 @@ public class Class25 {
 				return class30_sub3.aClass28Array1318[i1].aByte530 & 0xff;
 			}
 		}
-
 		return -1;
 	}
 
@@ -710,7 +689,6 @@ public class Class25 {
 								((Class30_Sub2_Sub4_Sub6) class28.aClass30_Sub2_Sub4_521).method480(j, k1, k, i, i1);
 							}
 						}
-
 						Class49 class49 = class30_sub3.aClass49_1315;
 						if (class49 != null && class49.aClass30_Sub2_Sub4_814.aClass33Array1425 != null) {
 							method306(i2, l1, (Class30_Sub2_Sub4_Sub6) class49.aClass30_Sub2_Sub4_814, j2);
@@ -784,7 +762,6 @@ public class Class25 {
 						}
 					}
 				}
-
 				j1--;
 				flag = false;
 			}
@@ -828,7 +805,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		if (l < 3 || !flag) {
 			return;
 		}
@@ -837,7 +813,6 @@ public class Class25 {
 				class30_sub2_sub4_sub6.anIntArray1637[k1] = -1;
 			}
 		}
-
 		for (int l1 = 0; l1 < class30_sub2_sub4_sub6_1.anInt1630; l1++) {
 			if (anIntArray487[class30_sub2_sub4_sub6_1.anIntArray1631[l1]] == anInt488 && anIntArray487[class30_sub2_sub4_sub6_1.anIntArray1632[l1]] == anInt488 && anIntArray487[class30_sub2_sub4_sub6_1.anIntArray1633[l1]] == anInt488) {
 				class30_sub2_sub4_sub6_1.anIntArray1637[l1] = -1;
@@ -863,7 +838,6 @@ public class Class25 {
 				ai[i + 3] = j1;
 				i += j;
 			}
-
 			return;
 		}
 		Class40 class40 = class30_sub3.aClass40_1312;
@@ -885,7 +859,6 @@ public class Class25 {
 				ai[i + 3] = ai1[ai2[l2++]] != 0 ? k2 : j2;
 				i += j;
 			}
-
 			return;
 		}
 		for (int j3 = 0; j3 < 4; j3++) {
@@ -977,7 +950,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		for (int l1 = anInt442; l1 < anInt437; l1++) {
 			Class30_Sub3[][] aclass30_sub3_1 = aClass30_Sub3ArrayArrayArray441[l1];
 			for (int l2 = -25; l2 <= 0; l2++) {
@@ -1023,7 +995,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		for (int j2 = anInt442; j2 < anInt437; j2++) {
 			Class30_Sub3[][] aclass30_sub3_2 = aClass30_Sub3ArrayArrayArray441[j2];
 			for (int j3 = -25; j3 <= 0; j3++) {
@@ -1069,7 +1040,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		aBoolean467 = false;
 	}
 
@@ -1288,7 +1258,6 @@ public class Class25 {
 					flag2 = false;
 					break;
 				}
-
 				if (flag2) {
 					Class10 class10_1 = class30_sub3_1.aClass10_1313;
 					if (!method321(l, i, j, class10_1.anInt276)) {
@@ -1336,7 +1305,6 @@ public class Class25 {
 								continue label0;
 							}
 						}
-
 						aClass28Array462[l1++] = class28_1;
 						int i5 = anInt453 - class28_1.anInt523;
 						int i6 = class28_1.anInt524 - anInt453;
@@ -1351,7 +1319,6 @@ public class Class25 {
 							class28_1.anInt527 = i5 + i7;
 						}
 					}
-
 					while (true) {
 						int i3 = -50;
 						int l3 = -1;
@@ -1372,7 +1339,6 @@ public class Class25 {
 								}
 							}
 						}
-
 						if (l3 == -1) {
 							break;
 						}
@@ -1643,7 +1609,6 @@ public class Class25 {
 			Class40.anIntArray688[l1] = Class30_Sub2_Sub1_Sub3.anInt1466 + (i2 << 9) / i3;
 			Class40.anIntArray689[l1] = Class30_Sub2_Sub1_Sub3.anInt1467 + (k2 << 9) / i3;
 		}
-
 		Class30_Sub2_Sub1_Sub3.anInt1465 = 0;
 		k1 = class40.anIntArray679.length;
 		for (int j2 = 0; j2 < k1; j2++) {
@@ -1825,7 +1790,6 @@ public class Class25 {
 								break label0;
 							}
 						}
-
 						if (flag2) {
 							class47.anInt798 = 5;
 							class47.anInt799 = (class47.anInt792 - anInt455 << 8) / j1;
@@ -2004,7 +1968,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		int k2 = (j << 7) + 1;
 		int l2 = (l << 7) + 2;
 		int i3 = anIntArrayArrayArray440[i][j][l] - j1;
@@ -2082,7 +2045,6 @@ public class Class25 {
 				}
 			}
 		}
-
 		return false;
 	}
 

@@ -46,7 +46,6 @@ public class client extends Applet_Sub1 {
 			i += i1;
 			anIntArray1019[j] = i / 4;
 		}
-
 		anIntArray1232 = new int[32];
 		i = 2;
 		for (int k = 0; k < 32; k++) {
@@ -567,7 +566,6 @@ public class client extends Applet_Sub1 {
 			for (int j = 0; j < 4; j++) {
 				aClass11Array1230[j] = new Class11(104, 104);
 			}
-
 			aClass30_Sub2_Sub1_Sub1_1263 = new Class30_Sub2_Sub1_Sub1(512, 512);
 			Class44 class44_6 = method67(5, "update list", "versionlist", anIntArray1090[5], 60);
 			method13(60, "Connecting to update server");
@@ -600,7 +598,6 @@ public class client extends Applet_Sub1 {
 			for (int i1 = 0; i1 < k; i1++) {
 				aClass42_Sub1_1068.method558(1, i1);
 			}
-
 			while (aClass42_Sub1_1068.method552() > 0) {
 				int j1 = k - aClass42_Sub1_1068.method552();
 				if (j1 > 0) {
@@ -624,7 +621,6 @@ public class client extends Applet_Sub1 {
 					aClass42_Sub1_1068.method558(0, k1);
 				}
 			}
-
 			k = aClass42_Sub1_1068.method552();
 			while (aClass42_Sub1_1068.method552() > 0) {
 				int i2 = k - aClass42_Sub1_1068.method552();
@@ -690,7 +686,6 @@ public class client extends Applet_Sub1 {
 					aClass42_Sub1_1068.method563(byte0, 0, k2);
 				}
 			}
-
 			aClass42_Sub1_1068.method554(aBoolean959);
 			if (!aBoolean960) {
 				int l = aClass42_Sub1_1068.method555(2);
@@ -710,7 +705,6 @@ public class client extends Applet_Sub1 {
 			for (int j3 = 0; j3 < 13; j3++) {
 				aClass30_Sub2_Sub1_Sub2Array947[j3] = new Class30_Sub2_Sub1_Sub2(class44_2, "sideicons", j3);
 			}
-
 			aClass30_Sub2_Sub1_Sub1_1122 = new Class30_Sub2_Sub1_Sub1(class44_2, "compass", 0);
 			aClass30_Sub2_Sub1_Sub1_1001 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapedge", 0);
 			aClass30_Sub2_Sub1_Sub1_1001.method345();
@@ -743,7 +737,6 @@ public class client extends Applet_Sub1 {
 			for (int k4 = 0; k4 < 8; k4++) {
 				aClass30_Sub2_Sub1_Sub1Array1150[k4] = new Class30_Sub2_Sub1_Sub1(class44_2, "cross", k4);
 			}
-
 			aClass30_Sub2_Sub1_Sub1_1074 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 0);
 			aClass30_Sub2_Sub1_Sub1_1075 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 1);
 			aClass30_Sub2_Sub1_Sub1_1076 = new Class30_Sub2_Sub1_Sub1(class44_2, "mapdots", 2);
@@ -773,7 +766,6 @@ public class client extends Applet_Sub1 {
 			for (int l4 = 0; l4 < 2; l4++) {
 				aClass30_Sub2_Sub1_Sub2Array1219[l4] = new Class30_Sub2_Sub1_Sub2(class44_2, "mod_icons", l4);
 			}
-
 			Class30_Sub2_Sub1_Sub1 class30_sub2_sub1_sub1 = new Class30_Sub2_Sub1_Sub1(class44_2, "backleft1", 0);
 			aClass15_903 = new Class15(class30_sub2_sub1_sub1.anInt1440, class30_sub2_sub1_sub1.anInt1441, method11());
 			class30_sub2_sub1_sub1.method346(0, 0);
@@ -813,7 +805,6 @@ public class client extends Applet_Sub1 {
 					aClass30_Sub2_Sub1_Sub2Array1060[i6].method360(i5 + l5, j5 + l5, k5 + l5);
 				}
 			}
-
 			method13(83, "Unpacking textures");
 			Class30_Sub2_Sub1_Sub3.method368(class44_3);
 			Class30_Sub2_Sub1_Sub3.method372(0.80000000000000004D);
@@ -855,11 +846,9 @@ public class client extends Applet_Sub1 {
 					i7 = k7;
 					break;
 				}
-
 				anIntArray968[j6] = k6;
 				anIntArray1057[j6] = i7 - k6;
 			}
-
 			for (int l6 = 5; l6 < 156; l6++) {
 				int j7 = 999;
 				int l7 = 0;
@@ -876,11 +865,9 @@ public class client extends Applet_Sub1 {
 					l7 = j8;
 					break;
 				}
-
 				anIntArray1052[l6 - 5] = j7 - 25;
 				anIntArray1229[l6 - 5] = l7 - j7;
 			}
-
 			Class30_Sub2_Sub1_Sub3.method365(479, 96);
 			anIntArray1180 = Class30_Sub2_Sub1_Sub3.anIntArray1472;
 			Class30_Sub2_Sub1_Sub3.method365(190, 261);
@@ -894,7 +881,6 @@ public class client extends Applet_Sub1 {
 				int i9 = Class30_Sub2_Sub1_Sub3.anIntArray1470[k8];
 				ai[i8] = l8 * i9 >> 16;
 			}
-
 			Class25.method310(500, 800, 512, 334, ai);
 			Class34.method487(class44_4);
 			aClass48_879 = new Class48(this);
@@ -1141,7 +1127,6 @@ public class client extends Applet_Sub1 {
 		for (int k = s.length() - 3; k > 0; k -= 3) {
 			s = s.substring(0, k) + "," + s.substring(k);
 		}
-
 		if (s.length() > 8) {
 			s = "@gre@" + s.substring(0, s.length() - 8) + " million @whi@(" + s + ")";
 		} else if (s.length() > 4) {
@@ -1260,13 +1245,11 @@ public class client extends Applet_Sub1 {
 				for (int i1 = 0; i1 < 9; i1++) {
 					anIntArray1090[i1] = class30_sub2_sub2.method413();
 				}
-
 				int j1 = class30_sub2_sub2.method413();
 				int k1 = 1234;
 				for (int l1 = 0; l1 < 9; l1++) {
 					k1 = (k1 << 1) + anIntArray1090[l1];
 				}
-
 				if (j1 != k1) {
 					s = "checksum problem";
 					anIntArray1090[8] = 0;
@@ -1298,7 +1281,6 @@ public class client extends Applet_Sub1 {
 					} catch (Exception ignored) {
 					}
 				}
-
 				j *= 2;
 				if (j > 60) {
 					j = 60;
@@ -1426,7 +1408,6 @@ public class client extends Applet_Sub1 {
 					}
 				}
 			}
-
 			Class30_Sub2_Sub1.method332();
 			anInt1211 = j * 14 + 7;
 			if (anInt1211 < 78) {
@@ -1518,7 +1499,6 @@ public class client extends Applet_Sub1 {
 						i3 = j3;
 					}
 				}
-
 				if (i3 != -1) {
 					method69(i3);
 				}
@@ -1584,7 +1564,6 @@ public class client extends Applet_Sub1 {
 			for (int i = 0; i < 4; i++) {
 				aClass11Array1230[i].method210();
 			}
-
 			for (int l = 0; l < 4; l++) {
 				for (int k1 = 0; k1 < 104; k1++) {
 					for (int j2 = 0; j2 < 104; j2++) {
@@ -1592,7 +1571,6 @@ public class client extends Applet_Sub1 {
 					}
 				}
 			}
-
 			Class7 class7 = new Class7(aByteArrayArrayArray1258, 104, 104, anIntArrayArrayArray1214);
 			int k2 = aByteArrayArray1183.length;
 			aClass30_Sub2_Sub2_1192.method397(0);
@@ -1605,7 +1583,6 @@ public class client extends Applet_Sub1 {
 						class7.method180(abyte0, k5, i4, (anInt1069 - 6) * 8, (anInt1070 - 6) * 8, aClass11Array1230);
 					}
 				}
-
 				for (int j4 = 0; j4 < k2; j4++) {
 					int l5 = (anIntArray1234[j4] >> 8) * 64 - anInt1034;
 					int k7 = (anIntArray1234[j4] & 0xff) * 64 - anInt1035;
@@ -1614,7 +1591,6 @@ public class client extends Applet_Sub1 {
 						class7.method174(k7, 64, 64, l5);
 					}
 				}
-
 				aClass30_Sub2_Sub2_1192.method397(0);
 				for (int i6 = 0; i6 < k2; i6++) {
 					byte[] abyte1 = aByteArrayArray1247[i6];
@@ -1647,7 +1623,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				for (int l4 = 0; l4 < 13; l4++) {
 					for (int k6 = 0; k6 < 13; k6++) {
 						int i8 = anIntArrayArrayArray1129[0][l4][k6];
@@ -1656,7 +1631,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				aClass30_Sub2_Sub2_1192.method397(0);
 				for (int l6 = 0; l6 < 4; l6++) {
 					for (int j8 = 0; j8 < 13; j8++) {
@@ -1762,7 +1736,6 @@ public class client extends Applet_Sub1 {
 		for (int k = 0; k < j; k++) {
 			ai[k] = 0;
 		}
-
 		for (int l = 1; l < 103; l++) {
 			int i1 = 24628 + (103 - l) * 512 * 4;
 			for (int k1 = 1; k1 < 103; k1++) {
@@ -1775,7 +1748,6 @@ public class client extends Applet_Sub1 {
 				i1 += 4;
 			}
 		}
-
 		int j1 = ((238 + (int) (Math.random() * 20D)) - 10 << 16) + ((238 + (int) (Math.random() * 20D)) - 10 << 8) + ((238 + (int) (Math.random() * 20D)) - 10);
 		int l1 = (238 + (int) (Math.random() * 20D)) - 10 << 16;
 		aClass30_Sub2_Sub1_Sub1_1263.method343();
@@ -1789,7 +1761,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		aClass15_1165.method237();
 		anInt1071 = 0;
 		for (int k2 = 0; k2 < 104; k2++) {
@@ -1850,7 +1821,6 @@ public class client extends Applet_Sub1 {
 				obj = class30_sub2_sub4_sub2;
 			}
 		}
-
 		class19.method250(obj);
 		Class30_Sub2_Sub4_Sub2 obj1 = null;
 		Class30_Sub2_Sub4 obj2 = null;
@@ -1862,7 +1832,6 @@ public class client extends Applet_Sub1 {
 				obj2 = class30_sub2_sub4_sub2_1;
 			}
 		}
-
 		int i1 = i + (j << 7) + 0x60000000;
 		aClass25_946.method281((byte) 7, i, i1, obj1, method42(anInt918, j * 128 + 64, i * 128 + 64), obj2, obj, anInt918, j);
 	}
@@ -2147,7 +2116,6 @@ public class client extends Applet_Sub1 {
 				aClass30_Sub2_Sub4_Sub1_Sub1Array835[l] = null;
 			}
 		}
-
 		if (class30_sub2_sub2.anInt1406 != i) {
 			signlink.reporterror(aString1173 + " size mismatch in getnpcpos - pos:" + class30_sub2_sub2.anInt1406 + " psize:" + i);
 			throw new RuntimeException("eek");
@@ -2533,7 +2501,6 @@ public class client extends Applet_Sub1 {
 				anIntArray826[j] = anIntArray826[j + 1];
 				aLongArray955[j] = aLongArray955[j + 1];
 			}
-
 			aClass30_Sub2_Sub2_1192.method397(215);
 			aClass30_Sub2_Sub2_1192.method404(l);
 			break;
@@ -2568,7 +2535,6 @@ public class client extends Applet_Sub1 {
 				for (int i2 = 0; i2 <= k; i2++) {
 					abyte3[i2] = abyte0[i2 - j1 & k];
 				}
-
 				class30_sub2_sub1_sub2.aByteArray1450 = abyte3;
 				aByteArray912 = abyte0;
 				Class30_Sub2_Sub1_Sub3.method370(17);
@@ -2582,7 +2548,6 @@ public class client extends Applet_Sub1 {
 				for (int j2 = 0; j2 <= l; j2++) {
 					abyte4[j2] = abyte1[j2 - k1 & l];
 				}
-
 				class30_sub2_sub1_sub2_1.aByteArray1450 = abyte4;
 				aByteArray912 = abyte1;
 				Class30_Sub2_Sub1_Sub3.method370(24);
@@ -2596,7 +2561,6 @@ public class client extends Applet_Sub1 {
 				for (int k2 = 0; k2 <= i1; k2++) {
 					abyte5[k2] = abyte2[k2 - l1 & i1];
 				}
-
 				class30_sub2_sub1_sub2_2.aByteArray1450 = abyte5;
 				aByteArray912 = abyte2;
 				Class30_Sub2_Sub1_Sub3.method370(34);
@@ -2620,7 +2584,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		for (int k = 0; k < anInt836; k++) {
 			int l = anIntArray837[k];
 			Class30_Sub2_Sub4_Sub1_Sub1 class30_sub2_sub4_sub1_sub1 = aClass30_Sub2_Sub4_Sub1_Sub1Array835[l];
@@ -2780,14 +2743,12 @@ public class client extends Applet_Sub1 {
 				return;
 			}
 		}
-
 		for (int j = 0; j < anInt822; j++) {
 			if (aLongArray925[j] == l) {
 				method77("Please remove " + s + " from your ignore list first", 0, "");
 				return;
 			}
 		}
-
 		if (!s.equals(aClass30_Sub2_Sub4_Sub1_Sub2_1126.aString1703)) {
 			aStringArray1082[anInt899] = s;
 			aLongArray955[anInt899] = l;
@@ -2833,7 +2794,6 @@ public class client extends Applet_Sub1 {
 		for (int i = 0; i < 4; i++) {
 			aClass11Array1230[i].method210();
 		}
-
 		System.gc();
 		method15();
 		anInt956 = -1;
@@ -3021,11 +2981,9 @@ public class client extends Applet_Sub1 {
 			for (int i1 = 0; i1 < 7; i1++) {
 				aClass30_Sub2_Sub2_1192.method398(anIntArray1065[i1]);
 			}
-
 			for (int l1 = 0; l1 < 5; l1++) {
 				aClass30_Sub2_Sub2_1192.method398(anIntArray990[l1]);
 			}
-
 			return true;
 		}
 		if (j >= 601 && j <= 612) {
@@ -3205,62 +3163,48 @@ public class client extends Applet_Sub1 {
 		for (int i1 = 0; i1 < 33920; i1++) {
 			aClass30_Sub2_Sub1_Sub1_1201.anIntArray1439[i1] = aClass15_1110.anIntArray315[i1];
 		}
-
 		for (int j1 = 0; j1 < 33920; j1++) {
 			aClass30_Sub2_Sub1_Sub1_1202.anIntArray1439[j1] = aClass15_1111.anIntArray315[j1];
 		}
-
 		anIntArray851 = new int[256];
 		for (int k1 = 0; k1 < 64; k1++) {
 			anIntArray851[k1] = k1 * 0x40000;
 		}
-
 		for (int l1 = 0; l1 < 64; l1++) {
 			anIntArray851[l1 + 64] = 0xff0000 + 1024 * l1;
 		}
-
 		for (int i2 = 0; i2 < 64; i2++) {
 			anIntArray851[i2 + 128] = 0xffff00 + 4 * i2;
 		}
-
 		for (int j2 = 0; j2 < 64; j2++) {
 			anIntArray851[j2 + 192] = 0xffffff;
 		}
-
 		anIntArray852 = new int[256];
 		for (int k2 = 0; k2 < 64; k2++) {
 			anIntArray852[k2] = k2 * 1024;
 		}
-
 		for (int l2 = 0; l2 < 64; l2++) {
 			anIntArray852[l2 + 64] = 65280 + 4 * l2;
 		}
-
 		for (int i3 = 0; i3 < 64; i3++) {
 			anIntArray852[i3 + 128] = 65535 + 0x40000 * i3;
 		}
-
 		for (int j3 = 0; j3 < 64; j3++) {
 			anIntArray852[j3 + 192] = 0xffffff;
 		}
-
 		anIntArray853 = new int[256];
 		for (int k3 = 0; k3 < 64; k3++) {
 			anIntArray853[k3] = k3 * 4;
 		}
-
 		for (int l3 = 0; l3 < 64; l3++) {
 			anIntArray853[l3 + 64] = 255 + 0x40000 * l3;
 		}
-
 		for (int i4 = 0; i4 < 64; i4++) {
 			anIntArray853[i4 + 128] = 0xff00ff + 1024 * i4;
 		}
-
 		for (int j4 = 0; j4 < 64; j4++) {
 			anIntArray853[j4 + 192] = 0xffffff;
 		}
-
 		anIntArray850 = new int[256];
 		anIntArray1190 = new int[32768];
 		anIntArray1191 = new int[32768];
@@ -3306,7 +3250,6 @@ public class client extends Applet_Sub1 {
 				return -2;
 			}
 		}
-
 		boolean flag = true;
 		for (int j = 0; j < aByteArrayArray1183.length; j++) {
 			byte[] abyte0 = aByteArrayArray1247[j];
@@ -3320,7 +3263,6 @@ public class client extends Applet_Sub1 {
 				flag &= Class7.method189(k, abyte0, l);
 			}
 		}
-
 		if (!flag) {
 			return -3;
 		}
@@ -3390,12 +3332,10 @@ public class client extends Applet_Sub1 {
 			for (int k = 0; k < class30_sub2_sub1_sub1.anInt1440; k++) {
 				ai[k] = class30_sub2_sub1_sub1.anIntArray1439[(class30_sub2_sub1_sub1.anInt1440 - k - 1) + class30_sub2_sub1_sub1.anInt1440 * j];
 			}
-
 			for (int l = 0; l < class30_sub2_sub1_sub1.anInt1440; l++) {
 				class30_sub2_sub1_sub1.anIntArray1439[l + class30_sub2_sub1_sub1.anInt1440 * j] = ai[l];
 			}
 		}
-
 		aClass15_1110.method237();
 		class30_sub2_sub1_sub1.method346(382, 0);
 		aClass15_1111.method237();
@@ -3463,7 +3403,7 @@ public class client extends Applet_Sub1 {
 					}
 				}
 			} while (class30_sub2_sub3.anInt1419 != 93 || !aClass42_Sub1_1068.method564(class30_sub2_sub3.anInt1421));
-			Class7.method173((byte) -107, new Class30_Sub2_Sub2(class30_sub2_sub3.aByteArray1420), aClass42_Sub1_1068);
+			Class7.method173(new Class30_Sub2_Sub2(class30_sub2_sub3.aByteArray1420), aClass42_Sub1_1068);
 		} while (true);
 	}
 
@@ -3475,21 +3415,18 @@ public class client extends Applet_Sub1 {
 				anIntArray828[j + (c - 2 << 7)] = 255;
 			}
 		}
-
 		for (int l = 0; l < 100; l++) {
 			int i1 = (int) (Math.random() * 124D) + 2;
 			int k1 = (int) (Math.random() * 128D) + 128;
 			int k2 = i1 + (k1 << 7);
 			anIntArray828[k2] = 192;
 		}
-
 		for (int j1 = 1; j1 < c - 1; j1++) {
 			for (int l1 = 1; l1 < 127; l1++) {
 				int l2 = l1 + (j1 << 7);
 				anIntArray829[l2] = (anIntArray828[l2 - 1] + anIntArray828[l2 + 1] + anIntArray828[l2 - 128] + anIntArray828[l2 + 128]) / 4;
 			}
 		}
-
 		anInt1275 += 128;
 		if (anInt1275 > anIntArray1190.length) {
 			anInt1275 -= anIntArray1190.length;
@@ -3506,11 +3443,9 @@ public class client extends Applet_Sub1 {
 				anIntArray828[k3] = i4;
 			}
 		}
-
 		for (int j3 = 0; j3 < c - 1; j3++) {
 			anIntArray969[j3] = anIntArray969[j3 + 1];
 		}
-
 		anIntArray969[c - 1] = (int) (Math.sin((double) anInt1161 / 14D) * 16D + Math.sin((double) anInt1161 / 15D) * 14D + Math.sin((double) anInt1161 / 16D) * 12D);
 		if (anInt1040 > 0) {
 			anInt1040 -= 4;
@@ -3574,7 +3509,6 @@ public class client extends Applet_Sub1 {
 				break;
 			}
 		}
-
 		if (!aBoolean1157) {
 			return;
 		}
@@ -3631,7 +3565,6 @@ public class client extends Applet_Sub1 {
 							}
 						}
 					}
-
 					aClass30_Sub2_Sub2_1192.method407(aClass30_Sub2_Sub2_1192.anInt1406 - j2);
 					if (j3 >= aClass48_879.anInt810) {
 						aClass48_879.anInt810 = 0;
@@ -3820,7 +3753,6 @@ public class client extends Applet_Sub1 {
 		for (int i1 = 0; i1 < 5; i1++) {
 			anIntArray1030[i1]++;
 		}
-
 		method73();
 		super.anInt18++;
 		if (super.anInt18 > 4500) {
@@ -3996,7 +3928,6 @@ public class client extends Applet_Sub1 {
 				for (int k2 = 0; k2 < 6; k2++) {
 					abyte0[k2] = abyte1[k2];
 				}
-
 				while (j2 < i2) {
 					int l2 = i2 - j2;
 					if (l2 > 1000) {
@@ -4069,7 +4000,6 @@ public class client extends Applet_Sub1 {
 					} catch (Exception ignored) {
 					}
 				}
-
 				l *= 2;
 				if (l > 60) {
 					l = 60;
@@ -4349,7 +4279,6 @@ public class client extends Applet_Sub1 {
 					flag9 = true;
 					break;
 				}
-
 				if (!flag9) {
 					method77("Unable to find " + s7, 0, "");
 				}
@@ -4745,7 +4674,6 @@ public class client extends Applet_Sub1 {
 					k3 = i4;
 					break;
 				}
-
 				if (k3 != -1 && anIntArray826[k3] > 0) {
 					aBoolean1223 = true;
 					anInt1225 = 0;
@@ -4982,7 +4910,6 @@ public class client extends Applet_Sub1 {
 							method87(class30_sub2_sub4_sub1_sub1_1.aClass5_1696, anIntArray837[j2], j1, i1);
 						}
 					}
-
 					for (int l2 = 0; l2 < anInt891; l2++) {
 						Class30_Sub2_Sub4_Sub1_Sub2 class30_sub2_sub4_sub1_sub2_1 = aClass30_Sub2_Sub4_Sub1_Sub2Array890[anIntArray892[l2]];
 						if (class30_sub2_sub4_sub1_sub2_1 != null && class30_sub2_sub4_sub1_sub2_1.anInt1550 == class30_sub2_sub4_sub1_sub1.anInt1550 && class30_sub2_sub4_sub1_sub2_1.anInt1551 == class30_sub2_sub4_sub1_sub1.anInt1551) {
@@ -5001,7 +4928,6 @@ public class client extends Applet_Sub1 {
 							method87(class30_sub2_sub4_sub1_sub1_2.aClass5_1696, anIntArray837[k2], j1, i1);
 						}
 					}
-
 					for (int i3 = 0; i3 < anInt891; i3++) {
 						Class30_Sub2_Sub4_Sub1_Sub2 class30_sub2_sub4_sub1_sub2_2 = aClass30_Sub2_Sub4_Sub1_Sub2Array890[anIntArray892[i3]];
 						if (class30_sub2_sub4_sub1_sub2_2 != null && class30_sub2_sub4_sub1_sub2_2 != class30_sub2_sub4_sub1_sub2 && class30_sub2_sub4_sub1_sub2_2.anInt1550 == class30_sub2_sub4_sub1_sub2.anInt1550 && class30_sub2_sub4_sub1_sub2_2.anInt1551 == class30_sub2_sub4_sub1_sub2.anInt1551) {
@@ -5064,7 +4990,6 @@ public class client extends Applet_Sub1 {
 									anInt1133++;
 								}
 							}
-
 							aStringArray1199[anInt1133] = "Examine @lre@" + class8.aString170;
 							anIntArray1093[anInt1133] = 1448;
 							anIntArray1094[anInt1133] = class30_sub2_sub4_sub2.anInt1558;
@@ -5521,7 +5446,6 @@ public class client extends Applet_Sub1 {
 						return;
 					}
 				}
-
 				aBoolean1031 = false;
 				Class30_Sub2_Sub4_Sub6[] aclass30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6[7];
 				int i2 = 0;
@@ -5531,7 +5455,6 @@ public class client extends Applet_Sub1 {
 						aclass30_sub2_sub4_sub6[i2++] = Class38.aClass38Array656[k2].method538();
 					}
 				}
-
 				Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(i2, aclass30_sub2_sub4_sub6);
 				for (int l2 = 0; l2 < 5; l2++) {
 					if (anIntArray990[l2] != 0) {
@@ -5541,7 +5464,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				class30_sub2_sub4_sub6.method469();
 				class30_sub2_sub4_sub6.method470(Class20.aClass20Array351[aClass30_Sub2_Sub4_Sub1_Sub2_1126.anInt1511].anIntArray353[0]);
 				class30_sub2_sub4_sub6.method479(64, 850, -30, -50, -30, true);
@@ -5752,7 +5674,6 @@ public class client extends Applet_Sub1 {
 			aStringArray943[j] = aStringArray943[j - 1];
 			aStringArray944[j] = aStringArray944[j - 1];
 		}
-
 		anIntArray942[0] = i;
 		aStringArray943[0] = s1;
 		aStringArray944[0] = s;
@@ -5981,7 +5902,6 @@ public class client extends Applet_Sub1 {
 			for (int j = 0; j < 8; j++) {
 				aClass24_1168.method268();
 			}
-
 			int k = aClass24_1168.method268();
 			int i1 = k;
 			if (k == 0) {
@@ -6016,13 +5936,11 @@ public class client extends Applet_Sub1 {
 				for (int l1 = 0; l1 < 9; l1++) {
 					aClass30_Sub2_Sub2_847.method402(anIntArray1090[l1]);
 				}
-
 				aClass30_Sub2_Sub2_847.method406(aClass30_Sub2_Sub2_1192.aByteArray1405, aClass30_Sub2_Sub2_1192.anInt1406, 0);
 				aClass30_Sub2_Sub2_1192.aClass17_1410 = new Class17(ai);
 				for (int j2 = 0; j2 < 4; j2++) {
 					ai[j2] += 50;
 				}
-
 				aClass17_1000 = new Class17(ai);
 				aClass24_1168.method271(aClass30_Sub2_Sub2_847.anInt1406, aClass30_Sub2_Sub2_847.aByteArray1405, 0);
 				k = aClass24_1168.method268();
@@ -6061,7 +5979,6 @@ public class client extends Applet_Sub1 {
 				for (int j1 = 0; j1 < 100; j1++) {
 					aStringArray944[j1] = null;
 				}
-
 				anInt1282 = 0;
 				anInt1136 = 0;
 				anInt1023 = 0;
@@ -6082,11 +5999,9 @@ public class client extends Applet_Sub1 {
 					aClass30_Sub2_Sub4_Sub1_Sub2Array890[i2] = null;
 					aClass30_Sub2_Sub2Array895[i2] = null;
 				}
-
 				for (int k2 = 0; k2 < 16384; k2++) {
 					aClass30_Sub2_Sub4_Sub1_Sub1Array835[k2] = null;
 				}
-
 				aClass30_Sub2_Sub4_Sub1_Sub2_1126 = aClass30_Sub2_Sub4_Sub1_Sub2Array890[anInt889] = new Class30_Sub2_Sub4_Sub1_Sub2();
 				aClass19_1013.method256();
 				aClass19_1056.method256();
@@ -6097,7 +6012,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				aClass19_1179 = new Class19();
 				anInt900 = 0;
 				anInt899 = 0;
@@ -6119,12 +6033,10 @@ public class client extends Applet_Sub1 {
 				for (int j3 = 0; j3 < 5; j3++) {
 					anIntArray990[j3] = 0;
 				}
-
 				for (int l3 = 0; l3 < 5; l3++) {
 					aStringArray1127[l3] = null;
 					aBooleanArray1128[l3] = false;
 				}
-
 				method79();
 				return;
 			}
@@ -6229,7 +6141,6 @@ public class client extends Applet_Sub1 {
 					} catch (Exception ignored) {
 					}
 				}
-
 				method84(s, s1, flag);
 				return;
 			}
@@ -6271,7 +6182,6 @@ public class client extends Applet_Sub1 {
 				anIntArrayArray825[l2][i3] = 0x5f5e0ff;
 			}
 		}
-
 		int j3 = j2;
 		int k3 = j1;
 		anIntArrayArray901[j2][j1] = 99;
@@ -6410,7 +6320,6 @@ public class client extends Applet_Sub1 {
 				k3--;
 			}
 		}
-
 		if (i4 > 0) {
 			int k4 = i4;
 			if (k4 > 25) {
@@ -6439,7 +6348,6 @@ public class client extends Applet_Sub1 {
 				aClass30_Sub2_Sub2_1192.method398(anIntArray1280[i4] - k6);
 				aClass30_Sub2_Sub2_1192.method398(anIntArray1281[i4] - i7);
 			}
-
 			aClass30_Sub2_Sub2_1192.method431(i7 + anInt1035);
 			aClass30_Sub2_Sub2_1192.method424(super.anIntArray30[5] != 1 ? 0 : 1);
 			return true;
@@ -6773,7 +6681,6 @@ public class client extends Applet_Sub1 {
 						anIntArray1241[j] = anIntArray1241[j + 1];
 						anIntArray1250[j] = anIntArray1250[j + 1];
 					}
-
 					i--;
 				} else {
 					anIntArray1250[i] = -5;
@@ -6782,7 +6689,6 @@ public class client extends Applet_Sub1 {
 				anIntArray1250[i]--;
 			}
 		}
-
 		if (anInt1259 > 0) {
 			anInt1259 -= 20;
 			if (anInt1259 < 0) {
@@ -7206,7 +7112,6 @@ public class client extends Applet_Sub1 {
 			for (class30_sub2_sub4_sub1.anInt1522++; class30_sub2_sub4_sub1.anInt1521 < class20_1.anInt352 && class30_sub2_sub4_sub1.anInt1522 > class20_1.method258(class30_sub2_sub4_sub1.anInt1521); class30_sub2_sub4_sub1.anInt1521++) {
 				class30_sub2_sub4_sub1.anInt1522 -= class20_1.method258(class30_sub2_sub4_sub1.anInt1521);
 			}
-
 			if (class30_sub2_sub4_sub1.anInt1521 >= class20_1.anInt352 && (class30_sub2_sub4_sub1.anInt1521 < 0 || class30_sub2_sub4_sub1.anInt1521 >= class20_1.anInt352)) {
 				class30_sub2_sub4_sub1.anInt1520 = -1;
 			}
@@ -7223,7 +7128,6 @@ public class client extends Applet_Sub1 {
 			for (class30_sub2_sub4_sub1.anInt1528++; class30_sub2_sub4_sub1.anInt1527 < class20_3.anInt352 && class30_sub2_sub4_sub1.anInt1528 > class20_3.method258(class30_sub2_sub4_sub1.anInt1527); class30_sub2_sub4_sub1.anInt1527++) {
 				class30_sub2_sub4_sub1.anInt1528 -= class20_3.method258(class30_sub2_sub4_sub1.anInt1527);
 			}
-
 			if (class30_sub2_sub4_sub1.anInt1527 >= class20_3.anInt352) {
 				class30_sub2_sub4_sub1.anInt1527 -= class20_3.anInt356;
 				class30_sub2_sub4_sub1.anInt1530++;
@@ -7812,19 +7716,16 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		Class30_Sub2_Sub1.method333(l1, i1, k1, j1);
 	}
 
 	public void method106(Class30_Sub2_Sub1_Sub2 class30_sub2_sub1_sub2) {
 		int j = 256;
 		Arrays.fill(anIntArray1190, 0);
-
 		for (int l = 0; l < 5000; l++) {
 			int i1 = (int) (Math.random() * 128D * (double) j);
 			anIntArray1190[i1] = (int) (Math.random() * 256D);
 		}
-
 		for (int j1 = 0; j1 < 20; j1++) {
 			for (int k1 = 1; k1 < j - 1; k1++) {
 				for (int i2 = 1; i2 < 127; i2++) {
@@ -7832,12 +7733,10 @@ public class client extends Applet_Sub1 {
 					anIntArray1191[k2] = (anIntArray1190[k2 - 1] + anIntArray1190[k2 + 1] + anIntArray1190[k2 - 128] + anIntArray1190[k2 + 128]) / 4;
 				}
 			}
-
 			int[] ai = anIntArray1190;
 			anIntArray1190 = anIntArray1191;
 			anIntArray1191 = ai;
 		}
-
 		if (class30_sub2_sub1_sub2 != null) {
 			int l1 = 0;
 			for (int j2 = 0; j2 < class30_sub2_sub1_sub2.anInt1453; j2++) {
@@ -8072,7 +7971,6 @@ public class client extends Applet_Sub1 {
 				return true;
 			}
 		}
-
 		return s.equalsIgnoreCase(aClass30_Sub2_Sub4_Sub1_Sub2_1126.aString1703);
 	}
 
@@ -8148,14 +8046,12 @@ public class client extends Applet_Sub1 {
 				return;
 			}
 		}
-
 		for (int k = 0; k < anInt899; k++) {
 			if (aLongArray955[k] == l) {
 				method77("Please remove " + s + " from your friend list first", 0, "");
 				return;
 			}
 		}
-
 		aLongArray925[anInt822++] = l;
 		aBoolean1153 = true;
 		aClass30_Sub2_Sub2_1192.method397(133);
@@ -8214,7 +8110,6 @@ public class client extends Applet_Sub1 {
 				i = k;
 			}
 		}
-
 		i += 8;
 		int l = 15 * anInt1133 + 21;
 		if (super.anInt27 > 4 && super.anInt28 > 4 && super.anInt27 < 516 && super.anInt28 < 338) {
@@ -8384,7 +8279,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		return flag1;
 	}
 
@@ -8488,7 +8382,6 @@ public class client extends Applet_Sub1 {
 				for (int k = j; k < anInt822; k++) {
 					aLongArray925[k] = aLongArray925[k + 1];
 				}
-
 				aClass30_Sub2_Sub2_1192.method397(74);
 				aClass30_Sub2_Sub2_1192.method404(l);
 				return;
@@ -8661,7 +8554,6 @@ public class client extends Applet_Sub1 {
 					ai[i5] = 0;
 				}
 			}
-
 			aClass30_Sub2_Sub1_Sub1_1122.method352(33, anInt1185, anIntArray1057, 256, anIntArray968, 25, 0, 0, 33, 25);
 			aClass15_1165.method237();
 			return;
@@ -8676,7 +8568,6 @@ public class client extends Applet_Sub1 {
 			int i3 = (anIntArray1073[j5] * 4 + 2) - aClass30_Sub2_Sub4_Sub1_Sub2_1126.anInt1551 / 32;
 			method141(aClass30_Sub2_Sub1_Sub1Array1140[j5], k, i3);
 		}
-
 		for (int k5 = 0; k5 < 104; k5++) {
 			for (int l5 = 0; l5 < 104; l5++) {
 				Class19 class19 = aClass19ArrayArrayArray827[anInt918][k5][l5];
@@ -8687,7 +8578,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		for (int i6 = 0; i6 < anInt836; i6++) {
 			Class30_Sub2_Sub4_Sub1_Sub1 class30_sub2_sub4_sub1_sub1 = aClass30_Sub2_Sub4_Sub1_Sub1Array835[anIntArray837[i6]];
 			if (class30_sub2_sub4_sub1_sub1 != null && class30_sub2_sub4_sub1_sub1.method449()) {
@@ -8702,7 +8592,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		for (int j6 = 0; j6 < anInt891; j6++) {
 			Class30_Sub2_Sub4_Sub1_Sub2 class30_sub2_sub4_sub1_sub2 = aClass30_Sub2_Sub4_Sub1_Sub2Array890[anIntArray892[j6]];
 			if (class30_sub2_sub4_sub1_sub2 != null && class30_sub2_sub4_sub1_sub2.method449()) {
@@ -8717,7 +8606,6 @@ public class client extends Applet_Sub1 {
 					flag1 = true;
 					break;
 				}
-
 				boolean flag2 = false;
 				if (class30_sub2_sub4_sub1_sub2.anInt1701 != 0 && aClass30_Sub2_Sub4_Sub1_Sub2_1126.anInt1701 == class30_sub2_sub4_sub1_sub2.anInt1701) {
 					flag2 = true;
@@ -8731,7 +8619,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		if (anInt855 != 0 && anInt1161 % 20 < 10) {
 			if (anInt855 == 1 && anInt1222 >= 0 && anInt1222 < aClass30_Sub2_Sub4_Sub1_Sub1Array835.length) {
 				Class30_Sub2_Sub4_Sub1_Sub1 class30_sub2_sub4_sub1_sub1_1 = aClass30_Sub2_Sub4_Sub1_Sub1Array835[anInt1222];
@@ -8856,7 +8743,6 @@ public class client extends Applet_Sub1 {
 			class30_sub1 = class30_sub1_1;
 			break;
 		}
-
 		if (class30_sub1 == null) {
 			class30_sub1 = new Class30_Sub1();
 			class30_sub1.anInt1295 = l1;
@@ -8896,7 +8782,6 @@ public class client extends Applet_Sub1 {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -8953,7 +8838,6 @@ public class client extends Applet_Sub1 {
 		for (int l = 0; l < 33920; l++) {
 			aClass15_1110.anIntArray315[l] = aClass30_Sub2_Sub1_Sub1_1201.anIntArray1439[l];
 		}
-
 		int i1 = 0;
 		int j1 = 1152;
 		for (int k1 = 1; k1 < c - 1; k1++) {
@@ -8975,15 +8859,12 @@ public class client extends Applet_Sub1 {
 					j1++;
 				}
 			}
-
 			j1 += j2;
 		}
-
 		aClass15_1110.method238(0, super.aGraphics12, 0);
 		for (int i2 = 0; i2 < 33920; i2++) {
 			aClass15_1111.anIntArray315[i2] = aClass30_Sub2_Sub1_Sub1_1202.anIntArray1439[i2];
 		}
-
 		i1 = 0;
 		j1 = 1176;
 		for (int k2 = 1; k2 < c - 1; k2++) {
@@ -9002,11 +8883,9 @@ public class client extends Applet_Sub1 {
 					j1++;
 				}
 			}
-
 			i1 += 128 - k3;
 			j1 += 128 - k3 - i3;
 		}
-
 		aClass15_1111.method238(0, super.aGraphics12, 637);
 	}
 
@@ -9179,7 +9058,6 @@ public class client extends Applet_Sub1 {
 						class30_sub2_sub4_sub2_3.anInt1559 = l13;
 						break;
 					}
-
 					method25(j3, i6);
 				}
 			}
@@ -9234,7 +9112,6 @@ public class client extends Applet_Sub1 {
 						class30_sub2_sub4_sub2.method329();
 						break;
 					}
-
 					if (class19.method252() == null) {
 						aClass19ArrayArrayArray827[anInt918][i4][l6] = null;
 					}
@@ -9550,7 +9427,6 @@ public class client extends Applet_Sub1 {
 						flag1 = true;
 						break;
 					}
-
 					if (anInt1216 == 0) {
 						if (l1 == 8 && aString1173.length() > 0) {
 							aString1173 = aString1173.substring(0, aString1173.length() - 1);
@@ -9686,7 +9562,6 @@ public class client extends Applet_Sub1 {
 				aClass30_Sub2_Sub4_Sub1_Sub2Array890[l] = null;
 			}
 		}
-
 		if (class30_sub2_sub2.anInt1406 != i) {
 			signlink.reporterror("Error packet size mismatch in getplayer pos:" + class30_sub2_sub2.anInt1406 + " psize:" + i);
 			throw new RuntimeException("eek");
@@ -9815,13 +9690,11 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				for (Class30_Sub1 class30_sub1 = (Class30_Sub1) aClass19_1179.method252(); class30_sub1 != null; class30_sub1 = (Class30_Sub1) aClass19_1179.method254()) {
 					if (class30_sub1.anInt1297 >= anInt1268 && class30_sub1.anInt1297 < anInt1268 + 8 && class30_sub1.anInt1298 >= anInt1269 && class30_sub1.anInt1298 < anInt1269 + 8 && class30_sub1.anInt1295 == anInt918) {
 						class30_sub1.anInt1294 = 0;
 					}
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -9841,7 +9714,6 @@ public class client extends Applet_Sub1 {
 				for (int l = 0; l < 5; l++) {
 					aBooleanArray876[l] = false;
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -9852,7 +9724,6 @@ public class client extends Applet_Sub1 {
 					class9.anIntArray253[k15] = -1;
 					class9.anIntArray253[k15] = 0;
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -9861,7 +9732,6 @@ public class client extends Applet_Sub1 {
 				for (int j1 = 0; j1 < anInt822; j1++) {
 					aLongArray925[j1] = aClass30_Sub2_Sub2_1083.method414();
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -9893,7 +9763,6 @@ public class client extends Applet_Sub1 {
 						anIntArray1044[k1] = k20 + 2;
 					}
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -9973,7 +9842,6 @@ public class client extends Applet_Sub1 {
 							}
 						}
 					}
-
 					aClass30_Sub2_Sub2_1083.method420();
 					l2 = aClass30_Sub2_Sub2_1083.method410();
 					aBoolean1159 = true;
@@ -10003,7 +9871,6 @@ public class client extends Applet_Sub1 {
 							k16++;
 						}
 					}
-
 					aByteArrayArray1183 = new byte[k16][];
 					aByteArrayArray1247 = new byte[k16][];
 					anIntArray1234 = new int[k16];
@@ -10048,7 +9915,6 @@ public class client extends Applet_Sub1 {
 										k32 = -1;
 										break;
 									}
-
 									if (k32 != -1) {
 										ai[l16++] = k32;
 									}
@@ -10056,7 +9922,6 @@ public class client extends Applet_Sub1 {
 							}
 						}
 					}
-
 					aByteArrayArray1183 = new byte[l16][];
 					aByteArrayArray1247 = new byte[l16][];
 					anIntArray1234 = new int[l16];
@@ -10087,12 +9952,10 @@ public class client extends Applet_Sub1 {
 							class30_sub2_sub4_sub1_sub1.anIntArray1500[j29] -= i17;
 							class30_sub2_sub4_sub1_sub1.anIntArray1501[j29] -= j21;
 						}
-
 						class30_sub2_sub4_sub1_sub1.anInt1550 -= i17 * 128;
 						class30_sub2_sub4_sub1_sub1.anInt1551 -= j21 * 128;
 					}
 				}
-
 				for (int i27 = 0; i27 < anInt888; i27++) {
 					Class30_Sub2_Sub4_Sub1_Sub2 class30_sub2_sub4_sub1_sub2 = aClass30_Sub2_Sub4_Sub1_Sub2Array890[i27];
 					if (class30_sub2_sub4_sub1_sub2 != null) {
@@ -10100,12 +9963,10 @@ public class client extends Applet_Sub1 {
 							class30_sub2_sub4_sub1_sub2.anIntArray1500[i31] -= i17;
 							class30_sub2_sub4_sub1_sub2.anIntArray1501[i31] -= j21;
 						}
-
 						class30_sub2_sub4_sub1_sub2.anInt1550 -= i17 * 128;
 						class30_sub2_sub4_sub1_sub2.anInt1551 -= j21 * 128;
 					}
 				}
-
 				aBoolean1080 = true;
 				byte byte1 = 0;
 				byte byte2 = 104;
@@ -10136,7 +9997,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				for (Class30_Sub1 class30_sub1_1 = (Class30_Sub1) aClass19_1179.method252(); class30_sub1_1 != null; class30_sub1_1 = (Class30_Sub1) aClass19_1179.method254()) {
 					class30_sub1_1.anInt1297 -= i17;
 					class30_sub1_1.anInt1298 -= j21;
@@ -10144,7 +10004,6 @@ public class client extends Applet_Sub1 {
 						class30_sub1_1.method329();
 					}
 				}
-
 				if (anInt1261 != 0) {
 					anInt1261 -= i17;
 					anInt1262 -= j21;
@@ -10248,7 +10107,6 @@ public class client extends Applet_Sub1 {
 						flag2 = true;
 						break;
 					}
-
 					if (!flag2 && anInt1251 == 0) {
 						method77("wishes to trade with you.", 4, s3);
 					}
@@ -10263,7 +10121,6 @@ public class client extends Applet_Sub1 {
 						flag3 = true;
 						break;
 					}
-
 					if (!flag3 && anInt1251 == 0) {
 						method77("wishes to duel with you.", 8, s4);
 					}
@@ -10278,7 +10135,6 @@ public class client extends Applet_Sub1 {
 						flag4 = true;
 						break;
 					}
-
 					if (!flag4 && anInt1251 == 0) {
 						String s8 = s.substring(s.indexOf(":") + 1, s.length() - 9);
 						method77(s8, 8, s5);
@@ -10295,13 +10151,11 @@ public class client extends Applet_Sub1 {
 						class30_sub2_sub4_sub1_sub2.anInt1526 = -1;
 					}
 				}
-
 				for (Class30_Sub2_Sub4_Sub1_Sub1 class30_sub2_sub4_sub1_sub1 : aClass30_Sub2_Sub4_Sub1_Sub1Array835) {
 					if (class30_sub2_sub4_sub1_sub1 != null) {
 						class30_sub2_sub4_sub1_sub1.anInt1526 = -1;
 					}
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -10326,7 +10180,6 @@ public class client extends Applet_Sub1 {
 					s7 = null;
 					break;
 				}
-
 				if (s7 != null && anInt899 < 200) {
 					aLongArray955[anInt899] = l4;
 					aStringArray1082[anInt899] = s7;
@@ -10352,7 +10205,6 @@ public class client extends Applet_Sub1 {
 						}
 					}
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -10444,7 +10296,6 @@ public class client extends Applet_Sub1 {
 						aBoolean1153 = true;
 					}
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -10460,7 +10311,6 @@ public class client extends Applet_Sub1 {
 					flag5 = true;
 					break;
 				}
-
 				if (l21 <= 1) {
 					for (int l29 = 0; l29 < anInt822; l29++) {
 						if (aLongArray925[l29] != l5) {
@@ -10612,12 +10462,10 @@ public class client extends Applet_Sub1 {
 					class9_1.anIntArray253[j22] = aClass30_Sub2_Sub2_1083.method436();
 					class9_1.anIntArray252[j22] = i25;
 				}
-
 				for (int j25 = j19; j25 < class9_1.anIntArray253.length; j25++) {
 					class9_1.anIntArray253[j25] = 0;
 					class9_1.anIntArray252[j25] = 0;
 				}
-
 				anInt1008 = -1;
 				return true;
 			}
@@ -10840,7 +10688,6 @@ public class client extends Applet_Sub1 {
 			for (int j15 = 0; j15 < anInt1007 && j15 < 50; j15++) {
 				s2.append(aClass30_Sub2_Sub2_1083.aByteArray1405[j15]).append(",");
 			}
-
 			signlink.reporterror(s2.toString());
 			method44();
 		}
@@ -10903,7 +10750,6 @@ public class client extends Applet_Sub1 {
 				}
 			}
 		}
-
 		int k2 = Class30_Sub2_Sub1_Sub3.anInt1481;
 		Class30_Sub2_Sub4_Sub6.aBoolean1684 = true;
 		Class30_Sub2_Sub4_Sub6.anInt1687 = 0;

@@ -186,11 +186,9 @@ public class Class13 {
 				byte byte1 = method229(class32);
 				class32.aBooleanArray590[j] = byte1 == 1;
 			}
-
 			for (int k = 0; k < 256; k++) {
 				class32.aBooleanArray589[k] = false;
 			}
-
 			for (int l = 0; l < 16; l++) {
 				if (class32.aBooleanArray590[l]) {
 					for (int i3 = 0; i3 < 16; i3++) {
@@ -201,7 +199,6 @@ public class Class13 {
 					}
 				}
 			}
-
 			method231(class32);
 			int i4 = class32.anInt588 + 2;
 			int j4 = method230(3, class32);
@@ -217,23 +214,19 @@ public class Class13 {
 				} while (true);
 				class32.aByteArray595[i1] = (byte) j3;
 			}
-
 			byte[] abyte0 = new byte[6];
 			for (byte byte16 = 0; byte16 < j4; byte16++) {
 				abyte0[byte16] = byte16;
 			}
-
 			for (int j1 = 0; j1 < k4; j1++) {
 				byte byte17 = class32.aByteArray595[j1];
 				byte byte15 = abyte0[byte17];
 				for (; byte17 > 0; byte17--) {
 					abyte0[byte17] = abyte0[byte17 - 1];
 				}
-
 				abyte0[0] = byte15;
 				class32.aByteArray594[j1] = byte15;
 			}
-
 			for (int k3 = 0; k3 < j4; k3++) {
 				int l6 = method230(5, class32);
 				for (int k1 = 0; k1 < i4; k1++) {
@@ -252,7 +245,6 @@ public class Class13 {
 					class32.aByteArrayArray596[k3][k1] = (byte) l6;
 				}
 			}
-
 			for (int l3 = 0; l3 < j4; l3++) {
 				byte byte8 = 32;
 				int i = 0;
@@ -264,28 +256,23 @@ public class Class13 {
 						byte8 = class32.aByteArrayArray596[l3][l1];
 					}
 				}
-
 				method232(class32.anIntArrayArray597[l3], class32.anIntArrayArray598[l3], class32.anIntArrayArray599[l3], class32.aByteArrayArray596[l3], byte8, i, i4);
 				class32.anIntArray600[l3] = byte8;
 			}
-
 			int l4 = class32.anInt588 + 1;
 			int i5 = -1;
 			int j5 = 0;
 			for (int i2 = 0; i2 <= 255; i2++) {
 				class32.anIntArray583[i2] = 0;
 			}
-
 			int j9 = 4095;
 			for (int l8 = 15; l8 >= 0; l8--) {
 				for (int i9 = 15; i9 >= 0; i9--) {
 					class32.aByteArray592[j9] = (byte) (l8 * 16 + i9);
 					j9--;
 				}
-
 				class32.anIntArray593[l8] = j9 + 1;
 			}
-
 			int i6 = 0;
 			if (j5 == 0) {
 				i5++;
@@ -304,7 +291,6 @@ public class Class13 {
 				i7++;
 				byte9 = method229(class32);
 			}
-
 			for (int k5 = ai2[l7 - ai1[i7]]; k5 != l4; ) {
 				if (k5 == 0 || k5 == 1) {
 					int j6 = -1;
@@ -333,7 +319,6 @@ public class Class13 {
 							j7++;
 							byte10 = method229(class32);
 						}
-
 						k5 = ai2[i8 - ai1[j7]];
 					} while (k5 == 0 || k5 == 1);
 					j6++;
@@ -356,11 +341,9 @@ public class Class13 {
 							class32.aByteArray592[k11 - 2] = class32.aByteArray592[k11 - 3];
 							class32.aByteArray592[k11 - 3] = class32.aByteArray592[k11 - 4];
 						}
-
 						for (; j11 > 0; j11--) {
 							class32.aByteArray592[j10 + j11] = class32.aByteArray592[(j10 + j11) - 1];
 						}
-
 						class32.aByteArray592[j10] = byte6;
 					} else {
 						int l10 = j11 / 16;
@@ -370,13 +353,11 @@ public class Class13 {
 						for (; k10 > class32.anIntArray593[l10]; k10--) {
 							class32.aByteArray592[k10] = class32.aByteArray592[k10 - 1];
 						}
-
 						class32.anIntArray593[l10]++;
 						for (; l10 > 0; l10--) {
 							class32.anIntArray593[l10]--;
 							class32.aByteArray592[class32.anIntArray593[l10]] = class32.aByteArray592[(class32.anIntArray593[l10 - 1] + 16) - 1];
 						}
-
 						class32.anIntArray593[0]--;
 						class32.aByteArray592[class32.anIntArray593[0]] = byte6;
 						if (class32.anIntArray593[0] == 0) {
@@ -386,7 +367,6 @@ public class Class13 {
 									class32.aByteArray592[i10] = class32.aByteArray592[class32.anIntArray593[k9] + l9];
 									i10--;
 								}
-
 								class32.anIntArray593[k9] = i10 + 1;
 							}
 						}
@@ -411,28 +391,23 @@ public class Class13 {
 						k7++;
 						byte11 = method229(class32);
 					}
-
 					k5 = ai2[j8 - ai1[k7]];
 				}
 			}
-
 			class32.anInt574 = 0;
 			class32.aByte573 = 0;
 			class32.anIntArray585[0] = 0;
 			for (int j2 = 1; j2 <= 256; j2++) {
 				class32.anIntArray585[j2] = class32.anIntArray583[j2 - 1];
 			}
-
 			for (int k2 = 1; k2 <= 256; k2++) {
 				class32.anIntArray585[k2] += class32.anIntArray585[k2 - 1];
 			}
-
 			for (int l2 = 0; l2 < i6; l2++) {
 				byte byte7 = (byte) (Class32.anIntArray587[l2] & 0xff);
 				Class32.anIntArray587[class32.anIntArray585[byte7 & 0xff]] |= l2 << 8;
 				class32.anIntArray585[byte7 & 0xff]++;
 			}
-
 			class32.anInt581 = Class32.anIntArray587[class32.anInt580] >> 8;
 			class32.anInt584 = 0;
 			class32.anInt581 = Class32.anIntArray587[class32.anInt581];
@@ -494,30 +469,24 @@ public class Class13 {
 				}
 			}
 		}
-
 		for (int j1 = 0; j1 < 23; j1++) {
 			ai1[j1] = 0;
 		}
-
 		for (int k1 = 0; k1 < k; k1++) {
 			ai1[abyte0[k1] + 1]++;
 		}
-
 		for (int l1 = 1; l1 < 23; l1++) {
 			ai1[l1] += ai1[l1 - 1];
 		}
-
 		for (int i2 = 0; i2 < 23; i2++) {
 			ai[i2] = 0;
 		}
-
 		int i3 = 0;
 		for (int j2 = i; j2 <= j; j2++) {
 			i3 += ai1[j2 + 1] - ai1[j2];
 			ai[j2] = i3 - 1;
 			i3 <<= 1;
 		}
-
 		for (int k2 = i + 1; k2 <= j; k2++) {
 			ai1[k2] = (ai[k2 - 1] + 1 << 1) - ai1[k2];
 		}

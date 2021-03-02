@@ -66,7 +66,6 @@ public class Class44 {
 				return abyte0;
 			}
 		}
-
 		return null;
 	}
 

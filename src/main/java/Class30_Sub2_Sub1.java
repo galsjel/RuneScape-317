@@ -92,7 +92,6 @@ public class Class30_Sub2_Sub1 extends Class30_Sub2 {
 				int k4 = ((i2 + l2 >> 8) << 16) + ((j2 + i3 >> 8) << 8) + (k2 + j3 >> 8);
 				anIntArray1378[l3++] = k4;
 			}
-
 			l3 += k3;
 		}
 	}
@@ -118,7 +117,6 @@ public class Class30_Sub2_Sub1 extends Class30_Sub2 {
 			for (int j2 = -i1; j2 < 0; j2++) {
 				anIntArray1378[l1++] = l;
 			}
-
 			l1 += k1;
 		}
 	}

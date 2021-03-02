@@ -20,7 +20,7 @@ public class Class20 {
 	public int anInt363 = -1;
 	public int anInt364 = -1;
 	public int anInt365 = 2;
-	public int anInt366;
+	public int unusedInt;
 
 	public Class20() {
 	}
@@ -80,7 +80,6 @@ public class Class20 {
 				for (int l = 0; l < k; l++) {
 					anIntArray357[l] = class30_sub2_sub2.method408();
 				}
-
 				anIntArray357[k] = 0x98967f;
 			} else if (i == 4) {
 				aBoolean358 = true;
@@ -99,7 +98,7 @@ public class Class20 {
 			} else if (i == 11) {
 				anInt365 = class30_sub2_sub2.method408();
 			} else if (i == 12) {
-				anInt366 = class30_sub2_sub2.method413();
+				unusedInt = class30_sub2_sub2.method413();
 			} else {
 				System.out.println("Error unrecognised seq config code: " + i);
 			}

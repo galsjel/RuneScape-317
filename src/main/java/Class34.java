@@ -67,14 +67,12 @@ public class Class34 {
 			for (int k = 0; k < ac1.length; k++) {
 				ac1[k] = (char) class30_sub2_sub2.method408();
 			}
-
 			ac[j] = ac1;
 			byte[][] abyte1 = new byte[class30_sub2_sub2.method408()][2];
 			for (int l = 0; l < abyte1.length; l++) {
 				abyte1[l][0] = (byte) class30_sub2_sub2.method408();
 				abyte1[l][1] = (byte) class30_sub2_sub2.method408();
 			}
-
 			if (abyte1.length > 0) {
 				abyte0[j] = abyte1;
 			}
@@ -90,7 +88,6 @@ public class Class34 {
 			for (int k = 0; k < ac1.length; k++) {
 				ac1[k] = (char) class30_sub2_sub2.method408();
 			}
-
 			ac[j] = ac1;
 		}
 	}
@@ -107,7 +104,6 @@ public class Class34 {
 				i++;
 			}
 		}
-
 		for (int k = i; k < ac.length; k++) {
 			ac[k] = ' ';
 		}
@@ -138,7 +134,6 @@ public class Class34 {
 				}
 			}
 		}
-
 		method498(s1.toCharArray(), 2, ac);
 		method499(0, ac);
 		return (new String(ac)).trim();
@@ -150,7 +145,6 @@ public class Class34 {
 				ac1[j] = ac[j];
 			}
 		}
-
 		if (i == 2) {
 		}
 	}
@@ -171,7 +165,6 @@ public class Class34 {
 				flag = true;
 			}
 		}
-
 		if (i == 0) {
 		}
 	}
@@ -260,7 +253,6 @@ public class Class34 {
 				return 3;
 			}
 		}
-
 		int l = 0;
 		for (int i1 = j - 1; i1 >= 0; i1--) {
 			if (!method517(ac1[i1])) {
@@ -270,7 +262,6 @@ public class Class34 {
 				l++;
 			}
 		}
-
 		if (l >= 3) {
 			return 4;
 		}
@@ -289,7 +280,6 @@ public class Class34 {
 				return 3;
 			}
 		}
-
 		int k = 0;
 		for (int l = i + 1; l < ac1.length; l++) {
 			if (!method517(ac[l])) {
@@ -299,7 +289,6 @@ public class Class34 {
 				k++;
 			}
 		}
-
 		if (k >= 3) {
 			return 4;
 		}
@@ -446,7 +435,6 @@ public class Class34 {
 				return 3;
 			}
 		}
-
 		int l = 0;
 		for (int i1 = j - 1; i1 >= 0; i1--) {
 			if (!method517(ac1[i1])) {
@@ -456,7 +444,6 @@ public class Class34 {
 				l++;
 			}
 		}
-
 		if (l >= 3) {
 			return 4;
 		}
@@ -475,7 +462,6 @@ public class Class34 {
 				return 3;
 			}
 		}
-
 		int k = 0;
 		for (int l = i + 1; l < ac.length; l++) {
 			if (!method517(ac1[l])) {
@@ -485,7 +471,6 @@ public class Class34 {
 				k++;
 			}
 		}
-
 		if (k >= 5) {
 			return 4;
 		}
@@ -588,7 +573,6 @@ public class Class34 {
 									}
 									ac2[j3] = ac[k2 + j3];
 								}
-
 								boolean flag8 = true;
 								if (j3 == 0) {
 									flag8 = false;
@@ -601,7 +585,6 @@ public class Class34 {
 								}
 							}
 						}
-
 						if (!flag7) {
 							flag4 = false;
 						}
@@ -619,7 +602,6 @@ public class Class34 {
 							j2 = l2;
 						}
 					}
-
 					if (j2 > -1) {
 						l1 -= l - 1 - j2;
 					}
@@ -833,7 +815,6 @@ public class Class34 {
 					flag = true;
 				}
 			}
-
 			if (flag) {
 				l = 0;
 			}
@@ -845,7 +826,6 @@ public class Class34 {
 			for (int l1 = j; l1 < k; l1++) {
 				k1 = (k1 * 10 + ac[l1]) - 48;
 			}
-
 			if (k1 > 255 || k - j > 8) {
 				l = 0;
 			} else {
@@ -855,7 +835,6 @@ public class Class34 {
 				for (int i2 = i1; i2 < k; i2++) {
 					ac[i2] = '*';
 				}
-
 				l = 0;
 			}
 		}
@@ -914,7 +893,6 @@ public class Class34 {
 				break;
 			}
 		}
-
 		if (flag) {
 			return true;
 		}
@@ -955,7 +933,6 @@ public class Class34 {
 				return 0;
 			}
 		}
-
 		return k;
 	}
 

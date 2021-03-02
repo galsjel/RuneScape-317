@@ -104,7 +104,6 @@ public class Class36 {
 					}
 				}
 			}
-
 			class36.anInt638 = l2;
 			class36.anIntArray639 = new int[l2];
 			class36.anIntArray640 = new int[l2];

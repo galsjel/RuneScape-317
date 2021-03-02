@@ -32,7 +32,6 @@ public class Class37 {
 				Class41.aClass41Array701[aClass37Array646[j].anInt648].unusedBool3 = true;
 			}
 		}
-
 		if (class30_sub2_sub2.anInt1406 != class30_sub2_sub2.aByteArray1405.length) {
 			System.out.println("varbit load mismatch");
 		}
