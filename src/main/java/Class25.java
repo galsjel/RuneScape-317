@@ -290,14 +290,11 @@ public class Class25 {
 		aClass30_Sub3ArrayArrayArray441[i][j1][k].aClass49_1315 = class49;
 	}
 
-	public void method281(byte byte0, int i, int j, Class30_Sub2_Sub4 class30_sub2_sub4, int k, Class30_Sub2_Sub4 class30_sub2_sub4_1, Class30_Sub2_Sub4 class30_sub2_sub4_2, int l, int i1) {
+	public void method281(int i, int j, Class30_Sub2_Sub4 class30_sub2_sub4, int k, Class30_Sub2_Sub4 class30_sub2_sub4_1, Class30_Sub2_Sub4 class30_sub2_sub4_2, int l, int i1) {
 		Class3 class3 = new Class3();
 		class3.aClass30_Sub2_Sub4_48 = class30_sub2_sub4_2;
 		class3.anInt46 = i * 128 + 64;
 		class3.anInt47 = i1 * 128 + 64;
-		if (byte0 != 7) {
-			return;
-		}
 		class3.anInt45 = k;
 		class3.anInt51 = j;
 		class3.aClass30_Sub2_Sub4_49 = class30_sub2_sub4;
@@ -1101,7 +1098,7 @@ public class Class25 {
 							method315(class30_sub3_7.aClass43_1311, 0, anInt458, anInt459, anInt460, anInt461, i, j);
 						}
 					} else if (class30_sub3_7.aClass40_1312 != null && !method320(0, i, j)) {
-						method316(i, (byte) 99, anInt458, anInt460, class30_sub3_7.aClass40_1312, anInt459, j, anInt461);
+						method316(i, anInt458, anInt460, class30_sub3_7.aClass40_1312, anInt459, j, anInt461);
 					}
 					Class10 class10 = class30_sub3_7.aClass10_1313;
 					if (class10 != null) {
@@ -1122,7 +1119,7 @@ public class Class25 {
 					}
 				} else if (class30_sub3_1.aClass40_1312 != null && !method320(l, i, j)) {
 					flag1 = true;
-					method316(i, (byte) 99, anInt458, anInt460, class30_sub3_1.aClass40_1312, anInt459, j, anInt461);
+					method316(i, anInt458, anInt460, class30_sub3_1.aClass40_1312, anInt459, j, anInt461);
 				}
 				int j1 = 0;
 				int j2 = 0;
@@ -1583,11 +1580,8 @@ public class Class25 {
 		}
 	}
 
-	public void method316(int i, byte byte0, int j, int k, Class40 class40, int l, int i1, int j1) {
+	public void method316(int i, int j, int k, Class40 class40, int l, int i1, int j1) {
 		int k1 = class40.anIntArray673.length;
-		if (byte0 != 99) {
-			return;
-		}
 		for (int l1 = 0; l1 < k1; l1++) {
 			int i2 = class40.anIntArray673[l1] - anInt455;
 			int k2 = class40.anIntArray674[l1] - anInt456;

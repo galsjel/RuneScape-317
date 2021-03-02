@@ -1833,7 +1833,7 @@ public class client extends Applet_Sub1 {
 			}
 		}
 		int i1 = i + (j << 7) + 0x60000000;
-		aClass25_946.method281((byte) 7, i, i1, obj1, method42(anInt918, j * 128 + 64, i * 128 + 64), obj2, obj, anInt918, j);
+		aClass25_946.method281(i, i1, obj1, method42(anInt918, j * 128 + 64, i * 128 + 64), obj2, obj, anInt918, j);
 	}
 
 	public void method26(boolean flag) {
