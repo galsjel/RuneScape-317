@@ -17,8 +17,8 @@ public class Class38 {
 	}
 
 	public static void method535(Class44 class44) {
-		Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(class44.method571("idk.dat", null));
-		anInt655 = class30_sub2_sub2.method410();
+		Buffer buffer = new Buffer(class44.method571("idk.dat", null));
+		anInt655 = buffer.method410();
 		if (aClass38Array656 == null) {
 			aClass38Array656 = new Class38[anInt655];
 		}
@@ -26,32 +26,32 @@ public class Class38 {
 			if (aClass38Array656[j] == null) {
 				aClass38Array656[j] = new Class38();
 			}
-			aClass38Array656[j].method536(class30_sub2_sub2);
+			aClass38Array656[j].method536(buffer);
 		}
 	}
 
-	public void method536(Class30_Sub2_Sub2 class30_sub2_sub2) {
+	public void method536(Buffer buffer) {
 		do {
-			int i = class30_sub2_sub2.method408();
+			int i = buffer.method408();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt657 = class30_sub2_sub2.method408();
+				anInt657 = buffer.method408();
 			} else if (i == 2) {
-				int j = class30_sub2_sub2.method408();
+				int j = buffer.method408();
 				anIntArray658 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray658[k] = class30_sub2_sub2.method410();
+					anIntArray658[k] = buffer.method410();
 				}
 			} else if (i == 3) {
 				aBoolean662 = true;
 			} else if (i >= 40 && i < 50) {
-				anIntArray659[i - 40] = class30_sub2_sub2.method410();
+				anIntArray659[i - 40] = buffer.method410();
 			} else if (i >= 50 && i < 60) {
-				anIntArray660[i - 50] = class30_sub2_sub2.method410();
+				anIntArray660[i - 50] = buffer.method410();
 			} else if (i >= 60 && i < 70) {
-				anIntArray661[i - 60] = class30_sub2_sub2.method410();
+				anIntArray661[i - 60] = buffer.method410();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
 			}
@@ -64,62 +64,62 @@ public class Class38 {
 		}
 		boolean flag = true;
 		for (int i : anIntArray658) {
-			if (!Class30_Sub2_Sub4_Sub6.method463(i)) {
+			if (!Model.method463(i)) {
 				flag = false;
 			}
 		}
 		return flag;
 	}
 
-	public Class30_Sub2_Sub4_Sub6 method538() {
+	public Model method538() {
 		if (anIntArray658 == null) {
 			return null;
 		}
-		Class30_Sub2_Sub4_Sub6[] aclass30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6[anIntArray658.length];
+		Model[] aclass30_sub2_sub4_sub6 = new Model[anIntArray658.length];
 		for (int i = 0; i < anIntArray658.length; i++) {
-			aclass30_sub2_sub4_sub6[i] = Class30_Sub2_Sub4_Sub6.method462(anIntArray658[i]);
+			aclass30_sub2_sub4_sub6[i] = Model.method462(anIntArray658[i]);
 		}
-		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6;
+		Model model;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
-			class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
+			model = aclass30_sub2_sub4_sub6[0];
 		} else {
-			class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(aclass30_sub2_sub4_sub6.length, aclass30_sub2_sub4_sub6);
+			model = new Model(aclass30_sub2_sub4_sub6.length, aclass30_sub2_sub4_sub6);
 		}
 		for (int j = 0; j < 6; j++) {
 			if (anIntArray659[j] == 0) {
 				break;
 			}
-			class30_sub2_sub4_sub6.method476(anIntArray659[j], anIntArray660[j]);
+			model.method476(anIntArray659[j], anIntArray660[j]);
 		}
-		return class30_sub2_sub4_sub6;
+		return model;
 	}
 
 	public boolean method539() {
 		boolean flag1 = true;
 		for (int i = 0; i < 5; i++) {
-			if (anIntArray661[i] != -1 && !Class30_Sub2_Sub4_Sub6.method463(anIntArray661[i])) {
+			if (anIntArray661[i] != -1 && !Model.method463(anIntArray661[i])) {
 				flag1 = false;
 			}
 		}
 		return flag1;
 	}
 
-	public Class30_Sub2_Sub4_Sub6 method540() {
-		Class30_Sub2_Sub4_Sub6[] aclass30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6[5];
+	public Model method540() {
+		Model[] aclass30_sub2_sub4_sub6 = new Model[5];
 		int j = 0;
 		for (int k = 0; k < 5; k++) {
 			if (anIntArray661[k] != -1) {
-				aclass30_sub2_sub4_sub6[j++] = Class30_Sub2_Sub4_Sub6.method462(anIntArray661[k]);
+				aclass30_sub2_sub4_sub6[j++] = Model.method462(anIntArray661[k]);
 			}
 		}
-		Class30_Sub2_Sub4_Sub6 class30_sub2_sub4_sub6 = new Class30_Sub2_Sub4_Sub6(j, aclass30_sub2_sub4_sub6);
+		Model model = new Model(j, aclass30_sub2_sub4_sub6);
 		for (int l = 0; l < 6; l++) {
 			if (anIntArray659[l] == 0) {
 				break;
 			}
-			class30_sub2_sub4_sub6.method476(anIntArray659[l], anIntArray660[l]);
+			model.method476(anIntArray659[l], anIntArray660[l]);
 		}
-		return class30_sub2_sub4_sub6;
+		return model;
 	}
 
 }

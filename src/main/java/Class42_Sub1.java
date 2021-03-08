@@ -15,7 +15,7 @@ import java.util.zip.GZIPInputStream;
 public class Class42_Sub1 extends Class42 implements Runnable {
 
 	public int anInt1330;
-	public final Class19 aClass19_1331 = new Class19();
+	public final DoublyLinkedList aList_1331 = new DoublyLinkedList();
 	public int anInt1332;
 	public String aString1333 = "";
 	public int anInt1334;
@@ -25,8 +25,8 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public final byte[] aByteArray1339 = new byte[500];
 	public int anInt1341;
 	public final byte[][] aByteArrayArray1342 = new byte[4][];
-	public client aClient1343;
-	public final Class19 aClass19_1344 = new Class19();
+	public Game aGame1343;
+	public final DoublyLinkedList aList_1344 = new DoublyLinkedList();
 	public int anInt1346;
 	public int anInt1347;
 	public int[] anIntArray1348;
@@ -37,19 +37,19 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public OutputStream anOutputStream1354;
 	public int[] anIntArray1356;
 	public boolean aBoolean1357 = false;
-	public final Class19 aClass19_1358 = new Class19();
+	public final DoublyLinkedList aList_1358 = new DoublyLinkedList();
 	public final byte[] aByteArray1359 = new byte[65000];
 	public int[] anIntArray1360;
-	public final Class2 aClass2_1361 = new Class2();
+	public final LinkedList aLinkedList_1361 = new LinkedList();
 	public InputStream anInputStream1362;
 	public Socket aSocket1363;
 	public final int[][] anIntArrayArray1364 = new int[4][];
 	public final int[][] anIntArrayArray1365 = new int[4][];
 	public int anInt1366;
 	public int anInt1367;
-	public final Class19 aClass19_1368 = new Class19();
-	public Class30_Sub2_Sub3 aClass30_Sub2_Sub3_1369;
-	public final Class19 aClass19_1370 = new Class19();
+	public final DoublyLinkedList aList_1368 = new DoublyLinkedList();
+	public OnDemandRequest aRequest_1369;
+	public final DoublyLinkedList aList_1370 = new DoublyLinkedList();
 	public int[] anIntArray1371;
 	public byte[] aByteArray1372;
 	public int anInt1373;
@@ -83,33 +83,33 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				int j1 = ((aByteArray1339[1] & 0xff) << 8) + (aByteArray1339[2] & 0xff);
 				int l1 = ((aByteArray1339[3] & 0xff) << 8) + (aByteArray1339[4] & 0xff);
 				int i2 = aByteArray1339[5] & 0xff;
-				aClass30_Sub2_Sub3_1369 = null;
-				for (Class30_Sub2_Sub3 class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3 != null; class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
-					if (class30_sub2_sub3.anInt1419 == l && class30_sub2_sub3.anInt1421 == j1) {
-						aClass30_Sub2_Sub3_1369 = class30_sub2_sub3;
+				aRequest_1369 = null;
+				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+					if (request.anInt1419 == l && request.anInt1421 == j1) {
+						aRequest_1369 = request;
 					}
-					if (aClass30_Sub2_Sub3_1369 != null) {
-						class30_sub2_sub3.anInt1423 = 0;
+					if (aRequest_1369 != null) {
+						request.anInt1423 = 0;
 					}
 				}
-				if (aClass30_Sub2_Sub3_1369 != null) {
+				if (aRequest_1369 != null) {
 					anInt1373 = 0;
 					if (l1 == 0) {
 						signlink.reporterror("Rej: " + l + "," + j1);
-						aClass30_Sub2_Sub3_1369.aByteArray1420 = null;
-						if (aClass30_Sub2_Sub3_1369.aBoolean1422) {
-							synchronized (aClass19_1358) {
-								aClass19_1358.method249(aClass30_Sub2_Sub3_1369);
+						aRequest_1369.aByteArray1420 = null;
+						if (aRequest_1369.aBoolean1422) {
+							synchronized (aList_1358) {
+								aList_1358.method249(aRequest_1369);
 							}
 						} else {
-							aClass30_Sub2_Sub3_1369.method329();
+							aRequest_1369.method329();
 						}
-						aClass30_Sub2_Sub3_1369 = null;
+						aRequest_1369 = null;
 					} else {
-						if (aClass30_Sub2_Sub3_1369.aByteArray1420 == null && i2 == 0) {
-							aClass30_Sub2_Sub3_1369.aByteArray1420 = new byte[l1];
+						if (aRequest_1369.aByteArray1420 == null && i2 == 0) {
+							aRequest_1369.aByteArray1420 = new byte[l1];
 						}
-						if (aClass30_Sub2_Sub3_1369.aByteArray1420 == null && i2 != 0) {
+						if (aRequest_1369.aByteArray1420 == null && i2 != 0) {
 							throw new IOException("missing start of file");
 						}
 					}
@@ -124,26 +124,26 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				aBoolean1357 = true;
 				byte[] abyte0 = aByteArray1339;
 				int i1 = 0;
-				if (aClass30_Sub2_Sub3_1369 != null) {
-					abyte0 = aClass30_Sub2_Sub3_1369.aByteArray1420;
+				if (aRequest_1369 != null) {
+					abyte0 = aRequest_1369.aByteArray1420;
 					i1 = anInt1346;
 				}
 				for (int k1 = 0; k1 < anInt1347; k1 += anInputStream1362.read(abyte0, k1 + i1, anInt1347 - k1)) {
 				}
-				if (anInt1347 + anInt1346 >= abyte0.length && aClass30_Sub2_Sub3_1369 != null) {
-					if (aClient1343.aClass14Array970[0] != null) {
-						aClient1343.aClass14Array970[aClass30_Sub2_Sub3_1369.anInt1419 + 1].method234(abyte0.length, abyte0, aClass30_Sub2_Sub3_1369.anInt1421);
+				if (anInt1347 + anInt1346 >= abyte0.length && aRequest_1369 != null) {
+					if (aGame1343.aFileStoreArray970[0] != null) {
+						aGame1343.aFileStoreArray970[aRequest_1369.anInt1419 + 1].method234(abyte0.length, abyte0, aRequest_1369.anInt1421);
 					}
-					if (!aClass30_Sub2_Sub3_1369.aBoolean1422 && aClass30_Sub2_Sub3_1369.anInt1419 == 3) {
-						aClass30_Sub2_Sub3_1369.aBoolean1422 = true;
-						aClass30_Sub2_Sub3_1369.anInt1419 = 93;
+					if (!aRequest_1369.aBoolean1422 && aRequest_1369.anInt1419 == 3) {
+						aRequest_1369.aBoolean1422 = true;
+						aRequest_1369.anInt1419 = 93;
 					}
-					if (aClass30_Sub2_Sub3_1369.aBoolean1422) {
-						synchronized (aClass19_1358) {
-							aClass19_1358.method249(aClass30_Sub2_Sub3_1369);
+					if (aRequest_1369.aBoolean1422) {
+						synchronized (aList_1358) {
+							aList_1358.method249(aRequest_1369);
 						}
 					} else {
-						aClass30_Sub2_Sub3_1369.method329();
+						aRequest_1369.method329();
 					}
 				}
 				anInt1347 = 0;
@@ -160,26 +160,26 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		}
 	}
 
-	public void method551(Class44 class44, client client1) {
+	public void method551(Class44 class44, Game game1) {
 		String[] as = {"model_version", "anim_version", "midi_version", "map_version"};
 		for (int i = 0; i < 4; i++) {
 			byte[] abyte0 = class44.method571(as[i], null);
 			int j = abyte0.length / 2;
-			Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(abyte0);
+			Buffer buffer = new Buffer(abyte0);
 			anIntArrayArray1364[i] = new int[j];
 			aByteArrayArray1342[i] = new byte[j];
 			for (int l = 0; l < j; l++) {
-				anIntArrayArray1364[i][l] = class30_sub2_sub2.method410();
+				anIntArrayArray1364[i][l] = buffer.method410();
 			}
 		}
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 		for (int k = 0; k < 4; k++) {
 			byte[] abyte1 = class44.method571(as1[k], null);
 			int i1 = abyte1.length / 4;
-			Class30_Sub2_Sub2 class30_sub2_sub2_1 = new Class30_Sub2_Sub2(abyte1);
+			Buffer buffer_1 = new Buffer(abyte1);
 			anIntArrayArray1365[k] = new int[i1];
 			for (int l1 = 0; l1 < i1; l1++) {
-				anIntArrayArray1365[k][l1] = class30_sub2_sub2_1.method413();
+				anIntArrayArray1365[k][l1] = buffer_1.method413();
 			}
 		}
 		byte[] abyte2 = class44.method571("model_index", null);
@@ -193,7 +193,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			}
 		}
 		abyte2 = class44.method571("map_index", null);
-		Class30_Sub2_Sub2 class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
+		Buffer class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 7;
 		anIntArray1371 = new int[j1];
 		anIntArray1350 = new int[j1];
@@ -206,27 +206,27 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			anIntArray1356[i2] = class30_sub2_sub2_2.method408();
 		}
 		abyte2 = class44.method571("anim_index", null);
-		class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
+		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1360 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++) {
 			anIntArray1360[j2] = class30_sub2_sub2_2.method410();
 		}
 		abyte2 = class44.method571("midi_index", null);
-		class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte2);
+		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length;
 		anIntArray1348 = new int[j1];
 		for (int k2 = 0; k2 < j1; k2++) {
 			anIntArray1348[k2] = class30_sub2_sub2_2.method408();
 		}
-		aClient1343 = client1;
+		aGame1343 = game1;
 		aBoolean1353 = true;
-		aClient1343.method12(this, 2);
+		aGame1343.method12(this, 2);
 	}
 
 	public int method552() {
-		synchronized (aClass2_1361) {
-			return aClass2_1361.method154();
+		synchronized (aLinkedList_1361) {
+			return aLinkedList_1361.method154();
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		return anIntArrayArray1364[j].length;
 	}
 
-	public void method556(Class30_Sub2_Sub3 class30_sub2_sub3) {
+	public void method556(OnDemandRequest request) {
 		try {
 			if (aSocket1363 == null) {
 				long l = System.currentTimeMillis();
@@ -256,7 +256,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 					return;
 				}
 				aLong1335 = l;
-				aSocket1363 = aClient1343.method19(43594 + client.anInt958);
+				aSocket1363 = aGame1343.method19(43594 + Game.anInt958);
 				anInputStream1362 = aSocket1363.getInputStream();
 				anOutputStream1354 = aSocket1363.getOutputStream();
 				anOutputStream1354.write(15);
@@ -265,12 +265,12 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				}
 				anInt1373 = 0;
 			}
-			aByteArray1339[0] = (byte) class30_sub2_sub3.anInt1419;
-			aByteArray1339[1] = (byte) (class30_sub2_sub3.anInt1421 >> 8);
-			aByteArray1339[2] = (byte) class30_sub2_sub3.anInt1421;
-			if (class30_sub2_sub3.aBoolean1422) {
+			aByteArray1339[0] = (byte) request.anInt1419;
+			aByteArray1339[1] = (byte) (request.anInt1421 >> 8);
+			aByteArray1339[2] = (byte) request.anInt1421;
+			if (request.aBoolean1422) {
 				aByteArray1339[3] = 2;
-			} else if (!aClient1343.aBoolean1157) {
+			} else if (!aGame1343.aBoolean1157) {
 				aByteArray1339[3] = 1;
 			} else {
 				aByteArray1339[3] = 0;
@@ -303,20 +303,20 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		if (anIntArrayArray1364[i][j] == 0) {
 			return;
 		}
-		synchronized (aClass2_1361) {
-			for (Class30_Sub2_Sub3 class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass2_1361.method152(); class30_sub2_sub3 != null; class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass2_1361.method153()) {
-				if (class30_sub2_sub3.anInt1419 == i && class30_sub2_sub3.anInt1421 == j) {
+		synchronized (aLinkedList_1361) {
+			for (OnDemandRequest request = (OnDemandRequest) aLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aLinkedList_1361.method153()) {
+				if (request.anInt1419 == i && request.anInt1421 == j) {
 					return;
 				}
 			}
-			Class30_Sub2_Sub3 class30_sub2_sub3_1 = new Class30_Sub2_Sub3();
-			class30_sub2_sub3_1.anInt1419 = i;
-			class30_sub2_sub3_1.anInt1421 = j;
-			class30_sub2_sub3_1.aBoolean1422 = true;
-			synchronized (aClass19_1370) {
-				aClass19_1370.method249(class30_sub2_sub3_1);
+			OnDemandRequest request_1 = new OnDemandRequest();
+			request_1.anInt1419 = i;
+			request_1.anInt1421 = j;
+			request_1.aBoolean1422 = true;
+			synchronized (aList_1370) {
+				aList_1370.method249(request_1);
 			}
-			aClass2_1361.method150(class30_sub2_sub3_1);
+			aLinkedList_1361.method150(request_1);
 		}
 	}
 
@@ -329,7 +329,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			while (aBoolean1353) {
 				anInt1341++;
 				int i = 20;
-				if (anInt1332 == 0 && aClient1343.aClass14Array970[0] != null) {
+				if (anInt1332 == 0 && aGame1343.aFileStoreArray970[0] != null) {
 					i = 50;
 				}
 				try {
@@ -353,23 +353,23 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 					}
 				}
 				boolean flag = false;
-				for (Class30_Sub2_Sub3 class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3 != null; class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
-					if (class30_sub2_sub3.aBoolean1422) {
+				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+					if (request.aBoolean1422) {
 						flag = true;
-						class30_sub2_sub3.anInt1423++;
-						if (class30_sub2_sub3.anInt1423 > 50) {
-							class30_sub2_sub3.anInt1423 = 0;
-							method556(class30_sub2_sub3);
+						request.anInt1423++;
+						if (request.anInt1423 > 50) {
+							request.anInt1423 = 0;
+							method556(request);
 						}
 					}
 				}
 				if (!flag) {
-					for (Class30_Sub2_Sub3 class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3_1 != null; class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
+					for (OnDemandRequest request_1 = (OnDemandRequest) aList_1331.method252(); request_1 != null; request_1 = (OnDemandRequest) aList_1331.method254()) {
 						flag = true;
-						class30_sub2_sub3_1.anInt1423++;
-						if (class30_sub2_sub3_1.anInt1423 > 50) {
-							class30_sub2_sub3_1.anInt1423 = 0;
-							method556(class30_sub2_sub3_1);
+						request_1.anInt1423++;
+						if (request_1.anInt1423 > 50) {
+							request_1.anInt1423 = 0;
+							method556(request_1);
 						}
 					}
 				}
@@ -389,7 +389,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 					anInt1373 = 0;
 					aString1333 = "";
 				}
-				if (aClient1343.aBoolean1157 && aSocket1363 != null && anOutputStream1354 != null && (anInt1332 > 0 || aClient1343.aClass14Array970[0] == null)) {
+				if (aGame1343.aBoolean1157 && aSocket1363 != null && anOutputStream1354 != null && (anInt1332 > 0 || aGame1343.aFileStoreArray970[0] == null)) {
 					anInt1334++;
 					if (anInt1334 > 500) {
 						anInt1334 = 0;
@@ -411,7 +411,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	}
 
 	public void method560(int i, int j) {
-		if (aClient1343.aClass14Array970[0] == null) {
+		if (aGame1343.aFileStoreArray970[0] == null) {
 			return;
 		}
 		if (anIntArrayArray1364[j][i] == 0) {
@@ -423,32 +423,32 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		if (anInt1332 == 0) {
 			return;
 		}
-		Class30_Sub2_Sub3 class30_sub2_sub3 = new Class30_Sub2_Sub3();
-		class30_sub2_sub3.anInt1419 = j;
-		class30_sub2_sub3.anInt1421 = i;
-		class30_sub2_sub3.aBoolean1422 = false;
-		synchronized (aClass19_1344) {
-			aClass19_1344.method249(class30_sub2_sub3);
+		OnDemandRequest request = new OnDemandRequest();
+		request.anInt1419 = j;
+		request.anInt1421 = i;
+		request.aBoolean1422 = false;
+		synchronized (aList_1344) {
+			aList_1344.method249(request);
 		}
 	}
 
-	public Class30_Sub2_Sub3 method561() {
-		Class30_Sub2_Sub3 class30_sub2_sub3;
-		synchronized (aClass19_1358) {
-			class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1358.method251();
+	public OnDemandRequest method561() {
+		OnDemandRequest request;
+		synchronized (aList_1358) {
+			request = (OnDemandRequest) aList_1358.method251();
 		}
-		if (class30_sub2_sub3 == null) {
+		if (request == null) {
 			return null;
 		}
-		synchronized (aClass2_1361) {
-			class30_sub2_sub3.method330();
+		synchronized (aLinkedList_1361) {
+			request.method330();
 		}
-		if (class30_sub2_sub3.aByteArray1420 == null) {
-			return class30_sub2_sub3;
+		if (request.aByteArray1420 == null) {
+			return request;
 		}
 		int i = 0;
 		try {
-			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(class30_sub2_sub3.aByteArray1420));
+			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(request.aByteArray1420));
 			do {
 				if (i == aByteArray1359.length) {
 					throw new RuntimeException("buffer overflow!");
@@ -462,11 +462,11 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		} catch (IOException _ex) {
 			throw new RuntimeException("error unzipping");
 		}
-		class30_sub2_sub3.aByteArray1420 = new byte[i];
+		request.aByteArray1420 = new byte[i];
 		for (int j = 0; j < i; j++) {
-			class30_sub2_sub3.aByteArray1420[j] = aByteArray1359[j];
+			request.aByteArray1420[j] = aByteArray1359[j];
 		}
-		return class30_sub2_sub3;
+		return request;
 	}
 
 	public int method562(int i, int k, int l) {
@@ -489,13 +489,13 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	}
 
 	public void method563(byte byte0, int i, int j) {
-		if (aClient1343.aClass14Array970[0] == null) {
+		if (aGame1343.aFileStoreArray970[0] == null) {
 			return;
 		}
 		if (anIntArrayArray1364[i][j] == 0) {
 			return;
 		}
-		byte[] abyte0 = aClient1343.aClass14Array970[i + 1].method233(j);
+		byte[] abyte0 = aGame1343.aFileStoreArray970[i + 1].method233(j);
 		if (method549(anIntArrayArray1364[i][j], anIntArrayArray1365[i][j], abyte0)) {
 			return;
 		}
@@ -518,59 +518,59 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public void method565() {
 		anInt1366 = 0;
 		anInt1367 = 0;
-		for (Class30_Sub2_Sub3 class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method252(); class30_sub2_sub3 != null; class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1331.method254()) {
-			if (class30_sub2_sub3.aBoolean1422) {
+		for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+			if (request.aBoolean1422) {
 				anInt1366++;
 			} else {
 				anInt1367++;
 			}
 		}
 		while (anInt1366 < 10) {
-			Class30_Sub2_Sub3 class30_sub2_sub3_1 = (Class30_Sub2_Sub3) aClass19_1368.method251();
-			if (class30_sub2_sub3_1 == null) {
+			OnDemandRequest request_1 = (OnDemandRequest) aList_1368.method251();
+			if (request_1 == null) {
 				break;
 			}
-			if (aByteArrayArray1342[class30_sub2_sub3_1.anInt1419][class30_sub2_sub3_1.anInt1421] != 0) {
+			if (aByteArrayArray1342[request_1.anInt1419][request_1.anInt1421] != 0) {
 				anInt1351++;
 			}
-			aByteArrayArray1342[class30_sub2_sub3_1.anInt1419][class30_sub2_sub3_1.anInt1421] = 0;
-			aClass19_1331.method249(class30_sub2_sub3_1);
+			aByteArrayArray1342[request_1.anInt1419][request_1.anInt1421] = 0;
+			aList_1331.method249(request_1);
 			anInt1366++;
-			method556(class30_sub2_sub3_1);
+			method556(request_1);
 			aBoolean1357 = true;
 		}
 	}
 
 	public void method566() {
-		synchronized (aClass19_1344) {
-			aClass19_1344.method256();
+		synchronized (aList_1344) {
+			aList_1344.method256();
 		}
 	}
 
 	public void method567() {
-		Class30_Sub2_Sub3 class30_sub2_sub3;
-		synchronized (aClass19_1370) {
-			class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1370.method251();
+		OnDemandRequest request;
+		synchronized (aList_1370) {
+			request = (OnDemandRequest) aList_1370.method251();
 		}
-		while (class30_sub2_sub3 != null) {
+		while (request != null) {
 			aBoolean1357 = true;
 			byte[] abyte0 = null;
-			if (aClient1343.aClass14Array970[0] != null) {
-				abyte0 = aClient1343.aClass14Array970[class30_sub2_sub3.anInt1419 + 1].method233(class30_sub2_sub3.anInt1421);
+			if (aGame1343.aFileStoreArray970[0] != null) {
+				abyte0 = aGame1343.aFileStoreArray970[request.anInt1419 + 1].method233(request.anInt1421);
 			}
-			if (!method549(anIntArrayArray1364[class30_sub2_sub3.anInt1419][class30_sub2_sub3.anInt1421], anIntArrayArray1365[class30_sub2_sub3.anInt1419][class30_sub2_sub3.anInt1421], abyte0)) {
+			if (!method549(anIntArrayArray1364[request.anInt1419][request.anInt1421], anIntArrayArray1365[request.anInt1419][request.anInt1421], abyte0)) {
 				abyte0 = null;
 			}
-			synchronized (aClass19_1370) {
+			synchronized (aList_1370) {
 				if (abyte0 == null) {
-					aClass19_1368.method249(class30_sub2_sub3);
+					aList_1368.method249(request);
 				} else {
-					class30_sub2_sub3.aByteArray1420 = abyte0;
-					synchronized (aClass19_1358) {
-						aClass19_1358.method249(class30_sub2_sub3);
+					request.aByteArray1420 = abyte0;
+					synchronized (aList_1358) {
+						aList_1358.method249(request);
 					}
 				}
-				class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1370.method251();
+				request = (OnDemandRequest) aList_1370.method251();
 			}
 		}
 	}
@@ -580,15 +580,15 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			if (anInt1332 == 0) {
 				break;
 			}
-			Class30_Sub2_Sub3 class30_sub2_sub3;
-			synchronized (aClass19_1344) {
-				class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1344.method251();
+			OnDemandRequest request;
+			synchronized (aList_1344) {
+				request = (OnDemandRequest) aList_1344.method251();
 			}
-			while (class30_sub2_sub3 != null) {
-				if (aByteArrayArray1342[class30_sub2_sub3.anInt1419][class30_sub2_sub3.anInt1421] != 0) {
-					aByteArrayArray1342[class30_sub2_sub3.anInt1419][class30_sub2_sub3.anInt1421] = 0;
-					aClass19_1331.method249(class30_sub2_sub3);
-					method556(class30_sub2_sub3);
+			while (request != null) {
+				if (aByteArrayArray1342[request.anInt1419][request.anInt1421] != 0) {
+					aByteArrayArray1342[request.anInt1419][request.anInt1421] = 0;
+					aList_1331.method249(request);
+					method556(request);
 					aBoolean1357 = true;
 					if (anInt1351 < anInt1330) {
 						anInt1351++;
@@ -599,8 +599,8 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 						return;
 					}
 				}
-				synchronized (aClass19_1344) {
-					class30_sub2_sub3 = (Class30_Sub2_Sub3) aClass19_1344.method251();
+				synchronized (aList_1344) {
+					request = (OnDemandRequest) aList_1344.method251();
 				}
 			}
 			for (int j = 0; j < 4; j++) {
@@ -609,12 +609,12 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				for (int l = 0; l < k; l++) {
 					if (abyte0[l] == anInt1332) {
 						abyte0[l] = 0;
-						Class30_Sub2_Sub3 class30_sub2_sub3_1 = new Class30_Sub2_Sub3();
-						class30_sub2_sub3_1.anInt1419 = j;
-						class30_sub2_sub3_1.anInt1421 = l;
-						class30_sub2_sub3_1.aBoolean1422 = false;
-						aClass19_1331.method249(class30_sub2_sub3_1);
-						method556(class30_sub2_sub3_1);
+						OnDemandRequest request_1 = new OnDemandRequest();
+						request_1.anInt1419 = j;
+						request_1.anInt1421 = l;
+						request_1.aBoolean1422 = false;
+						aList_1331.method249(request_1);
+						method556(request_1);
 						aBoolean1357 = true;
 						if (anInt1351 < anInt1330) {
 							anInt1351++;

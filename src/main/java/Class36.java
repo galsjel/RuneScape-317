@@ -7,7 +7,7 @@ public class Class36 {
 	public static Class36[] aClass36Array635;
 	public static boolean[] aBooleanArray643;
 	public int anInt636;
-	public Class18 aClass18_637;
+	public SeqSkeleton aSkeleton_637;
 	public int anInt638;
 	public int[] anIntArray639;
 	public int[] anIntArray640;
@@ -26,47 +26,47 @@ public class Class36 {
 	}
 
 	public static void method529(byte[] abyte0) {
-		Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(abyte0);
-		class30_sub2_sub2.anInt1406 = abyte0.length - 8;
-		int i = class30_sub2_sub2.method410();
-		int j = class30_sub2_sub2.method410();
-		int k = class30_sub2_sub2.method410();
-		int l = class30_sub2_sub2.method410();
+		Buffer buffer = new Buffer(abyte0);
+		buffer.anInt1406 = abyte0.length - 8;
+		int i = buffer.method410();
+		int j = buffer.method410();
+		int k = buffer.method410();
+		int l = buffer.method410();
 		int i1 = 0;
-		Class30_Sub2_Sub2 class30_sub2_sub2_1 = new Class30_Sub2_Sub2(abyte0);
-		class30_sub2_sub2_1.anInt1406 = i1;
+		Buffer buffer_1 = new Buffer(abyte0);
+		buffer_1.anInt1406 = i1;
 		i1 += i + 2;
-		Class30_Sub2_Sub2 class30_sub2_sub2_2 = new Class30_Sub2_Sub2(abyte0);
+		Buffer class30_sub2_sub2_2 = new Buffer(abyte0);
 		class30_sub2_sub2_2.anInt1406 = i1;
 		i1 += j;
-		Class30_Sub2_Sub2 class30_sub2_sub2_3 = new Class30_Sub2_Sub2(abyte0);
-		class30_sub2_sub2_3.anInt1406 = i1;
+		Buffer buffer_3 = new Buffer(abyte0);
+		buffer_3.anInt1406 = i1;
 		i1 += k;
-		Class30_Sub2_Sub2 class30_sub2_sub2_4 = new Class30_Sub2_Sub2(abyte0);
-		class30_sub2_sub2_4.anInt1406 = i1;
+		Buffer buffer_4 = new Buffer(abyte0);
+		buffer_4.anInt1406 = i1;
 		i1 += l;
-		Class30_Sub2_Sub2 class30_sub2_sub2_5 = new Class30_Sub2_Sub2(abyte0);
-		class30_sub2_sub2_5.anInt1406 = i1;
-		Class18 class18 = new Class18(class30_sub2_sub2_5);
-		int k1 = class30_sub2_sub2_1.method410();
+		Buffer buffer_5 = new Buffer(abyte0);
+		buffer_5.anInt1406 = i1;
+		SeqSkeleton skeleton = new SeqSkeleton(buffer_5);
+		int k1 = buffer_1.method410();
 		int[] ai = new int[500];
 		int[] ai1 = new int[500];
 		int[] ai2 = new int[500];
 		int[] ai3 = new int[500];
 		for (int l1 = 0; l1 < k1; l1++) {
-			int i2 = class30_sub2_sub2_1.method410();
+			int i2 = buffer_1.method410();
 			Class36 class36 = aClass36Array635[i2] = new Class36();
-			class36.anInt636 = class30_sub2_sub2_4.method408();
-			class36.aClass18_637 = class18;
-			int j2 = class30_sub2_sub2_1.method408();
+			class36.anInt636 = buffer_4.method408();
+			class36.aSkeleton_637 = skeleton;
+			int j2 = buffer_1.method408();
 			int k2 = -1;
 			int l2 = 0;
 			for (int i3 = 0; i3 < j2; i3++) {
 				int j3 = class30_sub2_sub2_2.method408();
 				if (j3 > 0) {
-					if (class18.anIntArray342[i3] != 0) {
+					if (skeleton.anIntArray342[i3] != 0) {
 						for (int l3 = i3 - 1; l3 > k2; l3--) {
-							if (class18.anIntArray342[l3] != 0) {
+							if (skeleton.anIntArray342[l3] != 0) {
 								continue;
 							}
 							ai[l2] = l3;
@@ -79,27 +79,27 @@ public class Class36 {
 					}
 					ai[l2] = i3;
 					char c = '\0';
-					if (class18.anIntArray342[i3] == 3) {
+					if (skeleton.anIntArray342[i3] == 3) {
 						c = '\200';
 					}
 					if ((j3 & 1) != 0) {
-						ai1[l2] = class30_sub2_sub2_3.method421();
+						ai1[l2] = buffer_3.method421();
 					} else {
 						ai1[l2] = c;
 					}
 					if ((j3 & 2) != 0) {
-						ai2[l2] = class30_sub2_sub2_3.method421();
+						ai2[l2] = buffer_3.method421();
 					} else {
 						ai2[l2] = c;
 					}
 					if ((j3 & 4) != 0) {
-						ai3[l2] = class30_sub2_sub2_3.method421();
+						ai3[l2] = buffer_3.method421();
 					} else {
 						ai3[l2] = c;
 					}
 					k2 = i3;
 					l2++;
-					if (class18.anIntArray342[i3] == 5) {
+					if (skeleton.anIntArray342[i3] == 5) {
 						aBooleanArray643[i2] = false;
 					}
 				}

@@ -7,7 +7,7 @@ public class Class49 {
 	public int anInt811;
 	public int anInt812;
 	public int anInt813;
-	public Class30_Sub2_Sub4 aClass30_Sub2_Sub4_814;
+	public Entity aEntity_814;
 	public int anInt815;
 	public byte aByte816;
 

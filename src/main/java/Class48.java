@@ -5,22 +5,22 @@
 public class Class48 implements Runnable {
 
 	public final Object lock = new Object();
-	public final client aClient805;
+	public final Game aGame805;
 	public final int[] anIntArray807 = new int[500];
 	public boolean aBoolean808 = true;
 	public final int[] anIntArray809 = new int[500];
 	public int anInt810;
 
-	public Class48(client client1) {
-		aClient805 = client1;
+	public Class48(Game game1) {
+		aGame805 = game1;
 	}
 
 	public void run() {
 		while (aBoolean808) {
 			synchronized (lock) {
 				if (anInt810 < 500) {
-					anIntArray809[anInt810] = aClient805.anInt20;
-					anIntArray807[anInt810] = aClient805.anInt21;
+					anIntArray809[anInt810] = aGame805.anInt20;
+					anIntArray807[anInt810] = aGame805.anInt21;
 					anInt810++;
 				}
 			}

@@ -25,9 +25,9 @@ public class Class41 {
 	}
 
 	public static void method546(Class44 class44) {
-		Class30_Sub2_Sub2 class30_sub2_sub2 = new Class30_Sub2_Sub2(class44.method571("varp.dat", null));
+		Buffer buffer = new Buffer(class44.method571("varp.dat", null));
 		anInt702 = 0;
-		anInt700 = class30_sub2_sub2.method410();
+		anInt700 = buffer.method410();
 		if (aClass41Array701 == null) {
 			aClass41Array701 = new Class41[anInt700];
 		}
@@ -38,43 +38,43 @@ public class Class41 {
 			if (aClass41Array701[j] == null) {
 				aClass41Array701[j] = new Class41();
 			}
-			aClass41Array701[j].method547(class30_sub2_sub2, j);
+			aClass41Array701[j].method547(buffer, j);
 		}
-		if (class30_sub2_sub2.anInt1406 != class30_sub2_sub2.aByteArray1405.length) {
+		if (buffer.anInt1406 != buffer.aByteArray1405.length) {
 			System.out.println("varptype load mismatch");
 		}
 	}
 
-	public void method547(Class30_Sub2_Sub2 class30_sub2_sub2, int i) {
+	public void method547(Buffer buffer, int i) {
 		do {
-			int j = class30_sub2_sub2.method408();
+			int j = buffer.method408();
 			if (j == 0) {
 				return;
 			}
 			if (j == 1) {
-				unusedInt0 = class30_sub2_sub2.method408();
+				unusedInt0 = buffer.method408();
 			} else if (j == 2) {
-				unusedInt1 = class30_sub2_sub2.method408();
+				unusedInt1 = buffer.method408();
 			} else if (j == 3) {
 				unusedBool0 = true;
 				anIntArray703[anInt702++] = i;
 			} else if (j == 4) {
 				unusedBool1 = false;
 			} else if (j == 5) {
-				anInt709 = class30_sub2_sub2.method410();
+				anInt709 = buffer.method410();
 			} else if (j == 6) {
 				unusedBool2 = true;
 			} else if (j == 7) {
-				unusedInt2 = class30_sub2_sub2.method413();
+				unusedInt2 = buffer.method413();
 			} else if (j == 8) {
 				unusedInt3 = 1;
 				unusedBool3 = true;
 			} else if (j == 10) {
-				unusedString = class30_sub2_sub2.method415();
+				unusedString = buffer.method415();
 			} else if (j == 11) {
 				unusedBool3 = true;
 			} else if (j == 12) {
-				unusedInt4 = class30_sub2_sub2.method413();
+				unusedInt4 = buffer.method413();
 			} else if (j == 13) {
 				unusedInt3 = 2;
 			} else {

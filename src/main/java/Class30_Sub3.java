@@ -10,12 +10,12 @@ public class Class30_Sub3 extends Class30 {
 	public final int anInt1310;
 	public Class43 aClass43_1311;
 	public Class40 aClass40_1312;
-	public Class10 aClass10_1313;
-	public Class26 aClass26_1314;
+	public SceneWall aWall_1313;
+	public SceneWallDecoration aWallDecoration_1314;
 	public Class49 aClass49_1315;
-	public Class3 aClass3_1316;
+	public SceneObjStack aObjStack_1316;
 	public int anInt1317;
-	public final Class28[] aClass28Array1318 = new Class28[5];
+	public final SceneLoc[] aLocArray1318 = new SceneLoc[5];
 	public final int[] anIntArray1319 = new int[5];
 	public int anInt1320;
 	public int anInt1321;

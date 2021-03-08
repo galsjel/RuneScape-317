@@ -209,6 +209,7 @@ public class signlink implements Runnable {
 	public void run() {
 		active = true;
 		String s = findcachedir();
+		System.out.println(s);
 		uid = getuid(s);
 		try {
 			File file = new File(s + "main_file_cache.dat");

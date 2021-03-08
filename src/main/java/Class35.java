@@ -5,14 +5,14 @@
 public class Class35 {
 
 	public static final char[] aCharArray631 = new char[100];
-	public static final Class30_Sub2_Sub2 aClass30_Sub2_Sub2_632 = new Class30_Sub2_Sub2(new byte[100]);
+	public static final Buffer A_BUFFER___632 = new Buffer(new byte[100]);
 	public static final char[] aCharArray633 = {' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']'};
 
-	public static String method525(int i, Class30_Sub2_Sub2 class30_sub2_sub2) {
+	public static String method525(int i, Buffer buffer) {
 		int j = 0;
 		int k = -1;
 		for (int l = 0; l < i; l++) {
-			int i1 = class30_sub2_sub2.method408();
+			int i1 = buffer.method408();
 			int j1 = i1 >> 4 & 0xf;
 			if (k == -1) {
 				if (j1 < 13) {
@@ -50,7 +50,7 @@ public class Class35 {
 		return new String(aCharArray631, 0, j);
 	}
 
-	public static void method526(String s, Class30_Sub2_Sub2 class30_sub2_sub2) {
+	public static void method526(String s, Buffer buffer) {
 		if (s.length() > 80) {
 			s = s.substring(0, 80);
 		}
@@ -73,27 +73,27 @@ public class Class35 {
 				if (k < 13) {
 					i = k;
 				} else {
-					class30_sub2_sub2.method398(k);
+					buffer.method398(k);
 				}
 			} else if (k < 13) {
-				class30_sub2_sub2.method398((i << 4) + k);
+				buffer.method398((i << 4) + k);
 				i = -1;
 			} else {
-				class30_sub2_sub2.method398((i << 4) + (k >> 4));
+				buffer.method398((i << 4) + (k >> 4));
 				i = k & 0xf;
 			}
 		}
 		if (i != -1) {
-			class30_sub2_sub2.method398(i << 4);
+			buffer.method398(i << 4);
 		}
 	}
 
 	public static String method527(String s) {
-		aClass30_Sub2_Sub2_632.anInt1406 = 0;
-		method526(s, aClass30_Sub2_Sub2_632);
-		int j = aClass30_Sub2_Sub2_632.anInt1406;
-		aClass30_Sub2_Sub2_632.anInt1406 = 0;
-		return method525(j, aClass30_Sub2_Sub2_632);
+		A_BUFFER___632.anInt1406 = 0;
+		method526(s, A_BUFFER___632);
+		int j = A_BUFFER___632.anInt1406;
+		A_BUFFER___632.anInt1406 = 0;
+		return method525(j, A_BUFFER___632);
 	}
 
 }
