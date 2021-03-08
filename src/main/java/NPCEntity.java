@@ -1,0 +1,68 @@
+// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+
+public class NPCEntity extends PathingEntity {
+
+	public NPCType aType_1696;
+
+	public NPCEntity() {
+	}
+
+	public Model method450() {
+		if (super.anInt1526 >= 0 && super.anInt1529 == 0) {
+			int k = SeqType.aTypeArray351[super.anInt1526].anIntArray353[super.anInt1527];
+			int i1 = -1;
+			if (super.anInt1517 >= 0 && super.anInt1517 != super.anInt1511) {
+				i1 = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+			}
+			return aType_1696.method164(i1, k, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
+		}
+		int l = -1;
+		if (super.anInt1517 >= 0) {
+			l = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+		}
+		return aType_1696.method164(-1, l, null);
+	}
+
+	@Override
+	public Model method444() {
+		if (aType_1696 == null) {
+			return null;
+		}
+		Model model = method450();
+		if (model == null) {
+			return null;
+		}
+		super.anInt1507 = model.anInt1426;
+		if (super.anInt1520 != -1 && super.anInt1521 != -1) {
+			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
+			Model model_1 = type.method266();
+			if (model_1 != null) {
+				int j = type.aType_407.anIntArray353[super.anInt1521];
+				Model class30_sub2_sub4_sub6_2 = new Model(true, SeqTransform.method532(j), false, model_1);
+				class30_sub2_sub4_sub6_2.method475(0, -super.anInt1524, 0);
+				class30_sub2_sub4_sub6_2.method469();
+				class30_sub2_sub4_sub6_2.method470(j);
+				class30_sub2_sub4_sub6_2.anIntArrayArray1658 = null;
+				class30_sub2_sub4_sub6_2.anIntArrayArray1657 = null;
+				if (type.anInt410 != 128 || type.anInt411 != 128) {
+					class30_sub2_sub4_sub6_2.method478(type.anInt410, type.anInt410, type.anInt411);
+				}
+				class30_sub2_sub4_sub6_2.method479(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
+				Model[] aclass30_sub2_sub4_sub6 = {model, class30_sub2_sub4_sub6_2};
+				model = new Model(2, -819, aclass30_sub2_sub4_sub6);
+			}
+		}
+		if (aType_1696.aByte68 == 1) {
+			model.aBoolean1659 = true;
+		}
+		return model;
+	}
+
+	@Override
+	public boolean method449() {
+		return aType_1696 != null;
+	}
+
+}
