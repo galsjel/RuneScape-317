@@ -42,9 +42,9 @@ public class Image24 extends Draw2D {
 		}
 	}
 
-	public Image24(Class44 class44, String s, int i) {
-		Buffer buffer = new Buffer(class44.method571(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(class44.method571("index.dat", null));
+	public Image24(FileArchive archive, String s, int i) {
+		Buffer buffer = new Buffer(archive.method571(s + ".dat", null));
+		Buffer buffer_1 = new Buffer(archive.method571("index.dat", null));
 		buffer_1.anInt1406 = buffer.method410();
 		anInt1444 = buffer_1.method410();
 		anInt1445 = buffer_1.method410();

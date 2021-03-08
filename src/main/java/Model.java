@@ -11,7 +11,7 @@ public class Model extends Entity {
 	public static int[] anIntArray1624 = new int[2000];
 	public static int[] anIntArray1625 = new int[2000];
 	public static ModelHeader[] aHeaderArray1661;
-	public static Class42 aClass42_1662;
+	public static OnDemand aClass42_1662;
 	public static boolean[] aBooleanArray1663 = new boolean[4096];
 	public static boolean[] aBooleanArray1664 = new boolean[4096];
 	public static int[] anIntArray1665 = new int[4096];
@@ -77,7 +77,7 @@ public class Model extends Entity {
 	public int[][] anIntArrayArray1657;
 	public int[][] anIntArrayArray1658;
 	public boolean aBoolean1659 = false;
-	public Class33[] aClass33Array1660;
+	public VertexNormal[] aNormalArray1660;
 
 	public Model() {
 	}
@@ -537,16 +537,16 @@ public class Model extends Entity {
 					anIntArray1637[i1] = model.anIntArray1637[i1];
 				}
 			}
-			super.aClass33Array1425 = new Class33[anInt1626];
+			super.aNormalArray1425 = new VertexNormal[anInt1626];
 			for (int j1 = 0; j1 < anInt1626; j1++) {
-				Class33 class33 = super.aClass33Array1425[j1] = new Class33();
-				Class33 class33_1 = model.aClass33Array1425[j1];
-				class33.anInt602 = class33_1.anInt602;
-				class33.anInt603 = class33_1.anInt603;
-				class33.anInt604 = class33_1.anInt604;
-				class33.anInt605 = class33_1.anInt605;
+				VertexNormal normal = super.aNormalArray1425[j1] = new VertexNormal();
+				VertexNormal normal_1 = model.aNormalArray1425[j1];
+				normal.anInt602 = normal_1.anInt602;
+				normal.anInt603 = normal_1.anInt603;
+				normal.anInt604 = normal_1.anInt604;
+				normal.anInt605 = normal_1.anInt605;
 			}
-			aClass33Array1660 = model.aClass33Array1660;
+			aNormalArray1660 = model.aNormalArray1660;
 		} else {
 			anIntArray1634 = model.anIntArray1634;
 			anIntArray1635 = model.anIntArray1635;
@@ -599,7 +599,7 @@ public class Model extends Entity {
 		anIntArray1692 = null;
 	}
 
-	public static void method459(int i, Class42 class42) {
+	public static void method459(int i, OnDemand class42) {
 		aHeaderArray1661 = new ModelHeader[i];
 		aClass42_1662 = class42;
 	}
@@ -933,17 +933,17 @@ public class Model extends Entity {
 		if (i == -1) {
 			return;
 		}
-		Class36 class36 = Class36.method531(i);
-		if (class36 == null) {
+		SeqTransform transform = SeqTransform.method531(i);
+		if (transform == null) {
 			return;
 		}
-		SeqSkeleton skeleton = class36.aSkeleton_637;
+		SeqSkeleton skeleton = transform.aSkeleton_637;
 		anInt1681 = 0;
 		anInt1682 = 0;
 		anInt1683 = 0;
-		for (int k = 0; k < class36.anInt638; k++) {
-			int l = class36.anIntArray639[k];
-			method472(skeleton.anIntArray342[l], skeleton.anIntArrayArray343[l], class36.anIntArray640[k], class36.anIntArray641[k], class36.anIntArray642[k]);
+		for (int k = 0; k < transform.anInt638; k++) {
+			int l = transform.anIntArray639[k];
+			method472(skeleton.anIntArray342[l], skeleton.anIntArrayArray343[l], transform.anIntArray640[k], transform.anIntArray641[k], transform.anIntArray642[k]);
 		}
 	}
 
@@ -955,27 +955,27 @@ public class Model extends Entity {
 			method470(k);
 			return;
 		}
-		Class36 class36 = Class36.method531(k);
-		if (class36 == null) {
+		SeqTransform transform = SeqTransform.method531(k);
+		if (transform == null) {
 			return;
 		}
-		Class36 class36_1 = Class36.method531(j);
-		if (class36_1 == null) {
+		SeqTransform transform_1 = SeqTransform.method531(j);
+		if (transform_1 == null) {
 			method470(k);
 			return;
 		}
-		SeqSkeleton skeleton = class36.aSkeleton_637;
+		SeqSkeleton skeleton = transform.aSkeleton_637;
 		anInt1681 = 0;
 		anInt1682 = 0;
 		anInt1683 = 0;
 		int l = 0;
 		int i1 = ai[l++];
-		for (int j1 = 0; j1 < class36.anInt638; j1++) {
+		for (int j1 = 0; j1 < transform.anInt638; j1++) {
 			int k1;
-			for (k1 = class36.anIntArray639[j1]; k1 > i1; i1 = ai[l++]) {
+			for (k1 = transform.anIntArray639[j1]; k1 > i1; i1 = ai[l++]) {
 			}
 			if (k1 != i1 || skeleton.anIntArray342[k1] == 0) {
-				method472(skeleton.anIntArray342[k1], skeleton.anIntArrayArray343[k1], class36.anIntArray640[j1], class36.anIntArray641[j1], class36.anIntArray642[j1]);
+				method472(skeleton.anIntArray342[k1], skeleton.anIntArrayArray343[k1], transform.anIntArray640[j1], transform.anIntArray641[j1], transform.anIntArray642[j1]);
 			}
 		}
 		anInt1681 = 0;
@@ -983,12 +983,12 @@ public class Model extends Entity {
 		anInt1683 = 0;
 		l = 0;
 		i1 = ai[l++];
-		for (int l1 = 0; l1 < class36_1.anInt638; l1++) {
+		for (int l1 = 0; l1 < transform_1.anInt638; l1++) {
 			int i2;
-			for (i2 = class36_1.anIntArray639[l1]; i2 > i1; i1 = ai[l++]) {
+			for (i2 = transform_1.anIntArray639[l1]; i2 > i1; i1 = ai[l++]) {
 			}
 			if (i2 == i1 || skeleton.anIntArray342[i2] == 0) {
-				method472(skeleton.anIntArray342[i2], skeleton.anIntArrayArray343[i2], class36_1.anIntArray640[l1], class36_1.anIntArray641[l1], class36_1.anIntArray642[l1]);
+				method472(skeleton.anIntArray342[i2], skeleton.anIntArrayArray343[i2], transform_1.anIntArray640[l1], transform_1.anIntArray641[l1], transform_1.anIntArray642[l1]);
 			}
 		}
 	}
@@ -1172,10 +1172,10 @@ public class Model extends Entity {
 			anIntArray1635 = new int[anInt1630];
 			anIntArray1636 = new int[anInt1630];
 		}
-		if (super.aClass33Array1425 == null) {
-			super.aClass33Array1425 = new Class33[anInt1626];
+		if (super.aNormalArray1425 == null) {
+			super.aNormalArray1425 = new VertexNormal[anInt1626];
 			for (int l1 = 0; l1 < anInt1626; l1++) {
-				super.aClass33Array1425[l1] = new Class33();
+				super.aNormalArray1425[l1] = new VertexNormal();
 			}
 		}
 		for (int i2 = 0; i2 < anInt1630; i2++) {
@@ -1203,21 +1203,21 @@ public class Model extends Entity {
 			i5 = (i5 * 256) / k5;
 			j5 = (j5 * 256) / k5;
 			if (anIntArray1637 == null || (anIntArray1637[i2] & 1) == 0) {
-				Class33 class33_2 = super.aClass33Array1425[j2];
-				class33_2.anInt602 += l4;
-				class33_2.anInt603 += i5;
-				class33_2.anInt604 += j5;
-				class33_2.anInt605++;
-				class33_2 = super.aClass33Array1425[l2];
-				class33_2.anInt602 += l4;
-				class33_2.anInt603 += i5;
-				class33_2.anInt604 += j5;
-				class33_2.anInt605++;
-				class33_2 = super.aClass33Array1425[i3];
-				class33_2.anInt602 += l4;
-				class33_2.anInt603 += i5;
-				class33_2.anInt604 += j5;
-				class33_2.anInt605++;
+				VertexNormal normal_2 = super.aNormalArray1425[j2];
+				normal_2.anInt602 += l4;
+				normal_2.anInt603 += i5;
+				normal_2.anInt604 += j5;
+				normal_2.anInt605++;
+				normal_2 = super.aNormalArray1425[l2];
+				normal_2.anInt602 += l4;
+				normal_2.anInt603 += i5;
+				normal_2.anInt604 += j5;
+				normal_2.anInt605++;
+				normal_2 = super.aNormalArray1425[i3];
+				normal_2.anInt602 += l4;
+				normal_2.anInt603 += i5;
+				normal_2.anInt604 += j5;
+				normal_2.anInt605++;
 			} else {
 				int l5 = i + (k * l4 + l * i5 + i1 * j5) / (k1 + k1 / 2);
 				anIntArray1634[i2] = method481(anIntArray1640[i2], l5, anIntArray1637[i2]);
@@ -1226,14 +1226,14 @@ public class Model extends Entity {
 		if (flag) {
 			method480(i, k1, k, l, i1);
 		} else {
-			aClass33Array1660 = new Class33[anInt1626];
+			aNormalArray1660 = new VertexNormal[anInt1626];
 			for (int k2 = 0; k2 < anInt1626; k2++) {
-				Class33 class33 = super.aClass33Array1425[k2];
-				Class33 class33_1 = aClass33Array1660[k2] = new Class33();
-				class33_1.anInt602 = class33.anInt602;
-				class33_1.anInt603 = class33.anInt603;
-				class33_1.anInt604 = class33.anInt604;
-				class33_1.anInt605 = class33.anInt605;
+				VertexNormal normal = super.aNormalArray1425[k2];
+				VertexNormal normal_1 = aNormalArray1660[k2] = new VertexNormal();
+				normal_1.anInt602 = normal.anInt602;
+				normal_1.anInt603 = normal.anInt603;
+				normal_1.anInt604 = normal.anInt604;
+				normal_1.anInt605 = normal.anInt605;
 			}
 		}
 		if (flag) {
@@ -1250,31 +1250,31 @@ public class Model extends Entity {
 			int j2 = anIntArray1633[j1];
 			if (anIntArray1637 == null) {
 				int i3 = anIntArray1640[j1];
-				Class33 class33 = super.aClass33Array1425[k1];
-				int k2 = i + (k * class33.anInt602 + l * class33.anInt603 + i1 * class33.anInt604) / (j * class33.anInt605);
+				VertexNormal normal = super.aNormalArray1425[k1];
+				int k2 = i + (k * normal.anInt602 + l * normal.anInt603 + i1 * normal.anInt604) / (j * normal.anInt605);
 				anIntArray1634[j1] = method481(i3, k2, 0);
-				class33 = super.aClass33Array1425[i2];
-				k2 = i + (k * class33.anInt602 + l * class33.anInt603 + i1 * class33.anInt604) / (j * class33.anInt605);
+				normal = super.aNormalArray1425[i2];
+				k2 = i + (k * normal.anInt602 + l * normal.anInt603 + i1 * normal.anInt604) / (j * normal.anInt605);
 				anIntArray1635[j1] = method481(i3, k2, 0);
-				class33 = super.aClass33Array1425[j2];
-				k2 = i + (k * class33.anInt602 + l * class33.anInt603 + i1 * class33.anInt604) / (j * class33.anInt605);
+				normal = super.aNormalArray1425[j2];
+				k2 = i + (k * normal.anInt602 + l * normal.anInt603 + i1 * normal.anInt604) / (j * normal.anInt605);
 				anIntArray1636[j1] = method481(i3, k2, 0);
 			} else if ((anIntArray1637[j1] & 1) == 0) {
 				int j3 = anIntArray1640[j1];
 				int k3 = anIntArray1637[j1];
-				Class33 class33_1 = super.aClass33Array1425[k1];
-				int l2 = i + (k * class33_1.anInt602 + l * class33_1.anInt603 + i1 * class33_1.anInt604) / (j * class33_1.anInt605);
+				VertexNormal normal_1 = super.aNormalArray1425[k1];
+				int l2 = i + (k * normal_1.anInt602 + l * normal_1.anInt603 + i1 * normal_1.anInt604) / (j * normal_1.anInt605);
 				anIntArray1634[j1] = method481(j3, l2, k3);
-				class33_1 = super.aClass33Array1425[i2];
-				l2 = i + (k * class33_1.anInt602 + l * class33_1.anInt603 + i1 * class33_1.anInt604) / (j * class33_1.anInt605);
+				normal_1 = super.aNormalArray1425[i2];
+				l2 = i + (k * normal_1.anInt602 + l * normal_1.anInt603 + i1 * normal_1.anInt604) / (j * normal_1.anInt605);
 				anIntArray1635[j1] = method481(j3, l2, k3);
-				class33_1 = super.aClass33Array1425[j2];
-				l2 = i + (k * class33_1.anInt602 + l * class33_1.anInt603 + i1 * class33_1.anInt604) / (j * class33_1.anInt605);
+				normal_1 = super.aNormalArray1425[j2];
+				l2 = i + (k * normal_1.anInt602 + l * normal_1.anInt603 + i1 * normal_1.anInt604) / (j * normal_1.anInt605);
 				anIntArray1636[j1] = method481(j3, l2, k3);
 			}
 		}
-		super.aClass33Array1425 = null;
-		aClass33Array1660 = null;
+		super.aNormalArray1425 = null;
+		aNormalArray1660 = null;
 		anIntArray1655 = null;
 		anIntArray1656 = null;
 		if (anIntArray1637 != null) {

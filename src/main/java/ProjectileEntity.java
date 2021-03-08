@@ -72,7 +72,7 @@ public class ProjectileEntity extends Entity {
 		if (aType_1592.aType_407 != null) {
 			j = aType_1592.aType_407.anIntArray353[anInt1593];
 		}
-		Model model_1 = new Model(true, Class36.method532(j), false, model);
+		Model model_1 = new Model(true, SeqTransform.method532(j), false, model);
 		if (j != -1) {
 			model_1.method469();
 			model_1.method470(j);

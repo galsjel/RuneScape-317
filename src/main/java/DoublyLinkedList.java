@@ -4,99 +4,63 @@
 
 public class DoublyLinkedList {
 
-	public final Class30 aClass30_346;
-	public Class30 aClass30_347;
+	public final DoublyLinkedListNode aNode_43;
+	public DoublyLinkedListNode aNode_44;
 
 	public DoublyLinkedList() {
-		aClass30_346 = new Class30();
-		aClass30_346.aClass30_549 = aClass30_346;
-		aClass30_346.aClass30_550 = aClass30_346;
+		aNode_43 = new DoublyLinkedListNode();
+		aNode_43.aNode_1303 = aNode_43;
+		aNode_43.aNode_1304 = aNode_43;
 	}
 
-	public void method249(Class30 class30) {
-		if (class30.aClass30_550 != null) {
-			class30.method329();
+	public void method150(DoublyLinkedListNode node) {
+		if (node.aNode_1304 != null) {
+			node.method330();
 		}
-		class30.aClass30_550 = aClass30_346.aClass30_550;
-		class30.aClass30_549 = aClass30_346;
-		class30.aClass30_550.aClass30_549 = class30;
-		class30.aClass30_549.aClass30_550 = class30;
+		node.aNode_1304 = aNode_43.aNode_1304;
+		node.aNode_1303 = aNode_43;
+		node.aNode_1304.aNode_1303 = node;
+		node.aNode_1303.aNode_1304 = node;
 	}
 
-	public void method250(Class30 class30) {
-		if (class30.aClass30_550 != null) {
-			class30.method329();
-		}
-		class30.aClass30_550 = aClass30_346;
-		class30.aClass30_549 = aClass30_346.aClass30_549;
-		class30.aClass30_550.aClass30_549 = class30;
-		class30.aClass30_549.aClass30_550 = class30;
-	}
-
-	public Class30 method251() {
-		Class30 class30 = aClass30_346.aClass30_549;
-		if (class30 == aClass30_346) {
+	public DoublyLinkedListNode method151() {
+		DoublyLinkedListNode node = aNode_43.aNode_1303;
+		if (node == aNode_43) {
 			return null;
 		} else {
-			class30.method329();
-			return class30;
+			node.method330();
+			return node;
 		}
 	}
 
-	public Class30 method252() {
-		Class30 class30 = aClass30_346.aClass30_549;
-		if (class30 == aClass30_346) {
-			aClass30_347 = null;
+	public DoublyLinkedListNode method152() {
+		DoublyLinkedListNode node = aNode_43.aNode_1303;
+		if (node == aNode_43) {
+			aNode_44 = null;
 			return null;
 		} else {
-			aClass30_347 = class30.aClass30_549;
-			return class30;
+			aNode_44 = node.aNode_1303;
+			return node;
 		}
 	}
 
-	public Class30 method253() {
-		Class30 class30 = aClass30_346.aClass30_550;
-		if (class30 == aClass30_346) {
-			aClass30_347 = null;
+	public DoublyLinkedListNode method153() {
+		DoublyLinkedListNode node = aNode_44;
+		if (node == aNode_43) {
+			aNode_44 = null;
 			return null;
 		} else {
-			aClass30_347 = class30.aClass30_550;
-			return class30;
+			aNode_44 = node.aNode_1303;
+			return node;
 		}
 	}
 
-	public Class30 method254() {
-		Class30 class30 = aClass30_347;
-		if (class30 == aClass30_346) {
-			aClass30_347 = null;
-			return null;
-		} else {
-			aClass30_347 = class30.aClass30_549;
-			return class30;
+	public int method154() {
+		int i = 0;
+		for (DoublyLinkedListNode node = aNode_43.aNode_1303; node != aNode_43; node = node.aNode_1303) {
+			i++;
 		}
-	}
-
-	public Class30 method255() {
-		Class30 class30 = aClass30_347;
-		if (class30 == aClass30_346) {
-			aClass30_347 = null;
-			return null;
-		}
-		aClass30_347 = class30.aClass30_550;
-		return class30;
-	}
-
-	public void method256() {
-		if (aClass30_346.aClass30_549 == aClass30_346) {
-			return;
-		}
-		do {
-			Class30 class30 = aClass30_346.aClass30_549;
-			if (class30 == aClass30_346) {
-				return;
-			}
-			class30.method329();
-		} while (true);
+		return i;
 	}
 
 }

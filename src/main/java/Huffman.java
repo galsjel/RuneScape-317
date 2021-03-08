@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class35 {
+public class Huffman {
 
 	public static final char[] aCharArray631 = new char[100];
 	public static final Buffer A_BUFFER___632 = new Buffer(new byte[100]);

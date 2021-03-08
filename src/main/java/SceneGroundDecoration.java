@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class49 {
+public class SceneGroundDecoration {
 
 	public int anInt811;
 	public int anInt812;
@@ -11,7 +11,7 @@ public class Class49 {
 	public int anInt815;
 	public byte aByte816;
 
-	public Class49() {
+	public SceneGroundDecoration() {
 	}
 
 }

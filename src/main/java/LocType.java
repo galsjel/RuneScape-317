@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class46 {
+public class LocType {
 
 	public static final Model[] A_MODEL_ARRAY_741 = new Model[4];
 	public static boolean aBoolean752;
@@ -12,7 +12,7 @@ public class Class46 {
 	public static Game aGame765;
 	public static int anInt771;
 	public static LRUCache aCache_780 = new LRUCache(30);
-	public static Class46[] aClass46Array782;
+	public static LocType[] aTypeArray782;
 	public static LRUCache aCache_785 = new LRUCache(500);
 
 	public boolean aBoolean736;
@@ -53,35 +53,35 @@ public class Class46 {
 	public int[] anIntArray784;
 	public String[] aStringArray786;
 
-	public Class46() {
+	public LocType() {
 	}
 
-	public static Class46 method572(int i) {
+	public static LocType method572(int i) {
 		for (int j = 0; j < 20; j++) {
-			if (aClass46Array782[j].anInt754 == i) {
-				return aClass46Array782[j];
+			if (aTypeArray782[j].anInt754 == i) {
+				return aTypeArray782[j];
 			}
 		}
 		anInt771 = (anInt771 + 1) % 20;
-		Class46 class46 = aClass46Array782[anInt771];
+		LocType type = aTypeArray782[anInt771];
 		aBuffer_753.anInt1406 = anIntArray755[i];
-		class46.anInt754 = i;
-		class46.method573();
-		class46.method582(aBuffer_753);
-		return class46;
+		type.anInt754 = i;
+		type.method573();
+		type.method582(aBuffer_753);
+		return type;
 	}
 
 	public static void method575() {
 		aCache_785 = null;
 		aCache_780 = null;
 		anIntArray755 = null;
-		aClass46Array782 = null;
+		aTypeArray782 = null;
 		aBuffer_753 = null;
 	}
 
-	public static void method576(Class44 class44) {
-		aBuffer_753 = new Buffer(class44.method571("loc.dat", null));
-		Buffer buffer = new Buffer(class44.method571("loc.idx", null));
+	public static void method576(FileArchive archive) {
+		aBuffer_753 = new Buffer(archive.method571("loc.dat", null));
+		Buffer buffer = new Buffer(archive.method571("loc.idx", null));
 		anInt756 = buffer.method410();
 		anIntArray755 = new int[anInt756];
 		int i = 2;
@@ -89,9 +89,9 @@ public class Class46 {
 			anIntArray755[j] = i;
 			i += buffer.method410();
 		}
-		aClass46Array782 = new Class46[20];
+		aTypeArray782 = new LocType[20];
 		for (int k = 0; k < 20; k++) {
-			aClass46Array782[k] = new Class46();
+			aTypeArray782[k] = new LocType();
 		}
 	}
 
@@ -134,12 +134,12 @@ public class Class46 {
 		anIntArray759 = null;
 	}
 
-	public void method574(Class42_Sub1 class42_sub1) {
+	public void method574(OnDemand onDemand) {
 		if (anIntArray773 == null) {
 			return;
 		}
 		for (int k : anIntArray773) {
-			class42_sub1.method560(k & 0xffff, 0);
+			onDemand.method560(k & 0xffff, 0);
 		}
 	}
 
@@ -199,13 +199,13 @@ public class Class46 {
 		return flag1;
 	}
 
-	public Class46 method580() {
+	public LocType method580() {
 		int i = -1;
 		if (anInt774 != -1) {
-			Class37 class37 = Class37.aClass37Array646[anInt774];
-			int j = class37.anInt648;
-			int k = class37.anInt649;
-			int l = class37.anInt650;
+			VarbitType varbit = VarbitType.aVarbitArray646[anInt774];
+			int j = varbit.anInt648;
+			int k = varbit.anInt649;
+			int l = varbit.anInt650;
 			int i1 = Game.anIntArray1232[l - k];
 			i = aGame765.anIntArray971[j] >> k & i1;
 		} else if (anInt749 != -1) {
@@ -296,7 +296,7 @@ public class Class46 {
 		flag = anInt748 != 128 || anInt772 != 128 || anInt740 != 128;
 		boolean flag2;
 		flag2 = anInt738 != 0 || anInt745 != 0 || anInt783 != 0;
-		Model model_3 = new Model(anIntArray784 == null, Class36.method532(k), l == 0 && k == -1 && !flag && !flag2, model);
+		Model model_3 = new Model(anIntArray784 == null, SeqTransform.method532(k), l == 0 && k == -1 && !flag && !flag2, model);
 		if (k != -1) {
 			model_3.method469();
 			model_3.method470(k);

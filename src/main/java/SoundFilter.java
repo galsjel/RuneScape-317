@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class39 {
+public class SoundFilter {
 
 	public static final float[][] aFloatArrayArray669 = new float[2][8];
 	public static final int[][] anIntArrayArray670 = new int[2][8];
@@ -13,7 +13,7 @@ public class Class39 {
 	public final int[][][] anIntArrayArrayArray667 = new int[2][2][4];
 	public final int[] anIntArray668 = new int[2];
 
-	public Class39() {
+	public SoundFilter() {
 	}
 
 	public float method541(int i, int j, float f) {

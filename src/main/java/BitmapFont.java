@@ -16,9 +16,9 @@ public class BitmapFont extends Draw2D {
 	public final Random aRandom1498 = new Random();
 	public boolean aBoolean1499 = false;
 
-	public BitmapFont(boolean flag, String s, Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(class44.method571("index.dat", null));
+	public BitmapFont(boolean flag, String s, FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571(s + ".dat", null));
+		Buffer buffer_1 = new Buffer(archive.method571("index.dat", null));
 		buffer_1.anInt1406 = buffer.method410() + 4;
 		int k = buffer_1.method408();
 		if (k > 0) {

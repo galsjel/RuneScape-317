@@ -72,9 +72,9 @@ public class Component {
 	public Component() {
 	}
 
-	public static void method205(Class44 class44, BitmapFont[] aclass30_sub2_sub1_sub4, Class44 class44_1) {
+	public static void method205(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
 		aCache_238 = new LRUCache(50000);
-		Buffer buffer = new Buffer(class44.method571("data", null));
+		Buffer buffer = new Buffer(archive.method571("data", null));
 		int i = -1;
 		int j = buffer.method410();
 		aComponentArray210 = new Component[j];
@@ -154,9 +154,9 @@ public class Component {
 						component.anIntArray215[j2] = buffer.method411();
 						component.anIntArray247[j2] = buffer.method411();
 						String s1 = buffer.method415();
-						if (class44_1 != null && s1.length() > 0) {
+						if (archive_1 != null && s1.length() > 0) {
 							int i5 = s1.lastIndexOf(",");
-							component.aImageArray209[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), class44_1, s1.substring(0, i5));
+							component.aImageArray209[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), archive_1, s1.substring(0, i5));
 						}
 					}
 				}
@@ -193,14 +193,14 @@ public class Component {
 			}
 			if (component.anInt262 == 5) {
 				String s = buffer.method415();
-				if (class44_1 != null && s.length() > 0) {
+				if (archive_1 != null && s.length() > 0) {
 					int i4 = s.lastIndexOf(",");
-					component.aImage_207 = method207(Integer.parseInt(s.substring(i4 + 1)), class44_1, s.substring(0, i4));
+					component.aImage_207 = method207(Integer.parseInt(s.substring(i4 + 1)), archive_1, s.substring(0, i4));
 				}
 				s = buffer.method415();
-				if (class44_1 != null && s.length() > 0) {
+				if (archive_1 != null && s.length() > 0) {
 					int j4 = s.lastIndexOf(",");
-					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), class44_1, s.substring(0, j4));
+					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), archive_1, s.substring(0, j4));
 				}
 			}
 			if (component.anInt262 == 6) {
@@ -277,14 +277,14 @@ public class Component {
 		aCache_238 = null;
 	}
 
-	public static Image24 method207(int i, Class44 class44, String s) {
-		long l = (Class50.method585(s) << 8) + (long) i;
+	public static Image24 method207(int i, FileArchive archive, String s) {
+		long l = (Base37.method585(s) << 8) + (long) i;
 		Image24 image = (Image24) aCache_238.method222(l);
 		if (image != null) {
 			return image;
 		}
 		try {
-			image = new Image24(class44, s, i);
+			image = new Image24(archive, s, i);
 			aCache_238.method223(image, l);
 		} catch (Exception _ex) {
 			return null;
@@ -347,7 +347,7 @@ public class Component {
 		if (k == -1 && j == -1 && model.anIntArray1640 == null) {
 			return model;
 		}
-		Model model_1 = new Model(true, Class36.method532(k) & Class36.method532(j), false, model);
+		Model model_1 = new Model(true, SeqTransform.method532(k) & SeqTransform.method532(j), false, model);
 		if (k != -1 || j != -1) {
 			model_1.method469();
 		}

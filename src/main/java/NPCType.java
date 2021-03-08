@@ -59,9 +59,9 @@ public class NPCType {
 		return type;
 	}
 
-	public static void method162(Class44 class44) {
-		aBuffer_60 = new Buffer(class44.method571("npc.dat", null));
-		Buffer buffer = new Buffer(class44.method571("npc.idx", null));
+	public static void method162(FileArchive archive) {
+		aBuffer_60 = new Buffer(archive.method571("npc.dat", null));
+		Buffer buffer = new Buffer(archive.method571("npc.idx", null));
 		anInt62 = buffer.method410();
 		anIntArray72 = new int[anInt62];
 		int i = 2;
@@ -124,10 +124,10 @@ public class NPCType {
 	public NPCType method161() {
 		int j = -1;
 		if (anInt57 != -1) {
-			Class37 class37 = Class37.aClass37Array646[anInt57];
-			int k = class37.anInt648;
-			int l = class37.anInt649;
-			int i1 = class37.anInt650;
+			VarbitType varbit = VarbitType.aVarbitArray646[anInt57];
+			int k = varbit.anInt648;
+			int l = varbit.anInt649;
+			int i1 = varbit.anInt650;
 			int j1 = Game.anIntArray1232[i1 - l];
 			j = aGame82.anIntArray971[k] >> l & j1;
 		} else if (anInt59 != -1) {
@@ -179,7 +179,7 @@ public class NPCType {
 			aCache_95.method223(model, aLong78);
 		}
 		Model model_1 = Model.A_MODEL___1621;
-		model_1.method464(model, Class36.method532(k) & Class36.method532(j));
+		model_1.method464(model, SeqTransform.method532(k) & SeqTransform.method532(j));
 		if (k != -1 && j != -1) {
 			model_1.method471(ai, j, k);
 		} else if (k != -1) {

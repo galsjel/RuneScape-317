@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class44 {
+public class FileArchive {
 
 	public byte[] aByteArray726;
 	public int anInt727;
@@ -12,7 +12,7 @@ public class Class44 {
 	public int[] anIntArray731;
 	public boolean aBoolean732;
 
-	public Class44(byte[] abyte0) {
+	public FileArchive(byte[] abyte0) {
 		method570(abyte0);
 	}
 

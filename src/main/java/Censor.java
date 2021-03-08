@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class34 {
+public class Censor {
 
 	public static final String[] aStringArray626 = {"cook", "cook's", "cooks", "seeks", "sheet", "woop", "woops", "faq", "noob", "noobs"};
 	public static int[] anIntArray620;
@@ -12,11 +12,11 @@ public class Class34 {
 	public static char[][] aCharArrayArray624;
 	public static int[] anIntArray625;
 
-	public static void method487(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("fragmentsenc.txt", null));
-		Buffer buffer_1 = new Buffer(class44.method571("badenc.txt", null));
-		Buffer class30_sub2_sub2_2 = new Buffer(class44.method571("domainenc.txt", null));
-		Buffer buffer_3 = new Buffer(class44.method571("tldlist.txt", null));
+	public static void method487(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("fragmentsenc.txt", null));
+		Buffer buffer_1 = new Buffer(archive.method571("badenc.txt", null));
+		Buffer class30_sub2_sub2_2 = new Buffer(archive.method571("domainenc.txt", null));
+		Buffer buffer_3 = new Buffer(archive.method571("tldlist.txt", null));
 		method488(buffer, buffer_1, class30_sub2_sub2_2, buffer_3);
 	}
 

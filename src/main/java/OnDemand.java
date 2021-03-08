@@ -2,8 +2,6 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import sign.signlink;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,10 +10,10 @@ import java.net.Socket;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 
-public class Class42_Sub1 extends Class42 implements Runnable {
+public class OnDemand implements Runnable {
 
 	public int anInt1330;
-	public final DoublyLinkedList aList_1331 = new DoublyLinkedList();
+	public final LinkedList aList_1331 = new LinkedList();
 	public int anInt1332;
 	public String aString1333 = "";
 	public int anInt1334;
@@ -26,7 +24,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public int anInt1341;
 	public final byte[][] aByteArrayArray1342 = new byte[4][];
 	public Game aGame1343;
-	public final DoublyLinkedList aList_1344 = new DoublyLinkedList();
+	public final LinkedList aList_1344 = new LinkedList();
 	public int anInt1346;
 	public int anInt1347;
 	public int[] anIntArray1348;
@@ -37,24 +35,24 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	public OutputStream anOutputStream1354;
 	public int[] anIntArray1356;
 	public boolean aBoolean1357 = false;
-	public final DoublyLinkedList aList_1358 = new DoublyLinkedList();
+	public final LinkedList aList_1358 = new LinkedList();
 	public final byte[] aByteArray1359 = new byte[65000];
 	public int[] anIntArray1360;
-	public final LinkedList aLinkedList_1361 = new LinkedList();
+	public final DoublyLinkedList aDoublyLinkedList_1361 = new DoublyLinkedList();
 	public InputStream anInputStream1362;
 	public Socket aSocket1363;
 	public final int[][] anIntArrayArray1364 = new int[4][];
 	public final int[][] anIntArrayArray1365 = new int[4][];
 	public int anInt1366;
 	public int anInt1367;
-	public final DoublyLinkedList aList_1368 = new DoublyLinkedList();
+	public final LinkedList aList_1368 = new LinkedList();
 	public OnDemandRequest aRequest_1369;
-	public final DoublyLinkedList aList_1370 = new DoublyLinkedList();
+	public final LinkedList aList_1370 = new LinkedList();
 	public int[] anIntArray1371;
 	public byte[] aByteArray1372;
 	public int anInt1373;
 
-	public Class42_Sub1() {
+	public OnDemand() {
 	}
 
 	public boolean method549(int i, int j, byte[] abyte0) {
@@ -95,7 +93,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				if (aRequest_1369 != null) {
 					anInt1373 = 0;
 					if (l1 == 0) {
-						signlink.reporterror("Rej: " + l + "," + j1);
+						Signlink.reporterror("Rej: " + l + "," + j1);
 						aRequest_1369.aByteArray1420 = null;
 						if (aRequest_1369.aBoolean1422) {
 							synchronized (aList_1358) {
@@ -160,10 +158,10 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		}
 	}
 
-	public void method551(Class44 class44, Game game1) {
+	public void method551(FileArchive archive, Game game1) {
 		String[] as = {"model_version", "anim_version", "midi_version", "map_version"};
 		for (int i = 0; i < 4; i++) {
-			byte[] abyte0 = class44.method571(as[i], null);
+			byte[] abyte0 = archive.method571(as[i], null);
 			int j = abyte0.length / 2;
 			Buffer buffer = new Buffer(abyte0);
 			anIntArrayArray1364[i] = new int[j];
@@ -174,7 +172,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		}
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 		for (int k = 0; k < 4; k++) {
-			byte[] abyte1 = class44.method571(as1[k], null);
+			byte[] abyte1 = archive.method571(as1[k], null);
 			int i1 = abyte1.length / 4;
 			Buffer buffer_1 = new Buffer(abyte1);
 			anIntArrayArray1365[k] = new int[i1];
@@ -182,7 +180,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				anIntArrayArray1365[k][l1] = buffer_1.method413();
 			}
 		}
-		byte[] abyte2 = class44.method571("model_index", null);
+		byte[] abyte2 = archive.method571("model_index", null);
 		int j1 = anIntArrayArray1364[0].length;
 		aByteArray1372 = new byte[j1];
 		for (int k1 = 0; k1 < j1; k1++) {
@@ -192,7 +190,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				aByteArray1372[k1] = 0;
 			}
 		}
-		abyte2 = class44.method571("map_index", null);
+		abyte2 = archive.method571("map_index", null);
 		Buffer class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 7;
 		anIntArray1371 = new int[j1];
@@ -205,14 +203,14 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			anIntArray1337[i2] = class30_sub2_sub2_2.method410();
 			anIntArray1356[i2] = class30_sub2_sub2_2.method408();
 		}
-		abyte2 = class44.method571("anim_index", null);
+		abyte2 = archive.method571("anim_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1360 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++) {
 			anIntArray1360[j2] = class30_sub2_sub2_2.method410();
 		}
-		abyte2 = class44.method571("midi_index", null);
+		abyte2 = archive.method571("midi_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length;
 		anIntArray1348 = new int[j1];
@@ -225,8 +223,8 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 	}
 
 	public int method552() {
-		synchronized (aLinkedList_1361) {
-			return aLinkedList_1361.method154();
+		synchronized (aDoublyLinkedList_1361) {
+			return aDoublyLinkedList_1361.method154();
 		}
 	}
 
@@ -303,8 +301,8 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		if (anIntArrayArray1364[i][j] == 0) {
 			return;
 		}
-		synchronized (aLinkedList_1361) {
-			for (OnDemandRequest request = (OnDemandRequest) aLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aLinkedList_1361.method153()) {
+		synchronized (aDoublyLinkedList_1361) {
+			for (OnDemandRequest request = (OnDemandRequest) aDoublyLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aDoublyLinkedList_1361.method153()) {
 				if (request.anInt1419 == i && request.anInt1421 == j) {
 					return;
 				}
@@ -316,7 +314,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 			synchronized (aList_1370) {
 				aList_1370.method249(request_1);
 			}
-			aLinkedList_1361.method150(request_1);
+			aDoublyLinkedList_1361.method150(request_1);
 		}
 	}
 
@@ -406,7 +404,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 				}
 			}
 		} catch (Exception exception) {
-			signlink.reporterror("od_ex " + exception.getMessage());
+			Signlink.reporterror("od_ex " + exception.getMessage());
 		}
 	}
 
@@ -440,7 +438,7 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		if (request == null) {
 			return null;
 		}
-		synchronized (aLinkedList_1361) {
+		synchronized (aDoublyLinkedList_1361) {
 			request.method330();
 		}
 		if (request.aByteArray1420 == null) {
@@ -483,7 +481,6 @@ public class Class42_Sub1 extends Class42 implements Runnable {
 		return -1;
 	}
 
-	@Override
 	public void method548(int i) {
 		method558(0, i);
 	}

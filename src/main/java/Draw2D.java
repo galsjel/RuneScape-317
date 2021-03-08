@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Draw2D extends Class30_Sub2 {
+public class Draw2D extends DoublyLinkedListNode {
 
 	public static int[] anIntArray1378;
 	public static int anInt1379;

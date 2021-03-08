@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class OnDemandRequest extends Class30_Sub2 {
+public class OnDemandRequest extends DoublyLinkedListNode {
 
 	public int anInt1419;
 	public byte[] aByteArray1420;

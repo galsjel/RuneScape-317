@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class30_Sub1 extends Class30 {
+public class SceneLocTemporary extends LinkedListNode {
 
 	public int anInt1291;
 	public int anInt1292;
@@ -17,7 +17,7 @@ public class Class30_Sub1 extends Class30 {
 	public int anInt1301;
 	public int anInt1302;
 
-	public Class30_Sub1() {
+	public SceneLocTemporary() {
 		anInt1294 = -1;
 	}
 

@@ -30,7 +30,7 @@ public class SpotAnimEntity extends Entity {
 			return null;
 		}
 		int j = aType_1568.aType_407.anIntArray353[anInt1569];
-		Model model_1 = new Model(true, Class36.method532(j), false, model);
+		Model model_1 = new Model(true, SeqTransform.method532(j), false, model);
 		if (!aBoolean1567) {
 			model_1.method469();
 			model_1.method470(j);

@@ -25,7 +25,7 @@ public class SoundTone {
 	public final int[] anIntArray108 = new int[5];
 	public int anInt109;
 	public int anInt110 = 100;
-	public Class39 aClass39_111;
+	public SoundFilter aSoundFilter_111;
 	public SoundEnvelope aEnvelope_112;
 	public int anInt113 = 500;
 	public int anInt114;
@@ -140,11 +140,11 @@ public class SoundTone {
 				anIntArray115[l4] += (anIntArray115[l4 - j3] * anInt110) / 100;
 			}
 		}
-		if (aClass39_111.anIntArray665[0] > 0 || aClass39_111.anIntArray665[1] > 0) {
+		if (aSoundFilter_111.anIntArray665[0] > 0 || aSoundFilter_111.anIntArray665[1] > 0) {
 			aEnvelope_112.method327();
 			int k3 = aEnvelope_112.method328(i + 1);
-			int i5 = aClass39_111.method544(0, (float) k3 / 65536F);
-			int i6 = aClass39_111.method544(1, (float) k3 / 65536F);
+			int i5 = aSoundFilter_111.method544(0, (float) k3 / 65536F);
+			int i6 = aSoundFilter_111.method544(1, (float) k3 / 65536F);
 			if (i >= i5 + i6) {
 				int j7 = 0;
 				int l7 = i6;
@@ -152,12 +152,12 @@ public class SoundTone {
 					l7 = i - i5;
 				}
 				for (; j7 < l7; j7++) {
-					int j8 = (int) ((long) anIntArray115[j7 + i5] * (long) Class39.anInt672 >> 16);
+					int j8 = (int) ((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672 >> 16);
 					for (int k8 = 0; k8 < i5; k8++) {
-						j8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k8] * (long) Class39.anIntArrayArray670[0][k8] >> 16);
+						j8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k8] * (long) SoundFilter.anIntArrayArray670[0][k8] >> 16);
 					}
 					for (int j9 = 0; j9 < j7; j9++) {
-						j8 -= (int) ((long) anIntArray115[j7 - 1 - j9] * (long) Class39.anIntArrayArray670[1][j9] >> 16);
+						j8 -= (int) ((long) anIntArray115[j7 - 1 - j9] * (long) SoundFilter.anIntArrayArray670[1][j9] >> 16);
 					}
 					anIntArray115[j7] = j8;
 					k3 = aEnvelope_112.method328(i + 1);
@@ -169,12 +169,12 @@ public class SoundTone {
 						l7 = i - i5;
 					}
 					for (; j7 < l7; j7++) {
-						int l8 = (int) ((long) anIntArray115[j7 + i5] * (long) Class39.anInt672 >> 16);
+						int l8 = (int) ((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672 >> 16);
 						for (int k9 = 0; k9 < i5; k9++) {
-							l8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k9] * (long) Class39.anIntArrayArray670[0][k9] >> 16);
+							l8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k9] * (long) SoundFilter.anIntArrayArray670[0][k9] >> 16);
 						}
 						for (int i10 = 0; i10 < i6; i10++) {
-							l8 -= (int) ((long) anIntArray115[j7 - 1 - i10] * (long) Class39.anIntArrayArray670[1][i10] >> 16);
+							l8 -= (int) ((long) anIntArray115[j7 - 1 - i10] * (long) SoundFilter.anIntArrayArray670[1][i10] >> 16);
 						}
 						anIntArray115[j7] = l8;
 						k3 = aEnvelope_112.method328(i + 1);
@@ -182,17 +182,17 @@ public class SoundTone {
 					if (j7 >= i - i5) {
 						break;
 					}
-					i5 = aClass39_111.method544(0, (float) k3 / 65536F);
-					i6 = aClass39_111.method544(1, (float) k3 / 65536F);
+					i5 = aSoundFilter_111.method544(0, (float) k3 / 65536F);
+					i6 = aSoundFilter_111.method544(1, (float) k3 / 65536F);
 					l7 += c;
 				} while (true);
 				for (; j7 < i; j7++) {
 					int i9 = 0;
 					for (int l9 = (j7 + i5) - i; l9 < i5; l9++) {
-						i9 += (int) ((long) anIntArray115[(j7 + i5) - 1 - l9] * (long) Class39.anIntArrayArray670[0][l9] >> 16);
+						i9 += (int) ((long) anIntArray115[(j7 + i5) - 1 - l9] * (long) SoundFilter.anIntArrayArray670[0][l9] >> 16);
 					}
 					for (int j10 = 0; j10 < i6; j10++) {
-						i9 -= (int) ((long) anIntArray115[j7 - 1 - j10] * (long) Class39.anIntArrayArray670[1][j10] >> 16);
+						i9 -= (int) ((long) anIntArray115[j7 - 1 - j10] * (long) SoundFilter.anIntArrayArray670[1][j10] >> 16);
 					}
 					anIntArray115[j7] = i9;
 					aEnvelope_112.method328(i + 1);
@@ -273,9 +273,9 @@ public class SoundTone {
 		anInt110 = buffer.method422();
 		anInt113 = buffer.method410();
 		anInt114 = buffer.method410();
-		aClass39_111 = new Class39();
+		aSoundFilter_111 = new SoundFilter();
 		aEnvelope_112 = new SoundEnvelope();
-		aClass39_111.method545(buffer, aEnvelope_112);
+		aSoundFilter_111.method545(buffer, aEnvelope_112);
 	}
 
 }

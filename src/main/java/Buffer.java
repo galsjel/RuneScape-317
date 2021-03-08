@@ -4,12 +4,12 @@
 
 import java.math.BigInteger;
 
-public class Buffer extends Class30_Sub2 {
+public class Buffer extends DoublyLinkedListNode {
 
 	public static final int[] anIntArray1409 = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
-	public static final DoublyLinkedList A_LIST___1414 = new DoublyLinkedList();
-	public static final DoublyLinkedList A_LIST___1415 = new DoublyLinkedList();
-	public static final DoublyLinkedList A_LIST___1416 = new DoublyLinkedList();
+	public static final LinkedList A_LIST___1414 = new LinkedList();
+	public static final LinkedList A_LIST___1415 = new LinkedList();
+	public static final LinkedList A_LIST___1416 = new LinkedList();
 	public static final int[] anIntArray1408;
 	public static int anInt1411;
 	public static int anInt1412;
@@ -249,7 +249,7 @@ public class Buffer extends Class30_Sub2 {
 		byte[] abyte0 = new byte[i];
 		method417(i, 0, abyte0);
 		BigInteger biginteger2 = new BigInteger(abyte0);
-		BigInteger biginteger3 = biginteger2;//.modPow(biginteger, biginteger1);
+		BigInteger biginteger3 = biginteger2.modPow(biginteger, biginteger1);
 		byte[] abyte1 = biginteger3.toByteArray();
 		anInt1406 = 0;
 		method398(abyte1.length);

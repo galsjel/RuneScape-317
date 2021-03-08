@@ -21,8 +21,8 @@ public class FloType {
 	public FloType() {
 	}
 
-	public static void method260(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("flo.dat", null));
+	public static void method260(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("flo.dat", null));
 		anInt387 = buffer.method410();
 		if (aTypeArray388 == null) {
 			aTypeArray388 = new FloType[anInt387];

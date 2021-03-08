@@ -2,9 +2,9 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class36 {
+public class SeqTransform {
 
-	public static Class36[] aClass36Array635;
+	public static SeqTransform[] aTransformArray635;
 	public static boolean[] aBooleanArray643;
 	public int anInt636;
 	public SeqSkeleton aSkeleton_637;
@@ -14,11 +14,11 @@ public class Class36 {
 	public int[] anIntArray641;
 	public int[] anIntArray642;
 
-	public Class36() {
+	public SeqTransform() {
 	}
 
 	public static void method528(int i) {
-		aClass36Array635 = new Class36[i + 1];
+		aTransformArray635 = new SeqTransform[i + 1];
 		aBooleanArray643 = new boolean[i + 1];
 		for (int j = 0; j < i + 1; j++) {
 			aBooleanArray643[j] = true;
@@ -55,9 +55,9 @@ public class Class36 {
 		int[] ai3 = new int[500];
 		for (int l1 = 0; l1 < k1; l1++) {
 			int i2 = buffer_1.method410();
-			Class36 class36 = aClass36Array635[i2] = new Class36();
-			class36.anInt636 = buffer_4.method408();
-			class36.aSkeleton_637 = skeleton;
+			SeqTransform transform = aTransformArray635[i2] = new SeqTransform();
+			transform.anInt636 = buffer_4.method408();
+			transform.aSkeleton_637 = skeleton;
 			int j2 = buffer_1.method408();
 			int k2 = -1;
 			int l2 = 0;
@@ -104,29 +104,29 @@ public class Class36 {
 					}
 				}
 			}
-			class36.anInt638 = l2;
-			class36.anIntArray639 = new int[l2];
-			class36.anIntArray640 = new int[l2];
-			class36.anIntArray641 = new int[l2];
-			class36.anIntArray642 = new int[l2];
+			transform.anInt638 = l2;
+			transform.anIntArray639 = new int[l2];
+			transform.anIntArray640 = new int[l2];
+			transform.anIntArray641 = new int[l2];
+			transform.anIntArray642 = new int[l2];
 			for (int k3 = 0; k3 < l2; k3++) {
-				class36.anIntArray639[k3] = ai[k3];
-				class36.anIntArray640[k3] = ai1[k3];
-				class36.anIntArray641[k3] = ai2[k3];
-				class36.anIntArray642[k3] = ai3[k3];
+				transform.anIntArray639[k3] = ai[k3];
+				transform.anIntArray640[k3] = ai1[k3];
+				transform.anIntArray641[k3] = ai2[k3];
+				transform.anIntArray642[k3] = ai3[k3];
 			}
 		}
 	}
 
 	public static void method530() {
-		aClass36Array635 = null;
+		aTransformArray635 = null;
 	}
 
-	public static Class36 method531(int j) {
-		if (aClass36Array635 == null) {
+	public static SeqTransform method531(int j) {
+		if (aTransformArray635 == null) {
 			return null;
 		} else {
-			return aClass36Array635[j];
+			return aTransformArray635[j];
 		}
 	}
 

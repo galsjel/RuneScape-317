@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class47 {
+public class SceneOccluder {
 
 	public int anInt787;
 	public int anInt788;
@@ -23,7 +23,7 @@ public class Class47 {
 	public int anInt803;
 	public int anInt804;
 
-	public Class47() {
+	public SceneOccluder() {
 	}
 
 }

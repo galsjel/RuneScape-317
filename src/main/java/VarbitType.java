@@ -2,10 +2,10 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class37 {
+public class VarbitType {
 
 	public static int anInt645;
-	public static Class37[] aClass37Array646;
+	public static VarbitType[] aVarbitArray646;
 	public String unusedString;
 	public int anInt648;
 	public int anInt649;
@@ -14,22 +14,22 @@ public class Class37 {
 	public int unusedInt0 = -1;
 	public int unusedInt1;
 
-	public Class37() {
+	public VarbitType() {
 	}
 
-	public static void method533(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("varbit.dat", null));
+	public static void method533(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("varbit.dat", null));
 		anInt645 = buffer.method410();
-		if (aClass37Array646 == null) {
-			aClass37Array646 = new Class37[anInt645];
+		if (aVarbitArray646 == null) {
+			aVarbitArray646 = new VarbitType[anInt645];
 		}
 		for (int j = 0; j < anInt645; j++) {
-			if (aClass37Array646[j] == null) {
-				aClass37Array646[j] = new Class37();
+			if (aVarbitArray646[j] == null) {
+				aVarbitArray646[j] = new VarbitType();
 			}
-			aClass37Array646[j].method534(buffer);
-			if (aClass37Array646[j].aBoolean651) {
-				Class41.aClass41Array701[aClass37Array646[j].anInt648].unusedBool3 = true;
+			aVarbitArray646[j].method534(buffer);
+			if (aVarbitArray646[j].aBoolean651) {
+				VarpType.aVarpArray701[aVarbitArray646[j].anInt648].unusedBool3 = true;
 			}
 		}
 		if (buffer.anInt1406 != buffer.aByteArray1405.length) {

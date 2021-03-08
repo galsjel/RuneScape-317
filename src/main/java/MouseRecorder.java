@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class48 implements Runnable {
+public class MouseRecorder implements Runnable {
 
 	public final Object lock = new Object();
 	public final Game aGame805;
@@ -11,7 +11,7 @@ public class Class48 implements Runnable {
 	public final int[] anIntArray809 = new int[500];
 	public int anInt810;
 
-	public Class48(Game game1) {
+	public MouseRecorder(Game game1) {
 		aGame805 = game1;
 	}
 

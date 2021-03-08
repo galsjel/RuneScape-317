@@ -2,10 +2,10 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class38 {
+public class IDKType {
 
 	public static int anInt655;
-	public static Class38[] aClass38Array656;
+	public static IDKType[] aIDKTypeArray656;
 	public int anInt657 = -1;
 	public int[] anIntArray658;
 	public final int[] anIntArray659 = new int[6];
@@ -13,20 +13,20 @@ public class Class38 {
 	public final int[] anIntArray661 = {-1, -1, -1, -1, -1};
 	public boolean aBoolean662 = false;
 
-	public Class38() {
+	public IDKType() {
 	}
 
-	public static void method535(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("idk.dat", null));
+	public static void method535(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("idk.dat", null));
 		anInt655 = buffer.method410();
-		if (aClass38Array656 == null) {
-			aClass38Array656 = new Class38[anInt655];
+		if (aIDKTypeArray656 == null) {
+			aIDKTypeArray656 = new IDKType[anInt655];
 		}
 		for (int j = 0; j < anInt655; j++) {
-			if (aClass38Array656[j] == null) {
-				aClass38Array656[j] = new Class38();
+			if (aIDKTypeArray656[j] == null) {
+				aIDKTypeArray656[j] = new IDKType();
 			}
-			aClass38Array656[j].method536(buffer);
+			aIDKTypeArray656[j].method536(buffer);
 		}
 	}
 

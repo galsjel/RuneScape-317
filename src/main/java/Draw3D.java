@@ -96,11 +96,11 @@ public class Draw3D extends Draw2D {
 		}
 	}
 
-	public static void method368(Class44 class44) {
+	public static void method368(FileArchive archive) {
 		anInt1473 = 0;
 		for (int j = 0; j < 50; j++) {
 			try {
-				aImageArray1474[j] = new Image8(class44, String.valueOf(j), 0);
+				aImageArray1474[j] = new Image8(archive, String.valueOf(j), 0);
 				if (aBoolean1461 && aImageArray1474[j].anInt1456 == 128) {
 					aImageArray1474[j].method356();
 				} else {

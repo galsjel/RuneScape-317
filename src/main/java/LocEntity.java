@@ -36,10 +36,10 @@ public class LocEntity extends Entity {
 				anInt1608 -= (int) (Math.random() * (double) aType_1607.method258(anInt1599));
 			}
 		}
-		Class46 class46 = Class46.method572(anInt1610);
-		anInt1601 = class46.anInt774;
-		anInt1602 = class46.anInt749;
-		anIntArray1600 = class46.anIntArray759;
+		LocType type = LocType.method572(anInt1610);
+		anInt1601 = type.anInt774;
+		anInt1602 = type.anInt749;
+		anIntArray1600 = type.anIntArray759;
 	}
 
 	@Override
@@ -68,26 +68,26 @@ public class LocEntity extends Entity {
 				j = aType_1607.anIntArray353[anInt1599];
 			}
 		}
-		Class46 class46;
+		LocType type;
 		if (anIntArray1600 != null) {
-			class46 = method457();
+			type = method457();
 		} else {
-			class46 = Class46.method572(anInt1610);
+			type = LocType.method572(anInt1610);
 		}
-		if (class46 == null) {
+		if (type == null) {
 			return null;
 		} else {
-			return class46.method578(anInt1611, anInt1612, anInt1603, anInt1604, anInt1605, anInt1606, j);
+			return type.method578(anInt1611, anInt1612, anInt1603, anInt1604, anInt1605, anInt1606, j);
 		}
 	}
 
-	public Class46 method457() {
+	public LocType method457() {
 		int i = -1;
 		if (anInt1601 != -1) {
-			Class37 class37 = Class37.aClass37Array646[anInt1601];
-			int k = class37.anInt648;
-			int l = class37.anInt649;
-			int i1 = class37.anInt650;
+			VarbitType varbit = VarbitType.aVarbitArray646[anInt1601];
+			int k = varbit.anInt648;
+			int l = varbit.anInt649;
+			int i1 = varbit.anInt650;
 			int j1 = Game.anIntArray1232[i1 - l];
 			i = aGame1609.anIntArray971[k] >> l & j1;
 		} else if (anInt1602 != -1) {
@@ -96,7 +96,7 @@ public class LocEntity extends Entity {
 		if (i < 0 || i >= anIntArray1600.length || anIntArray1600[i] == -1) {
 			return null;
 		} else {
-			return Class46.method572(anIntArray1600[i]);
+			return LocType.method572(anIntArray1600[i]);
 		}
 	}
 

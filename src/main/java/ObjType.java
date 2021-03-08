@@ -64,9 +64,9 @@ public class ObjType {
 		aBuffer_183 = null;
 	}
 
-	public static void method193(Class44 class44) {
-		aBuffer_183 = new Buffer(class44.method571("obj.dat", null));
-		Buffer buffer = new Buffer(class44.method571("obj.idx", null));
+	public static void method193(FileArchive archive) {
+		aBuffer_183 = new Buffer(archive.method571("obj.dat", null));
+		Buffer buffer = new Buffer(archive.method571("obj.idx", null));
 		anInt203 = buffer.method410();
 		anIntArray195 = new int[anInt203];
 		int i = 2;

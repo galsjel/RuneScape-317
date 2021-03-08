@@ -25,8 +25,8 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public static void method257(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("seq.dat", null));
+	public static void method257(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("seq.dat", null));
 		anInt350 = buffer.method410();
 		if (aTypeArray351 == null) {
 			aTypeArray351 = new SeqType[anInt350];
@@ -42,9 +42,9 @@ public class SeqType {
 	public int method258(int i) {
 		int j = anIntArray355[i];
 		if (j == 0) {
-			Class36 class36 = Class36.method531(anIntArray353[i]);
-			if (class36 != null) {
-				j = anIntArray355[i] = class36.anInt636;
+			SeqTransform transform = SeqTransform.method531(anIntArray353[i]);
+			if (transform != null) {
+				j = anIntArray355[i] = transform.anInt636;
 			}
 		}
 		if (j == 0) {

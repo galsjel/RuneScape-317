@@ -22,8 +22,8 @@ public class SpotAnimType {
 	public SpotAnimType() {
 	}
 
-	public static void method264(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("spotanim.dat", null));
+	public static void method264(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("spotanim.dat", null));
 		anInt402 = buffer.method410();
 		if (aTypeArray403 == null) {
 			aTypeArray403 = new SpotAnimType[anInt402];

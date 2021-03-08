@@ -3,15 +3,13 @@
 // Decompiler options: packimports(3) 
 // Source File Name:   signlink.java
 
-package sign;
-
 import java.applet.Applet;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 
-public class signlink implements Runnable {
+public class Signlink implements Runnable {
 
 	public static int uid;
 	public static int storeid = 32;
@@ -44,7 +42,7 @@ public class signlink implements Runnable {
 	public static int wavevol;
 	public static boolean reporterror = true;
 
-	public signlink() {
+	public Signlink() {
 	}
 
 	public static void startpriv(InetAddress inetaddress) {
@@ -62,7 +60,7 @@ public class signlink implements Runnable {
 		savereq = null;
 		urlreq = null;
 		socketip = inetaddress;
-		Thread thread = new Thread(new signlink());
+		Thread thread = new Thread(new Signlink());
 		thread.setDaemon(true);
 		thread.start();
 		while (!active) {

@@ -40,7 +40,7 @@ public class NPCEntity extends PathingEntity {
 			Model model_1 = type.method266();
 			if (model_1 != null) {
 				int j = type.aType_407.anIntArray353[super.anInt1521];
-				Model class30_sub2_sub4_sub6_2 = new Model(true, Class36.method532(j), false, model_1);
+				Model class30_sub2_sub4_sub6_2 = new Model(true, SeqTransform.method532(j), false, model_1);
 				class30_sub2_sub4_sub6_2.method475(0, -super.anInt1524, 0);
 				class30_sub2_sub4_sub6_2.method469();
 				class30_sub2_sub4_sub6_2.method470(j);

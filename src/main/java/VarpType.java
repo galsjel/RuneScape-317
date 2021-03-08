@@ -2,10 +2,10 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class41 {
+public class VarpType {
 
 	public static int anInt700;
-	public static Class41[] aClass41Array701;
+	public static VarpType[] aVarpArray701;
 	public static int anInt702;
 	public static int[] anIntArray703;
 
@@ -21,24 +21,24 @@ public class Class41 {
 	public boolean unusedBool3 = false;
 	public int unusedInt4 = -1;
 
-	public Class41() {
+	public VarpType() {
 	}
 
-	public static void method546(Class44 class44) {
-		Buffer buffer = new Buffer(class44.method571("varp.dat", null));
+	public static void method546(FileArchive archive) {
+		Buffer buffer = new Buffer(archive.method571("varp.dat", null));
 		anInt702 = 0;
 		anInt700 = buffer.method410();
-		if (aClass41Array701 == null) {
-			aClass41Array701 = new Class41[anInt700];
+		if (aVarpArray701 == null) {
+			aVarpArray701 = new VarpType[anInt700];
 		}
 		if (anIntArray703 == null) {
 			anIntArray703 = new int[anInt700];
 		}
 		for (int j = 0; j < anInt700; j++) {
-			if (aClass41Array701[j] == null) {
-				aClass41Array701[j] = new Class41();
+			if (aVarpArray701[j] == null) {
+				aVarpArray701[j] = new VarpType();
 			}
-			aClass41Array701[j].method547(buffer, j);
+			aVarpArray701[j].method547(buffer, j);
 		}
 		if (buffer.anInt1406 != buffer.aByteArray1405.length) {
 			System.out.println("varptype load mismatch");

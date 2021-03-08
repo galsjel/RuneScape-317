@@ -2,9 +2,9 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Entity extends Class30_Sub2 {
+public class Entity extends DoublyLinkedListNode {
 
-	public Class33[] aClass33Array1425;
+	public VertexNormal[] aNormalArray1425;
 	public int anInt1426 = 1000;
 
 	public Entity() {

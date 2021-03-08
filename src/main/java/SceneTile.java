@@ -2,17 +2,17 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Class30_Sub3 extends Class30 {
+public class SceneTile extends LinkedListNode {
 
 	public int anInt1307;
 	public final int anInt1308;
 	public final int anInt1309;
 	public final int anInt1310;
-	public Class43 aClass43_1311;
-	public Class40 aClass40_1312;
+	public SceneTileUnderlay aUnderlay_1311;
+	public SceneTileOverlay aOverlay_1312;
 	public SceneWall aWall_1313;
 	public SceneWallDecoration aWallDecoration_1314;
-	public Class49 aClass49_1315;
+	public SceneGroundDecoration aGroundDecoration_1315;
 	public SceneObjStack aObjStack_1316;
 	public int anInt1317;
 	public final SceneLoc[] aLocArray1318 = new SceneLoc[5];
@@ -26,9 +26,9 @@ public class Class30_Sub3 extends Class30 {
 	public int anInt1326;
 	public int anInt1327;
 	public int anInt1328;
-	public Class30_Sub3 aClass30_Sub3_1329;
+	public SceneTile aTile_1329;
 
-	public Class30_Sub3(int i, int j, int k) {
+	public SceneTile(int i, int j, int k) {
 		anInt1310 = anInt1307 = i;
 		anInt1308 = j;
 		anInt1309 = k;

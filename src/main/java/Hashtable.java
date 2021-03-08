@@ -5,38 +5,38 @@
 public class Hashtable {
 
 	public final int anInt39;
-	public final Class30[] aClass30Array40;
+	public final LinkedListNode[] aNodeArray40;
 
 	public Hashtable(int j) {
 		anInt39 = j;
-		aClass30Array40 = new Class30[j];
+		aNodeArray40 = new LinkedListNode[j];
 		for (int k = 0; k < j; k++) {
-			Class30 class30 = aClass30Array40[k] = new Class30();
-			class30.aClass30_549 = class30;
-			class30.aClass30_550 = class30;
+			LinkedListNode node = aNodeArray40[k] = new LinkedListNode();
+			node.aNode_549 = node;
+			node.aNode_550 = node;
 		}
 	}
 
-	public Class30 method148(long l) {
-		Class30 class30 = aClass30Array40[(int) (l & (long) (anInt39 - 1))];
-		for (Class30 class30_1 = class30.aClass30_549; class30_1 != class30; class30_1 = class30_1.aClass30_549) {
-			if (class30_1.aLong548 == l) {
-				return class30_1;
+	public LinkedListNode method148(long l) {
+		LinkedListNode node = aNodeArray40[(int) (l & (long) (anInt39 - 1))];
+		for (LinkedListNode node_1 = node.aNode_549; node_1 != node; node_1 = node_1.aNode_549) {
+			if (node_1.aLong548 == l) {
+				return node_1;
 			}
 		}
 		return null;
 	}
 
-	public void method149(Class30 class30, long l) {
-		if (class30.aClass30_550 != null) {
-			class30.method329();
+	public void method149(LinkedListNode node, long l) {
+		if (node.aNode_550 != null) {
+			node.method329();
 		}
-		Class30 class30_1 = aClass30Array40[(int) (l & (long) (anInt39 - 1))];
-		class30.aClass30_550 = class30_1.aClass30_550;
-		class30.aClass30_549 = class30_1;
-		class30.aClass30_550.aClass30_549 = class30;
-		class30.aClass30_549.aClass30_550 = class30;
-		class30.aLong548 = l;
+		LinkedListNode node_1 = aNodeArray40[(int) (l & (long) (anInt39 - 1))];
+		node.aNode_550 = node_1.aNode_550;
+		node.aNode_549 = node_1;
+		node.aNode_550.aNode_549 = node;
+		node.aNode_549.aNode_550 = node;
+		node.aLong548 = l;
 	}
 
 }
