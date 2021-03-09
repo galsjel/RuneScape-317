@@ -63,7 +63,7 @@ public class ProjectileEntity extends Entity {
 	}
 
 	@Override
-	public Model method444() {
+	public Model getModel() {
 		Model model = aType_1592.method266();
 		if (model == null) {
 			return null;

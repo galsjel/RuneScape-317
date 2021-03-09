@@ -26,7 +26,7 @@ public class NPCEntity extends PathingEntity {
 	}
 
 	@Override
-	public Model method444() {
+	public Model getModel() {
 		if (aType_1696 == null) {
 			return null;
 		}
