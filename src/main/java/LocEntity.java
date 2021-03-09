@@ -43,7 +43,7 @@ public class LocEntity extends Entity {
 	}
 
 	@Override
-	public Model method444() {
+	public Model getModel() {
 		int j = -1;
 		if (aType_1607 != null) {
 			int k = Game.anInt1161 - anInt1608;

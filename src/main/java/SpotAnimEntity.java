@@ -24,7 +24,7 @@ public class SpotAnimEntity extends Entity {
 	}
 
 	@Override
-	public Model method444() {
+	public Model getModel() {
 		Model model = aType_1568.method266();
 		if (model == null) {
 			return null;

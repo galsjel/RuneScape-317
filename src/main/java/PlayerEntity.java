@@ -34,7 +34,7 @@ public class PlayerEntity extends PathingEntity {
 	}
 
 	@Override
-	public Model method444() {
+	public Model getModel() {
 		if (!aBoolean1710) {
 			return null;
 		}
