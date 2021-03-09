@@ -5224,7 +5224,7 @@ public class Game extends GameShell {
 						aBuffer_1192.put8S(j2);
 						aBuffer_834.position = 0;
 						Huffman.method526(aString887, aBuffer_834);
-						aBuffer_1192.putBytesA(0, aBuffer_834.data, aBuffer_834.position);
+						aBuffer_1192.putA(aBuffer_834.data, 0, aBuffer_834.position);
 						aBuffer_1192.putSize8(aBuffer_1192.position - j3);
 						aString887 = Huffman.method527(aString887);
 						aString887 = Censor.method497(aString887, 0);
@@ -5933,7 +5933,7 @@ public class Game extends GameShell {
 				for (int l1 = 0; l1 < 9; l1++) {
 					aBuffer_847.put32(anIntArray1090[l1]);
 				}
-				aBuffer_847.putBytes(aBuffer_1192.data, aBuffer_1192.position, 0);
+				aBuffer_847.put(aBuffer_1192.data, aBuffer_1192.position, 0);
 				aBuffer_1192.cipher = new ISAACCipher(ai);
 				for (int j2 = 0; j2 < 4; j2++) {
 					ai[j2] += 50;
@@ -7832,7 +7832,7 @@ public class Game extends GameShell {
 				if (!flag && (anInt1251 == 0)) {
 					try {
 						aBuffer_834.position = 0;
-						buffer.getBytesReversed(aBuffer_834.data, 0, j3);
+						buffer.getReversed(aBuffer_834.data, 0, j3);
 						aBuffer_834.position = 0;
 						String s = Huffman.method525(j3, aBuffer_834);
 						s = Censor.method497(s, 0);
@@ -7864,7 +7864,7 @@ public class Game extends GameShell {
 			int j1 = buffer.getU8C();
 			byte[] abyte0 = new byte[j1];
 			Buffer buffer_1 = new Buffer(abyte0);
-			buffer.getBytes(abyte0, 0, j1);
+			buffer.get(abyte0, 0, j1);
 			aBufferArray895[j] = buffer_1;
 			player.method451(buffer_1);
 		}

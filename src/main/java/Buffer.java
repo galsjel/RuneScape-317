@@ -3,6 +3,7 @@
 // Decompiler options: packimports(3) 
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 public class Buffer extends DoublyLinkedListNode {
 
@@ -17,6 +18,7 @@ public class Buffer extends DoublyLinkedListNode {
 	public static Buffer create(int sizeType) {
 		synchronized (bufferPool1) {
 			Buffer buffer = null;
+
 			if ((sizeType == 0) && (bufferPoolSize0 > 0)) {
 				bufferPoolSize0--;
 				buffer = (Buffer) bufferPool0.method251();
@@ -27,13 +29,16 @@ public class Buffer extends DoublyLinkedListNode {
 				bufferPoolSize2--;
 				buffer = (Buffer) bufferPool2.method251();
 			}
+
 			if (buffer != null) {
 				buffer.position = 0;
 				return buffer;
 			}
 		}
+
 		Buffer buffer = new Buffer();
 		buffer.position = 0;
+
 		if (sizeType == 0) {
 			buffer.data = new byte[100];
 		} else if (sizeType == 1) {
@@ -41,6 +46,7 @@ public class Buffer extends DoublyLinkedListNode {
 		} else {
 			buffer.data = new byte[30000];
 		}
+
 		return buffer;
 	}
 
@@ -129,18 +135,20 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void putString(String s) {
-		s.getBytes(0, s.length(), data, position);
-		position += s.length();
-		data[position++] = 10;
+		put(s.getBytes(StandardCharsets.US_ASCII));
+		put8('\n');
 	}
 
-	public void putBytes(byte[] src, int len, int off) {
-		for (int k = off; k < (off + len); k++) {
-			data[position++] = src[k];
-		}
+	public void put(byte[] src, int len, int off) {
+		System.arraycopy(src, off, data, position, len);
+		position += len;
 	}
 
-	public void putBytesA(int off, byte[] src, int len) {
+	public void put(byte[] src) {
+		put(src, 0, src.length);
+	}
+
+	public void putA(byte[] src, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			data[position++] = (byte) (src[i] + 128);
 		}
@@ -283,13 +291,12 @@ public class Buffer extends DoublyLinkedListNode {
 		return raw;
 	}
 
-	public void getBytes(byte[] dst, int off, int len) {
-		for (int i = off; i < (off + len); i++) {
-			dst[i] = data[position++];
-		}
+	public void get(byte[] dst, int off, int len) {
+		System.arraycopy(data, position, dst, off, len);
+		position += len;
 	}
 
-	public void getBytesReversed(byte[] dst, int off, int len) {
+	public void getReversed(byte[] dst, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			dst[i] = data[position++];
 		}
@@ -324,11 +331,11 @@ public class Buffer extends DoublyLinkedListNode {
 		int length = position;
 		position = 0;
 		byte[] raw = new byte[length];
-		getBytes(raw, 0, length);
+		get(raw, 0, length);
 		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
 		position = 0;
 		put8(encrypted.length);
-		putBytes(encrypted, encrypted.length, 0);
+		put(encrypted, encrypted.length, 0);
 	}
 
 }
