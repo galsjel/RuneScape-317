@@ -65,14 +65,14 @@ public class ObjType {
 	}
 
 	public static void method193(FileArchive archive) {
-		aBuffer_183 = new Buffer(archive.method571("obj.dat", null));
-		Buffer buffer = new Buffer(archive.method571("obj.idx", null));
-		anInt203 = buffer.method410();
+		aBuffer_183 = new Buffer(archive.read("obj.dat", null));
+		Buffer buffer = new Buffer(archive.read("obj.idx", null));
+		anInt203 = buffer.getU16();
 		anIntArray195 = new int[anInt203];
 		int i = 2;
 		for (int j = 0; j < anInt203; j++) {
 			anIntArray195[j] = i;
-			i += buffer.method410();
+			i += buffer.getU16();
 		}
 		aTypeArray172 = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -468,55 +468,55 @@ public class ObjType {
 
 	public void method203(Buffer buffer) {
 		do {
-			int i = buffer.method408();
+			int i = buffer.getU8();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt174 = buffer.method410();
+				anInt174 = buffer.getU16();
 			} else if (i == 2) {
-				aString170 = buffer.method415();
+				aString170 = buffer.getString();
 			} else if (i == 3) {
-				aByteArray178 = buffer.method416();
+				aByteArray178 = buffer.getStringBytes();
 			} else if (i == 4) {
-				anInt181 = buffer.method410();
+				anInt181 = buffer.getU16();
 			} else if (i == 5) {
-				anInt190 = buffer.method410();
+				anInt190 = buffer.getU16();
 			} else if (i == 6) {
-				anInt198 = buffer.method410();
+				anInt198 = buffer.getU16();
 			} else if (i == 7) {
-				anInt169 = buffer.method410();
+				anInt169 = buffer.getU16();
 				if (anInt169 > 32767) {
 					anInt169 -= 0x10000;
 				}
 			} else if (i == 8) {
-				anInt194 = buffer.method410();
+				anInt194 = buffer.getU16();
 				if (anInt194 > 32767) {
 					anInt194 -= 0x10000;
 				}
 			} else if (i == 10) {
-				unusedInt = buffer.method410();
+				unusedInt = buffer.getU16();
 			} else if (i == 11) {
 				aBoolean176 = true;
 			} else if (i == 12) {
-				anInt155 = buffer.method413();
+				anInt155 = buffer.get32();
 			} else if (i == 16) {
 				aBoolean161 = true;
 			} else if (i == 23) {
-				anInt165 = buffer.method410();
-				aByte205 = buffer.method409();
+				anInt165 = buffer.getU16();
+				aByte205 = buffer.get8();
 			} else if (i == 24) {
-				anInt188 = buffer.method410();
+				anInt188 = buffer.getU16();
 			} else if (i == 25) {
-				anInt200 = buffer.method410();
-				aByte154 = buffer.method409();
+				anInt200 = buffer.getU16();
+				aByte154 = buffer.get8();
 			} else if (i == 26) {
-				anInt164 = buffer.method410();
+				anInt164 = buffer.getU16();
 			} else if ((i >= 30) && (i < 35)) {
 				if (aStringArray168 == null) {
 					aStringArray168 = new String[5];
 				}
-				aStringArray168[i - 30] = buffer.method415();
+				aStringArray168[i - 30] = buffer.getString();
 				if (aStringArray168[i - 30].equalsIgnoreCase("hidden")) {
 					aStringArray168[i - 30] = null;
 				}
@@ -524,52 +524,52 @@ public class ObjType {
 				if (aStringArray189 == null) {
 					aStringArray189 = new String[5];
 				}
-				aStringArray189[i - 35] = buffer.method415();
+				aStringArray189[i - 35] = buffer.getString();
 			} else if (i == 40) {
-				int j = buffer.method408();
+				int j = buffer.getU8();
 				anIntArray156 = new int[j];
 				anIntArray160 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray156[k] = buffer.method410();
-					anIntArray160[k] = buffer.method410();
+					anIntArray156[k] = buffer.getU16();
+					anIntArray160[k] = buffer.getU16();
 				}
 			} else if (i == 78) {
-				anInt185 = buffer.method410();
+				anInt185 = buffer.getU16();
 			} else if (i == 79) {
-				anInt162 = buffer.method410();
+				anInt162 = buffer.getU16();
 			} else if (i == 90) {
-				anInt175 = buffer.method410();
+				anInt175 = buffer.getU16();
 			} else if (i == 91) {
-				anInt197 = buffer.method410();
+				anInt197 = buffer.getU16();
 			} else if (i == 92) {
-				anInt166 = buffer.method410();
+				anInt166 = buffer.getU16();
 			} else if (i == 93) {
-				anInt173 = buffer.method410();
+				anInt173 = buffer.getU16();
 			} else if (i == 95) {
-				anInt204 = buffer.method410();
+				anInt204 = buffer.getU16();
 			} else if (i == 97) {
-				anInt179 = buffer.method410();
+				anInt179 = buffer.getU16();
 			} else if (i == 98) {
-				anInt163 = buffer.method410();
+				anInt163 = buffer.getU16();
 			} else if ((i >= 100) && (i < 110)) {
 				if (anIntArray193 == null) {
 					anIntArray193 = new int[10];
 					anIntArray201 = new int[10];
 				}
-				anIntArray193[i - 100] = buffer.method410();
-				anIntArray201[i - 100] = buffer.method410();
+				anIntArray193[i - 100] = buffer.getU16();
+				anIntArray201[i - 100] = buffer.getU16();
 			} else if (i == 110) {
-				anInt167 = buffer.method410();
+				anInt167 = buffer.getU16();
 			} else if (i == 111) {
-				anInt192 = buffer.method410();
+				anInt192 = buffer.getU16();
 			} else if (i == 112) {
-				anInt191 = buffer.method410();
+				anInt191 = buffer.getU16();
 			} else if (i == 113) {
-				anInt196 = buffer.method409();
+				anInt196 = buffer.get8();
 			} else if (i == 114) {
-				anInt184 = buffer.method409() * 5;
+				anInt184 = buffer.get8() * 5;
 			} else if (i == 115) {
-				anInt202 = buffer.method408();
+				anInt202 = buffer.getU8();
 			}
 		} while (true);
 	}

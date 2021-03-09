@@ -236,7 +236,7 @@ public class SoundTone {
 		aEnvelope_98.method325(buffer);
 		aEnvelope_99 = new SoundEnvelope();
 		aEnvelope_99.method325(buffer);
-		int i = buffer.method408();
+		int i = buffer.getU8();
 		if (i != 0) {
 			buffer.position--;
 			aEnvelope_100 = new SoundEnvelope();
@@ -244,7 +244,7 @@ public class SoundTone {
 			aEnvelope_101 = new SoundEnvelope();
 			aEnvelope_101.method325(buffer);
 		}
-		i = buffer.method408();
+		i = buffer.getU8();
 		if (i != 0) {
 			buffer.position--;
 			aEnvelope_102 = new SoundEnvelope();
@@ -252,7 +252,7 @@ public class SoundTone {
 			aEnvelope_103 = new SoundEnvelope();
 			aEnvelope_103.method325(buffer);
 		}
-		i = buffer.method408();
+		i = buffer.getU8();
 		if (i != 0) {
 			buffer.position--;
 			aEnvelope_104 = new SoundEnvelope();
@@ -261,18 +261,18 @@ public class SoundTone {
 			aEnvelope_105.method325(buffer);
 		}
 		for (int j = 0; j < 10; j++) {
-			int k = buffer.method422();
+			int k = buffer.getUSmart();
 			if (k == 0) {
 				break;
 			}
 			anIntArray106[j] = k;
-			anIntArray107[j] = buffer.method421();
-			anIntArray108[j] = buffer.method422();
+			anIntArray107[j] = buffer.getSmart();
+			anIntArray108[j] = buffer.getUSmart();
 		}
-		anInt109 = buffer.method422();
-		anInt110 = buffer.method422();
-		anInt113 = buffer.method410();
-		anInt114 = buffer.method410();
+		anInt109 = buffer.getUSmart();
+		anInt110 = buffer.getUSmart();
+		anInt113 = buffer.getU16();
+		anInt114 = buffer.getU16();
 		aSoundFilter_111 = new SoundFilter();
 		aEnvelope_112 = new SoundEnvelope();
 		aSoundFilter_111.method545(buffer, aEnvelope_112);

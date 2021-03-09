@@ -60,14 +60,14 @@ public class NPCType {
 	}
 
 	public static void method162(FileArchive archive) {
-		aBuffer_60 = new Buffer(archive.method571("npc.dat", null));
-		Buffer buffer = new Buffer(archive.method571("npc.idx", null));
-		anInt62 = buffer.method410();
+		aBuffer_60 = new Buffer(archive.read("npc.dat", null));
+		Buffer buffer = new Buffer(archive.read("npc.idx", null));
+		anInt62 = buffer.getU16();
 		anIntArray72 = new int[anInt62];
 		int i = 2;
 		for (int j = 0; j < anInt62; j++) {
 			anIntArray72[j] = i;
-			i += buffer.method410();
+			i += buffer.getU16();
 		}
 		aTypeArray80 = new NPCType[20];
 		for (int k = 0; k < 20; k++) {
@@ -199,90 +199,90 @@ public class NPCType {
 
 	public void method165(Buffer buffer) {
 		do {
-			int i = buffer.method408();
+			int i = buffer.getU8();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				int j = buffer.method408();
+				int j = buffer.getU8();
 				anIntArray94 = new int[j];
 				for (int j1 = 0; j1 < j; j1++) {
-					anIntArray94[j1] = buffer.method410();
+					anIntArray94[j1] = buffer.getU16();
 				}
 			} else if (i == 2) {
-				aString65 = buffer.method415();
+				aString65 = buffer.getString();
 			} else if (i == 3) {
-				aByteArray89 = buffer.method416();
+				aByteArray89 = buffer.getStringBytes();
 			} else if (i == 12) {
-				aByte68 = buffer.method409();
+				aByte68 = buffer.get8();
 			} else if (i == 13) {
-				anInt77 = buffer.method410();
+				anInt77 = buffer.getU16();
 			} else if (i == 14) {
-				anInt67 = buffer.method410();
+				anInt67 = buffer.getU16();
 			} else if (i == 17) {
-				anInt67 = buffer.method410();
-				anInt58 = buffer.method410();
-				anInt83 = buffer.method410();
-				anInt55 = buffer.method410();
+				anInt67 = buffer.getU16();
+				anInt58 = buffer.getU16();
+				anInt83 = buffer.getU16();
+				anInt55 = buffer.getU16();
 			} else if ((i >= 30) && (i < 40)) {
 				if (aStringArray66 == null) {
 					aStringArray66 = new String[5];
 				}
-				aStringArray66[i - 30] = buffer.method415();
+				aStringArray66[i - 30] = buffer.getString();
 				if (aStringArray66[i - 30].equalsIgnoreCase("hidden")) {
 					aStringArray66[i - 30] = null;
 				}
 			} else if (i == 40) {
-				int k = buffer.method408();
+				int k = buffer.getU8();
 				anIntArray76 = new int[k];
 				anIntArray70 = new int[k];
 				for (int k1 = 0; k1 < k; k1++) {
-					anIntArray76[k1] = buffer.method410();
-					anIntArray70[k1] = buffer.method410();
+					anIntArray76[k1] = buffer.getU16();
+					anIntArray70[k1] = buffer.getU16();
 				}
 			} else if (i == 60) {
-				int l = buffer.method408();
+				int l = buffer.getU8();
 				anIntArray73 = new int[l];
 				for (int l1 = 0; l1 < l; l1++) {
-					anIntArray73[l1] = buffer.method410();
+					anIntArray73[l1] = buffer.getU16();
 				}
 			} else if (i == 90) {
-				unusedInt2 = buffer.method410();
+				unusedInt2 = buffer.getU16();
 			} else if (i == 91) {
-				unusedInt0 = buffer.method410();
+				unusedInt0 = buffer.getU16();
 			} else if (i == 92) {
-				unusedInt1 = buffer.method410();
+				unusedInt1 = buffer.getU16();
 			} else if (i == 93) {
 				aBoolean87 = false;
 			} else if (i == 95) {
-				anInt61 = buffer.method410();
+				anInt61 = buffer.getU16();
 			} else if (i == 97) {
-				anInt91 = buffer.method410();
+				anInt91 = buffer.getU16();
 			} else if (i == 98) {
-				anInt86 = buffer.method410();
+				anInt86 = buffer.getU16();
 			} else if (i == 99) {
 				aBoolean93 = true;
 			} else if (i == 100) {
-				anInt85 = buffer.method409();
+				anInt85 = buffer.get8();
 			} else if (i == 101) {
-				anInt92 = buffer.method409() * 5;
+				anInt92 = buffer.get8() * 5;
 			} else if (i == 102) {
-				anInt75 = buffer.method410();
+				anInt75 = buffer.getU16();
 			} else if (i == 103) {
-				anInt79 = buffer.method410();
+				anInt79 = buffer.getU16();
 			} else if (i == 106) {
-				anInt57 = buffer.method410();
+				anInt57 = buffer.getU16();
 				if (anInt57 == 65535) {
 					anInt57 = -1;
 				}
-				anInt59 = buffer.method410();
+				anInt59 = buffer.getU16();
 				if (anInt59 == 65535) {
 					anInt59 = -1;
 				}
-				int i1 = buffer.method408();
+				int i1 = buffer.getU8();
 				anIntArray88 = new int[i1 + 1];
 				for (int i2 = 0; i2 <= i1; i2++) {
-					anIntArray88[i2] = buffer.method410();
+					anIntArray88[i2] = buffer.getU16();
 					if (anIntArray88[i2] == 65535) {
 						anIntArray88[i2] = -1;
 					}

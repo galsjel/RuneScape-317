@@ -23,8 +23,8 @@ public class SpotAnimType {
 	}
 
 	public static void method264(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.method571("spotanim.dat", null));
-		anInt402 = buffer.method410();
+		Buffer buffer = new Buffer(archive.read("spotanim.dat", null));
+		anInt402 = buffer.getU16();
 		if (aTypeArray403 == null) {
 			aTypeArray403 = new SpotAnimType[anInt402];
 		}
@@ -39,31 +39,31 @@ public class SpotAnimType {
 
 	public void method265(Buffer buffer) {
 		do {
-			int i = buffer.method408();
+			int i = buffer.getU8();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt405 = buffer.method410();
+				anInt405 = buffer.getU16();
 			} else if (i == 2) {
-				anInt406 = buffer.method410();
+				anInt406 = buffer.getU16();
 				if (SeqType.aTypeArray351 != null) {
 					aType_407 = SeqType.aTypeArray351[anInt406];
 				}
 			} else if (i == 4) {
-				anInt410 = buffer.method410();
+				anInt410 = buffer.getU16();
 			} else if (i == 5) {
-				anInt411 = buffer.method410();
+				anInt411 = buffer.getU16();
 			} else if (i == 6) {
-				anInt412 = buffer.method410();
+				anInt412 = buffer.getU16();
 			} else if (i == 7) {
-				anInt413 = buffer.method408();
+				anInt413 = buffer.getU8();
 			} else if (i == 8) {
-				anInt414 = buffer.method408();
+				anInt414 = buffer.getU8();
 			} else if ((i >= 40) && (i < 50)) {
-				anIntArray408[i - 40] = buffer.method410();
+				anIntArray408[i - 40] = buffer.getU16();
 			} else if ((i >= 50) && (i < 60)) {
-				anIntArray409[i - 50] = buffer.method410();
+				anIntArray409[i - 50] = buffer.getU16();
 			} else {
 				System.out.println("Error unrecognised spotanim config code: " + i);
 			}

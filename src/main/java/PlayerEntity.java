@@ -103,20 +103,20 @@ public class PlayerEntity extends PathingEntity {
 
 	public void method451(Buffer buffer) {
 		buffer.position = 0;
-		anInt1702 = buffer.method408();
-		anInt1706 = buffer.method408();
+		anInt1702 = buffer.getU8();
+		anInt1706 = buffer.getU8();
 		aType_1698 = null;
 		anInt1701 = 0;
 		for (int j = 0; j < 12; j++) {
-			int k = buffer.method408();
+			int k = buffer.getU8();
 			if (k == 0) {
 				anIntArray1717[j] = 0;
 				continue;
 			}
-			int i1 = buffer.method408();
+			int i1 = buffer.getU8();
 			anIntArray1717[j] = (k << 8) + i1;
 			if ((j == 0) && (anIntArray1717[0] == 65535)) {
-				aType_1698 = NPCType.method159(buffer.method410());
+				aType_1698 = NPCType.method159(buffer.getU16());
 				break;
 			}
 			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
@@ -127,43 +127,43 @@ public class PlayerEntity extends PathingEntity {
 			}
 		}
 		for (int l = 0; l < 5; l++) {
-			int j1 = buffer.method408();
+			int j1 = buffer.getU8();
 			if ((j1 < 0) || (j1 >= Game.anIntArrayArray1003[l].length)) {
 				j1 = 0;
 			}
 			anIntArray1700[l] = j1;
 		}
-		super.anInt1511 = buffer.method410();
+		super.anInt1511 = buffer.getU16();
 		if (super.anInt1511 == 65535) {
 			super.anInt1511 = -1;
 		}
-		super.anInt1512 = buffer.method410();
+		super.anInt1512 = buffer.getU16();
 		if (super.anInt1512 == 65535) {
 			super.anInt1512 = -1;
 		}
-		super.anInt1554 = buffer.method410();
+		super.anInt1554 = buffer.getU16();
 		if (super.anInt1554 == 65535) {
 			super.anInt1554 = -1;
 		}
-		super.anInt1555 = buffer.method410();
+		super.anInt1555 = buffer.getU16();
 		if (super.anInt1555 == 65535) {
 			super.anInt1555 = -1;
 		}
-		super.anInt1556 = buffer.method410();
+		super.anInt1556 = buffer.getU16();
 		if (super.anInt1556 == 65535) {
 			super.anInt1556 = -1;
 		}
-		super.anInt1557 = buffer.method410();
+		super.anInt1557 = buffer.getU16();
 		if (super.anInt1557 == 65535) {
 			super.anInt1557 = -1;
 		}
-		super.anInt1505 = buffer.method410();
+		super.anInt1505 = buffer.getU16();
 		if (super.anInt1505 == 65535) {
 			super.anInt1505 = -1;
 		}
-		aString1703 = StringUtil.method587(StringUtil.fromBase37(buffer.method414()));
-		anInt1705 = buffer.method408();
-		anInt1723 = buffer.method410();
+		aString1703 = StringUtil.formatName(StringUtil.fromBase37(buffer.get64()));
+		anInt1705 = buffer.getU8();
+		anInt1723 = buffer.getU16();
 		aBoolean1710 = true;
 		aLong1718 = 0L;
 		for (int k1 = 0; k1 < 12; k1++) {

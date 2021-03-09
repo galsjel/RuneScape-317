@@ -89,41 +89,41 @@ public class SeqFrame {
 		int offset = 0;
 		Buffer header = new Buffer(src);
 		header.position = offset;
-		offset += offsets.method410() + 2;
+		offset += offsets.getU16() + 2;
 
 		Buffer tran1 = new Buffer(src);
 		tran1.position = offset;
-		offset += offsets.method410();
+		offset += offsets.getU16();
 
 		Buffer tran2 = new Buffer(src);
 		tran2.position = offset;
-		offset += offsets.method410();
+		offset += offsets.getU16();
 
 		Buffer del = new Buffer(src);
 		del.position = offset;
-		offset += offsets.method410();
+		offset += offsets.getU16();
 
 		Buffer skel = new Buffer(src);
 		skel.position = offset;
 
 		SeqSkeleton skeleton = new SeqSkeleton(skel);
 
-		int frameCount = header.method410();
+		int frameCount = header.getU16();
 		int[] bases = new int[500];
 		int[] x = new int[500];
 		int[] y = new int[500];
 		int[] z = new int[500];
 
 		for (int i = 0; i < frameCount; i++) {
-			SeqFrame frame = instances[header.method410()] = new SeqFrame();
-			frame.delay = del.method408();
+			SeqFrame frame = instances[header.getU16()] = new SeqFrame();
+			frame.delay = del.getU8();
 			frame.skeleton = skeleton;
 
-			int baseCount = header.method408();
+			int baseCount = header.getU8();
 			int lastBase = -1;
 			int length = 0;
 			for (int base = 0; base < baseCount; base++) {
-				int flags = tran1.method408();
+				int flags = tran1.getU8();
 
 				if (flags <= 0) {
 					continue;
@@ -151,19 +151,19 @@ public class SeqFrame {
 				}
 
 				if ((flags & 1) != 0) {
-					x[length] = tran2.method421();
+					x[length] = tran2.getSmart();
 				} else {
 					x[length] = defaultValue;
 				}
 
 				if ((flags & 2) != 0) {
-					y[length] = tran2.method421();
+					y[length] = tran2.getSmart();
 				} else {
 					y[length] = defaultValue;
 				}
 
 				if ((flags & 4) != 0) {
-					z[length] = tran2.method421();
+					z[length] = tran2.getSmart();
 				} else {
 					z[length] = defaultValue;
 				}

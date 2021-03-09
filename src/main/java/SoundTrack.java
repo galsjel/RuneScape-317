@@ -20,7 +20,7 @@ public class SoundTrack {
 		aBuffer_328 = new Buffer(aByteArray327);
 		SoundTone.method166();
 		do {
-			int j = buffer.method410();
+			int j = buffer.getU16();
 			if (j == 65535) {
 				return;
 			}
@@ -41,15 +41,15 @@ public class SoundTrack {
 
 	public void method242(Buffer buffer) {
 		for (int i = 0; i < 10; i++) {
-			int j = buffer.method408();
+			int j = buffer.getU8();
 			if (j != 0) {
 				buffer.position--;
 				aToneArray329[i] = new SoundTone();
 				aToneArray329[i].method169(buffer);
 			}
 		}
-		anInt330 = buffer.method410();
-		anInt331 = buffer.method410();
+		anInt330 = buffer.getU16();
+		anInt331 = buffer.getU16();
 	}
 
 	public int method243() {
@@ -80,19 +80,19 @@ public class SoundTrack {
 	public Buffer method244(int i) {
 		int k = method245(i);
 		aBuffer_328.position = 0;
-		aBuffer_328.method402(0x52494646);
-		aBuffer_328.method403(36 + k);
-		aBuffer_328.method402(0x57415645);
-		aBuffer_328.method402(0x666d7420);
-		aBuffer_328.method403(16);
-		aBuffer_328.method400(1);
-		aBuffer_328.method400(1);
-		aBuffer_328.method403(22050);
-		aBuffer_328.method403(22050);
-		aBuffer_328.method400(1);
-		aBuffer_328.method400(8);
-		aBuffer_328.method402(0x64617461);
-		aBuffer_328.method403(k);
+		aBuffer_328.put32(0x52494646);
+		aBuffer_328.put32LE(36 + k);
+		aBuffer_328.put32(0x57415645);
+		aBuffer_328.put32(0x666d7420);
+		aBuffer_328.put32LE(16);
+		aBuffer_328.put16LE(1);
+		aBuffer_328.put16LE(1);
+		aBuffer_328.put32LE(22050);
+		aBuffer_328.put32LE(22050);
+		aBuffer_328.put16LE(1);
+		aBuffer_328.put16LE(8);
+		aBuffer_328.put32(0x64617461);
+		aBuffer_328.put32LE(k);
 		aBuffer_328.position += k;
 		return aBuffer_328;
 	}

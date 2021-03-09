@@ -74,86 +74,86 @@ public class Component {
 
 	public static void method205(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
 		aCache_238 = new LRUCache(50000);
-		Buffer buffer = new Buffer(archive.method571("data", null));
+		Buffer buffer = new Buffer(archive.read("data", null));
 		int i = -1;
-		int j = buffer.method410();
+		int j = buffer.getU16();
 		aComponentArray210 = new Component[j];
-		while (buffer.position < buffer.aByteArray1405.length) {
-			int k = buffer.method410();
+		while (buffer.position < buffer.data.length) {
+			int k = buffer.getU16();
 			if (k == 65535) {
-				i = buffer.method410();
-				k = buffer.method410();
+				i = buffer.getU16();
+				k = buffer.getU16();
 			}
 			Component component = aComponentArray210[k] = new Component();
 			component.anInt250 = k;
 			component.anInt236 = i;
-			component.anInt262 = buffer.method408();
-			component.anInt217 = buffer.method408();
-			component.anInt214 = buffer.method410();
-			component.anInt220 = buffer.method410();
-			component.anInt267 = buffer.method410();
-			component.aByte254 = (byte) buffer.method408();
-			component.anInt230 = buffer.method408();
+			component.anInt262 = buffer.getU8();
+			component.anInt217 = buffer.getU8();
+			component.anInt214 = buffer.getU16();
+			component.anInt220 = buffer.getU16();
+			component.anInt267 = buffer.getU16();
+			component.aByte254 = (byte) buffer.getU8();
+			component.anInt230 = buffer.getU8();
 			if (component.anInt230 != 0) {
-				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.method408();
+				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.getU8();
 			} else {
 				component.anInt230 = -1;
 			}
-			int i1 = buffer.method408();
+			int i1 = buffer.getU8();
 			if (i1 > 0) {
 				component.anIntArray245 = new int[i1];
 				component.anIntArray212 = new int[i1];
 				for (int j1 = 0; j1 < i1; j1++) {
-					component.anIntArray245[j1] = buffer.method408();
-					component.anIntArray212[j1] = buffer.method410();
+					component.anIntArray245[j1] = buffer.getU8();
+					component.anIntArray212[j1] = buffer.getU16();
 				}
 			}
-			int k1 = buffer.method408();
+			int k1 = buffer.getU8();
 			if (k1 > 0) {
 				component.anIntArrayArray226 = new int[k1][];
 				for (int l1 = 0; l1 < k1; l1++) {
-					int i3 = buffer.method410();
+					int i3 = buffer.getU16();
 					component.anIntArrayArray226[l1] = new int[i3];
 					for (int l4 = 0; l4 < i3; l4++) {
-						component.anIntArrayArray226[l1][l4] = buffer.method410();
+						component.anIntArrayArray226[l1][l4] = buffer.getU16();
 					}
 				}
 			}
 			if (component.anInt262 == 0) {
-				component.anInt261 = buffer.method410();
-				component.aBoolean266 = buffer.method408() == 1;
-				int i2 = buffer.method410();
+				component.anInt261 = buffer.getU16();
+				component.aBoolean266 = buffer.getU8() == 1;
+				int i2 = buffer.getU16();
 				component.anIntArray240 = new int[i2];
 				component.anIntArray241 = new int[i2];
 				component.anIntArray272 = new int[i2];
 				for (int j3 = 0; j3 < i2; j3++) {
-					component.anIntArray240[j3] = buffer.method410();
-					component.anIntArray241[j3] = buffer.method411();
-					component.anIntArray272[j3] = buffer.method411();
+					component.anIntArray240[j3] = buffer.getU16();
+					component.anIntArray241[j3] = buffer.get16();
+					component.anIntArray272[j3] = buffer.get16();
 				}
 			}
 			if (component.anInt262 == 1) {
-				component.unusedInt = buffer.method410();
-				component.unusedBool = buffer.method408() == 1;
+				component.unusedInt = buffer.getU16();
+				component.unusedBool = buffer.getU8() == 1;
 			}
 			if (component.anInt262 == 2) {
 				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
 				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
-				component.aBoolean259 = buffer.method408() == 1;
-				component.aBoolean249 = buffer.method408() == 1;
-				component.aBoolean242 = buffer.method408() == 1;
-				component.aBoolean235 = buffer.method408() == 1;
-				component.anInt231 = buffer.method408();
-				component.anInt244 = buffer.method408();
+				component.aBoolean259 = buffer.getU8() == 1;
+				component.aBoolean249 = buffer.getU8() == 1;
+				component.aBoolean242 = buffer.getU8() == 1;
+				component.aBoolean235 = buffer.getU8() == 1;
+				component.anInt231 = buffer.getU8();
+				component.anInt244 = buffer.getU8();
 				component.anIntArray215 = new int[20];
 				component.anIntArray247 = new int[20];
 				component.aImageArray209 = new Image24[20];
 				for (int j2 = 0; j2 < 20; j2++) {
-					int k3 = buffer.method408();
+					int k3 = buffer.getU8();
 					if (k3 == 1) {
-						component.anIntArray215[j2] = buffer.method411();
-						component.anIntArray247[j2] = buffer.method411();
-						String s1 = buffer.method415();
+						component.anIntArray215[j2] = buffer.get16();
+						component.anIntArray247[j2] = buffer.get16();
+						String s1 = buffer.getString();
 						if ((archive_1 != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
 							component.aImageArray209[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), archive_1, s1.substring(0, i5));
@@ -162,102 +162,102 @@ public class Component {
 				}
 				component.aStringArray225 = new String[5];
 				for (int l3 = 0; l3 < 5; l3++) {
-					component.aStringArray225[l3] = buffer.method415();
+					component.aStringArray225[l3] = buffer.getString();
 					if (component.aStringArray225[l3].length() == 0) {
 						component.aStringArray225[l3] = null;
 					}
 				}
 			}
 			if (component.anInt262 == 3) {
-				component.aBoolean227 = buffer.method408() == 1;
+				component.aBoolean227 = buffer.getU8() == 1;
 			}
 			if ((component.anInt262 == 4) || (component.anInt262 == 1)) {
-				component.aBoolean223 = buffer.method408() == 1;
-				int k2 = buffer.method408();
+				component.aBoolean223 = buffer.getU8() == 1;
+				int k2 = buffer.getU8();
 				if (aclass30_sub2_sub1_sub4 != null) {
 					component.aFont_243 = aclass30_sub2_sub1_sub4[k2];
 				}
-				component.aBoolean268 = buffer.method408() == 1;
+				component.aBoolean268 = buffer.getU8() == 1;
 			}
 			if (component.anInt262 == 4) {
-				component.aString248 = buffer.method415();
-				component.aString228 = buffer.method415();
+				component.aString248 = buffer.getString();
+				component.aString228 = buffer.getString();
 			}
 			if ((component.anInt262 == 1) || (component.anInt262 == 3) || (component.anInt262 == 4)) {
-				component.anInt232 = buffer.method413();
+				component.anInt232 = buffer.get32();
 			}
 			if ((component.anInt262 == 3) || (component.anInt262 == 4)) {
-				component.anInt219 = buffer.method413();
-				component.anInt216 = buffer.method413();
-				component.anInt239 = buffer.method413();
+				component.anInt219 = buffer.get32();
+				component.anInt216 = buffer.get32();
+				component.anInt239 = buffer.get32();
 			}
 			if (component.anInt262 == 5) {
-				String s = buffer.method415();
+				String s = buffer.getString();
 				if ((archive_1 != null) && (s.length() > 0)) {
 					int i4 = s.lastIndexOf(",");
 					component.aImage_207 = method207(Integer.parseInt(s.substring(i4 + 1)), archive_1, s.substring(0, i4));
 				}
-				s = buffer.method415();
+				s = buffer.getString();
 				if ((archive_1 != null) && (s.length() > 0)) {
 					int j4 = s.lastIndexOf(",");
 					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), archive_1, s.substring(0, j4));
 				}
 			}
 			if (component.anInt262 == 6) {
-				int l = buffer.method408();
+				int l = buffer.getU8();
 				if (l != 0) {
 					component.anInt233 = 1;
-					component.anInt234 = ((l - 1) << 8) + buffer.method408();
+					component.anInt234 = ((l - 1) << 8) + buffer.getU8();
 				}
-				l = buffer.method408();
+				l = buffer.getU8();
 				if (l != 0) {
 					component.anInt255 = 1;
-					component.anInt256 = ((l - 1) << 8) + buffer.method408();
+					component.anInt256 = ((l - 1) << 8) + buffer.getU8();
 				}
-				l = buffer.method408();
+				l = buffer.getU8();
 				if (l != 0) {
-					component.anInt257 = ((l - 1) << 8) + buffer.method408();
+					component.anInt257 = ((l - 1) << 8) + buffer.getU8();
 				} else {
 					component.anInt257 = -1;
 				}
-				l = buffer.method408();
+				l = buffer.getU8();
 				if (l != 0) {
-					component.anInt258 = ((l - 1) << 8) + buffer.method408();
+					component.anInt258 = ((l - 1) << 8) + buffer.getU8();
 				} else {
 					component.anInt258 = -1;
 				}
-				component.anInt269 = buffer.method410();
-				component.anInt270 = buffer.method410();
-				component.anInt271 = buffer.method410();
+				component.anInt269 = buffer.getU16();
+				component.anInt270 = buffer.getU16();
+				component.anInt271 = buffer.getU16();
 			}
 			if (component.anInt262 == 7) {
 				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
 				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
-				component.aBoolean223 = buffer.method408() == 1;
-				int l2 = buffer.method408();
+				component.aBoolean223 = buffer.getU8() == 1;
+				int l2 = buffer.getU8();
 				if (aclass30_sub2_sub1_sub4 != null) {
 					component.aFont_243 = aclass30_sub2_sub1_sub4[l2];
 				}
-				component.aBoolean268 = buffer.method408() == 1;
-				component.anInt232 = buffer.method413();
-				component.anInt231 = buffer.method411();
-				component.anInt244 = buffer.method411();
-				component.aBoolean249 = buffer.method408() == 1;
+				component.aBoolean268 = buffer.getU8() == 1;
+				component.anInt232 = buffer.get32();
+				component.anInt231 = buffer.get16();
+				component.anInt244 = buffer.get16();
+				component.aBoolean249 = buffer.getU8() == 1;
 				component.aStringArray225 = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
-					component.aStringArray225[k4] = buffer.method415();
+					component.aStringArray225[k4] = buffer.getString();
 					if (component.aStringArray225[k4].length() == 0) {
 						component.aStringArray225[k4] = null;
 					}
 				}
 			}
 			if ((component.anInt217 == 2) || (component.anInt262 == 2)) {
-				component.aString222 = buffer.method415();
-				component.aString218 = buffer.method415();
-				component.anInt237 = buffer.method410();
+				component.aString222 = buffer.getString();
+				component.aString218 = buffer.getString();
+				component.anInt237 = buffer.getU16();
 			}
 			if ((component.anInt217 == 1) || (component.anInt217 == 4) || (component.anInt217 == 5) || (component.anInt217 == 6)) {
-				component.aString221 = buffer.method415();
+				component.aString221 = buffer.getString();
 				if (component.aString221.length() == 0) {
 					if (component.anInt217 == 1) {
 						component.aString221 = "Ok";

@@ -70,24 +70,24 @@ public class SoundFilter {
 	}
 
 	public void method545(Buffer buffer, SoundEnvelope envelope) {
-		int i = buffer.method408();
+		int i = buffer.getU8();
 		anIntArray665[0] = i >> 4;
 		anIntArray665[1] = i & 0xf;
 		if (i != 0) {
-			anIntArray668[0] = buffer.method410();
-			anIntArray668[1] = buffer.method410();
-			int j = buffer.method408();
+			anIntArray668[0] = buffer.getU16();
+			anIntArray668[1] = buffer.getU16();
+			int j = buffer.getU8();
 			for (int k = 0; k < 2; k++) {
 				for (int l = 0; l < anIntArray665[k]; l++) {
-					anIntArrayArrayArray666[k][0][l] = buffer.method410();
-					anIntArrayArrayArray667[k][0][l] = buffer.method410();
+					anIntArrayArrayArray666[k][0][l] = buffer.getU16();
+					anIntArrayArrayArray667[k][0][l] = buffer.getU16();
 				}
 			}
 			for (int i1 = 0; i1 < 2; i1++) {
 				for (int j1 = 0; j1 < anIntArray665[i1]; j1++) {
 					if ((j & (1 << (i1 * 4) << j1)) != 0) {
-						anIntArrayArrayArray666[i1][1][j1] = buffer.method410();
-						anIntArrayArrayArray667[i1][1][j1] = buffer.method410();
+						anIntArrayArrayArray666[i1][1][j1] = buffer.getU16();
+						anIntArrayArrayArray667[i1][1][j1] = buffer.getU16();
 					} else {
 						anIntArrayArrayArray666[i1][1][j1] = anIntArrayArrayArray666[i1][0][j1];
 						anIntArrayArrayArray667[i1][1][j1] = anIntArrayArrayArray667[i1][0][j1];

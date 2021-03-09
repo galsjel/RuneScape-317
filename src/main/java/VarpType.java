@@ -25,9 +25,9 @@ public class VarpType {
 	}
 
 	public static void method546(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.method571("varp.dat", null));
+		Buffer buffer = new Buffer(archive.read("varp.dat", null));
 		anInt702 = 0;
-		anInt700 = buffer.method410();
+		anInt700 = buffer.getU16();
 		if (aVarpArray701 == null) {
 			aVarpArray701 = new VarpType[anInt700];
 		}
@@ -40,41 +40,41 @@ public class VarpType {
 			}
 			aVarpArray701[j].method547(buffer, j);
 		}
-		if (buffer.position != buffer.aByteArray1405.length) {
+		if (buffer.position != buffer.data.length) {
 			System.out.println("varptype load mismatch");
 		}
 	}
 
 	public void method547(Buffer buffer, int i) {
 		do {
-			int j = buffer.method408();
+			int j = buffer.getU8();
 			if (j == 0) {
 				return;
 			}
 			if (j == 1) {
-				unusedInt0 = buffer.method408();
+				unusedInt0 = buffer.getU8();
 			} else if (j == 2) {
-				unusedInt1 = buffer.method408();
+				unusedInt1 = buffer.getU8();
 			} else if (j == 3) {
 				unusedBool0 = true;
 				anIntArray703[anInt702++] = i;
 			} else if (j == 4) {
 				unusedBool1 = false;
 			} else if (j == 5) {
-				anInt709 = buffer.method410();
+				anInt709 = buffer.getU16();
 			} else if (j == 6) {
 				unusedBool2 = true;
 			} else if (j == 7) {
-				unusedInt2 = buffer.method413();
+				unusedInt2 = buffer.get32();
 			} else if (j == 8) {
 				unusedInt3 = 1;
 				unusedBool3 = true;
 			} else if (j == 10) {
-				unusedString = buffer.method415();
+				unusedString = buffer.getString();
 			} else if (j == 11) {
 				unusedBool3 = true;
 			} else if (j == 12) {
-				unusedInt4 = buffer.method413();
+				unusedInt4 = buffer.get32();
 			} else if (j == 13) {
 				unusedInt3 = 2;
 			} else {

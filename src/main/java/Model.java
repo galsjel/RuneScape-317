@@ -194,22 +194,22 @@ public class Model extends Entity {
 		int z = 0;
 
 		for (int v = 0; v < vertexCount; v++) {
-			int flags = buf0.method408();
+			int flags = buf0.getU8();
 
 			int dx = 0;
 			int dy = 0;
 			int dz = 0;
 
 			if ((flags & 1) != 0) {
-				dx = buf1.method421();
+				dx = buf1.getSmart();
 			}
 
 			if ((flags & 2) != 0) {
-				dy = buf2.method421();
+				dy = buf2.getSmart();
 			}
 
 			if ((flags & 4) != 0) {
-				dz = buf3.method421();
+				dz = buf3.getSmart();
 			}
 
 			vertexX[v] = x + dx;
@@ -221,7 +221,7 @@ public class Model extends Entity {
 			z = vertexZ[v];
 
 			if (vertexLabel != null) {
-				vertexLabel[v] = buf4.method408();
+				vertexLabel[v] = buf4.getU8();
 			}
 		}
 
@@ -232,22 +232,22 @@ public class Model extends Entity {
 		buf4.position = header.obFace5Position;
 
 		for (int face = 0; face < faceCount; face++) {
-			faceColor[face] = buf0.method410();
+			faceColor[face] = buf0.getU16();
 
 			if (faceInfo != null) {
-				faceInfo[face] = buf1.method408();
+				faceInfo[face] = buf1.getU8();
 			}
 
 			if (facePriority != null) {
-				facePriority[face] = buf2.method408();
+				facePriority[face] = buf2.getU8();
 			}
 
 			if (faceAlpha != null) {
-				faceAlpha[face] = buf3.method408();
+				faceAlpha[face] = buf3.getU8();
 			}
 
 			if (faceLabel != null) {
-				faceLabel[face] = buf4.method408();
+				faceLabel[face] = buf4.getU8();
 			}
 		}
 
@@ -260,7 +260,7 @@ public class Model extends Entity {
 		int last = 0;
 
 		for (int face = 0; face < faceCount; face++) {
-			int orientation = buf1.method408();
+			int orientation = buf1.getU8();
 
 			// fancy shmansy compression type stuff.
 			// vertex indices stored as deltas, with some faces
@@ -268,11 +268,11 @@ public class Model extends Entity {
 
 			// new a, b, c
 			if (orientation == 1) {
-				a = buf0.method421() + last;
+				a = buf0.getSmart() + last;
 				last = a;
-				b = buf0.method421() + last;
+				b = buf0.getSmart() + last;
 				last = b;
-				c = buf0.method421() + last;
+				c = buf0.getSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -282,7 +282,7 @@ public class Model extends Entity {
 			// reuse a, c, new b
 			if (orientation == 2) {
 				b = c;
-				c = buf0.method421() + last;
+				c = buf0.getSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -292,7 +292,7 @@ public class Model extends Entity {
 			// reuse c, b, new a
 			if (orientation == 3) {
 				a = c;
-				c = buf0.method421() + last;
+				c = buf0.getSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -304,7 +304,7 @@ public class Model extends Entity {
 				int a_ = a;
 				a = b;
 				b = a_;
-				c = buf0.method421() + last;
+				c = buf0.getSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -315,9 +315,9 @@ public class Model extends Entity {
 		buf0.position = header.obAxisPosition;
 
 		for (int face = 0; face < texturedFaceCount; face++) {
-			texturedVertexA[face] = buf0.method410();
-			texturedVertexB[face] = buf0.method410();
-			texturedVertexC[face] = buf0.method410();
+			texturedVertexA[face] = buf0.getU16();
+			texturedVertexB[face] = buf0.getU16();
+			texturedVertexC[face] = buf0.getU16();
 		}
 	}
 
@@ -816,19 +816,19 @@ public class Model extends Entity {
 		buffer.position = src.length - 18;
 		ModelHeader header = headers[id] = new ModelHeader();
 		header.data = src;
-		header.vertexCount = buffer.method410();
-		header.faceCount = buffer.method410();
-		header.texturedFaceCount = buffer.method408();
-		int k = buffer.method408();
-		int l = buffer.method408();
-		int i1 = buffer.method408();
-		int j1 = buffer.method408();
-		int k1 = buffer.method408();
-		int l1 = buffer.method410();
-		int i2 = buffer.method410();
+		header.vertexCount = buffer.getU16();
+		header.faceCount = buffer.getU16();
+		header.texturedFaceCount = buffer.getU8();
+		int k = buffer.getU8();
+		int l = buffer.getU8();
+		int i1 = buffer.getU8();
+		int j1 = buffer.getU8();
+		int k1 = buffer.getU8();
+		int l1 = buffer.getU16();
+		int i2 = buffer.getU16();
 		//noinspection unused
-		int j2 = buffer.method410();
-		int k2 = buffer.method410();
+		int j2 = buffer.getU16();
+		int k2 = buffer.getU16();
 		int offset = 0;
 		header.obPoint1Position = offset;
 		offset += header.vertexCount;

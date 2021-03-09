@@ -2,37 +2,35 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class BZip2Deflator {
+public class BZip2 {
 
-	public static final BZip2Block A_BLOCK___305 = new BZip2Block();
+	public static final BZip2Context context = new BZip2Context();
 
-	public static int method225(byte[] abyte0, int i, byte[] abyte1, int j, int k) {
-		synchronized (A_BLOCK___305) {
-			A_BLOCK___305.aByteArray563 = abyte1;
-			A_BLOCK___305.anInt564 = k;
-			A_BLOCK___305.aByteArray568 = abyte0;
-			A_BLOCK___305.anInt569 = 0;
-			A_BLOCK___305.anInt565 = j;
-			A_BLOCK___305.anInt570 = i;
-			A_BLOCK___305.anInt577 = 0;
-			A_BLOCK___305.anInt576 = 0;
-			A_BLOCK___305.anInt566 = 0;
-			A_BLOCK___305.anInt567 = 0;
-			A_BLOCK___305.anInt571 = 0;
-			A_BLOCK___305.anInt572 = 0;
-			A_BLOCK___305.anInt579 = 0;
-			method227(A_BLOCK___305);
-			i -= A_BLOCK___305.anInt570;
-			return i;
+	public static void inflate(byte[] abyte0, int i, byte[] abyte1, int j, int k) {
+		synchronized (context) {
+			context.aByteArray563 = abyte1;
+			context.anInt564 = k;
+			context.aByteArray568 = abyte0;
+			context.anInt569 = 0;
+			context.anInt565 = j;
+			context.anInt570 = i;
+			context.anInt577 = 0;
+			context.anInt576 = 0;
+			context.anInt566 = 0;
+			context.anInt567 = 0;
+			context.anInt571 = 0;
+			context.anInt572 = 0;
+			context.anInt579 = 0;
+			method227(context);
 		}
 	}
 
-	public static void method226(BZip2Block block) {
+	public static void method226(BZip2Context block) {
 		byte byte4 = block.aByte573;
 		int i = block.anInt574;
 		int j = block.anInt584;
 		int k = block.anInt582;
-		int[] ai = BZip2Block.anIntArray587;
+		int[] ai = BZip2Context.anIntArray587;
 		int l = block.anInt581;
 		byte[] abyte0 = block.aByteArray568;
 		int i1 = block.anInt569;
@@ -138,21 +136,21 @@ public class BZip2Deflator {
 		block.anInt574 = i;
 		block.anInt584 = j;
 		block.anInt582 = k;
-		BZip2Block.anIntArray587 = ai;
+		BZip2Context.anIntArray587 = ai;
 		block.anInt581 = l;
 		block.aByteArray568 = abyte0;
 		block.anInt569 = i1;
 		block.anInt570 = j1;
 	}
 
-	public static void method227(BZip2Block block) {
+	public static void method227(BZip2Context block) {
 		int k8 = 0;
 		int[] ai = null;
 		int[] ai1 = null;
 		int[] ai2 = null;
 		block.anInt578 = 1;
-		if (BZip2Block.anIntArray587 == null) {
-			BZip2Block.anIntArray587 = new int[block.anInt578 * 0x186a0];
+		if (BZip2Context.anIntArray587 == null) {
+			BZip2Context.anIntArray587 = new int[block.anInt578 * 0x186a0];
 		}
 		boolean flag19 = true;
 		while (flag19) {
@@ -325,7 +323,7 @@ public class BZip2Deflator {
 					byte byte5 = block.aByteArray591[block.aByteArray592[block.anIntArray593[0]] & 0xff];
 					block.anIntArray583[byte5 & 0xff] += j6;
 					for (; j6 > 0; j6--) {
-						BZip2Block.anIntArray587[i6] = byte5 & 0xff;
+						BZip2Context.anIntArray587[i6] = byte5 & 0xff;
 						i6++;
 					}
 				} else {
@@ -372,7 +370,7 @@ public class BZip2Deflator {
 						}
 					}
 					block.anIntArray583[block.aByteArray591[byte6 & 0xff] & 0xff]++;
-					BZip2Block.anIntArray587[i6] = block.aByteArray591[byte6 & 0xff] & 0xff;
+					BZip2Context.anIntArray587[i6] = block.aByteArray591[byte6 & 0xff] & 0xff;
 					i6++;
 					if (j5 == 0) {
 						i5++;
@@ -404,13 +402,13 @@ public class BZip2Deflator {
 				block.anIntArray585[k2] += block.anIntArray585[k2 - 1];
 			}
 			for (int l2 = 0; l2 < i6; l2++) {
-				byte byte7 = (byte) (BZip2Block.anIntArray587[l2] & 0xff);
-				BZip2Block.anIntArray587[block.anIntArray585[byte7 & 0xff]] |= l2 << 8;
+				byte byte7 = (byte) (BZip2Context.anIntArray587[l2] & 0xff);
+				BZip2Context.anIntArray587[block.anIntArray585[byte7 & 0xff]] |= l2 << 8;
 				block.anIntArray585[byte7 & 0xff]++;
 			}
-			block.anInt581 = BZip2Block.anIntArray587[block.anInt580] >> 8;
+			block.anInt581 = BZip2Context.anIntArray587[block.anInt580] >> 8;
 			block.anInt584 = 0;
-			block.anInt581 = BZip2Block.anIntArray587[block.anInt581];
+			block.anInt581 = BZip2Context.anIntArray587[block.anInt581];
 			block.anInt582 = (byte) (block.anInt581 & 0xff);
 			block.anInt581 >>= 8;
 			block.anInt584++;
@@ -420,15 +418,15 @@ public class BZip2Deflator {
 		}
 	}
 
-	public static byte method228(BZip2Block block) {
+	public static byte method228(BZip2Context block) {
 		return (byte) method230(8, block);
 	}
 
-	public static byte method229(BZip2Block block) {
+	public static byte method229(BZip2Context block) {
 		return (byte) method230(1, block);
 	}
 
-	public static int method230(int i, BZip2Block block) {
+	public static int method230(int i, BZip2Context block) {
 		int j;
 		do {
 			if (block.anInt577 >= i) {
@@ -449,7 +447,7 @@ public class BZip2Deflator {
 		return j;
 	}
 
-	public static void method231(BZip2Block block) {
+	public static void method231(BZip2Context block) {
 		block.anInt588 = 0;
 		for (int i = 0; i < 256; i++) {
 			if (block.aBooleanArray589[i]) {

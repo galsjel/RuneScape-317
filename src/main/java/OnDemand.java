@@ -161,26 +161,26 @@ public class OnDemand implements Runnable {
 	public void method551(FileArchive archive, Game game1) {
 		String[] as = {"model_version", "anim_version", "midi_version", "map_version"};
 		for (int i = 0; i < 4; i++) {
-			byte[] abyte0 = archive.method571(as[i], null);
+			byte[] abyte0 = archive.read(as[i], null);
 			int j = abyte0.length / 2;
 			Buffer buffer = new Buffer(abyte0);
 			anIntArrayArray1364[i] = new int[j];
 			aByteArrayArray1342[i] = new byte[j];
 			for (int l = 0; l < j; l++) {
-				anIntArrayArray1364[i][l] = buffer.method410();
+				anIntArrayArray1364[i][l] = buffer.getU16();
 			}
 		}
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 		for (int k = 0; k < 4; k++) {
-			byte[] abyte1 = archive.method571(as1[k], null);
+			byte[] abyte1 = archive.read(as1[k], null);
 			int i1 = abyte1.length / 4;
 			Buffer buffer_1 = new Buffer(abyte1);
 			anIntArrayArray1365[k] = new int[i1];
 			for (int l1 = 0; l1 < i1; l1++) {
-				anIntArrayArray1365[k][l1] = buffer_1.method413();
+				anIntArrayArray1365[k][l1] = buffer_1.get32();
 			}
 		}
-		byte[] abyte2 = archive.method571("model_index", null);
+		byte[] abyte2 = archive.read("model_index", null);
 		int j1 = anIntArrayArray1364[0].length;
 		aByteArray1372 = new byte[j1];
 		for (int k1 = 0; k1 < j1; k1++) {
@@ -190,7 +190,7 @@ public class OnDemand implements Runnable {
 				aByteArray1372[k1] = 0;
 			}
 		}
-		abyte2 = archive.method571("map_index", null);
+		abyte2 = archive.read("map_index", null);
 		Buffer class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 7;
 		anIntArray1371 = new int[j1];
@@ -198,24 +198,24 @@ public class OnDemand implements Runnable {
 		anIntArray1337 = new int[j1];
 		anIntArray1356 = new int[j1];
 		for (int i2 = 0; i2 < j1; i2++) {
-			anIntArray1371[i2] = class30_sub2_sub2_2.method410();
-			anIntArray1350[i2] = class30_sub2_sub2_2.method410();
-			anIntArray1337[i2] = class30_sub2_sub2_2.method410();
-			anIntArray1356[i2] = class30_sub2_sub2_2.method408();
+			anIntArray1371[i2] = class30_sub2_sub2_2.getU16();
+			anIntArray1350[i2] = class30_sub2_sub2_2.getU16();
+			anIntArray1337[i2] = class30_sub2_sub2_2.getU16();
+			anIntArray1356[i2] = class30_sub2_sub2_2.getU8();
 		}
-		abyte2 = archive.method571("anim_index", null);
+		abyte2 = archive.read("anim_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1360 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++) {
-			anIntArray1360[j2] = class30_sub2_sub2_2.method410();
+			anIntArray1360[j2] = class30_sub2_sub2_2.getU16();
 		}
-		abyte2 = archive.method571("midi_index", null);
+		abyte2 = archive.read("midi_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length;
 		anIntArray1348 = new int[j1];
 		for (int k2 = 0; k2 < j1; k2++) {
-			anIntArray1348[k2] = class30_sub2_sub2_2.method408();
+			anIntArray1348[k2] = class30_sub2_sub2_2.getU8();
 		}
 		aGame1343 = game1;
 		aBoolean1353 = true;

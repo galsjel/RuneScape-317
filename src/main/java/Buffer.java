@@ -6,352 +6,329 @@ import java.math.BigInteger;
 
 public class Buffer extends DoublyLinkedListNode {
 
-	public static final int[] anIntArray1409 = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
-	public static final LinkedList A_LIST___1414 = new LinkedList();
-	public static final LinkedList A_LIST___1415 = new LinkedList();
-	public static final LinkedList A_LIST___1416 = new LinkedList();
-	public static final int[] anIntArray1408;
-	public static int anInt1411;
-	public static int anInt1412;
-	public static int anInt1413;
+	public static final LinkedList bufferPool0 = new LinkedList();
+	public static final LinkedList bufferPool1 = new LinkedList();
+	public static final LinkedList bufferPool2 = new LinkedList();
+	private static final int[] BITMASK = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
+	public static int bufferPoolSize0;
+	public static int bufferPoolSize1;
+	public static int bufferPoolSize2;
 
-	static {
-		anIntArray1408 = new int[256];
-		for (int j = 0; j < 256; j++) {
-			int i = j;
-			for (int k = 0; k < 8; k++) {
-				if ((i & 1) == 1) {
-					i = (i >>> 1) ^ 0xedb88320;
-				} else {
-					i >>>= 1;
-				}
+	public static Buffer create(int sizeType) {
+		synchronized (bufferPool1) {
+			Buffer buffer = null;
+			if ((sizeType == 0) && (bufferPoolSize0 > 0)) {
+				bufferPoolSize0--;
+				buffer = (Buffer) bufferPool0.method251();
+			} else if ((sizeType == 1) && (bufferPoolSize1 > 0)) {
+				bufferPoolSize1--;
+				buffer = (Buffer) bufferPool1.method251();
+			} else if ((sizeType == 2) && (bufferPoolSize2 > 0)) {
+				bufferPoolSize2--;
+				buffer = (Buffer) bufferPool2.method251();
 			}
-			anIntArray1408[j] = i;
+			if (buffer != null) {
+				buffer.position = 0;
+				return buffer;
+			}
 		}
+		Buffer buffer = new Buffer();
+		buffer.position = 0;
+		if (sizeType == 0) {
+			buffer.data = new byte[100];
+		} else if (sizeType == 1) {
+			buffer.data = new byte[5000];
+		} else {
+			buffer.data = new byte[30000];
+		}
+		return buffer;
 	}
 
-	public byte[] aByteArray1405;
+	public byte[] data;
 	public int position;
-	public int anInt1407;
-	public ISAACCipher aISAACCipher_1410;
+	public int bitPosition;
+	public ISAACCipher cipher;
 
 	public Buffer() {
 	}
 
-	public Buffer(byte[] abyte0) {
-		aByteArray1405 = abyte0;
+	public Buffer(byte[] src) {
+		data = src;
 		position = 0;
 	}
 
-	public static Buffer method396(int i) {
-		synchronized (A_LIST___1415) {
-			Buffer class30_sub2_sub2_2 = null;
-			if ((i == 0) && (anInt1411 > 0)) {
-				anInt1411--;
-				class30_sub2_sub2_2 = (Buffer) A_LIST___1414.method251();
-			} else if ((i == 1) && (anInt1412 > 0)) {
-				anInt1412--;
-				class30_sub2_sub2_2 = (Buffer) A_LIST___1415.method251();
-			} else if ((i == 2) && (anInt1413 > 0)) {
-				anInt1413--;
-				class30_sub2_sub2_2 = (Buffer) A_LIST___1416.method251();
-			}
-			if (class30_sub2_sub2_2 != null) {
-				class30_sub2_sub2_2.position = 0;
-				return class30_sub2_sub2_2;
-			}
-		}
-		Buffer buffer_1 = new Buffer();
-		buffer_1.position = 0;
-		if (i == 0) {
-			buffer_1.aByteArray1405 = new byte[100];
-		} else if (i == 1) {
-			buffer_1.aByteArray1405 = new byte[5000];
-		} else {
-			buffer_1.aByteArray1405 = new byte[30000];
-		}
-		return buffer_1;
+	public void putOp(int i) {
+		data[position++] = (byte) (i + cipher.method246());
 	}
 
-	public void method397(int i) {
-		aByteArray1405[position++] = (byte) (i + aISAACCipher_1410.method246());
+	public void putSize8(int i) {
+		data[position - i - 1] = (byte) i;
 	}
 
-	public void method398(int i) {
-		aByteArray1405[position++] = (byte) i;
+	public void put8(int i) {
+		data[position++] = (byte) i;
 	}
 
-	public void method399(int i) {
-		aByteArray1405[position++] = (byte) (i >> 8);
-		aByteArray1405[position++] = (byte) i;
+	public void put8C(int i) {
+		data[position++] = (byte) (-i);
 	}
 
-	public void method400(int i) {
-		aByteArray1405[position++] = (byte) i;
-		aByteArray1405[position++] = (byte) (i >> 8);
+	public void put8S(int j) {
+		data[position++] = (byte) (128 - j);
 	}
 
-	public void method401(int i) {
-		aByteArray1405[position++] = (byte) (i >> 16);
-		aByteArray1405[position++] = (byte) (i >> 8);
-		aByteArray1405[position++] = (byte) i;
+	public void put16(int i) {
+		data[position++] = (byte) (i >> 8);
+		data[position++] = (byte) i;
 	}
 
-	public void method402(int i) {
-		aByteArray1405[position++] = (byte) (i >> 24);
-		aByteArray1405[position++] = (byte) (i >> 16);
-		aByteArray1405[position++] = (byte) (i >> 8);
-		aByteArray1405[position++] = (byte) i;
+	public void put16A(int j) {
+		data[position++] = (byte) (j >> 8);
+		data[position++] = (byte) (j + 128);
 	}
 
-	public void method403(int j) {
-		aByteArray1405[position++] = (byte) j;
-		aByteArray1405[position++] = (byte) (j >> 8);
-		aByteArray1405[position++] = (byte) (j >> 16);
-		aByteArray1405[position++] = (byte) (j >> 24);
+	public void put16LE(int i) {
+		data[position++] = (byte) i;
+		data[position++] = (byte) (i >> 8);
 	}
 
-	public void method404(long l) {
-		aByteArray1405[position++] = (byte) (int) (l >> 56);
-		aByteArray1405[position++] = (byte) (int) (l >> 48);
-		aByteArray1405[position++] = (byte) (int) (l >> 40);
-		aByteArray1405[position++] = (byte) (int) (l >> 32);
-		aByteArray1405[position++] = (byte) (int) (l >> 24);
-		aByteArray1405[position++] = (byte) (int) (l >> 16);
-		aByteArray1405[position++] = (byte) (int) (l >> 8);
-		aByteArray1405[position++] = (byte) (int) l;
+	public void put16LEA(int j) {
+		data[position++] = (byte) (j + 128);
+		data[position++] = (byte) (j >> 8);
 	}
 
-	public void method405(String s) {
-		s.getBytes(0, s.length(), aByteArray1405, position);
+	public void put24(int i) {
+		data[position++] = (byte) (i >> 16);
+		data[position++] = (byte) (i >> 8);
+		data[position++] = (byte) i;
+	}
+
+	public void put32(int i) {
+		data[position++] = (byte) (i >> 24);
+		data[position++] = (byte) (i >> 16);
+		data[position++] = (byte) (i >> 8);
+		data[position++] = (byte) i;
+	}
+
+	public void put32LE(int j) {
+		data[position++] = (byte) j;
+		data[position++] = (byte) (j >> 8);
+		data[position++] = (byte) (j >> 16);
+		data[position++] = (byte) (j >> 24);
+	}
+
+	public void put64(long l) {
+		data[position++] = (byte) (int) (l >> 56);
+		data[position++] = (byte) (int) (l >> 48);
+		data[position++] = (byte) (int) (l >> 40);
+		data[position++] = (byte) (int) (l >> 32);
+		data[position++] = (byte) (int) (l >> 24);
+		data[position++] = (byte) (int) (l >> 16);
+		data[position++] = (byte) (int) (l >> 8);
+		data[position++] = (byte) (int) l;
+	}
+
+	public void putString(String s) {
+		s.getBytes(0, s.length(), data, position);
 		position += s.length();
-		aByteArray1405[position++] = 10;
+		data[position++] = 10;
 	}
 
-	public void method406(byte[] abyte0, int i, int j) {
-		for (int k = j; k < (j + i); k++) {
-			aByteArray1405[position++] = abyte0[k];
+	public void putBytes(byte[] src, int len, int off) {
+		for (int k = off; k < (off + len); k++) {
+			data[position++] = src[k];
 		}
 	}
 
-	public void method407(int i) {
-		aByteArray1405[position - i - 1] = (byte) i;
+	public void putBytesA(int off, byte[] src, int len) {
+		for (int i = (off + len) - 1; i >= off; i--) {
+			data[position++] = (byte) (src[i] + 128);
+		}
 	}
 
-	public int method408() {
-		return aByteArray1405[position++] & 0xff;
+	public byte get8() {
+		return data[position++];
 	}
 
-	public byte method409() {
-		return aByteArray1405[position++];
+	public byte get8C() {
+		return (byte) (-data[position++]);
 	}
 
-	public int method410() {
+	public byte get8S() {
+		return (byte) (128 - data[position++]);
+	}
+
+	public int getU8() {
+		return data[position++] & 0xff;
+	}
+
+	public int getU8A() {
+		return (data[position++] - 128) & 0xff;
+	}
+
+	public int getU8C() {
+		return -data[position++] & 0xff;
+	}
+
+	public int getU8S() {
+		return (128 - data[position++]) & 0xff;
+	}
+
+	public int getSmart() {
+		int i = data[position] & 0xff;
+		if (i < 0x80) {
+			return getU8() - 0x40;
+		} else {
+			return getU16() - 0xc000;
+		}
+	}
+
+	public int getUSmart() {
+		int i = data[position] & 0xff;
+		if (i < 0x80) {
+			return getU8();
+		} else {
+			return getU16() - 0x7fff;
+		}
+	}
+
+	public int getU16() {
 		position += 2;
-		return ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
+		return ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int method411() {
+	public int getU16A() {
 		position += 2;
-		int i = ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
-		if (i > 32767) {
+		return ((data[position - 2] & 0xff) << 8) + ((data[position - 1] - 128) & 0xff);
+	}
+
+	public int getU16LE() {
+		position += 2;
+		return ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
+	}
+
+	public int getU16LEA() {
+		position += 2;
+		return ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
+	}
+
+	public int get16() {
+		position += 2;
+		int i = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
+		if (i > 0x7fff) {
 			i -= 0x10000;
 		}
 		return i;
 	}
 
-	public int method412() {
+	public int get16LE() {
+		position += 2;
+		int j = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
+		if (j > 0x7fff) {
+			j -= 0x10000;
+		}
+		return j;
+	}
+
+	public int get16LEA() {
+		position += 2;
+		int j = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
+		if (j > 0x7fff) {
+			j -= 0x10000;
+		}
+		return j;
+	}
+
+	public int get24() {
 		position += 3;
-		return ((aByteArray1405[position - 3] & 0xff) << 16) + ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
+		return ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int method413() {
+	public int get32() {
 		position += 4;
-		return ((aByteArray1405[position - 4] & 0xff) << 24) + ((aByteArray1405[position - 3] & 0xff) << 16) + ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
+		return ((data[position - 4] & 0xff) << 24) + ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public long method414() {
-		long l = (long) method413() & 0xffffffffL;
-		long l1 = (long) method413() & 0xffffffffL;
+	public int get32ME() {
+		position += 4;
+		return ((data[position - 3] & 0xff) << 24) + ((data[position - 4] & 0xff) << 16) + ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
+	}
+
+	public int get32RME() {
+		position += 4;
+		return ((data[position - 2] & 0xff) << 24) + ((data[position - 1] & 0xff) << 16) + ((data[position - 4] & 0xff) << 8) + (data[position - 3] & 0xff);
+	}
+
+	public long get64() {
+		long l = (long) get32() & 0xffffffffL;
+		long l1 = (long) get32() & 0xffffffffL;
 		return (l << 32) + l1;
 	}
 
-	public String method415() {
-		int i = position;
-		while (aByteArray1405[position++] != 10) {
+	public String getString() {
+		int start = position;
+		while (data[position++] != '\n') {
 		}
-		return new String(aByteArray1405, i, position - i - 1);
+		return new String(data, start, position - start - 1);
 	}
 
-	public byte[] method416() {
-		int i = position;
-		while (aByteArray1405[position++] != 10) {
+	public byte[] getStringBytes() {
+		int start = position;
+		while (data[position++] != '\n') {
 		}
-		byte[] abyte0 = new byte[position - i - 1];
-		for (int j = i; j < (position - 1); j++) {
-			abyte0[j - i] = aByteArray1405[j];
+		byte[] raw = new byte[position - start - 1];
+		for (int j = start; j < (position - 1); j++) {
+			raw[j - start] = data[j];
 		}
-		return abyte0;
+		return raw;
 	}
 
-	public void method417(int i, int j, byte[] abyte0) {
-		for (int l = j; l < (j + i); l++) {
-			abyte0[l] = aByteArray1405[position++];
+	public void getBytes(byte[] dst, int off, int len) {
+		for (int i = off; i < (off + len); i++) {
+			dst[i] = data[position++];
 		}
 	}
 
-	public void method418() {
-		anInt1407 = position * 8;
+	public void getBytesReversed(byte[] dst, int off, int len) {
+		for (int i = (off + len) - 1; i >= off; i--) {
+			dst[i] = data[position++];
+		}
 	}
 
-	public int method419(int i) {
-		int k = anInt1407 >> 3;
-		int l = 8 - (anInt1407 & 7);
-		int i1 = 0;
-		anInt1407 += i;
-		for (; i > l; l = 8) {
-			i1 += (aByteArray1405[k++] & anIntArray1409[l]) << (i - l);
-			i -= l;
+	public void accessBits() {
+		bitPosition = position * 8;
+	}
+
+	public int getN(int n) {
+		int bytePos = bitPosition >> 3;
+		int remaining = 8 - (bitPosition & 7);
+		int value = 0;
+		bitPosition += n;
+		for (; n > remaining; remaining = 8) {
+			value += (data[bytePos++] & BITMASK[remaining]) << (n - remaining);
+			n -= remaining;
 		}
-		if (i == l) {
-			i1 += aByteArray1405[k] & anIntArray1409[l];
+		if (n == remaining) {
+			value += data[bytePos] & BITMASK[remaining];
 		} else {
-			i1 += (aByteArray1405[k] >> (l - i)) & anIntArray1409[i];
+			value += (data[bytePos] >> (remaining - n)) & BITMASK[n];
 		}
-		return i1;
+		return value;
 	}
 
-	public void method420() {
-		position = (anInt1407 + 7) / 8;
+	public void accessBytes() {
+		position = (bitPosition + 7) / 8;
 	}
 
-	public int method421() {
-		int i = aByteArray1405[position] & 0xff;
-		if (i < 128) {
-			return method408() - 64;
-		} else {
-			return method410() - 49152;
-		}
-	}
-
-	public int method422() {
-		int i = aByteArray1405[position] & 0xff;
-		if (i < 128) {
-			return method408();
-		} else {
-			return method410() - 32768;
-		}
-	}
-
-	public void method423(BigInteger biginteger, BigInteger biginteger1) {
-		int i = position;
+	public void encrypt(BigInteger exponent, BigInteger modulus) {
+		int length = position;
 		position = 0;
-		byte[] abyte0 = new byte[i];
-		method417(i, 0, abyte0);
-		BigInteger biginteger2 = new BigInteger(abyte0);
-		BigInteger biginteger3 = biginteger2.modPow(biginteger, biginteger1);
-		byte[] abyte1 = biginteger3.toByteArray();
+		byte[] raw = new byte[length];
+		getBytes(raw, 0, length);
+		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
 		position = 0;
-		method398(abyte1.length);
-		method406(abyte1, abyte1.length, 0);
-	}
-
-	public void method424(int i) {
-		aByteArray1405[position++] = (byte) (-i);
-	}
-
-	public void method425(int j) {
-		aByteArray1405[position++] = (byte) (128 - j);
-	}
-
-	public int method426() {
-		return (aByteArray1405[position++] - 128) & 0xff;
-	}
-
-	public int method427() {
-		return -aByteArray1405[position++] & 0xff;
-	}
-
-	public int method428() {
-		return (128 - aByteArray1405[position++]) & 0xff;
-	}
-
-	public byte method429() {
-		return (byte) (-aByteArray1405[position++]);
-	}
-
-	public byte method430() {
-		return (byte) (128 - aByteArray1405[position++]);
-	}
-
-	public void method431(int i) {
-		aByteArray1405[position++] = (byte) i;
-		aByteArray1405[position++] = (byte) (i >> 8);
-	}
-
-	public void method432(int j) {
-		aByteArray1405[position++] = (byte) (j >> 8);
-		aByteArray1405[position++] = (byte) (j + 128);
-	}
-
-	public void method433(int j) {
-		aByteArray1405[position++] = (byte) (j + 128);
-		aByteArray1405[position++] = (byte) (j >> 8);
-	}
-
-	public int method434() {
-		position += 2;
-		return ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
-	}
-
-	public int method435() {
-		position += 2;
-		return ((aByteArray1405[position - 2] & 0xff) << 8) + ((aByteArray1405[position - 1] - 128) & 0xff);
-	}
-
-	public int method436() {
-		position += 2;
-		return ((aByteArray1405[position - 1] & 0xff) << 8) + ((aByteArray1405[position - 2] - 128) & 0xff);
-	}
-
-	public int method437() {
-		position += 2;
-		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
-		if (j > 32767) {
-			j -= 0x10000;
-		}
-		return j;
-	}
-
-	public int method438() {
-		position += 2;
-		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + ((aByteArray1405[position - 2] - 128) & 0xff);
-		if (j > 32767) {
-			j -= 0x10000;
-		}
-		return j;
-	}
-
-	public int method439() {
-		position += 4;
-		return ((aByteArray1405[position - 2] & 0xff) << 24) + ((aByteArray1405[position - 1] & 0xff) << 16) + ((aByteArray1405[position - 4] & 0xff) << 8) + (aByteArray1405[position - 3] & 0xff);
-	}
-
-	public int method440() {
-		position += 4;
-		return ((aByteArray1405[position - 3] & 0xff) << 24) + ((aByteArray1405[position - 4] & 0xff) << 16) + ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
-	}
-
-	public void method441(int i, byte[] abyte0, int j) {
-		for (int k = (i + j) - 1; k >= i; k--) {
-			aByteArray1405[position++] = (byte) (abyte0[k] + 128);
-		}
-	}
-
-	public void method442(int i, int j, byte[] abyte0) {
-		for (int k = (j + i) - 1; k >= j; k--) {
-			abyte0[k] = aByteArray1405[position++];
-		}
+		put8(encrypted.length);
+		putBytes(encrypted, encrypted.length, 0);
 	}
 
 }

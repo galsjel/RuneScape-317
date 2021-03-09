@@ -15,7 +15,7 @@ public class StringUtil {
 
 	}
 
-	public static long getBase37(String s) {
+	public static long toBase37(String s) {
 		long l = 0L;
 		for (int i = 0; (i < s.length()) && (i < 12); i++) {
 			char c = s.charAt(i);
@@ -65,7 +65,7 @@ public class StringUtil {
 		return String.format("%d.%d.%d.%d", (ipv4 >> 24) & 0xff, (ipv4 >> 16) & 0xff, (ipv4 >> 8) & 0xff, ipv4 & 0xff);
 	}
 
-	public static String method587(String s) {
+	public static String formatName(String s) {
 		if (s.length() > 0) {
 			char[] ac = s.toCharArray();
 			for (int j = 0; j < ac.length; j++) {

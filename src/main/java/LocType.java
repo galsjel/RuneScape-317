@@ -80,14 +80,14 @@ public class LocType {
 	}
 
 	public static void method576(FileArchive archive) {
-		aBuffer_753 = new Buffer(archive.method571("loc.dat", null));
-		Buffer buffer = new Buffer(archive.method571("loc.idx", null));
-		anInt756 = buffer.method410();
+		aBuffer_753 = new Buffer(archive.read("loc.dat", null));
+		Buffer buffer = new Buffer(archive.read("loc.idx", null));
+		anInt756 = buffer.getU16();
 		anIntArray755 = new int[anInt756];
 		int i = 2;
 		for (int j = 0; j < anInt756; j++) {
 			anIntArray755[j] = i;
-			i += buffer.method410();
+			i += buffer.getU16();
 		}
 		aTypeArray782 = new LocType[20];
 		for (int k = 0; k < 20; k++) {
@@ -331,51 +331,51 @@ public class LocType {
 		do {
 			int j;
 			do {
-				j = buffer.method408();
+				j = buffer.getU8();
 				if (j == 0) {
 					break label0;
 				}
 				if (j == 1) {
-					int k = buffer.method408();
+					int k = buffer.getU8();
 					if (k > 0) {
 						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = new int[k];
 							anIntArray773 = new int[k];
 							for (int k1 = 0; k1 < k; k1++) {
-								anIntArray773[k1] = buffer.method410();
-								anIntArray776[k1] = buffer.method408();
+								anIntArray773[k1] = buffer.getU16();
+								anIntArray776[k1] = buffer.getU8();
 							}
 						} else {
 							buffer.position += k * 3;
 						}
 					}
 				} else if (j == 2) {
-					aString739 = buffer.method415();
+					aString739 = buffer.getString();
 				} else if (j == 3) {
-					aByteArray777 = buffer.method416();
+					aByteArray777 = buffer.getStringBytes();
 				} else if (j == 5) {
-					int l = buffer.method408();
+					int l = buffer.getU8();
 					if (l > 0) {
 						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = null;
 							anIntArray773 = new int[l];
 							for (int l1 = 0; l1 < l; l1++) {
-								anIntArray773[l1] = buffer.method410();
+								anIntArray773[l1] = buffer.getU16();
 							}
 						} else {
 							buffer.position += l * 2;
 						}
 					}
 				} else if (j == 14) {
-					anInt744 = buffer.method408();
+					anInt744 = buffer.getU8();
 				} else if (j == 15) {
-					anInt761 = buffer.method408();
+					anInt761 = buffer.getU8();
 				} else if (j == 17) {
 					aBoolean767 = false;
 				} else if (j == 18) {
 					aBoolean757 = false;
 				} else if (j == 19) {
-					i = buffer.method408();
+					i = buffer.getU8();
 					if (i == 1) {
 						aBoolean778 = true;
 					}
@@ -386,54 +386,54 @@ public class LocType {
 				} else if (j == 23) {
 					aBoolean764 = true;
 				} else if (j == 24) {
-					anInt781 = buffer.method410();
+					anInt781 = buffer.getU16();
 					if (anInt781 == 65535) {
 						anInt781 = -1;
 					}
 				} else if (j == 28) {
-					anInt775 = buffer.method408();
+					anInt775 = buffer.getU8();
 				} else if (j == 29) {
-					aByte737 = buffer.method409();
+					aByte737 = buffer.get8();
 				} else if (j == 39) {
-					aByte742 = buffer.method409();
+					aByte742 = buffer.get8();
 				} else if ((j >= 30) && (j < 39)) {
 					if (aStringArray786 == null) {
 						aStringArray786 = new String[5];
 					}
-					aStringArray786[j - 30] = buffer.method415();
+					aStringArray786[j - 30] = buffer.getString();
 					if (aStringArray786[j - 30].equalsIgnoreCase("hidden")) {
 						aStringArray786[j - 30] = null;
 					}
 				} else if (j == 40) {
-					int i1 = buffer.method408();
+					int i1 = buffer.getU8();
 					anIntArray784 = new int[i1];
 					anIntArray747 = new int[i1];
 					for (int i2 = 0; i2 < i1; i2++) {
-						anIntArray784[i2] = buffer.method410();
-						anIntArray747[i2] = buffer.method410();
+						anIntArray784[i2] = buffer.getU16();
+						anIntArray747[i2] = buffer.getU16();
 					}
 				} else if (j == 60) {
-					anInt746 = buffer.method410();
+					anInt746 = buffer.getU16();
 				} else if (j == 62) {
 					aBoolean751 = true;
 				} else if (j == 64) {
 					aBoolean779 = false;
 				} else if (j == 65) {
-					anInt748 = buffer.method410();
+					anInt748 = buffer.getU16();
 				} else if (j == 66) {
-					anInt772 = buffer.method410();
+					anInt772 = buffer.getU16();
 				} else if (j == 67) {
-					anInt740 = buffer.method410();
+					anInt740 = buffer.getU16();
 				} else if (j == 68) {
-					anInt758 = buffer.method410();
+					anInt758 = buffer.getU16();
 				} else if (j == 69) {
-					anInt768 = buffer.method408();
+					anInt768 = buffer.getU8();
 				} else if (j == 70) {
-					anInt738 = buffer.method411();
+					anInt738 = buffer.get16();
 				} else if (j == 71) {
-					anInt745 = buffer.method411();
+					anInt745 = buffer.get16();
 				} else if (j == 72) {
-					anInt783 = buffer.method411();
+					anInt783 = buffer.get16();
 				} else if (j == 73) {
 					aBoolean736 = true;
 				} else if (j == 74) {
@@ -442,22 +442,22 @@ public class LocType {
 					if (j != 75) {
 						continue;
 					}
-					anInt760 = buffer.method408();
+					anInt760 = buffer.getU8();
 				}
 				continue label0;
 			} while (j != 77);
-			anInt774 = buffer.method410();
+			anInt774 = buffer.getU16();
 			if (anInt774 == 65535) {
 				anInt774 = -1;
 			}
-			anInt749 = buffer.method410();
+			anInt749 = buffer.getU16();
 			if (anInt749 == 65535) {
 				anInt749 = -1;
 			}
-			int j1 = buffer.method408();
+			int j1 = buffer.getU8();
 			anIntArray759 = new int[j1 + 1];
 			for (int j2 = 0; j2 <= j1; j2++) {
-				anIntArray759[j2] = buffer.method410();
+				anIntArray759[j2] = buffer.getU16();
 				if (anIntArray759[j2] == 65535) {
 					anIntArray759[j2] = -1;
 				}

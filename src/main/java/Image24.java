@@ -43,41 +43,41 @@ public class Image24 extends Draw2D {
 	}
 
 	public Image24(FileArchive archive, String s, int i) {
-		Buffer buffer = new Buffer(archive.method571(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(archive.method571("index.dat", null));
-		buffer_1.position = buffer.method410();
-		anInt1444 = buffer_1.method410();
-		anInt1445 = buffer_1.method410();
-		int j = buffer_1.method408();
+		Buffer buffer = new Buffer(archive.read(s + ".dat", null));
+		Buffer buffer_1 = new Buffer(archive.read("index.dat", null));
+		buffer_1.position = buffer.getU16();
+		anInt1444 = buffer_1.getU16();
+		anInt1445 = buffer_1.getU16();
+		int j = buffer_1.getU8();
 		int[] ai = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
-			ai[k + 1] = buffer_1.method412();
+			ai[k + 1] = buffer_1.get24();
 			if (ai[k + 1] == 0) {
 				ai[k + 1] = 1;
 			}
 		}
 		for (int l = 0; l < i; l++) {
 			buffer_1.position += 2;
-			buffer.position += buffer_1.method410() * buffer_1.method410();
+			buffer.position += buffer_1.getU16() * buffer_1.getU16();
 			buffer_1.position++;
 		}
-		anInt1442 = buffer_1.method408();
-		anInt1443 = buffer_1.method408();
-		anInt1440 = buffer_1.method410();
-		anInt1441 = buffer_1.method410();
-		int i1 = buffer_1.method408();
+		anInt1442 = buffer_1.getU8();
+		anInt1443 = buffer_1.getU8();
+		anInt1440 = buffer_1.getU16();
+		anInt1441 = buffer_1.getU16();
+		int i1 = buffer_1.getU8();
 		int j1 = anInt1440 * anInt1441;
 		anIntArray1439 = new int[j1];
 		if (i1 == 0) {
 			for (int k1 = 0; k1 < j1; k1++) {
-				anIntArray1439[k1] = ai[buffer.method408()];
+				anIntArray1439[k1] = ai[buffer.getU8()];
 			}
 			return;
 		}
 		if (i1 == 1) {
 			for (int l1 = 0; l1 < anInt1440; l1++) {
 				for (int i2 = 0; i2 < anInt1441; i2++) {
-					anIntArray1439[l1 + (i2 * anInt1440)] = ai[buffer.method408()];
+					anIntArray1439[l1 + (i2 * anInt1440)] = ai[buffer.getU8()];
 				}
 			}
 		}

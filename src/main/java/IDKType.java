@@ -17,8 +17,8 @@ public class IDKType {
 	}
 
 	public static void method535(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.method571("idk.dat", null));
-		anInt655 = buffer.method410();
+		Buffer buffer = new Buffer(archive.read("idk.dat", null));
+		anInt655 = buffer.getU16();
 		if (aIDKTypeArray656 == null) {
 			aIDKTypeArray656 = new IDKType[anInt655];
 		}
@@ -32,26 +32,26 @@ public class IDKType {
 
 	public void method536(Buffer buffer) {
 		do {
-			int i = buffer.method408();
+			int i = buffer.getU8();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt657 = buffer.method408();
+				anInt657 = buffer.getU8();
 			} else if (i == 2) {
-				int j = buffer.method408();
+				int j = buffer.getU8();
 				anIntArray658 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray658[k] = buffer.method410();
+					anIntArray658[k] = buffer.getU16();
 				}
 			} else if (i == 3) {
 				aBoolean662 = true;
 			} else if ((i >= 40) && (i < 50)) {
-				anIntArray659[i - 40] = buffer.method410();
+				anIntArray659[i - 40] = buffer.getU16();
 			} else if ((i >= 50) && (i < 60)) {
-				anIntArray660[i - 50] = buffer.method410();
+				anIntArray660[i - 50] = buffer.getU16();
 			} else if ((i >= 60) && (i < 70)) {
-				anIntArray661[i - 60] = buffer.method410();
+				anIntArray661[i - 60] = buffer.getU16();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
 			}

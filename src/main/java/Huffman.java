@@ -12,7 +12,7 @@ public class Huffman {
 		int j = 0;
 		int k = -1;
 		for (int l = 0; l < i; l++) {
-			int i1 = buffer.method408();
+			int i1 = buffer.getU8();
 			int j1 = (i1 >> 4) & 0xf;
 			if (k == -1) {
 				if (j1 < 13) {
@@ -73,18 +73,18 @@ public class Huffman {
 				if (k < 13) {
 					i = k;
 				} else {
-					buffer.method398(k);
+					buffer.put8(k);
 				}
 			} else if (k < 13) {
-				buffer.method398((i << 4) + k);
+				buffer.put8((i << 4) + k);
 				i = -1;
 			} else {
-				buffer.method398((i << 4) + (k >> 4));
+				buffer.put8((i << 4) + (k >> 4));
 				i = k & 0xf;
 			}
 		}
 		if (i != -1) {
-			buffer.method398(i << 4);
+			buffer.put8(i << 4);
 		}
 	}
 
