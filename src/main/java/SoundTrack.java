@@ -43,7 +43,7 @@ public class SoundTrack {
 		for (int i = 0; i < 10; i++) {
 			int j = buffer.method408();
 			if (j != 0) {
-				buffer.anInt1406--;
+				buffer.position--;
 				aToneArray329[i] = new SoundTone();
 				aToneArray329[i].method169(buffer);
 			}
@@ -79,7 +79,7 @@ public class SoundTrack {
 
 	public Buffer method244(int i) {
 		int k = method245(i);
-		aBuffer_328.anInt1406 = 0;
+		aBuffer_328.position = 0;
 		aBuffer_328.method402(0x52494646);
 		aBuffer_328.method403(36 + k);
 		aBuffer_328.method402(0x57415645);
@@ -93,7 +93,7 @@ public class SoundTrack {
 		aBuffer_328.method400(8);
 		aBuffer_328.method402(0x64617461);
 		aBuffer_328.method403(k);
-		aBuffer_328.anInt1406 += k;
+		aBuffer_328.position += k;
 		return aBuffer_328;
 	}
 

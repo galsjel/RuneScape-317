@@ -35,7 +35,7 @@ public class FileArchive {
 		anIntArray729 = new int[anInt727];
 		anIntArray730 = new int[anInt727];
 		anIntArray731 = new int[anInt727];
-		int k = buffer.anInt1406 + anInt727 * 10;
+		int k = buffer.position + anInt727 * 10;
 		for (int l = 0; l < anInt727; l++) {
 			anIntArray728[l] = buffer.method413();
 			anIntArray729[l] = buffer.method412();

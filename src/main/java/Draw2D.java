@@ -1,224 +1,245 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+import java.util.Arrays;
 
 public class Draw2D extends DoublyLinkedListNode {
 
-	public static int[] anIntArray1378;
-	public static int anInt1379;
-	public static int anInt1380;
-	public static int anInt1381;
-	public static int anInt1382;
-	public static int anInt1383;
-	public static int anInt1384;
-	public static int anInt1385;
-	public static int anInt1386;
-	public static int anInt1387;
+	public static int[] pixels;
+	public static int width;
+	public static int height;
+	public static int top;
+	public static int bottom;
+	public static int left;
+	public static int right;
+	public static int boundX;
+	public static int centerX;
+	public static int centerY;
 
 	public Draw2D() {
 	}
 
-	public static void method331(int i, int j, int[] ai) {
-		anIntArray1378 = ai;
-		anInt1379 = j;
-		anInt1380 = i;
-		method333(i, 0, j, 0);
+	public static void bind(int[] pixels, int width, int height) {
+		Draw2D.pixels = pixels;
+		Draw2D.width = width;
+		Draw2D.height = height;
+		setBounds(height, 0, width, 0);
 	}
 
-	public static void method332() {
-		anInt1383 = 0;
-		anInt1381 = 0;
-		anInt1384 = anInt1379;
-		anInt1382 = anInt1380;
-		anInt1385 = anInt1384 - 1;
-		anInt1386 = anInt1384 / 2;
+	public static void resetBounds() {
+		left = 0;
+		top = 0;
+		right = width;
+		bottom = height;
+		boundX = right - 1;
+		centerX = right / 2;
 	}
 
-	public static void method333(int i, int j, int k, int l) {
-		if (j < 0) {
-			j = 0;
+	public static void setBounds(int bottom, int left, int right, int top) {
+		if (left < 0) {
+			left = 0;
 		}
-		if (l < 0) {
-			l = 0;
+		if (top < 0) {
+			top = 0;
 		}
-		if (k > anInt1379) {
-			k = anInt1379;
+		if (right > width) {
+			right = width;
 		}
-		if (i > anInt1380) {
-			i = anInt1380;
+		if (bottom > height) {
+			bottom = height;
 		}
-		anInt1383 = j;
-		anInt1381 = l;
-		anInt1384 = k;
-		anInt1382 = i;
-		anInt1385 = anInt1384 - 1;
-		anInt1386 = anInt1384 / 2;
-		anInt1387 = anInt1382 / 2;
+		Draw2D.left = left;
+		Draw2D.top = top;
+		Draw2D.right = right;
+		Draw2D.bottom = bottom;
+		boundX = Draw2D.right - 1;
+		centerX = Draw2D.right / 2;
+		centerY = Draw2D.bottom / 2;
 	}
 
-	public static void method334() {
-		int i = anInt1379 * anInt1380;
-		for (int j = 0; j < i; j++) {
-			anIntArray1378[j] = 0;
-		}
+	public static void clear() {
+		Arrays.fill(pixels, 0);
 	}
 
-	public static void method335(int i, int j, int k, int l, int i1, int k1) {
-		if (k1 < anInt1383) {
-			k -= anInt1383 - k1;
-			k1 = anInt1383;
+	public static void fillRect(int x, int y, int width, int height, int rgb, int alpha) {
+		if (x < left) {
+			width -= left - x;
+			x = left;
 		}
-		if (j < anInt1381) {
-			l -= anInt1381 - j;
-			j = anInt1381;
+
+		if (y < top) {
+			height -= top - y;
+			y = top;
 		}
-		if (k1 + k > anInt1384) {
-			k = anInt1384 - k1;
+
+		if (x + width > right) {
+			width = right - x;
 		}
-		if (j + l > anInt1382) {
-			l = anInt1382 - j;
+
+		if (y + height > bottom) {
+			height = bottom - y;
 		}
-		int l1 = 256 - i1;
-		int i2 = (i >> 16 & 0xff) * i1;
-		int j2 = (i >> 8 & 0xff) * i1;
-		int k2 = (i & 0xff) * i1;
-		int k3 = anInt1379 - k;
-		int l3 = k1 + j * anInt1379;
-		for (int i4 = 0; i4 < l; i4++) {
-			for (int j4 = -k; j4 < 0; j4++) {
-				int l2 = (anIntArray1378[l3] >> 16 & 0xff) * l1;
-				int i3 = (anIntArray1378[l3] >> 8 & 0xff) * l1;
-				int j3 = (anIntArray1378[l3] & 0xff) * l1;
-				int k4 = ((i2 + l2 >> 8) << 16) + ((j2 + i3 >> 8) << 8) + (k2 + j3 >> 8);
-				anIntArray1378[l3++] = k4;
+
+		int invAlpha = 256 - alpha;
+		int r0 = (rgb >> 16 & 0xff) * alpha;
+		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int b0 = (rgb & 0xff) * alpha;
+
+		int step = Draw2D.width - width;
+		int offset = x + y * Draw2D.width;
+
+		for (int i = 0; i < height; i++) {
+			for (int j = -width; j < 0; j++) {
+				int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
+				int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+				int b1 = (pixels[offset] & 0xff) * invAlpha;
+				pixels[offset++] = (((r0 + r1) >> 8) << 16) + (((g0 + g1) >> 8) << 8) + ((b0 + b1) >> 8);
 			}
-			l3 += k3;
+			offset += step;
 		}
 	}
 
-	public static void method336(int i, int j, int k, int l, int i1) {
-		if (k < anInt1383) {
-			i1 -= anInt1383 - k;
-			k = anInt1383;
+	public static void fillRect(int x, int y, int width, int height, int rgb) {
+		if (x < left) {
+			width -= left - x;
+			x = left;
 		}
-		if (j < anInt1381) {
-			i -= anInt1381 - j;
-			j = anInt1381;
+
+		if (y < top) {
+			height -= top - y;
+			y = top;
 		}
-		if (k + i1 > anInt1384) {
-			i1 = anInt1384 - k;
+
+		if (x + width > right) {
+			width = right - x;
 		}
-		if (j + i > anInt1382) {
-			i = anInt1382 - j;
+
+		if (y + height > bottom) {
+			height = bottom - y;
 		}
-		int k1 = anInt1379 - i1;
-		int l1 = k + j * anInt1379;
-		for (int i2 = -i; i2 < 0; i2++) {
-			for (int j2 = -i1; j2 < 0; j2++) {
-				anIntArray1378[l1++] = l;
+
+		int step = Draw2D.width - width;
+		int offset = x + y * Draw2D.width;
+
+		for (int i = -height; i < 0; i++) {
+			for (int j = -width; j < 0; j++) {
+				pixels[offset++] = rgb;
 			}
-			l1 += k1;
+			offset += step;
 		}
 	}
 
-	public static void method337(int i, int j, int k, int l, int i1) {
-		method339(i1, l, j, i);
-		method339((i1 + k) - 1, l, j, i);
-		method341(i1, l, k, i);
-		method341(i1, l, k, (i + j) - 1);
+	public static void drawRect(int x, int y, int width, int height, int rgb) {
+		drawLineX(x, y, width, rgb);
+		drawLineX(x, (y + height) - 1, width, rgb);
+		drawLineY(y, rgb, height, x);
+		drawLineY(y, rgb, height, (x + width) - 1);
 	}
 
-	public static void method338(int i, int j, int k, int l, int i1, int j1) {
-		method340(l, i1, i, k, j1);
-		method340(l, i1, (i + j) - 1, k, j1);
-		if (j >= 3) {
-			method342(l, j1, k, i + 1, j - 2);
-			method342(l, (j1 + i1) - 1, k, i + 1, j - 2);
+	public static void drawRect(int x, int y, int width, int height, int rgb, int alpha) {
+		drawLineX(x, y, width, rgb, alpha);
+		drawLineX(x, (y + height) - 1, width, rgb, alpha);
+		if (height >= 3) {
+			drawLineY(rgb, x, alpha, y + 1, height - 2);
+			drawLineY(rgb, (x + width) - 1, alpha, y + 1, height - 2);
 		}
 	}
 
-	public static void method339(int i, int j, int k, int l) {
-		if (i < anInt1381 || i >= anInt1382) {
+	public static void drawLineX(int x, int y, int length, int rgb) {
+		if (y < top || y >= bottom) {
 			return;
 		}
-		if (l < anInt1383) {
-			k -= anInt1383 - l;
-			l = anInt1383;
+
+		if (x < left) {
+			length -= left - x;
+			x = left;
 		}
-		if (l + k > anInt1384) {
-			k = anInt1384 - l;
+
+		if (x + length > right) {
+			length = right - x;
 		}
-		int i1 = l + i * anInt1379;
-		for (int j1 = 0; j1 < k; j1++) {
-			anIntArray1378[i1 + j1] = j;
+
+		int offset = x + y * width;
+
+		for (int i = 0; i < length; i++) {
+			pixels[offset + i] = rgb;
 		}
 	}
 
-	public static void method340(int i, int j, int k, int l, int i1) {
-		if (k < anInt1381 || k >= anInt1382) {
+	public static void drawLineX(int x, int y, int length, int rgb, int alpha) {
+		if (y < top || y >= bottom) {
 			return;
 		}
-		if (i1 < anInt1383) {
-			j -= anInt1383 - i1;
-			i1 = anInt1383;
+
+		if (x < left) {
+			length -= left - x;
+			x = left;
 		}
-		if (i1 + j > anInt1384) {
-			j = anInt1384 - i1;
+
+		if (x + length > right) {
+			length = right - x;
 		}
-		int j1 = 256 - l;
-		int k1 = (i >> 16 & 0xff) * l;
-		int l1 = (i >> 8 & 0xff) * l;
-		int i2 = (i & 0xff) * l;
-		int i3 = i1 + k * anInt1379;
-		for (int j3 = 0; j3 < j; j3++) {
-			int j2 = (anIntArray1378[i3] >> 16 & 0xff) * j1;
-			int k2 = (anIntArray1378[i3] >> 8 & 0xff) * j1;
-			int l2 = (anIntArray1378[i3] & 0xff) * j1;
-			int k3 = ((k1 + j2 >> 8) << 16) + ((l1 + k2 >> 8) << 8) + (i2 + l2 >> 8);
-			anIntArray1378[i3++] = k3;
+
+		int invAlpha = 256 - alpha;
+		int r0 = (rgb >> 16 & 0xff) * alpha;
+		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int b0 = (rgb & 0xff) * alpha;
+
+		int offset = x + y * width;
+
+		for (int i = 0; i < length; i++) {
+			int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
+			int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+			int b1 = (pixels[offset] & 0xff) * invAlpha;
+			pixels[offset++] = ((r0 + r1 >> 8) << 16) + ((g0 + g1 >> 8) << 8) + (b0 + b1 >> 8);
 		}
 	}
 
-	public static void method341(int i, int j, int k, int l) {
-		if (l < anInt1383 || l >= anInt1384) {
+	public static void drawLineY(int y, int rgb, int length, int x) {
+		if (x < left || x >= right) {
 			return;
 		}
-		if (i < anInt1381) {
-			k -= anInt1381 - i;
-			i = anInt1381;
+
+		if (y < top) {
+			length -= top - y;
+			y = top;
 		}
-		if (i + k > anInt1382) {
-			k = anInt1382 - i;
+
+		if (y + length > bottom) {
+			length = bottom - y;
 		}
-		int j1 = l + i * anInt1379;
-		for (int k1 = 0; k1 < k; k1++) {
-			anIntArray1378[j1 + k1 * anInt1379] = j;
+
+		int offset = x + y * width;
+
+		for (int i = 0; i < length; i++) {
+			pixels[offset + i * width] = rgb;
 		}
 	}
 
-	public static void method342(int i, int j, int k, int l, int i1) {
-		if (j < anInt1383 || j >= anInt1384) {
+	public static void drawLineY(int rgb, int x, int alpha, int y, int length) {
+		if (x < left || x >= right) {
 			return;
 		}
-		if (l < anInt1381) {
-			i1 -= anInt1381 - l;
-			l = anInt1381;
+
+		if (y < top) {
+			length -= top - y;
+			y = top;
 		}
-		if (l + i1 > anInt1382) {
-			i1 = anInt1382 - l;
+
+		if (y + length > bottom) {
+			length = bottom - y;
 		}
-		int j1 = 256 - k;
-		int k1 = (i >> 16 & 0xff) * k;
-		int l1 = (i >> 8 & 0xff) * k;
-		int i2 = (i & 0xff) * k;
-		int i3 = j + l * anInt1379;
-		for (int j3 = 0; j3 < i1; j3++) {
-			int j2 = (anIntArray1378[i3] >> 16 & 0xff) * j1;
-			int k2 = (anIntArray1378[i3] >> 8 & 0xff) * j1;
-			int l2 = (anIntArray1378[i3] & 0xff) * j1;
-			int k3 = ((k1 + j2 >> 8) << 16) + ((l1 + k2 >> 8) << 8) + (i2 + l2 >> 8);
-			anIntArray1378[i3] = k3;
-			i3 += anInt1379;
+
+		int invAlpha = 256 - alpha;
+		int r0 = (rgb >> 16 & 0xff) * alpha;
+		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int b0 = (rgb & 0xff) * alpha;
+
+		int offset = x + y * width;
+
+		for (int i = 0; i < length; i++) {
+			int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
+			int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+			int b1 = (pixels[offset] & 0xff) * invAlpha;
+			pixels[offset] = ((r0 + r1 >> 8) << 16) + ((g0 + g1 >> 8) << 8) + (b0 + b1 >> 8);
+			offset += width;
 		}
 	}
 

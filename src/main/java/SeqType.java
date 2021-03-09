@@ -42,9 +42,9 @@ public class SeqType {
 	public int method258(int i) {
 		int j = anIntArray355[i];
 		if (j == 0) {
-			SeqTransform transform = SeqTransform.method531(anIntArray353[i]);
+			SeqFrame transform = SeqFrame.get(anIntArray353[i]);
 			if (transform != null) {
-				j = anIntArray355[i] = transform.anInt636;
+				j = anIntArray355[i] = transform.delay;
 			}
 		}
 		if (j == 0) {
@@ -80,7 +80,7 @@ public class SeqType {
 				for (int l = 0; l < k; l++) {
 					anIntArray357[l] = buffer.method408();
 				}
-				anIntArray357[k] = 0x98967f;
+				anIntArray357[k] = 9999999;
 			} else if (i == 4) {
 				aBoolean358 = true;
 			} else if (i == 5) {

@@ -32,7 +32,7 @@ public class VarbitType {
 				VarpType.aVarpArray701[aVarbitArray646[j].anInt648].unusedBool3 = true;
 			}
 		}
-		if (buffer.anInt1406 != buffer.aByteArray1405.length) {
+		if (buffer.position != buffer.aByteArray1405.length) {
 			System.out.println("varbit load mismatch");
 		}
 	}

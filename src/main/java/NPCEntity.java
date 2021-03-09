@@ -34,28 +34,28 @@ public class NPCEntity extends PathingEntity {
 		if (model == null) {
 			return null;
 		}
-		super.anInt1507 = model.anInt1426;
+		super.anInt1507 = model.minY;
 		if (super.anInt1520 != -1 && super.anInt1521 != -1) {
 			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
 			Model model_1 = type.method266();
 			if (model_1 != null) {
 				int j = type.aType_407.anIntArray353[super.anInt1521];
-				Model class30_sub2_sub4_sub6_2 = new Model(true, SeqTransform.method532(j), false, model_1);
-				class30_sub2_sub4_sub6_2.method475(0, -super.anInt1524, 0);
-				class30_sub2_sub4_sub6_2.method469();
-				class30_sub2_sub4_sub6_2.method470(j);
-				class30_sub2_sub4_sub6_2.anIntArrayArray1658 = null;
-				class30_sub2_sub4_sub6_2.anIntArrayArray1657 = null;
+				Model class30_sub2_sub4_sub6_2 = new Model(true, SeqFrame.isNull(j), false, model_1);
+				class30_sub2_sub4_sub6_2.translate(0, -super.anInt1524, 0);
+				class30_sub2_sub4_sub6_2.createLabelReferences();
+				class30_sub2_sub4_sub6_2.applySequenceFrame(j);
+				class30_sub2_sub4_sub6_2.labelFaces = null;
+				class30_sub2_sub4_sub6_2.labelVertices = null;
 				if (type.anInt410 != 128 || type.anInt411 != 128) {
-					class30_sub2_sub4_sub6_2.method478(type.anInt410, type.anInt410, type.anInt411);
+					class30_sub2_sub4_sub6_2.scale(type.anInt410, type.anInt410, type.anInt411);
 				}
-				class30_sub2_sub4_sub6_2.method479(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
+				class30_sub2_sub4_sub6_2.calculateNormals(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
 				Model[] aclass30_sub2_sub4_sub6 = {model, class30_sub2_sub4_sub6_2};
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6);
 			}
 		}
 		if (aType_1696.aByte68 == 1) {
-			model.aBoolean1659 = true;
+			model.pickBounds = true;
 		}
 		return model;
 	}

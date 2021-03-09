@@ -31,7 +31,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public byte[] aByteArray1405;
-	public int anInt1406;
+	public int position;
 	public int anInt1407;
 	public ISAACCipher aISAACCipher_1410;
 
@@ -40,7 +40,7 @@ public class Buffer extends DoublyLinkedListNode {
 
 	public Buffer(byte[] abyte0) {
 		aByteArray1405 = abyte0;
-		anInt1406 = 0;
+		position = 0;
 	}
 
 	public static Buffer method396(int i) {
@@ -57,12 +57,12 @@ public class Buffer extends DoublyLinkedListNode {
 				class30_sub2_sub2_2 = (Buffer) A_LIST___1416.method251();
 			}
 			if (class30_sub2_sub2_2 != null) {
-				class30_sub2_sub2_2.anInt1406 = 0;
+				class30_sub2_sub2_2.position = 0;
 				return class30_sub2_sub2_2;
 			}
 		}
 		Buffer buffer_1 = new Buffer();
-		buffer_1.anInt1406 = 0;
+		buffer_1.position = 0;
 		if (i == 0) {
 			buffer_1.aByteArray1405 = new byte[100];
 		} else if (i == 1) {
@@ -74,86 +74,86 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void method397(int i) {
-		aByteArray1405[anInt1406++] = (byte) (i + aISAACCipher_1410.method246());
+		aByteArray1405[position++] = (byte) (i + aISAACCipher_1410.method246());
 	}
 
 	public void method398(int i) {
-		aByteArray1405[anInt1406++] = (byte) i;
+		aByteArray1405[position++] = (byte) i;
 	}
 
 	public void method399(int i) {
-		aByteArray1405[anInt1406++] = (byte) (i >> 8);
-		aByteArray1405[anInt1406++] = (byte) i;
+		aByteArray1405[position++] = (byte) (i >> 8);
+		aByteArray1405[position++] = (byte) i;
 	}
 
 	public void method400(int i) {
-		aByteArray1405[anInt1406++] = (byte) i;
-		aByteArray1405[anInt1406++] = (byte) (i >> 8);
+		aByteArray1405[position++] = (byte) i;
+		aByteArray1405[position++] = (byte) (i >> 8);
 	}
 
 	public void method401(int i) {
-		aByteArray1405[anInt1406++] = (byte) (i >> 16);
-		aByteArray1405[anInt1406++] = (byte) (i >> 8);
-		aByteArray1405[anInt1406++] = (byte) i;
+		aByteArray1405[position++] = (byte) (i >> 16);
+		aByteArray1405[position++] = (byte) (i >> 8);
+		aByteArray1405[position++] = (byte) i;
 	}
 
 	public void method402(int i) {
-		aByteArray1405[anInt1406++] = (byte) (i >> 24);
-		aByteArray1405[anInt1406++] = (byte) (i >> 16);
-		aByteArray1405[anInt1406++] = (byte) (i >> 8);
-		aByteArray1405[anInt1406++] = (byte) i;
+		aByteArray1405[position++] = (byte) (i >> 24);
+		aByteArray1405[position++] = (byte) (i >> 16);
+		aByteArray1405[position++] = (byte) (i >> 8);
+		aByteArray1405[position++] = (byte) i;
 	}
 
 	public void method403(int j) {
-		aByteArray1405[anInt1406++] = (byte) j;
-		aByteArray1405[anInt1406++] = (byte) (j >> 8);
-		aByteArray1405[anInt1406++] = (byte) (j >> 16);
-		aByteArray1405[anInt1406++] = (byte) (j >> 24);
+		aByteArray1405[position++] = (byte) j;
+		aByteArray1405[position++] = (byte) (j >> 8);
+		aByteArray1405[position++] = (byte) (j >> 16);
+		aByteArray1405[position++] = (byte) (j >> 24);
 	}
 
 	public void method404(long l) {
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 56);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 48);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 40);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 32);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 24);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 16);
-		aByteArray1405[anInt1406++] = (byte) (int) (l >> 8);
-		aByteArray1405[anInt1406++] = (byte) (int) l;
+		aByteArray1405[position++] = (byte) (int) (l >> 56);
+		aByteArray1405[position++] = (byte) (int) (l >> 48);
+		aByteArray1405[position++] = (byte) (int) (l >> 40);
+		aByteArray1405[position++] = (byte) (int) (l >> 32);
+		aByteArray1405[position++] = (byte) (int) (l >> 24);
+		aByteArray1405[position++] = (byte) (int) (l >> 16);
+		aByteArray1405[position++] = (byte) (int) (l >> 8);
+		aByteArray1405[position++] = (byte) (int) l;
 	}
 
 	public void method405(String s) {
-		s.getBytes(0, s.length(), aByteArray1405, anInt1406);
-		anInt1406 += s.length();
-		aByteArray1405[anInt1406++] = 10;
+		s.getBytes(0, s.length(), aByteArray1405, position);
+		position += s.length();
+		aByteArray1405[position++] = 10;
 	}
 
 	public void method406(byte[] abyte0, int i, int j) {
 		for (int k = j; k < j + i; k++) {
-			aByteArray1405[anInt1406++] = abyte0[k];
+			aByteArray1405[position++] = abyte0[k];
 		}
 	}
 
 	public void method407(int i) {
-		aByteArray1405[anInt1406 - i - 1] = (byte) i;
+		aByteArray1405[position - i - 1] = (byte) i;
 	}
 
 	public int method408() {
-		return aByteArray1405[anInt1406++] & 0xff;
+		return aByteArray1405[position++] & 0xff;
 	}
 
 	public byte method409() {
-		return aByteArray1405[anInt1406++];
+		return aByteArray1405[position++];
 	}
 
 	public int method410() {
-		anInt1406 += 2;
-		return ((aByteArray1405[anInt1406 - 2] & 0xff) << 8) + (aByteArray1405[anInt1406 - 1] & 0xff);
+		position += 2;
+		return ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
 	}
 
 	public int method411() {
-		anInt1406 += 2;
-		int i = ((aByteArray1405[anInt1406 - 2] & 0xff) << 8) + (aByteArray1405[anInt1406 - 1] & 0xff);
+		position += 2;
+		int i = ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
 		if (i > 32767) {
 			i -= 0x10000;
 		}
@@ -161,13 +161,13 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method412() {
-		anInt1406 += 3;
-		return ((aByteArray1405[anInt1406 - 3] & 0xff) << 16) + ((aByteArray1405[anInt1406 - 2] & 0xff) << 8) + (aByteArray1405[anInt1406 - 1] & 0xff);
+		position += 3;
+		return ((aByteArray1405[position - 3] & 0xff) << 16) + ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
 	}
 
 	public int method413() {
-		anInt1406 += 4;
-		return ((aByteArray1405[anInt1406 - 4] & 0xff) << 24) + ((aByteArray1405[anInt1406 - 3] & 0xff) << 16) + ((aByteArray1405[anInt1406 - 2] & 0xff) << 8) + (aByteArray1405[anInt1406 - 1] & 0xff);
+		position += 4;
+		return ((aByteArray1405[position - 4] & 0xff) << 24) + ((aByteArray1405[position - 3] & 0xff) << 16) + ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] & 0xff);
 	}
 
 	public long method414() {
@@ -177,18 +177,18 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public String method415() {
-		int i = anInt1406;
-		while (aByteArray1405[anInt1406++] != 10) {
+		int i = position;
+		while (aByteArray1405[position++] != 10) {
 		}
-		return new String(aByteArray1405, i, anInt1406 - i - 1);
+		return new String(aByteArray1405, i, position - i - 1);
 	}
 
 	public byte[] method416() {
-		int i = anInt1406;
-		while (aByteArray1405[anInt1406++] != 10) {
+		int i = position;
+		while (aByteArray1405[position++] != 10) {
 		}
-		byte[] abyte0 = new byte[anInt1406 - i - 1];
-		for (int j = i; j < anInt1406 - 1; j++) {
+		byte[] abyte0 = new byte[position - i - 1];
+		for (int j = i; j < position - 1; j++) {
 			abyte0[j - i] = aByteArray1405[j];
 		}
 		return abyte0;
@@ -196,12 +196,12 @@ public class Buffer extends DoublyLinkedListNode {
 
 	public void method417(int i, int j, byte[] abyte0) {
 		for (int l = j; l < j + i; l++) {
-			abyte0[l] = aByteArray1405[anInt1406++];
+			abyte0[l] = aByteArray1405[position++];
 		}
 	}
 
 	public void method418() {
-		anInt1407 = anInt1406 * 8;
+		anInt1407 = position * 8;
 	}
 
 	public int method419(int i) {
@@ -222,11 +222,11 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void method420() {
-		anInt1406 = (anInt1407 + 7) / 8;
+		position = (anInt1407 + 7) / 8;
 	}
 
 	public int method421() {
-		int i = aByteArray1405[anInt1406] & 0xff;
+		int i = aByteArray1405[position] & 0xff;
 		if (i < 128) {
 			return method408() - 64;
 		} else {
@@ -235,7 +235,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method422() {
-		int i = aByteArray1405[anInt1406] & 0xff;
+		int i = aByteArray1405[position] & 0xff;
 		if (i < 128) {
 			return method408();
 		} else {
@@ -244,79 +244,79 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void method423(BigInteger biginteger, BigInteger biginteger1) {
-		int i = anInt1406;
-		anInt1406 = 0;
+		int i = position;
+		position = 0;
 		byte[] abyte0 = new byte[i];
 		method417(i, 0, abyte0);
 		BigInteger biginteger2 = new BigInteger(abyte0);
 		BigInteger biginteger3 = biginteger2.modPow(biginteger, biginteger1);
 		byte[] abyte1 = biginteger3.toByteArray();
-		anInt1406 = 0;
+		position = 0;
 		method398(abyte1.length);
 		method406(abyte1, abyte1.length, 0);
 	}
 
 	public void method424(int i) {
-		aByteArray1405[anInt1406++] = (byte) (-i);
+		aByteArray1405[position++] = (byte) (-i);
 	}
 
 	public void method425(int j) {
-		aByteArray1405[anInt1406++] = (byte) (128 - j);
+		aByteArray1405[position++] = (byte) (128 - j);
 	}
 
 	public int method426() {
-		return aByteArray1405[anInt1406++] - 128 & 0xff;
+		return aByteArray1405[position++] - 128 & 0xff;
 	}
 
 	public int method427() {
-		return -aByteArray1405[anInt1406++] & 0xff;
+		return -aByteArray1405[position++] & 0xff;
 	}
 
 	public int method428() {
-		return 128 - aByteArray1405[anInt1406++] & 0xff;
+		return 128 - aByteArray1405[position++] & 0xff;
 	}
 
 	public byte method429() {
-		return (byte) (-aByteArray1405[anInt1406++]);
+		return (byte) (-aByteArray1405[position++]);
 	}
 
 	public byte method430() {
-		return (byte) (128 - aByteArray1405[anInt1406++]);
+		return (byte) (128 - aByteArray1405[position++]);
 	}
 
 	public void method431(int i) {
-		aByteArray1405[anInt1406++] = (byte) i;
-		aByteArray1405[anInt1406++] = (byte) (i >> 8);
+		aByteArray1405[position++] = (byte) i;
+		aByteArray1405[position++] = (byte) (i >> 8);
 	}
 
 	public void method432(int j) {
-		aByteArray1405[anInt1406++] = (byte) (j >> 8);
-		aByteArray1405[anInt1406++] = (byte) (j + 128);
+		aByteArray1405[position++] = (byte) (j >> 8);
+		aByteArray1405[position++] = (byte) (j + 128);
 	}
 
 	public void method433(int j) {
-		aByteArray1405[anInt1406++] = (byte) (j + 128);
-		aByteArray1405[anInt1406++] = (byte) (j >> 8);
+		aByteArray1405[position++] = (byte) (j + 128);
+		aByteArray1405[position++] = (byte) (j >> 8);
 	}
 
 	public int method434() {
-		anInt1406 += 2;
-		return ((aByteArray1405[anInt1406 - 1] & 0xff) << 8) + (aByteArray1405[anInt1406 - 2] & 0xff);
+		position += 2;
+		return ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
 	}
 
 	public int method435() {
-		anInt1406 += 2;
-		return ((aByteArray1405[anInt1406 - 2] & 0xff) << 8) + (aByteArray1405[anInt1406 - 1] - 128 & 0xff);
+		position += 2;
+		return ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] - 128 & 0xff);
 	}
 
 	public int method436() {
-		anInt1406 += 2;
-		return ((aByteArray1405[anInt1406 - 1] & 0xff) << 8) + (aByteArray1405[anInt1406 - 2] - 128 & 0xff);
+		position += 2;
+		return ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] - 128 & 0xff);
 	}
 
 	public int method437() {
-		anInt1406 += 2;
-		int j = ((aByteArray1405[anInt1406 - 1] & 0xff) << 8) + (aByteArray1405[anInt1406 - 2] & 0xff);
+		position += 2;
+		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
 		if (j > 32767) {
 			j -= 0x10000;
 		}
@@ -324,8 +324,8 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method438() {
-		anInt1406 += 2;
-		int j = ((aByteArray1405[anInt1406 - 1] & 0xff) << 8) + (aByteArray1405[anInt1406 - 2] - 128 & 0xff);
+		position += 2;
+		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] - 128 & 0xff);
 		if (j > 32767) {
 			j -= 0x10000;
 		}
@@ -333,24 +333,24 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method439() {
-		anInt1406 += 4;
-		return ((aByteArray1405[anInt1406 - 2] & 0xff) << 24) + ((aByteArray1405[anInt1406 - 1] & 0xff) << 16) + ((aByteArray1405[anInt1406 - 4] & 0xff) << 8) + (aByteArray1405[anInt1406 - 3] & 0xff);
+		position += 4;
+		return ((aByteArray1405[position - 2] & 0xff) << 24) + ((aByteArray1405[position - 1] & 0xff) << 16) + ((aByteArray1405[position - 4] & 0xff) << 8) + (aByteArray1405[position - 3] & 0xff);
 	}
 
 	public int method440() {
-		anInt1406 += 4;
-		return ((aByteArray1405[anInt1406 - 3] & 0xff) << 24) + ((aByteArray1405[anInt1406 - 4] & 0xff) << 16) + ((aByteArray1405[anInt1406 - 1] & 0xff) << 8) + (aByteArray1405[anInt1406 - 2] & 0xff);
+		position += 4;
+		return ((aByteArray1405[position - 3] & 0xff) << 24) + ((aByteArray1405[position - 4] & 0xff) << 16) + ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] & 0xff);
 	}
 
 	public void method441(int i, byte[] abyte0, int j) {
 		for (int k = (i + j) - 1; k >= i; k--) {
-			aByteArray1405[anInt1406++] = (byte) (abyte0[k] + 128);
+			aByteArray1405[position++] = (byte) (abyte0[k] + 128);
 		}
 	}
 
 	public void method442(int i, int j, byte[] abyte0) {
 		for (int k = (j + i) - 1; k >= j; k--) {
-			abyte0[k] = aByteArray1405[anInt1406++];
+			abyte0[k] = aByteArray1405[position++];
 		}
 	}
 

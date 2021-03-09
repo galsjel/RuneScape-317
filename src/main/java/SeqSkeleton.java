@@ -1,25 +1,48 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
+/**
+ * A {@link SeqSkeleton} describes the usage and relationship between groups.
+ *
+ * @see Model#applySequenceFrame(int)
+ * @see Model#applySequenceFrames(int, int, int[])
+ */
 public class SeqSkeleton {
 
-	public final int anInt341;
-	public final int[] anIntArray342;
-	public final int[][] anIntArrayArray343;
+	public static final int OP_BASE = 0;
+	public static final int OP_TRANSLATE = 1;
+	public static final int OP_ROTATE = 2;
+	public static final int OP_SCALE = 3;
+	public static final int OP_ALPHA = 5;
+	/**
+	 * A base type determines the operation performed on the labels belonging to it.
+	 *
+	 * @see #OP_BASE
+	 * @see #OP_TRANSLATE
+	 * @see #OP_ROTATE
+	 * @see #OP_SCALE
+	 * @see #OP_ALPHA
+	 */
+	public final int[] baseTypes;
+	/**
+	 * The labels belonging to the base.
+	 */
+	public final int[][] baseLabels;
 
-	public SeqSkeleton(Buffer buffer) {
-		anInt341 = buffer.method408();
-		anIntArray342 = new int[anInt341];
-		anIntArrayArray343 = new int[anInt341][];
-		for (int j = 0; j < anInt341; j++) {
-			anIntArray342[j] = buffer.method408();
+	/**
+	 * Constructs a new {@link SeqSkeleton} read from the provided input.
+	 *
+	 * @param in the input
+	 */
+	public SeqSkeleton(Buffer in) {
+		final int length = in.method408();
+		baseTypes = new int[length];
+		baseLabels = new int[length][];
+		for (int group = 0; group < length; group++) {
+			baseTypes[group] = in.method408();
 		}
-		for (int k = 0; k < anInt341; k++) {
-			int l = buffer.method408();
-			anIntArrayArray343[k] = new int[l];
-			for (int i1 = 0; i1 < l; i1++) {
-				anIntArrayArray343[k][i1] = buffer.method408();
+		for (int group = 0; group < length; group++) {
+			int count = in.method408();
+			baseLabels[group] = new int[count];
+			for (int child = 0; child < count; child++) {
+				baseLabels[group][child] = in.method408();
 			}
 		}
 	}

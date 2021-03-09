@@ -45,7 +45,7 @@ public class Image24 extends Draw2D {
 	public Image24(FileArchive archive, String s, int i) {
 		Buffer buffer = new Buffer(archive.method571(s + ".dat", null));
 		Buffer buffer_1 = new Buffer(archive.method571("index.dat", null));
-		buffer_1.anInt1406 = buffer.method410();
+		buffer_1.position = buffer.method410();
 		anInt1444 = buffer_1.method410();
 		anInt1445 = buffer_1.method410();
 		int j = buffer_1.method408();
@@ -57,9 +57,9 @@ public class Image24 extends Draw2D {
 			}
 		}
 		for (int l = 0; l < i; l++) {
-			buffer_1.anInt1406 += 2;
-			buffer.anInt1406 += buffer_1.method410() * buffer_1.method410();
-			buffer_1.anInt1406++;
+			buffer_1.position += 2;
+			buffer.position += buffer_1.method410() * buffer_1.method410();
+			buffer_1.position++;
 		}
 		anInt1442 = buffer_1.method408();
 		anInt1443 = buffer_1.method408();
@@ -84,7 +84,7 @@ public class Image24 extends Draw2D {
 	}
 
 	public void method343() {
-		Draw2D.method331(anInt1441, anInt1440, anIntArray1439);
+		Draw2D.bind(anIntArray1439, anInt1440, anInt1441);
 	}
 
 	public void method344(int i, int j, int k) {
@@ -134,40 +134,40 @@ public class Image24 extends Draw2D {
 	public void method346(int i, int j) {
 		i += anInt1442;
 		j += anInt1443;
-		int l = i + j * Draw2D.anInt1379;
+		int l = i + j * Draw2D.width;
 		int i1 = 0;
 		int j1 = anInt1441;
 		int k1 = anInt1440;
-		int l1 = Draw2D.anInt1379 - k1;
+		int l1 = Draw2D.width - k1;
 		int i2 = 0;
-		if (j < Draw2D.anInt1381) {
-			int j2 = Draw2D.anInt1381 - j;
+		if (j < Draw2D.top) {
+			int j2 = Draw2D.top - j;
 			j1 -= j2;
-			j = Draw2D.anInt1381;
+			j = Draw2D.top;
 			i1 += j2 * k1;
-			l += j2 * Draw2D.anInt1379;
+			l += j2 * Draw2D.width;
 		}
-		if (j + j1 > Draw2D.anInt1382) {
-			j1 -= (j + j1) - Draw2D.anInt1382;
+		if (j + j1 > Draw2D.bottom) {
+			j1 -= (j + j1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.anInt1383) {
-			int k2 = Draw2D.anInt1383 - i;
+		if (i < Draw2D.left) {
+			int k2 = Draw2D.left - i;
 			k1 -= k2;
-			i = Draw2D.anInt1383;
+			i = Draw2D.left;
 			i1 += k2;
 			l += k2;
 			i2 += k2;
 			l1 += k2;
 		}
-		if (i + k1 > Draw2D.anInt1384) {
-			int l2 = (i + k1) - Draw2D.anInt1384;
+		if (i + k1 > Draw2D.right) {
+			int l2 = (i + k1) - Draw2D.right;
 			k1 -= l2;
 			i2 += l2;
 			l1 += l2;
 		}
 		if (k1 <= 0 || j1 <= 0) {
 		} else {
-			method347(l, k1, j1, i2, i1, l1, anIntArray1439, Draw2D.anIntArray1378);
+			method347(l, k1, j1, i2, i1, l1, anIntArray1439, Draw2D.pixels);
 		}
 	}
 
@@ -192,40 +192,40 @@ public class Image24 extends Draw2D {
 	public void method348(int i, int k) {
 		i += anInt1442;
 		k += anInt1443;
-		int l = i + k * Draw2D.anInt1379;
+		int l = i + k * Draw2D.width;
 		int i1 = 0;
 		int j1 = anInt1441;
 		int k1 = anInt1440;
-		int l1 = Draw2D.anInt1379 - k1;
+		int l1 = Draw2D.width - k1;
 		int i2 = 0;
-		if (k < Draw2D.anInt1381) {
-			int j2 = Draw2D.anInt1381 - k;
+		if (k < Draw2D.top) {
+			int j2 = Draw2D.top - k;
 			j1 -= j2;
-			k = Draw2D.anInt1381;
+			k = Draw2D.top;
 			i1 += j2 * k1;
-			l += j2 * Draw2D.anInt1379;
+			l += j2 * Draw2D.width;
 		}
-		if (k + j1 > Draw2D.anInt1382) {
-			j1 -= (k + j1) - Draw2D.anInt1382;
+		if (k + j1 > Draw2D.bottom) {
+			j1 -= (k + j1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.anInt1383) {
-			int k2 = Draw2D.anInt1383 - i;
+		if (i < Draw2D.left) {
+			int k2 = Draw2D.left - i;
 			k1 -= k2;
-			i = Draw2D.anInt1383;
+			i = Draw2D.left;
 			i1 += k2;
 			l += k2;
 			i2 += k2;
 			l1 += k2;
 		}
-		if (i + k1 > Draw2D.anInt1384) {
-			int l2 = (i + k1) - Draw2D.anInt1384;
+		if (i + k1 > Draw2D.right) {
+			int l2 = (i + k1) - Draw2D.right;
 			k1 -= l2;
 			i2 += l2;
 			l1 += l2;
 		}
 		if (k1 <= 0 || j1 <= 0) {
 		} else {
-			method349(Draw2D.anIntArray1378, anIntArray1439, i1, l, k1, j1, l1, i2);
+			method349(Draw2D.pixels, anIntArray1439, i1, l, k1, j1, l1, i2);
 		}
 	}
 
@@ -276,40 +276,40 @@ public class Image24 extends Draw2D {
 	public void method350(int i, int j, int k) {
 		i += anInt1442;
 		j += anInt1443;
-		int i1 = i + j * Draw2D.anInt1379;
+		int i1 = i + j * Draw2D.width;
 		int j1 = 0;
 		int k1 = anInt1441;
 		int l1 = anInt1440;
-		int i2 = Draw2D.anInt1379 - l1;
+		int i2 = Draw2D.width - l1;
 		int j2 = 0;
-		if (j < Draw2D.anInt1381) {
-			int k2 = Draw2D.anInt1381 - j;
+		if (j < Draw2D.top) {
+			int k2 = Draw2D.top - j;
 			k1 -= k2;
-			j = Draw2D.anInt1381;
+			j = Draw2D.top;
 			j1 += k2 * l1;
-			i1 += k2 * Draw2D.anInt1379;
+			i1 += k2 * Draw2D.width;
 		}
-		if (j + k1 > Draw2D.anInt1382) {
-			k1 -= (j + k1) - Draw2D.anInt1382;
+		if (j + k1 > Draw2D.bottom) {
+			k1 -= (j + k1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.anInt1383) {
-			int l2 = Draw2D.anInt1383 - i;
+		if (i < Draw2D.left) {
+			int l2 = Draw2D.left - i;
 			l1 -= l2;
-			i = Draw2D.anInt1383;
+			i = Draw2D.left;
 			j1 += l2;
 			i1 += l2;
 			j2 += l2;
 			i2 += l2;
 		}
-		if (i + l1 > Draw2D.anInt1384) {
-			int i3 = (i + l1) - Draw2D.anInt1384;
+		if (i + l1 > Draw2D.right) {
+			int i3 = (i + l1) - Draw2D.right;
 			l1 -= i3;
 			j2 += i3;
 			i2 += i3;
 		}
 		if (l1 <= 0 || k1 <= 0) {
 		} else {
-			method351(j1, l1, Draw2D.anIntArray1378, anIntArray1439, j2, k1, i2, k, i1);
+			method351(j1, l1, Draw2D.pixels, anIntArray1439, j2, k1, i2, k, i1);
 		}
 	}
 
@@ -340,20 +340,20 @@ public class Image24 extends Draw2D {
 			i3 = i3 * k >> 8;
 			int j3 = (i2 << 16) + (k2 * l2 + j2 * i3);
 			int k3 = (i1 << 16) + (k2 * i3 - j2 * l2);
-			int l3 = k1 + j1 * Draw2D.anInt1379;
+			int l3 = k1 + j1 * Draw2D.width;
 			for (j1 = 0; j1 < i; j1++) {
 				int i4 = ai1[j1];
 				int j4 = l3 + i4;
 				int k4 = j3 + i3 * i4;
 				int l4 = k3 - l2 * i4;
 				for (k1 = -ai[j1]; k1 < 0; k1++) {
-					Draw2D.anIntArray1378[j4++] = anIntArray1439[(k4 >> 16) + (l4 >> 16) * anInt1440];
+					Draw2D.pixels[j4++] = anIntArray1439[(k4 >> 16) + (l4 >> 16) * anInt1440];
 					k4 += i3;
 					l4 -= l2;
 				}
 				j3 += l2;
 				k3 += i3;
-				l3 += Draw2D.anInt1379;
+				l3 += Draw2D.width;
 			}
 		} catch (Exception ignored) {
 		}
@@ -369,7 +369,7 @@ public class Image24 extends Draw2D {
 			l2 = l2 * j1 >> 8;
 			int i3 = (l << 16) + (j2 * k2 + i2 * l2);
 			int j3 = (j << 16) + (j2 * l2 - i2 * k2);
-			int k3 = l1 + i * Draw2D.anInt1379;
+			int k3 = l1 + i * Draw2D.width;
 			for (i = 0; i < k1; i++) {
 				int l3 = k3;
 				int i4 = i3;
@@ -377,7 +377,7 @@ public class Image24 extends Draw2D {
 				for (l1 = -k; l1 < 0; l1++) {
 					int k4 = anIntArray1439[(i4 >> 16) + (j4 >> 16) * anInt1440];
 					if (k4 != 0) {
-						Draw2D.anIntArray1378[l3++] = k4;
+						Draw2D.pixels[l3++] = k4;
 					} else {
 						l3++;
 					}
@@ -386,7 +386,7 @@ public class Image24 extends Draw2D {
 				}
 				i3 += k2;
 				j3 += l2;
-				k3 += Draw2D.anInt1379;
+				k3 += Draw2D.width;
 			}
 		} catch (Exception ignored) {
 		}
@@ -395,40 +395,40 @@ public class Image24 extends Draw2D {
 	public void method354(Image8 image, int i, int j) {
 		j += anInt1442;
 		i += anInt1443;
-		int k = j + i * Draw2D.anInt1379;
+		int k = j + i * Draw2D.width;
 		int l = 0;
 		int i1 = anInt1441;
 		int j1 = anInt1440;
-		int k1 = Draw2D.anInt1379 - j1;
+		int k1 = Draw2D.width - j1;
 		int l1 = 0;
-		if (i < Draw2D.anInt1381) {
-			int i2 = Draw2D.anInt1381 - i;
+		if (i < Draw2D.top) {
+			int i2 = Draw2D.top - i;
 			i1 -= i2;
-			i = Draw2D.anInt1381;
+			i = Draw2D.top;
 			l += i2 * j1;
-			k += i2 * Draw2D.anInt1379;
+			k += i2 * Draw2D.width;
 		}
-		if (i + i1 > Draw2D.anInt1382) {
-			i1 -= (i + i1) - Draw2D.anInt1382;
+		if (i + i1 > Draw2D.bottom) {
+			i1 -= (i + i1) - Draw2D.bottom;
 		}
-		if (j < Draw2D.anInt1383) {
-			int j2 = Draw2D.anInt1383 - j;
+		if (j < Draw2D.left) {
+			int j2 = Draw2D.left - j;
 			j1 -= j2;
-			j = Draw2D.anInt1383;
+			j = Draw2D.left;
 			l += j2;
 			k += j2;
 			l1 += j2;
 			k1 += j2;
 		}
-		if (j + j1 > Draw2D.anInt1384) {
-			int k2 = (j + j1) - Draw2D.anInt1384;
+		if (j + j1 > Draw2D.right) {
+			int k2 = (j + j1) - Draw2D.right;
 			j1 -= k2;
 			l1 += k2;
 			k1 += k2;
 		}
 		if (j1 <= 0 || i1 <= 0) {
 		} else {
-			method355(anIntArray1439, j1, image.aByteArray1450, i1, Draw2D.anIntArray1378, k1, k, l1, l);
+			method355(anIntArray1439, j1, image.aByteArray1450, i1, Draw2D.pixels, k1, k, l1, l);
 		}
 	}
 

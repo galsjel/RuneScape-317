@@ -30,31 +30,31 @@ public class SpotAnimEntity extends Entity {
 			return null;
 		}
 		int j = aType_1568.aType_407.anIntArray353[anInt1569];
-		Model model_1 = new Model(true, SeqTransform.method532(j), false, model);
+		Model model_1 = new Model(true, SeqFrame.isNull(j), false, model);
 		if (!aBoolean1567) {
-			model_1.method469();
-			model_1.method470(j);
-			model_1.anIntArrayArray1658 = null;
-			model_1.anIntArrayArray1657 = null;
+			model_1.createLabelReferences();
+			model_1.applySequenceFrame(j);
+			model_1.labelFaces = null;
+			model_1.labelVertices = null;
 		}
 		if (aType_1568.anInt410 != 128 || aType_1568.anInt411 != 128) {
-			model_1.method478(aType_1568.anInt410, aType_1568.anInt410, aType_1568.anInt411);
+			model_1.scale(aType_1568.anInt410, aType_1568.anInt410, aType_1568.anInt411);
 		}
 		if (aType_1568.anInt412 != 0) {
 			if (aType_1568.anInt412 == 90) {
-				model_1.method473();
+				model_1.rotateY90();
 			}
 			if (aType_1568.anInt412 == 180) {
-				model_1.method473();
-				model_1.method473();
+				model_1.rotateY90();
+				model_1.rotateY90();
 			}
 			if (aType_1568.anInt412 == 270) {
-				model_1.method473();
-				model_1.method473();
-				model_1.method473();
+				model_1.rotateY90();
+				model_1.rotateY90();
+				model_1.rotateY90();
 			}
 		}
-		model_1.method479(64 + aType_1568.anInt413, 850 + aType_1568.anInt414, -30, -50, -30, true);
+		model_1.calculateNormals(64 + aType_1568.anInt413, 850 + aType_1568.anInt414, -30, -50, -30, true);
 		return model_1;
 	}
 

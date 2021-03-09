@@ -4,23 +4,23 @@
 
 public class ModelHeader {
 
-	public byte[] aByteArray368;
-	public int anInt369;
-	public int anInt370;
-	public int anInt371;
-	public int anInt372;
-	public int anInt373;
-	public int anInt374;
-	public int anInt375;
-	public int anInt376;
-	public int anInt377;
-	public int anInt378;
-	public int anInt379;
-	public int anInt380;
-	public int anInt381;
-	public int anInt382;
-	public int anInt383;
-	public int anInt384;
+	public byte[] data;
+	public int vertexCount;
+	public int faceCount;
+	public int texturedFaceCount;
+	public int obPoint1Position;
+	public int obPoint2Position;
+	public int obPoint3Position;
+	public int obPoint4Position;
+	public int obPoint5Position;
+	public int obVertex1Position;
+	public int obVertex2Position;
+	public int obFace1Position;
+	public int obFace2Position;
+	public int obFace3Position;
+	public int obFace4Position;
+	public int obFace5Position;
+	public int obAxisPosition;
 
 	public ModelHeader() {
 	}

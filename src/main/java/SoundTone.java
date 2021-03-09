@@ -238,7 +238,7 @@ public class SoundTone {
 		aEnvelope_99.method325(buffer);
 		int i = buffer.method408();
 		if (i != 0) {
-			buffer.anInt1406--;
+			buffer.position--;
 			aEnvelope_100 = new SoundEnvelope();
 			aEnvelope_100.method325(buffer);
 			aEnvelope_101 = new SoundEnvelope();
@@ -246,7 +246,7 @@ public class SoundTone {
 		}
 		i = buffer.method408();
 		if (i != 0) {
-			buffer.anInt1406--;
+			buffer.position--;
 			aEnvelope_102 = new SoundEnvelope();
 			aEnvelope_102.method325(buffer);
 			aEnvelope_103 = new SoundEnvelope();
@@ -254,7 +254,7 @@ public class SoundTone {
 		}
 		i = buffer.method408();
 		if (i != 0) {
-			buffer.anInt1406--;
+			buffer.position--;
 			aEnvelope_104 = new SoundEnvelope();
 			aEnvelope_104.method325(buffer);
 			aEnvelope_105 = new SoundEnvelope();

@@ -64,7 +64,7 @@ public class IDKType {
 		}
 		boolean flag = true;
 		for (int i : anIntArray658) {
-			if (!Model.method463(i)) {
+			if (!Model.validate(i)) {
 				flag = false;
 			}
 		}
@@ -77,7 +77,7 @@ public class IDKType {
 		}
 		Model[] aclass30_sub2_sub4_sub6 = new Model[anIntArray658.length];
 		for (int i = 0; i < anIntArray658.length; i++) {
-			aclass30_sub2_sub4_sub6[i] = Model.method462(anIntArray658[i]);
+			aclass30_sub2_sub4_sub6[i] = Model.tryGet(anIntArray658[i]);
 		}
 		Model model;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
@@ -89,7 +89,7 @@ public class IDKType {
 			if (anIntArray659[j] == 0) {
 				break;
 			}
-			model.method476(anIntArray659[j], anIntArray660[j]);
+			model.replaceColor(anIntArray659[j], anIntArray660[j]);
 		}
 		return model;
 	}
@@ -97,7 +97,7 @@ public class IDKType {
 	public boolean method539() {
 		boolean flag1 = true;
 		for (int i = 0; i < 5; i++) {
-			if (anIntArray661[i] != -1 && !Model.method463(anIntArray661[i])) {
+			if (anIntArray661[i] != -1 && !Model.validate(anIntArray661[i])) {
 				flag1 = false;
 			}
 		}
@@ -109,7 +109,7 @@ public class IDKType {
 		int j = 0;
 		for (int k = 0; k < 5; k++) {
 			if (anIntArray661[k] != -1) {
-				aclass30_sub2_sub4_sub6[j++] = Model.method462(anIntArray661[k]);
+				aclass30_sub2_sub4_sub6[j++] = Model.tryGet(anIntArray661[k]);
 			}
 		}
 		Model model = new Model(j, aclass30_sub2_sub4_sub6);
@@ -117,7 +117,7 @@ public class IDKType {
 			if (anIntArray659[l] == 0) {
 				break;
 			}
-			model.method476(anIntArray659[l], anIntArray660[l]);
+			model.replaceColor(anIntArray659[l], anIntArray660[l]);
 		}
 		return model;
 	}
