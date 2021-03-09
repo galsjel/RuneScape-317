@@ -278,7 +278,7 @@ public class Component {
 	}
 
 	public static Image24 method207(int i, FileArchive archive, String s) {
-		long l = (Base37.method585(s) << 8) + (long) i;
+		long l = (StringUtil.hashCode(s) << 8) + (long) i;
 		Image24 image = (Image24) aCache_238.method222(l);
 		if (image != null) {
 			return image;

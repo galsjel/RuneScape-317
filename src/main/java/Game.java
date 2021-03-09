@@ -1415,7 +1415,7 @@ public class Game extends GameShell {
 			if (aPlayer_1126 != null && aPlayer_1126.aString1703 != null) {
 				s = aPlayer_1126.aString1703;
 			} else {
-				s = Base37.method587(aString1173);
+				s = StringUtil.method587(aString1173);
 			}
 			font.method385(0, s + ":", 90, 4);
 			font.method385(255, aString887 + "*", 90, 6 + font.method383(s + ": "));
@@ -2733,7 +2733,7 @@ public class Game extends GameShell {
 			method77("Your friendlist is full. Max of 100 for free users, and 200 for members", 0, "");
 			return;
 		}
-		String s = Base37.method587(Base37.method584(l));
+		String s = StringUtil.method587(StringUtil.fromBase37(l));
 		for (int i = 0; i < anInt899; i++) {
 			if (aLongArray955[i] == l) {
 				method77(s + " is already on your friend list", 0, "");
@@ -2987,7 +2987,7 @@ public class Game extends GameShell {
 			method147();
 			if (aString881.length() > 0) {
 				aBuffer_1192.method397(218);
-				aBuffer_1192.method404(Base37.method583(aString881));
+				aBuffer_1192.method404(StringUtil.getBase37(aString881));
 				aBuffer_1192.method398(j - 601);
 				aBuffer_1192.method398(aBoolean1158 ? 1 : 0);
 			}
@@ -4205,7 +4205,7 @@ public class Game extends GameShell {
 			String s = aStringArray1199[i];
 			int k1 = s.indexOf("@whi@");
 			if (k1 != -1) {
-				long l3 = Base37.method583(s.substring(k1 + 5).trim());
+				long l3 = StringUtil.getBase37(s.substring(k1 + 5).trim());
 				if (l == 337) {
 					method41(l3);
 				}
@@ -4257,7 +4257,7 @@ public class Game extends GameShell {
 			int l1 = s1.indexOf("@whi@");
 			if (l1 != -1) {
 				s1 = s1.substring(l1 + 5).trim();
-				String s7 = Base37.method587(Base37.method584(Base37.method583(s1)));
+				String s7 = StringUtil.method587(StringUtil.fromBase37(StringUtil.getBase37(s1)));
 				boolean flag9 = false;
 				for (int j3 = 0; j3 < anInt891; j3++) {
 					PlayerEntity player_7 = aPlayerArray890[anIntArray892[j3]];
@@ -4662,7 +4662,7 @@ public class Game extends GameShell {
 			String s3 = aStringArray1199[i];
 			int k2 = s3.indexOf("@whi@");
 			if (k2 != -1) {
-				long l4 = Base37.method583(s3.substring(k2 + 5).trim());
+				long l4 = StringUtil.getBase37(s3.substring(k2 + 5).trim());
 				int k3 = -1;
 				for (int i4 = 0; i4 < anInt899; i4++) {
 					if (aLongArray955[i4] != l4) {
@@ -5043,11 +5043,11 @@ public class Game extends GameShell {
 					aBoolean1256 = false;
 					aBoolean1223 = true;
 					if (anInt1064 == 1) {
-						long l = Base37.method583(aString1212);
+						long l = StringUtil.getBase37(aString1212);
 						method41(l);
 					}
 					if (anInt1064 == 2 && anInt899 > 0) {
-						long l1 = Base37.method583(aString1212);
+						long l1 = StringUtil.getBase37(aString1212);
 						method35(l1);
 					}
 					if (anInt1064 == 3 && aString1212.length() > 0) {
@@ -5059,7 +5059,7 @@ public class Game extends GameShell {
 						aBuffer_1192.method407(aBuffer_1192.position - k);
 						aString1212 = Huffman.method527(aString1212);
 						aString1212 = Censor.method497(aString1212, 0);
-						method77(aString1212, 6, Base37.method587(Base37.method584(aLong953)));
+						method77(aString1212, 6, StringUtil.method587(StringUtil.fromBase37(aLong953)));
 						if (anInt845 == 2) {
 							anInt845 = 1;
 							aBoolean1233 = true;
@@ -5070,11 +5070,11 @@ public class Game extends GameShell {
 						}
 					}
 					if (anInt1064 == 4 && anInt822 < 100) {
-						long l2 = Base37.method583(aString1212);
+						long l2 = StringUtil.getBase37(aString1212);
 						method113(l2);
 					}
 					if (anInt1064 == 5 && anInt822 > 0) {
-						long l3 = Base37.method583(aString1212);
+						long l3 = StringUtil.getBase37(aString1212);
 						method122(l3);
 					}
 				}
@@ -5112,7 +5112,7 @@ public class Game extends GameShell {
 				if (j == 13 || j == 10) {
 					if (aString1004.length() > 0) {
 						aBuffer_1192.method397(60);
-						aBuffer_1192.method404(Base37.method583(aString1004));
+						aBuffer_1192.method404(StringUtil.getBase37(aString1004));
 					}
 					anInt1225 = 0;
 					aBoolean1223 = true;
@@ -5421,7 +5421,7 @@ public class Game extends GameShell {
 				component.aString248 = "";
 				component.anInt217 = 0;
 			} else {
-				component.aString248 = Base37.method587(Base37.method584(aLongArray925[j]));
+				component.aString248 = StringUtil.method587(StringUtil.fromBase37(aLongArray925[j]));
 				component.anInt217 = 1;
 			}
 			return;
@@ -5890,7 +5890,7 @@ public class Game extends GameShell {
 				method135(true);
 			}
 			aConnection_1168 = new Connection(this, method19(43594 + anInt958));
-			long l = Base37.method583(s);
+			long l = StringUtil.getBase37(s);
 			int i = (int) (l >> 16 & 31L);
 			aBuffer_1192.position = 0;
 			aBuffer_1192.method398(14);
@@ -7818,7 +7818,7 @@ public class Game extends GameShell {
 			int j3 = buffer.method427();
 			int k3 = buffer.position;
 			if (player.aString1703 != null && player.aBoolean1710) {
-				long l3 = Base37.method583(player.aString1703);
+				long l3 = StringUtil.getBase37(player.aString1703);
 				boolean flag = false;
 				if (j2 <= 1) {
 					for (int i4 = 0; i4 < anInt822; i4++) {
@@ -8036,7 +8036,7 @@ public class Game extends GameShell {
 			method77("Your ignore list is full. Max of 100 hit", 0, "");
 			return;
 		}
-		String s = Base37.method587(Base37.method584(l));
+		String s = StringUtil.method587(StringUtil.fromBase37(l));
 		for (int j = 0; j < anInt822; j++) {
 			if (aLongArray925[j] == l) {
 				method77(s + " is already on your ignore list", 0, "");
@@ -8595,7 +8595,7 @@ public class Game extends GameShell {
 				int j1 = player.anInt1550 / 32 - aPlayer_1126.anInt1550 / 32;
 				int l3 = player.anInt1551 / 32 - aPlayer_1126.anInt1551 / 32;
 				boolean flag1 = false;
-				long l6 = Base37.method583(player.aString1703);
+				long l6 = StringUtil.getBase37(player.aString1703);
 				for (int k6 = 0; k6 < anInt899; k6++) {
 					if (l6 != aLongArray955[k6] || anIntArray826[k6] == 0) {
 						continue;
@@ -8968,7 +8968,7 @@ public class Game extends GameShell {
 			j += 30;
 			aFont_1272.method389(true, c / 2 - 90, 0xffffff, "Username: " + aString1173 + ((anInt1216 == 0) & (anInt1161 % 40 < 20) ? "@yel@|" : ""), j);
 			j += 15;
-			aFont_1272.method389(true, c / 2 - 88, 0xffffff, "Password: " + Base37.method588(aString1174) + ((anInt1216 == 1) & (anInt1161 % 40 < 20) ? "@yel@|" : ""), j);
+			aFont_1272.method389(true, c / 2 - 88, 0xffffff, "Password: " + StringUtil.toAsterisks(aString1174) + ((anInt1216 == 1) & (anInt1161 % 40 < 20) ? "@yel@|" : ""), j);
 			if (!flag) {
 				int i1 = c / 2 - 80;
 				int l1 = c1 / 2 + 50;
@@ -9657,7 +9657,7 @@ public class Game extends GameShell {
 				anInt1193 = aBuffer_1083.method440();
 				anInt1006 = aBuffer_1083.method410();
 				if (anInt1193 != 0 && anInt857 == -1) {
-					Signlink.dnslookup(Base37.method586(anInt1193));
+					Signlink.dnslookup(StringUtil.formatIPv4(anInt1193));
 					method147();
 					char c = '\u028A';
 					if (anInt1167 != 201 || anInt1120 == 1) {
@@ -10095,7 +10095,7 @@ public class Game extends GameShell {
 				String s = aBuffer_1083.method415();
 				if (s.endsWith(":tradereq:")) {
 					String s3 = s.substring(0, s.indexOf(":"));
-					long l17 = Base37.method583(s3);
+					long l17 = StringUtil.getBase37(s3);
 					boolean flag2 = false;
 					for (int j27 = 0; j27 < anInt822; j27++) {
 						if (aLongArray925[j27] != l17) {
@@ -10109,7 +10109,7 @@ public class Game extends GameShell {
 					}
 				} else if (s.endsWith(":duelreq:")) {
 					String s4 = s.substring(0, s.indexOf(":"));
-					long l18 = Base37.method583(s4);
+					long l18 = StringUtil.getBase37(s4);
 					boolean flag3 = false;
 					for (int k27 = 0; k27 < anInt822; k27++) {
 						if (aLongArray925[k27] != l18) {
@@ -10123,7 +10123,7 @@ public class Game extends GameShell {
 					}
 				} else if (s.endsWith(":chalreq:")) {
 					String s5 = s.substring(0, s.indexOf(":"));
-					long l19 = Base37.method583(s5);
+					long l19 = StringUtil.getBase37(s5);
 					boolean flag4 = false;
 					for (int l27 = 0; l27 < anInt822; l27++) {
 						if (aLongArray925[l27] != l19) {
@@ -10159,7 +10159,7 @@ public class Game extends GameShell {
 			if (anInt1008 == 50) {
 				long l4 = aBuffer_1083.method414();
 				int i18 = aBuffer_1083.method408();
-				String s7 = Base37.method587(Base37.method584(l4));
+				String s7 = StringUtil.method587(StringUtil.fromBase37(l4));
 				for (int k24 = 0; k24 < anInt899; k24++) {
 					if (l4 != aLongArray955[k24]) {
 						continue;
@@ -10326,11 +10326,11 @@ public class Game extends GameShell {
 							s9 = Censor.method497(s9, 0);
 						}
 						if (l21 == 2 || l21 == 3) {
-							method77(s9, 7, "@cr2@" + Base37.method587(Base37.method584(l5)));
+							method77(s9, 7, "@cr2@" + StringUtil.method587(StringUtil.fromBase37(l5)));
 						} else if (l21 == 1) {
-							method77(s9, 7, "@cr1@" + Base37.method587(Base37.method584(l5)));
+							method77(s9, 7, "@cr1@" + StringUtil.method587(StringUtil.fromBase37(l5)));
 						} else {
-							method77(s9, 3, Base37.method587(Base37.method584(l5)));
+							method77(s9, 3, StringUtil.method587(StringUtil.fromBase37(l5)));
 						}
 					} catch (Exception exception1) {
 						Signlink.reporterror("cde1");

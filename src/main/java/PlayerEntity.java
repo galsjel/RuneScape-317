@@ -161,7 +161,7 @@ public class PlayerEntity extends PathingEntity {
 		if (super.anInt1505 == 65535) {
 			super.anInt1505 = -1;
 		}
-		aString1703 = Base37.method587(Base37.method584(buffer.method414()));
+		aString1703 = StringUtil.method587(StringUtil.fromBase37(buffer.method414()));
 		anInt1705 = buffer.method408();
 		anInt1723 = buffer.method410();
 		aBoolean1710 = true;
