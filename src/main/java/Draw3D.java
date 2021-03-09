@@ -112,7 +112,7 @@ public class Draw3D {
 		for (int j = 0; j < 50; j++) {
 			try {
 				aImageArray1474[j] = new Image8(archive, String.valueOf(j), 0);
-				if (aBoolean1461 && aImageArray1474[j].anInt1456 == 128) {
+				if (aBoolean1461 && (aImageArray1474[j].anInt1456 == 128)) {
 					aImageArray1474[j].method356();
 				} else {
 					aImageArray1474[j].method357();
@@ -132,11 +132,11 @@ public class Draw3D {
 		int i1 = 0;
 		int j1 = anIntArrayArray1483[i].length;
 		for (int k1 = 0; k1 < j1; k1++) {
-			k += anIntArrayArray1483[i][k1] >> 16 & 0xff;
-			l += anIntArrayArray1483[i][k1] >> 8 & 0xff;
+			k += (anIntArrayArray1483[i][k1] >> 16) & 0xff;
+			l += (anIntArrayArray1483[i][k1] >> 8) & 0xff;
 			i1 += anIntArrayArray1483[i][k1] & 0xff;
 		}
-		int l1 = (k / j1 << 16) + (l / j1 << 8) + i1 / j1;
+		int l1 = ((k / j1) << 16) + ((l / j1) << 8) + (i1 / j1);
 		l1 = method373(l1, 1.3999999999999999D);
 		if (l1 == 0) {
 			l1 = 1;
@@ -166,7 +166,7 @@ public class Draw3D {
 			int j = 0;
 			int k = -1;
 			for (int l = 0; l < anInt1473; l++) {
-				if (anIntArrayArray1479[l] != null && (anIntArray1480[l] < j || k == -1)) {
+				if ((anIntArrayArray1479[l] != null) && ((anIntArray1480[l] < j) || (k == -1))) {
 					j = anIntArray1480[l];
 					k = l;
 				}
@@ -184,9 +184,9 @@ public class Draw3D {
 				if (i2 == 0) {
 					textureTranslucent[i] = true;
 				}
-				ai[4096 + i1] = i2 - (i2 >>> 3) & 0xf8f8ff;
-				ai[8192 + i1] = i2 - (i2 >>> 2) & 0xf8f8ff;
-				ai[12288 + i1] = i2 - (i2 >>> 2) - (i2 >>> 3) & 0xf8f8ff;
+				ai[4096 + i1] = (i2 - (i2 >>> 3)) & 0xf8f8ff;
+				ai[8192 + i1] = (i2 - (i2 >>> 2)) & 0xf8f8ff;
+				ai[12288 + i1] = (i2 - (i2 >>> 2) - (i2 >>> 3)) & 0xf8f8ff;
 			}
 		} else {
 			if (image.anInt1452 == 64) {
@@ -207,20 +207,20 @@ public class Draw3D {
 				if (k2 == 0) {
 					textureTranslucent[i] = true;
 				}
-				ai[16384 + l1] = k2 - (k2 >>> 3) & 0xf8f8ff;
-				ai[32768 + l1] = k2 - (k2 >>> 2) & 0xf8f8ff;
-				ai[49152 + l1] = k2 - (k2 >>> 2) - (k2 >>> 3) & 0xf8f8ff;
+				ai[16384 + l1] = (k2 - (k2 >>> 3)) & 0xf8f8ff;
+				ai[32768 + l1] = (k2 - (k2 >>> 2)) & 0xf8f8ff;
+				ai[49152 + l1] = (k2 - (k2 >>> 2) - (k2 >>> 3)) & 0xf8f8ff;
 			}
 		}
 		return ai;
 	}
 
 	public static void method372(double d) {
-		d += Math.random() * 0.029999999999999999D - 0.014999999999999999D;
+		d += (Math.random() * 0.029999999999999999D) - 0.014999999999999999D;
 		int j = 0;
 		for (int k = 0; k < 512; k++) {
-			double d1 = (double) (k / 8) / 64D + 0.0078125D;
-			double d2 = (double) (k & 7) / 8D + 0.0625D;
+			double d1 = ((double) (k / 8) / 64D) + 0.0078125D;
+			double d2 = ((double) (k & 7) / 8D) + 0.0625D;
 			for (int k1 = 0; k1 < 128; k1++) {
 				double d3 = (double) k1 / 128D;
 				double d4 = d3;
@@ -231,9 +231,9 @@ public class Draw3D {
 					if (d3 < 0.5D) {
 						d7 = d3 * (1.0D + d2);
 					} else {
-						d7 = (d3 + d2) - d3 * d2;
+						d7 = (d3 + d2) - (d3 * d2);
 					}
-					double d8 = 2D * d3 - d7;
+					double d8 = (2D * d3) - d7;
 					double d9 = d1 + 0.33333333333333331D;
 					if (d9 > 1.0D) {
 						d9--;
@@ -242,30 +242,30 @@ public class Draw3D {
 					if (d11 < 0.0D) {
 						d11++;
 					}
-					if (6D * d9 < 1.0D) {
-						d4 = d8 + (d7 - d8) * 6D * d9;
-					} else if (2D * d9 < 1.0D) {
+					if ((6D * d9) < 1.0D) {
+						d4 = d8 + ((d7 - d8) * 6D * d9);
+					} else if ((2D * d9) < 1.0D) {
 						d4 = d7;
-					} else if (3D * d9 < 2D) {
-						d4 = d8 + (d7 - d8) * (0.66666666666666663D - d9) * 6D;
+					} else if ((3D * d9) < 2D) {
+						d4 = d8 + ((d7 - d8) * (0.66666666666666663D - d9) * 6D);
 					} else {
 						d4 = d8;
 					}
-					if (6D * d1 < 1.0D) {
-						d5 = d8 + (d7 - d8) * 6D * d1;
-					} else if (2D * d1 < 1.0D) {
+					if ((6D * d1) < 1.0D) {
+						d5 = d8 + ((d7 - d8) * 6D * d1);
+					} else if ((2D * d1) < 1.0D) {
 						d5 = d7;
-					} else if (3D * d1 < 2D) {
-						d5 = d8 + (d7 - d8) * (0.66666666666666663D - d1) * 6D;
+					} else if ((3D * d1) < 2D) {
+						d5 = d8 + ((d7 - d8) * (0.66666666666666663D - d1) * 6D);
 					} else {
 						d5 = d8;
 					}
-					if (6D * d11 < 1.0D) {
-						d6 = d8 + (d7 - d8) * 6D * d11;
-					} else if (2D * d11 < 1.0D) {
+					if ((6D * d11) < 1.0D) {
+						d6 = d8 + ((d7 - d8) * 6D * d11);
+					} else if ((2D * d11) < 1.0D) {
 						d6 = d7;
-					} else if (3D * d11 < 2D) {
-						d6 = d8 + (d7 - d8) * (0.66666666666666663D - d11) * 6D;
+					} else if ((3D * d11) < 2D) {
+						d6 = d8 + ((d7 - d8) * (0.66666666666666663D - d11) * 6D);
 					} else {
 						d6 = d8;
 					}
@@ -287,7 +287,7 @@ public class Draw3D {
 				anIntArrayArray1483[l] = new int[ai.length];
 				for (int j1 = 0; j1 < ai.length; j1++) {
 					anIntArrayArray1483[l][j1] = method373(ai[j1], d);
-					if ((anIntArrayArray1483[l][j1] & 0xf8f8ff) == 0 && j1 != 0) {
+					if (((anIntArrayArray1483[l][j1] & 0xf8f8ff) == 0) && (j1 != 0)) {
 						anIntArrayArray1483[l][j1] = 1;
 					}
 				}
@@ -300,7 +300,7 @@ public class Draw3D {
 
 	public static int method373(int i, double d) {
 		double d1 = (double) (i >> 16) / 256D;
-		double d2 = (double) (i >> 8 & 0xff) / 256D;
+		double d2 = (double) ((i >> 8) & 0xff) / 256D;
 		double d3 = (double) (i & 0xff) / 256D;
 		d1 = Math.pow(d1, d);
 		d2 = Math.pow(d2, d);
@@ -334,21 +334,21 @@ public class Draw3D {
 		int colorStepAC = 0;
 
 		if (yB != yA) {
-			xStepAB = (xB - xA << 16) / (yB - yA);
-			colorStepAB = (colorB - colorA << 15) / (yB - yA);
+			xStepAB = ((xB - xA) << 16) / (yB - yA);
+			colorStepAB = ((colorB - colorA) << 15) / (yB - yA);
 		}
 
 		if (yC != yB) {
-			xStepBC = (xC - xB << 16) / (yC - yB);
-			colorStepBC = (colorC - colorB << 15) / (yC - yB);
+			xStepBC = ((xC - xB) << 16) / (yC - yB);
+			colorStepBC = ((colorC - colorB) << 15) / (yC - yB);
 		}
 
 		if (yC != yA) {
-			xStepAC = (xA - xC << 16) / (yA - yC);
-			colorStepAC = (colorA - colorC << 15) / (yA - yC);
+			xStepAC = ((xA - xC) << 16) / (yA - yC);
+			colorStepAC = ((colorA - colorC) << 15) / (yA - yC);
 		}
 
-		if (yA <= yB && yA <= yC) {
+		if ((yA <= yB) && (yA <= yC)) {
 			if (yA >= Draw2D.bottom) {
 				return;
 			}
@@ -359,8 +359,8 @@ public class Draw3D {
 				yC = Draw2D.bottom;
 			}
 			if (yB < yC) {
-				xC = xA <<= 16;
-				colorC = colorA <<= 15;
+				xC = (xA <<= 16);
+				colorC = (colorA <<= 15);
 				if (yA < 0) {
 					xC -= xStepAC * yA;
 					xA -= xStepAB * yA;
@@ -375,7 +375,7 @@ public class Draw3D {
 					colorB -= colorStepBC * yB;
 					yB = 0;
 				}
-				if (yA != yB && xStepAC < xStepAB || yA == yB && xStepAC > xStepBC) {
+				if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
 					yC -= yB;
 					yB -= yA;
 					for (yA = anIntArray1472[yA]; --yB >= 0; yA += Draw2D.width) {
@@ -414,8 +414,8 @@ public class Draw3D {
 				}
 				return;
 			}
-			xB = xA <<= 16;
-			colorB = colorA <<= 15;
+			xB = (xA <<= 16);
+			colorB = (colorA <<= 15);
 			if (yA < 0) {
 				xB -= xStepAC * yA;
 				xA -= xStepAB * yA;
@@ -430,7 +430,7 @@ public class Draw3D {
 				colorC -= colorStepBC * yC;
 				yC = 0;
 			}
-			if (yA != yC && xStepAC < xStepAB || yA == yC && xStepBC > xStepAB) {
+			if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
 				yB -= yC;
 				yC -= yA;
 				for (yA = anIntArray1472[yA]; --yC >= 0; yA += Draw2D.width) {
@@ -480,8 +480,8 @@ public class Draw3D {
 				yA = Draw2D.bottom;
 			}
 			if (yC < yA) {
-				xA = xB <<= 16;
-				colorA = colorB <<= 15;
+				xA = (xB <<= 16);
+				colorA = (colorB <<= 15);
 				if (yB < 0) {
 					xA -= xStepAB * yB;
 					xB -= xStepBC * yB;
@@ -496,7 +496,7 @@ public class Draw3D {
 					colorC -= colorStepAC * yC;
 					yC = 0;
 				}
-				if (yB != yC && xStepAB < xStepBC || yB == yC && xStepAB > xStepAC) {
+				if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
 					yA -= yC;
 					yC -= yB;
 					for (yB = anIntArray1472[yB]; --yC >= 0; yB += Draw2D.width) {
@@ -535,8 +535,8 @@ public class Draw3D {
 				}
 				return;
 			}
-			xC = xB <<= 16;
-			colorC = colorB <<= 15;
+			xC = (xB <<= 16);
+			colorC = (colorB <<= 15);
 			if (yB < 0) {
 				xC -= xStepAB * yB;
 				xB -= xStepBC * yB;
@@ -600,8 +600,8 @@ public class Draw3D {
 			yB = Draw2D.bottom;
 		}
 		if (yA < yB) {
-			xB = xC <<= 16;
-			colorB = colorC <<= 15;
+			xB = (xC <<= 16);
+			colorB = (colorC <<= 15);
 			if (yC < 0) {
 				xB -= xStepBC * yC;
 				xC -= xStepAC * yC;
@@ -655,8 +655,8 @@ public class Draw3D {
 			}
 			return;
 		}
-		xA = xC <<= 16;
-		colorA = colorC <<= 15;
+		xA = (xC <<= 16);
+		colorA = (colorC <<= 15);
 		if (yC < 0) {
 			xA -= xStepBC * yC;
 			xC -= xStepAC * yC;
@@ -729,7 +729,7 @@ public class Draw3D {
 			int colorStep;
 
 			if (clipX) {
-				if (rightX - leftX > 3) {
+				if ((rightX - leftX) > 3) {
 					colorStep = (rightColor - leftColor) / (rightX - leftX);
 				} else {
 					colorStep = 0;
@@ -749,7 +749,7 @@ public class Draw3D {
 				}
 
 				dstOff += leftX;
-				length = rightX - leftX >> 2;
+				length = (rightX - leftX) >> 2;
 				colorStep <<= 2;
 			} else {
 				if (leftX >= rightX) {
@@ -757,10 +757,10 @@ public class Draw3D {
 				}
 
 				dstOff += leftX;
-				length = rightX - leftX >> 2;
+				length = (rightX - leftX) >> 2;
 
 				if (length > 0) {
-					colorStep = (rightColor - leftColor) * recipreical15[length] >> 15;
+					colorStep = ((rightColor - leftColor) * recipreical15[length]) >> 15;
 				} else {
 					colorStep = 0;
 				}
@@ -776,7 +776,7 @@ public class Draw3D {
 					dst[dstOff++] = color;
 				}
 
-				length = rightX - leftX & 3;
+				length = (rightX - leftX) & 3;
 
 				if (length > 0) {
 					color = palette[leftColor >> 8];
@@ -792,20 +792,20 @@ public class Draw3D {
 				while (--length >= 0) {
 					color = palette[leftColor >> 8];
 					leftColor += colorStep;
-					color = ((color & 0xff00ff) * invAlpha >> 8 & 0xff00ff) + ((color & 0xff00) * invAlpha >> 8 & 0xff00);
-					dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-					dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-					dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-					dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
+					color = ((((color & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((color & 0xff00) * invAlpha) >> 8) & 0xff00);
+					dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+					dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+					dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+					dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
 				}
 
-				length = rightX - leftX & 3;
+				length = (rightX - leftX) & 3;
 
 				if (length > 0) {
 					color = palette[leftColor >> 8];
-					color = ((color & 0xff00ff) * invAlpha >> 8 & 0xff00ff) + ((color & 0xff00) * invAlpha >> 8 & 0xff00);
+					color = ((((color & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((color & 0xff00) * invAlpha) >> 8) & 0xff00);
 					do {
-						dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
+						dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
 					} while (--length > 0);
 				}
 			}
@@ -848,25 +848,25 @@ public class Draw3D {
 		do {
 			color = palette[leftColor >> 8];
 			leftColor += colorStep;
-			color = ((color & 0xff00ff) * invAlpha >> 8 & 0xff00ff) + ((color & 0xff00) * invAlpha >> 8 & 0xff00);
-			dst[dstOff++] = color + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
+			color = ((((color & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((color & 0xff00) * invAlpha) >> 8) & 0xff00);
+			dst[dstOff++] = color + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
 		} while (--length > 0);
 	}
 
 	public static void fillTriangle(int i, int j, int k, int l, int i1, int j1, int k1) {
 		int l1 = 0;
 		if (j != i) {
-			l1 = (i1 - l << 16) / (j - i);
+			l1 = ((i1 - l) << 16) / (j - i);
 		}
 		int i2 = 0;
 		if (k != j) {
-			i2 = (j1 - i1 << 16) / (k - j);
+			i2 = ((j1 - i1) << 16) / (k - j);
 		}
 		int j2 = 0;
 		if (k != i) {
-			j2 = (l - j1 << 16) / (i - k);
+			j2 = ((l - j1) << 16) / (i - k);
 		}
-		if (i <= j && i <= k) {
+		if ((i <= j) && (i <= k)) {
 			if (i >= Draw2D.bottom) {
 				return;
 			}
@@ -877,7 +877,7 @@ public class Draw3D {
 				k = Draw2D.bottom;
 			}
 			if (j < k) {
-				j1 = l <<= 16;
+				j1 = (l <<= 16);
 				if (i < 0) {
 					j1 -= j2 * i;
 					l -= l1 * i;
@@ -888,7 +888,7 @@ public class Draw3D {
 					i1 -= i2 * j;
 					j = 0;
 				}
-				if (i != j && j2 < l1 || i == j && j2 > i2) {
+				if (((i != j) && (j2 < l1)) || ((i == j) && (j2 > i2))) {
 					k -= j;
 					j -= i;
 					for (i = anIntArray1472[i]; --j >= 0; i += Draw2D.width) {
@@ -919,7 +919,7 @@ public class Draw3D {
 				}
 				return;
 			}
-			i1 = l <<= 16;
+			i1 = (l <<= 16);
 			if (i < 0) {
 				i1 -= j2 * i;
 				l -= l1 * i;
@@ -930,7 +930,7 @@ public class Draw3D {
 				j1 -= i2 * k;
 				k = 0;
 			}
-			if (i != k && j2 < l1 || i == k && i2 > l1) {
+			if (((i != k) && (j2 < l1)) || ((i == k) && (i2 > l1))) {
 				j -= k;
 				k -= i;
 				for (i = anIntArray1472[i]; --k >= 0; i += Draw2D.width) {
@@ -972,7 +972,7 @@ public class Draw3D {
 				i = Draw2D.bottom;
 			}
 			if (k < i) {
-				l = i1 <<= 16;
+				l = (i1 <<= 16);
 				if (j < 0) {
 					l -= l1 * j;
 					i1 -= i2 * j;
@@ -983,7 +983,7 @@ public class Draw3D {
 					j1 -= j2 * k;
 					k = 0;
 				}
-				if (j != k && l1 < i2 || j == k && l1 > j2) {
+				if (((j != k) && (l1 < i2)) || ((j == k) && (l1 > j2))) {
 					i -= k;
 					k -= j;
 					for (j = anIntArray1472[j]; --k >= 0; j += Draw2D.width) {
@@ -1014,7 +1014,7 @@ public class Draw3D {
 				}
 				return;
 			}
-			j1 = i1 <<= 16;
+			j1 = (i1 <<= 16);
 			if (j < 0) {
 				j1 -= l1 * j;
 				i1 -= i2 * j;
@@ -1066,7 +1066,7 @@ public class Draw3D {
 			j = Draw2D.bottom;
 		}
 		if (i < j) {
-			i1 = j1 <<= 16;
+			i1 = (j1 <<= 16);
 			if (k < 0) {
 				i1 -= i2 * k;
 				j1 -= j2 * k;
@@ -1108,7 +1108,7 @@ public class Draw3D {
 			}
 			return;
 		}
-		l = j1 <<= 16;
+		l = (j1 <<= 16);
 		if (k < 0) {
 			l -= i2 * k;
 			j1 -= j2 * k;
@@ -1165,7 +1165,7 @@ public class Draw3D {
 		}
 
 		dstOff += leftX;
-		int length = rightX - leftX >> 2;
+		int length = (rightX - leftX) >> 2;
 
 		if (Draw3D.alpha == 0) {
 			while (--length >= 0) {
@@ -1174,7 +1174,7 @@ public class Draw3D {
 				dst[dstOff++] = rgb;
 				dst[dstOff++] = rgb;
 			}
-			for (length = rightX - leftX & 3; --length >= 0; ) {
+			for (length = (rightX - leftX) & 3; --length >= 0; ) {
 				dst[dstOff++] = rgb;
 			}
 			return;
@@ -1183,17 +1183,17 @@ public class Draw3D {
 		int alpha = Draw3D.alpha;
 		int invAlpha = 256 - Draw3D.alpha;
 
-		rgb = ((rgb & 0xff00ff) * invAlpha >> 8 & 0xff00ff) + ((rgb & 0xff00) * invAlpha >> 8 & 0xff00);
+		rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
 
 		while (--length >= 0) {
-			dst[dstOff++] = rgb + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-			dst[dstOff++] = rgb + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-			dst[dstOff++] = rgb + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
-			dst[dstOff++] = rgb + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
+			dst[dstOff++] = rgb + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+			dst[dstOff++] = rgb + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+			dst[dstOff++] = rgb + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
+			dst[dstOff++] = rgb + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
 		}
 
-		for (length = rightX - leftX & 3; --length >= 0; ) {
-			dst[dstOff++] = rgb + ((dst[dstOff] & 0xff00ff) * alpha >> 8 & 0xff00ff) + ((dst[dstOff] & 0xff00) * alpha >> 8 & 0xff00);
+		for (length = (rightX - leftX) & 3; --length >= 0; ) {
+			dst[dstOff++] = rgb + ((((dst[dstOff] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[dstOff] & 0xff00) * alpha) >> 8) & 0xff00);
 		}
 	}
 
@@ -1209,17 +1209,17 @@ public class Draw3D {
 		viewYC -= viewYA;
 		viewZC -= viewZA;
 
-		int l4 = viewXC * viewYA - viewYC * viewXA << 14;
-		int i5 = viewYC * viewZA - viewZC * viewYA << 8;
-		int j5 = viewZC * viewXA - viewXC * viewZA << 5;
+		int l4 = ((viewXC * viewYA) - (viewYC * viewXA)) << 14;
+		int i5 = ((viewYC * viewZA) - (viewZC * viewYA)) << 8;
+		int j5 = ((viewZC * viewXA) - (viewXC * viewZA)) << 5;
 
-		int k5 = viewXB * viewYA - viewYB * viewXA << 14;
-		int l5 = viewYB * viewZA - viewZB * viewYA << 8;
-		int i6 = viewZB * viewXA - viewXB * viewZA << 5;
+		int k5 = ((viewXB * viewYA) - (viewYB * viewXA)) << 14;
+		int l5 = ((viewYB * viewZA) - (viewZB * viewYA)) << 8;
+		int i6 = ((viewZB * viewXA) - (viewXB * viewZA)) << 5;
 
-		int j6 = viewYB * viewXC - viewXB * viewYC << 14;
-		int k6 = viewZB * viewYC - viewYB * viewZC << 8;
-		int l6 = viewXB * viewZC - viewZB * viewXC << 5;
+		int j6 = ((viewYB * viewXC) - (viewXB * viewYC)) << 14;
+		int k6 = ((viewZB * viewYC) - (viewYB * viewZC)) << 8;
+		int l6 = ((viewXB * viewZC) - (viewZB * viewXC)) << 5;
 
 		int xStepAB = 0;
 		int xStepBC = 0;
@@ -1230,21 +1230,21 @@ public class Draw3D {
 		int lightnessStepAC = 0;
 
 		if (yB != yA) {
-			xStepAB = (xB - xA << 16) / (yB - yA);
-			lightnessStepAB = (lightnessB - lightnessA << 16) / (yB - yA);
+			xStepAB = ((xB - xA) << 16) / (yB - yA);
+			lightnessStepAB = ((lightnessB - lightnessA) << 16) / (yB - yA);
 		}
 
 		if (yC != yB) {
-			xStepBC = (xC - xB << 16) / (yC - yB);
-			lightnessStepBC = (lightnessC - lightnessB << 16) / (yC - yB);
+			xStepBC = ((xC - xB) << 16) / (yC - yB);
+			lightnessStepBC = ((lightnessC - lightnessB) << 16) / (yC - yB);
 		}
 
 		if (yC != yA) {
-			xStepAC = (xA - xC << 16) / (yA - yC);
-			lightnessStepAC = (lightnessA - lightnessC << 16) / (yA - yC);
+			xStepAC = ((xA - xC) << 16) / (yA - yC);
+			lightnessStepAC = ((lightnessA - lightnessC) << 16) / (yA - yC);
 		}
 
-		if (yA <= yB && yA <= yC) {
+		if ((yA <= yB) && (yA <= yC)) {
 			if (yA >= Draw2D.bottom) {
 				return;
 			}
@@ -1255,8 +1255,8 @@ public class Draw3D {
 				yC = Draw2D.bottom;
 			}
 			if (yB < yC) {
-				xC = xA <<= 16;
-				lightnessC = lightnessA <<= 16;
+				xC = (xA <<= 16);
+				lightnessC = (lightnessA <<= 16);
 				if (yA < 0) {
 					xC -= xStepAC * yA;
 					xA -= xStepAB * yA;
@@ -1275,7 +1275,7 @@ public class Draw3D {
 				l4 += j5 * k8;
 				k5 += i6 * k8;
 				j6 += l6 * k8;
-				if (yA != yB && xStepAC < xStepAB || yA == yB && xStepAC > xStepBC) {
+				if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
 					yC -= yB;
 					yB -= yA;
 					yA = anIntArray1472[yA];
@@ -1330,8 +1330,8 @@ public class Draw3D {
 				}
 				return;
 			}
-			xB = xA <<= 16;
-			lightnessB = lightnessA <<= 16;
+			xB = (xA <<= 16);
+			lightnessB = (lightnessA <<= 16);
 			if (yA < 0) {
 				xB -= xStepAC * yA;
 				xA -= xStepAB * yA;
@@ -1350,7 +1350,7 @@ public class Draw3D {
 			l4 += j5 * l8;
 			k5 += i6 * l8;
 			j6 += l6 * l8;
-			if (yA != yC && xStepAC < xStepAB || yA == yC && xStepBC > xStepAB) {
+			if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
 				yB -= yC;
 				yC -= yA;
 				yA = anIntArray1472[yA];
@@ -1416,8 +1416,8 @@ public class Draw3D {
 				yA = Draw2D.bottom;
 			}
 			if (yC < yA) {
-				xA = xB <<= 16;
-				lightnessA = lightnessB <<= 16;
+				xA = (xB <<= 16);
+				lightnessA = (lightnessB <<= 16);
 				if (yB < 0) {
 					xA -= xStepAB * yB;
 					xB -= xStepBC * yB;
@@ -1436,7 +1436,7 @@ public class Draw3D {
 				l4 += j5 * i9;
 				k5 += i6 * i9;
 				j6 += l6 * i9;
-				if (yB != yC && xStepAB < xStepBC || yB == yC && xStepAB > xStepAC) {
+				if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
 					yA -= yC;
 					yC -= yB;
 					yB = anIntArray1472[yB];
@@ -1491,8 +1491,8 @@ public class Draw3D {
 				}
 				return;
 			}
-			xC = xB <<= 16;
-			lightnessC = lightnessB <<= 16;
+			xC = (xB <<= 16);
+			lightnessC = (lightnessB <<= 16);
 			if (yB < 0) {
 				xC -= xStepAB * yB;
 				xB -= xStepBC * yB;
@@ -1576,8 +1576,8 @@ public class Draw3D {
 			yB = Draw2D.bottom;
 		}
 		if (yA < yB) {
-			xB = xC <<= 16;
-			lightnessB = lightnessC <<= 16;
+			xB = (xC <<= 16);
+			lightnessB = (lightnessC <<= 16);
 			if (yC < 0) {
 				xB -= xStepBC * yC;
 				xC -= xStepAC * yC;
@@ -1651,8 +1651,8 @@ public class Draw3D {
 			}
 			return;
 		}
-		xA = xC <<= 16;
-		lightnessA = lightnessC <<= 16;
+		xA = (xC <<= 16);
+		lightnessA = (lightnessC <<= 16);
 		if (yC < 0) {
 			xA -= xStepBC * yC;
 			xC -= xStepAC * yC;
@@ -1744,12 +1744,12 @@ public class Draw3D {
 			if (l >= i1) {
 				return;
 			}
-			k3 = i1 - l >> 3;
+			k3 = (i1 - l) >> 3;
 			j3 <<= 12;
 		} else {
-			if (i1 - l > 7) {
-				k3 = i1 - l >> 3;
-				j3 = (k1 - j1) * recipreical15[k3] >> 6;
+			if ((i1 - l) > 7) {
+				k3 = (i1 - l) >> 3;
+				j3 = ((k1 - j1) * recipreical15[k3]) >> 6;
 			} else {
 				k3 = 0;
 				j3 = 0;
@@ -1787,8 +1787,8 @@ public class Draw3D {
 					i4 = 4032;
 				}
 			}
-			int i7 = i4 - i >> 3;
-			int k7 = k4 - j >> 3;
+			int i7 = (i4 - i) >> 3;
+			int k7 = (k4 - j) >> 3;
 			i += (j1 & 0x600000) >> 3;
 			int i8 = j1 >> 23;
 			if (opaque) {
@@ -1830,13 +1830,13 @@ public class Draw3D {
 							i4 = 4032;
 						}
 					}
-					i7 = i4 - i >> 3;
-					k7 = k4 - j >> 3;
+					i7 = (i4 - i) >> 3;
+					k7 = (k4 - j) >> 3;
 					j1 += j3;
 					i += (j1 & 0x600000) >> 3;
 					i8 = j1 >> 23;
 				}
-				for (k3 = i1 - l & 7; k3-- > 0; ) {
+				for (k3 = (i1 - l) & 7; k3-- > 0; ) {
 					ai[k++] = ai1[(j & 0xfc0) + (i >> 6)] >>> i8;
 					i += i7;
 					j += k7;
@@ -1906,13 +1906,13 @@ public class Draw3D {
 						i4 = 4032;
 					}
 				}
-				i7 = i4 - i >> 3;
-				k7 = k4 - j >> 3;
+				i7 = (i4 - i) >> 3;
+				k7 = (k4 - j) >> 3;
 				j1 += j3;
 				i += (j1 & 0x600000) >> 3;
 				i8 = j1 >> 23;
 			}
-			for (k3 = i1 - l & 7; k3-- > 0; ) {
+			for (k3 = (i1 - l) & 7; k3-- > 0; ) {
 				int l8;
 				if ((l8 = ai1[(j & 0xfc0) + (i >> 6)] >>> i8) != 0) {
 					ai[k] = l8;
@@ -1952,8 +1952,8 @@ public class Draw3D {
 				j4 = 16256;
 			}
 		}
-		int j7 = j4 - i >> 3;
-		int l7 = l4 - j >> 3;
+		int j7 = (j4 - i) >> 3;
+		int l7 = (l4 - j) >> 3;
 		i += j1 & 0x600000;
 		int j8 = j1 >> 23;
 		if (opaque) {
@@ -1995,13 +1995,13 @@ public class Draw3D {
 						j4 = 16256;
 					}
 				}
-				j7 = j4 - i >> 3;
-				l7 = l4 - j >> 3;
+				j7 = (j4 - i) >> 3;
+				l7 = (l4 - j) >> 3;
 				j1 += j3;
 				i += j1 & 0x600000;
 				j8 = j1 >> 23;
 			}
-			for (k3 = i1 - l & 7; k3-- > 0; ) {
+			for (k3 = (i1 - l) & 7; k3-- > 0; ) {
 				ai[k++] = ai1[(j & 0x3f80) + (i >> 7)] >>> j8;
 				i += j7;
 				j += l7;
@@ -2071,13 +2071,13 @@ public class Draw3D {
 					j4 = 16256;
 				}
 			}
-			j7 = j4 - i >> 3;
-			l7 = l4 - j >> 3;
+			j7 = (j4 - i) >> 3;
+			l7 = (l4 - j) >> 3;
 			j1 += j3;
 			i += j1 & 0x600000;
 			j8 = j1 >> 23;
 		}
-		for (int l3 = i1 - l & 7; l3-- > 0; ) {
+		for (int l3 = (i1 - l) & 7; l3-- > 0; ) {
 			int j9;
 			if ((j9 = ai1[(j & 0x3f80) + (i >> 7)] >>> j8) != 0) {
 				ai[k] = j9;

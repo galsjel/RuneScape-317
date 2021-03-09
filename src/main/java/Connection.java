@@ -96,7 +96,7 @@ public class Connection implements Runnable {
 			for (int l = 0; l < i; l++) {
 				aByteArray424[anInt426] = abyte0[l + k];
 				anInt426 = (anInt426 + 1) % 5000;
-				if (anInt426 == (anInt425 + 4900) % 5000) {
+				if (anInt426 == ((anInt425 + 4900) % 5000)) {
 					throw new IOException("buffer overflow");
 				}
 			}

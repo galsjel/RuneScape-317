@@ -93,20 +93,20 @@ public class SoundTone {
 				int j5 = aEnvelope_100.method328(i);
 				int j6 = aEnvelope_101.method328(i);
 				l2 += method168(j6, j1, aEnvelope_100.anInt540) >> 1;
-				j1 += (j5 * l >> 16) + i1;
+				j1 += ((j5 * l) >> 16) + i1;
 			}
 			if (aEnvelope_102 != null) {
 				int k5 = aEnvelope_102.method328(i);
 				int k6 = aEnvelope_103.method328(i);
-				j4 = j4 * ((method168(k6, i2, aEnvelope_102.anInt540) >> 1) + 32768) >> 15;
-				i2 += (k5 * k1 >> 16) + l1;
+				j4 = (j4 * ((method168(k6, i2, aEnvelope_102.anInt540) >> 1) + 32768)) >> 15;
+				i2 += ((k5 * k1) >> 16) + l1;
 			}
 			for (int l5 = 0; l5 < 5; l5++) {
 				if (anIntArray106[l5] != 0) {
 					int l6 = k2 + anIntArray119[l5];
 					if (l6 < i) {
-						anIntArray115[l6] += method168(j4 * anIntArray120[l5] >> 15, anIntArray118[l5], aEnvelope_98.anInt540);
-						anIntArray118[l5] += (l2 * anIntArray121[l5] >> 16) + anIntArray122[l5];
+						anIntArray115[l6] += method168((j4 * anIntArray120[l5]) >> 15, anIntArray118[l5], aEnvelope_98.anInt540);
+						anIntArray118[l5] += ((l2 * anIntArray121[l5]) >> 16) + anIntArray122[l5];
 					}
 				}
 			}
@@ -121,9 +121,9 @@ public class SoundTone {
 				int i8 = aEnvelope_105.method328(i);
 				int k4;
 				if (flag1) {
-					k4 = aEnvelope_104.anInt538 + ((aEnvelope_104.anInt539 - aEnvelope_104.anInt538) * k7 >> 8);
+					k4 = aEnvelope_104.anInt538 + (((aEnvelope_104.anInt539 - aEnvelope_104.anInt538) * k7) >> 8);
 				} else {
-					k4 = aEnvelope_104.anInt538 + ((aEnvelope_104.anInt539 - aEnvelope_104.anInt538) * i8 >> 8);
+					k4 = aEnvelope_104.anInt538 + (((aEnvelope_104.anInt539 - aEnvelope_104.anInt538) * i8) >> 8);
 				}
 				if ((i3 += 256) >= k4) {
 					i3 = 0;
@@ -134,30 +134,30 @@ public class SoundTone {
 				}
 			}
 		}
-		if (anInt109 > 0 && anInt110 > 0) {
+		if ((anInt109 > 0) && (anInt110 > 0)) {
 			int j3 = (int) ((double) anInt109 * d);
 			for (int l4 = j3; l4 < i; l4++) {
 				anIntArray115[l4] += (anIntArray115[l4 - j3] * anInt110) / 100;
 			}
 		}
-		if (aSoundFilter_111.anIntArray665[0] > 0 || aSoundFilter_111.anIntArray665[1] > 0) {
+		if ((aSoundFilter_111.anIntArray665[0] > 0) || (aSoundFilter_111.anIntArray665[1] > 0)) {
 			aEnvelope_112.method327();
 			int k3 = aEnvelope_112.method328(i + 1);
 			int i5 = aSoundFilter_111.method544(0, (float) k3 / 65536F);
 			int i6 = aSoundFilter_111.method544(1, (float) k3 / 65536F);
-			if (i >= i5 + i6) {
+			if (i >= (i5 + i6)) {
 				int j7 = 0;
 				int l7 = i6;
-				if (l7 > i - i5) {
+				if (l7 > (i - i5)) {
 					l7 = i - i5;
 				}
 				for (; j7 < l7; j7++) {
-					int j8 = (int) ((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672 >> 16);
+					int j8 = (int) (((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672) >> 16);
 					for (int k8 = 0; k8 < i5; k8++) {
-						j8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k8] * (long) SoundFilter.anIntArrayArray670[0][k8] >> 16);
+						j8 += (int) (((long) anIntArray115[(j7 + i5) - 1 - k8] * (long) SoundFilter.anIntArrayArray670[0][k8]) >> 16);
 					}
 					for (int j9 = 0; j9 < j7; j9++) {
-						j8 -= (int) ((long) anIntArray115[j7 - 1 - j9] * (long) SoundFilter.anIntArrayArray670[1][j9] >> 16);
+						j8 -= (int) (((long) anIntArray115[j7 - 1 - j9] * (long) SoundFilter.anIntArrayArray670[1][j9]) >> 16);
 					}
 					anIntArray115[j7] = j8;
 					k3 = aEnvelope_112.method328(i + 1);
@@ -165,21 +165,21 @@ public class SoundTone {
 				char c = '\200';
 				l7 = c;
 				do {
-					if (l7 > i - i5) {
+					if (l7 > (i - i5)) {
 						l7 = i - i5;
 					}
 					for (; j7 < l7; j7++) {
-						int l8 = (int) ((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672 >> 16);
+						int l8 = (int) (((long) anIntArray115[j7 + i5] * (long) SoundFilter.anInt672) >> 16);
 						for (int k9 = 0; k9 < i5; k9++) {
-							l8 += (int) ((long) anIntArray115[(j7 + i5) - 1 - k9] * (long) SoundFilter.anIntArrayArray670[0][k9] >> 16);
+							l8 += (int) (((long) anIntArray115[(j7 + i5) - 1 - k9] * (long) SoundFilter.anIntArrayArray670[0][k9]) >> 16);
 						}
 						for (int i10 = 0; i10 < i6; i10++) {
-							l8 -= (int) ((long) anIntArray115[j7 - 1 - i10] * (long) SoundFilter.anIntArrayArray670[1][i10] >> 16);
+							l8 -= (int) (((long) anIntArray115[j7 - 1 - i10] * (long) SoundFilter.anIntArrayArray670[1][i10]) >> 16);
 						}
 						anIntArray115[j7] = l8;
 						k3 = aEnvelope_112.method328(i + 1);
 					}
-					if (j7 >= i - i5) {
+					if (j7 >= (i - i5)) {
 						break;
 					}
 					i5 = aSoundFilter_111.method544(0, (float) k3 / 65536F);
@@ -189,10 +189,10 @@ public class SoundTone {
 				for (; j7 < i; j7++) {
 					int i9 = 0;
 					for (int l9 = (j7 + i5) - i; l9 < i5; l9++) {
-						i9 += (int) ((long) anIntArray115[(j7 + i5) - 1 - l9] * (long) SoundFilter.anIntArrayArray670[0][l9] >> 16);
+						i9 += (int) (((long) anIntArray115[(j7 + i5) - 1 - l9] * (long) SoundFilter.anIntArrayArray670[0][l9]) >> 16);
 					}
 					for (int j10 = 0; j10 < i6; j10++) {
-						i9 -= (int) ((long) anIntArray115[j7 - 1 - j10] * (long) SoundFilter.anIntArrayArray670[1][j10] >> 16);
+						i9 -= (int) (((long) anIntArray115[j7 - 1 - j10] * (long) SoundFilter.anIntArrayArray670[1][j10]) >> 16);
 					}
 					anIntArray115[j7] = i9;
 					aEnvelope_112.method328(i + 1);
@@ -219,13 +219,13 @@ public class SoundTone {
 			}
 		}
 		if (l == 2) {
-			return anIntArray117[k & 0x7fff] * i >> 14;
+			return (anIntArray117[k & 0x7fff] * i) >> 14;
 		}
 		if (l == 3) {
-			return ((k & 0x7fff) * i >> 14) - i;
+			return (((k & 0x7fff) * i) >> 14) - i;
 		}
 		if (l == 4) {
-			return anIntArray116[k / 2607 & 0x7fff] * i;
+			return anIntArray116[(k / 2607) & 0x7fff] * i;
 		} else {
 			return 0;
 		}

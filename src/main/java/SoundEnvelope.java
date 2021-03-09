@@ -57,7 +57,7 @@ public class SoundEnvelope {
 		}
 		anInt544 += anInt543;
 		anInt545++;
-		return anInt544 - anInt543 >> 15;
+		return (anInt544 - anInt543) >> 15;
 	}
 
 }

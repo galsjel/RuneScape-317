@@ -37,7 +37,7 @@ public class SpotAnimEntity extends Entity {
 			model_1.labelFaces = null;
 			model_1.labelVertices = null;
 		}
-		if (aType_1568.anInt410 != 128 || aType_1568.anInt411 != 128) {
+		if ((aType_1568.anInt410 != 128) || (aType_1568.anInt411 != 128)) {
 			model_1.scale(aType_1568.anInt410, aType_1568.anInt410, aType_1568.anInt411);
 		}
 		if (aType_1568.anInt412 != 0) {
@@ -62,7 +62,7 @@ public class SpotAnimEntity extends Entity {
 		for (anInt1570 += i; anInt1570 > aType_1568.aType_407.method258(anInt1569); ) {
 			anInt1570 -= aType_1568.aType_407.method258(anInt1569) + 1;
 			anInt1569++;
-			if (anInt1569 >= aType_1568.aType_407.anInt352 && (anInt1569 < 0 || anInt1569 >= aType_1568.aType_407.anInt352)) {
+			if ((anInt1569 >= aType_1568.aType_407.anInt352) && ((anInt1569 < 0) || (anInt1569 >= aType_1568.aType_407.anInt352))) {
 				anInt1569 = 0;
 				aBoolean1567 = true;
 			}

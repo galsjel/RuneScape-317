@@ -64,13 +64,13 @@ public class PathingEntity extends Entity {
 	}
 
 	public void method445(int i, int j, boolean flag) {
-		if (anInt1526 != -1 && SeqType.aTypeArray351[anInt1526].anInt364 == 1) {
+		if ((anInt1526 != -1) && (SeqType.aTypeArray351[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
 		if (!flag) {
 			int k = i - anIntArray1500[0];
 			int l = j - anIntArray1501[0];
-			if (k >= -8 && k <= 8 && l >= -8 && l <= 8) {
+			if ((k >= -8) && (k <= 8) && (l >= -8) && (l <= 8)) {
 				if (anInt1525 < 9) {
 					anInt1525++;
 				}
@@ -90,8 +90,8 @@ public class PathingEntity extends Entity {
 		anInt1503 = 0;
 		anIntArray1500[0] = i;
 		anIntArray1501[0] = j;
-		anInt1550 = anIntArray1500[0] * 128 + anInt1540 * 64;
-		anInt1551 = anIntArray1501[0] * 128 + anInt1540 * 64;
+		anInt1550 = (anIntArray1500[0] * 128) + (anInt1540 * 64);
+		anInt1551 = (anIntArray1501[0] * 128) + (anInt1540 * 64);
 	}
 
 	public void method446() {
@@ -141,7 +141,7 @@ public class PathingEntity extends Entity {
 			j++;
 			k--;
 		}
-		if (anInt1526 != -1 && SeqType.aTypeArray351[anInt1526].anInt364 == 1) {
+		if ((anInt1526 != -1) && (SeqType.aTypeArray351[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
 		if (anInt1525 < 9) {

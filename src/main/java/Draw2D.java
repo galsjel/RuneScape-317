@@ -69,26 +69,26 @@ public class Draw2D extends DoublyLinkedListNode {
 			y = top;
 		}
 
-		if (x + width > right) {
+		if ((x + width) > right) {
 			width = right - x;
 		}
 
-		if (y + height > bottom) {
+		if ((y + height) > bottom) {
 			height = bottom - y;
 		}
 
 		int invAlpha = 256 - alpha;
-		int r0 = (rgb >> 16 & 0xff) * alpha;
-		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int r0 = ((rgb >> 16) & 0xff) * alpha;
+		int g0 = ((rgb >> 8) & 0xff) * alpha;
 		int b0 = (rgb & 0xff) * alpha;
 
 		int step = Draw2D.width - width;
-		int offset = x + y * Draw2D.width;
+		int offset = x + (y * Draw2D.width);
 
 		for (int i = 0; i < height; i++) {
 			for (int j = -width; j < 0; j++) {
-				int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
-				int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+				int r1 = ((pixels[offset] >> 16) & 0xff) * invAlpha;
+				int g1 = ((pixels[offset] >> 8) & 0xff) * invAlpha;
 				int b1 = (pixels[offset] & 0xff) * invAlpha;
 				pixels[offset++] = (((r0 + r1) >> 8) << 16) + (((g0 + g1) >> 8) << 8) + ((b0 + b1) >> 8);
 			}
@@ -107,16 +107,16 @@ public class Draw2D extends DoublyLinkedListNode {
 			y = top;
 		}
 
-		if (x + width > right) {
+		if ((x + width) > right) {
 			width = right - x;
 		}
 
-		if (y + height > bottom) {
+		if ((y + height) > bottom) {
 			height = bottom - y;
 		}
 
 		int step = Draw2D.width - width;
-		int offset = x + y * Draw2D.width;
+		int offset = x + (y * Draw2D.width);
 
 		for (int i = -height; i < 0; i++) {
 			for (int j = -width; j < 0; j++) {
@@ -143,7 +143,7 @@ public class Draw2D extends DoublyLinkedListNode {
 	}
 
 	public static void drawLineX(int x, int y, int length, int rgb) {
-		if (y < top || y >= bottom) {
+		if ((y < top) || (y >= bottom)) {
 			return;
 		}
 
@@ -152,11 +152,11 @@ public class Draw2D extends DoublyLinkedListNode {
 			x = left;
 		}
 
-		if (x + length > right) {
+		if ((x + length) > right) {
 			length = right - x;
 		}
 
-		int offset = x + y * width;
+		int offset = x + (y * width);
 
 		for (int i = 0; i < length; i++) {
 			pixels[offset + i] = rgb;
@@ -164,7 +164,7 @@ public class Draw2D extends DoublyLinkedListNode {
 	}
 
 	public static void drawLineX(int x, int y, int length, int rgb, int alpha) {
-		if (y < top || y >= bottom) {
+		if ((y < top) || (y >= bottom)) {
 			return;
 		}
 
@@ -173,27 +173,27 @@ public class Draw2D extends DoublyLinkedListNode {
 			x = left;
 		}
 
-		if (x + length > right) {
+		if ((x + length) > right) {
 			length = right - x;
 		}
 
 		int invAlpha = 256 - alpha;
-		int r0 = (rgb >> 16 & 0xff) * alpha;
-		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int r0 = ((rgb >> 16) & 0xff) * alpha;
+		int g0 = ((rgb >> 8) & 0xff) * alpha;
 		int b0 = (rgb & 0xff) * alpha;
 
-		int offset = x + y * width;
+		int offset = x + (y * width);
 
 		for (int i = 0; i < length; i++) {
-			int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
-			int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+			int r1 = ((pixels[offset] >> 16) & 0xff) * invAlpha;
+			int g1 = ((pixels[offset] >> 8) & 0xff) * invAlpha;
 			int b1 = (pixels[offset] & 0xff) * invAlpha;
-			pixels[offset++] = ((r0 + r1 >> 8) << 16) + ((g0 + g1 >> 8) << 8) + (b0 + b1 >> 8);
+			pixels[offset++] = (((r0 + r1) >> 8) << 16) + (((g0 + g1) >> 8) << 8) + ((b0 + b1) >> 8);
 		}
 	}
 
 	public static void drawLineY(int y, int rgb, int length, int x) {
-		if (x < left || x >= right) {
+		if ((x < left) || (x >= right)) {
 			return;
 		}
 
@@ -202,19 +202,19 @@ public class Draw2D extends DoublyLinkedListNode {
 			y = top;
 		}
 
-		if (y + length > bottom) {
+		if ((y + length) > bottom) {
 			length = bottom - y;
 		}
 
-		int offset = x + y * width;
+		int offset = x + (y * width);
 
 		for (int i = 0; i < length; i++) {
-			pixels[offset + i * width] = rgb;
+			pixels[offset + (i * width)] = rgb;
 		}
 	}
 
 	public static void drawLineY(int rgb, int x, int alpha, int y, int length) {
-		if (x < left || x >= right) {
+		if ((x < left) || (x >= right)) {
 			return;
 		}
 
@@ -223,22 +223,22 @@ public class Draw2D extends DoublyLinkedListNode {
 			y = top;
 		}
 
-		if (y + length > bottom) {
+		if ((y + length) > bottom) {
 			length = bottom - y;
 		}
 
 		int invAlpha = 256 - alpha;
-		int r0 = (rgb >> 16 & 0xff) * alpha;
-		int g0 = (rgb >> 8 & 0xff) * alpha;
+		int r0 = ((rgb >> 16) & 0xff) * alpha;
+		int g0 = ((rgb >> 8) & 0xff) * alpha;
 		int b0 = (rgb & 0xff) * alpha;
 
-		int offset = x + y * width;
+		int offset = x + (y * width);
 
 		for (int i = 0; i < length; i++) {
-			int r1 = (pixels[offset] >> 16 & 0xff) * invAlpha;
-			int g1 = (pixels[offset] >> 8 & 0xff) * invAlpha;
+			int r1 = ((pixels[offset] >> 16) & 0xff) * invAlpha;
+			int g1 = ((pixels[offset] >> 8) & 0xff) * invAlpha;
 			int b1 = (pixels[offset] & 0xff) * invAlpha;
-			pixels[offset] = ((r0 + r1 >> 8) << 16) + ((g0 + g1 >> 8) << 8) + (b0 + b1 >> 8);
+			pixels[offset] = (((r0 + r1) >> 8) << 16) + (((g0 + g1) >> 8) << 8) + ((b0 + b1) >> 8);
 			offset += width;
 		}
 	}

@@ -31,7 +31,7 @@ public class LocEntity extends Entity {
 			aType_1607 = SeqType.aTypeArray351[l1];
 			anInt1599 = 0;
 			anInt1608 = Game.anInt1161;
-			if (flag && aType_1607.anInt356 != -1) {
+			if (flag && (aType_1607.anInt356 != -1)) {
 				anInt1599 = (int) (Math.random() * (double) aType_1607.anInt352);
 				anInt1608 -= (int) (Math.random() * (double) aType_1607.method258(anInt1599));
 			}
@@ -47,7 +47,7 @@ public class LocEntity extends Entity {
 		int j = -1;
 		if (aType_1607 != null) {
 			int k = Game.anInt1161 - anInt1608;
-			if (k > 100 && aType_1607.anInt356 > 0) {
+			if ((k > 100) && (aType_1607.anInt356 > 0)) {
 				k = 100;
 			}
 			while (k > aType_1607.method258(anInt1599)) {
@@ -57,7 +57,7 @@ public class LocEntity extends Entity {
 					continue;
 				}
 				anInt1599 -= aType_1607.anInt356;
-				if (anInt1599 >= 0 && anInt1599 < aType_1607.anInt352) {
+				if ((anInt1599 >= 0) && (anInt1599 < aType_1607.anInt352)) {
 					continue;
 				}
 				aType_1607 = null;
@@ -89,11 +89,11 @@ public class LocEntity extends Entity {
 			int l = varbit.anInt649;
 			int i1 = varbit.anInt650;
 			int j1 = Game.anIntArray1232[i1 - l];
-			i = aGame1609.anIntArray971[k] >> l & j1;
+			i = (aGame1609.anIntArray971[k] >> l) & j1;
 		} else if (anInt1602 != -1) {
 			i = aGame1609.anIntArray971[anInt1602];
 		}
-		if (i < 0 || i >= anIntArray1600.length || anIntArray1600[i] == -1) {
+		if ((i < 0) || (i >= anIntArray1600.length) || (anIntArray1600[i] == -1)) {
 			return null;
 		} else {
 			return LocType.method572(anIntArray1600[i]);

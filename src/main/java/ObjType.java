@@ -108,7 +108,7 @@ public class ObjType {
 	public static Image24 method200(int i, int j, int k) {
 		if (k == 0) {
 			Image24 image = (Image24) aCache_158.method222(i);
-			if (image != null && image.anInt1445 != j && image.anInt1445 != -1) {
+			if ((image != null) && (image.anInt1445 != j) && (image.anInt1445 != -1)) {
 				image.method329();
 				image = null;
 			}
@@ -123,7 +123,7 @@ public class ObjType {
 		if (j > 1) {
 			int i1 = -1;
 			for (int j1 = 0; j1 < 10; j1++) {
-				if (j >= type.anIntArray201[j1] && type.anIntArray201[j1] != 0) {
+				if ((j >= type.anIntArray201[j1]) && (type.anIntArray201[j1] != 0)) {
 					i1 = type.anIntArray193[j1];
 				}
 			}
@@ -164,20 +164,20 @@ public class ObjType {
 		if (k > 0) {
 			k3 = (int) ((double) k3 * 1.04D);
 		}
-		int l3 = Draw3D.sin[type.anInt190] * k3 >> 16;
-		int i4 = Draw3D.cos[type.anInt190] * k3 >> 16;
-		model.drawSimple(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + model.minY / 2 + type.anInt194, i4 + type.anInt194);
+		int l3 = (Draw3D.sin[type.anInt190] * k3) >> 16;
+		int i4 = (Draw3D.cos[type.anInt190] * k3) >> 16;
+		model.drawSimple(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + (model.minY / 2) + type.anInt194, i4 + type.anInt194);
 		for (int i5 = 31; i5 >= 0; i5--) {
 			for (int j4 = 31; j4 >= 0; j4--) {
-				if (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] == 0) {
-					if (i5 > 0 && class30_sub2_sub1_sub1_1.anIntArray1439[(i5 - 1) + j4 * 32] > 1) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] = 1;
-					} else if (j4 > 0 && class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 - 1) * 32] > 1) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] = 1;
-					} else if (i5 < 31 && class30_sub2_sub1_sub1_1.anIntArray1439[i5 + 1 + j4 * 32] > 1) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] = 1;
-					} else if (j4 < 31 && class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 + 1) * 32] > 1) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] = 1;
+				if (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] == 0) {
+					if ((i5 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(i5 - 1) + (j4 * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
+					} else if ((j4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + ((j4 - 1) * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
+					} else if ((i5 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + 1 + (j4 * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
+					} else if ((j4 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + ((j4 + 1) * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
 					}
 				}
 			}
@@ -185,15 +185,15 @@ public class ObjType {
 		if (k > 0) {
 			for (int j5 = 31; j5 >= 0; j5--) {
 				for (int k4 = 31; k4 >= 0; k4--) {
-					if (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + k4 * 32] == 0) {
-						if (j5 > 0 && class30_sub2_sub1_sub1_1.anIntArray1439[(j5 - 1) + k4 * 32] == 1) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + k4 * 32] = k;
-						} else if (k4 > 0 && class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 - 1) * 32] == 1) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + k4 * 32] = k;
-						} else if (j5 < 31 && class30_sub2_sub1_sub1_1.anIntArray1439[j5 + 1 + k4 * 32] == 1) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + k4 * 32] = k;
-						} else if (k4 < 31 && class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 + 1) * 32] == 1) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + k4 * 32] = k;
+					if (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] == 0) {
+						if ((j5 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(j5 - 1) + (k4 * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
+						} else if ((k4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + ((k4 - 1) * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
+						} else if ((j5 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + 1 + (k4 * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
+						} else if ((k4 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + ((k4 + 1) * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
 						}
 					}
 				}
@@ -201,8 +201,8 @@ public class ObjType {
 		} else if (k == 0) {
 			for (int k5 = 31; k5 >= 0; k5--) {
 				for (int l4 = 31; l4 >= 0; l4--) {
-					if (class30_sub2_sub1_sub1_1.anIntArray1439[k5 + l4 * 32] == 0 && k5 > 0 && l4 > 0 && class30_sub2_sub1_sub1_1.anIntArray1439[(k5 - 1) + (l4 - 1) * 32] > 0) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[k5 + l4 * 32] = 0x302020;
+					if ((class30_sub2_sub1_sub1_1.anIntArray1439[k5 + (l4 * 32)] == 0) && (k5 > 0) && (l4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(k5 - 1) + ((l4 - 1) * 32)] > 0)) {
+						class30_sub2_sub1_sub1_1.anIntArray1439[k5 + (l4 * 32)] = 0x302020;
 					}
 				}
 			}
@@ -248,7 +248,7 @@ public class ObjType {
 		if (!Model.validate(k)) {
 			flag = false;
 		}
-		if (l != -1 && !Model.validate(l)) {
+		if ((l != -1) && !Model.validate(l)) {
 			flag = false;
 		}
 		return flag;
@@ -294,10 +294,10 @@ public class ObjType {
 		if (!Model.validate(k)) {
 			flag = false;
 		}
-		if (l != -1 && !Model.validate(l)) {
+		if ((l != -1) && !Model.validate(l)) {
 			flag = false;
 		}
-		if (i1 != -1 && !Model.validate(i1)) {
+		if ((i1 != -1) && !Model.validate(i1)) {
 			flag = false;
 		}
 		return flag;
@@ -328,10 +328,10 @@ public class ObjType {
 				model = new Model(2, aclass30_sub2_sub4_sub6);
 			}
 		}
-		if (i == 0 && aByte205 != 0) {
+		if ((i == 0) && (aByte205 != 0)) {
 			model.translate(0, aByte205, 0);
 		}
-		if (i == 1 && aByte154 != 0) {
+		if ((i == 1) && (aByte154 != 0)) {
 			model.translate(0, aByte154, 0);
 		}
 		if (anIntArray156 != null) {
@@ -401,7 +401,7 @@ public class ObjType {
 		anInt155 = type_1.anInt155;
 		String s = "a";
 		char c = type_1.aString170.charAt(0);
-		if (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U') {
+		if ((c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U')) {
 			s = "an";
 		}
 		aByteArray178 = ("Swap this note at any bank for " + s + " " + type_1.aString170 + ".").getBytes();
@@ -409,10 +409,10 @@ public class ObjType {
 	}
 
 	public Model method201(int i) {
-		if (anIntArray193 != null && i > 1) {
+		if ((anIntArray193 != null) && (i > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
-				if (i >= anIntArray201[k] && anIntArray201[k] != 0) {
+				if ((i >= anIntArray201[k]) && (anIntArray201[k] != 0)) {
 					j = anIntArray193[k];
 				}
 			}
@@ -428,7 +428,7 @@ public class ObjType {
 		if (model == null) {
 			return null;
 		}
-		if (anInt167 != 128 || anInt192 != 128 || anInt191 != 128) {
+		if ((anInt167 != 128) || (anInt192 != 128) || (anInt191 != 128)) {
 			model.scale(anInt167, anInt191, anInt192);
 		}
 		if (anIntArray156 != null) {
@@ -443,10 +443,10 @@ public class ObjType {
 	}
 
 	public Model method202(int i) {
-		if (anIntArray193 != null && i > 1) {
+		if ((anIntArray193 != null) && (i > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
-				if (i >= anIntArray201[k] && anIntArray201[k] != 0) {
+				if ((i >= anIntArray201[k]) && (anIntArray201[k] != 0)) {
 					j = anIntArray193[k];
 				}
 			}
@@ -512,7 +512,7 @@ public class ObjType {
 				aByte154 = buffer.method409();
 			} else if (i == 26) {
 				anInt164 = buffer.method410();
-			} else if (i >= 30 && i < 35) {
+			} else if ((i >= 30) && (i < 35)) {
 				if (aStringArray168 == null) {
 					aStringArray168 = new String[5];
 				}
@@ -520,7 +520,7 @@ public class ObjType {
 				if (aStringArray168[i - 30].equalsIgnoreCase("hidden")) {
 					aStringArray168[i - 30] = null;
 				}
-			} else if (i >= 35 && i < 40) {
+			} else if ((i >= 35) && (i < 40)) {
 				if (aStringArray189 == null) {
 					aStringArray189 = new String[5];
 				}
@@ -551,7 +551,7 @@ public class ObjType {
 				anInt179 = buffer.method410();
 			} else if (i == 98) {
 				anInt163 = buffer.method410();
-			} else if (i >= 100 && i < 110) {
+			} else if ((i >= 100) && (i < 110)) {
 				if (anIntArray193 == null) {
 					anIntArray193 = new int[10];
 					anIntArray201 = new int[10];

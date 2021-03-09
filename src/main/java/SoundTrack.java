@@ -55,14 +55,14 @@ public class SoundTrack {
 	public int method243() {
 		int j = 0x98967f;
 		for (int k = 0; k < 10; k++) {
-			if (aToneArray329[k] != null && aToneArray329[k].anInt114 / 20 < j) {
+			if ((aToneArray329[k] != null) && ((aToneArray329[k].anInt114 / 20) < j)) {
 				j = aToneArray329[k].anInt114 / 20;
 			}
 		}
-		if (anInt330 < anInt331 && anInt330 / 20 < j) {
+		if ((anInt330 < anInt331) && ((anInt330 / 20) < j)) {
 			j = anInt330 / 20;
 		}
-		if (j == 0x98967f || j == 0) {
+		if ((j == 0x98967f) || (j == 0)) {
 			return 0;
 		}
 		for (int l = 0; l < 10; l++) {
@@ -100,7 +100,7 @@ public class SoundTrack {
 	public int method245(int i) {
 		int j = 0;
 		for (int k = 0; k < 10; k++) {
-			if (aToneArray329[k] != null && aToneArray329[k].anInt113 + aToneArray329[k].anInt114 > j) {
+			if ((aToneArray329[k] != null) && ((aToneArray329[k].anInt113 + aToneArray329[k].anInt114) > j)) {
 				j = aToneArray329[k].anInt113 + aToneArray329[k].anInt114;
 			}
 		}
@@ -110,11 +110,11 @@ public class SoundTrack {
 		int l = (22050 * j) / 1000;
 		int i1 = (22050 * anInt330) / 1000;
 		int j1 = (22050 * anInt331) / 1000;
-		if (i1 < 0 || j1 < 0 || j1 > l || i1 >= j1) {
+		if ((i1 < 0) || (j1 < 0) || (j1 > l) || (i1 >= j1)) {
 			i = 0;
 		}
-		int k1 = l + (j1 - i1) * (i - 1);
-		for (int l1 = 44; l1 < k1 + 44; l1++) {
+		int k1 = l + ((j1 - i1) * (i - 1));
+		for (int l1 = 44; l1 < (k1 + 44); l1++) {
 			aByteArray327[l1] = -128;
 		}
 		for (int i2 = 0; i2 < 10; i2++) {

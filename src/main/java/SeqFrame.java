@@ -66,7 +66,7 @@ public class SeqFrame {
 	 * @return the {@link SeqFrame} or <code>null</code> if it does not exist.
 	 */
 	public static SeqFrame get(int id) {
-		if (instances == null || id < 0 || id >= instances.length) {
+		if ((instances == null) || (id < 0) || (id >= instances.length)) {
 			return null;
 		} else {
 			return instances[id];

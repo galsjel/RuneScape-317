@@ -33,10 +33,10 @@ public class FileStore {
 			}
 			int i1 = ((aByteArray308[0] & 0xff) << 16) + ((aByteArray308[1] & 0xff) << 8) + (aByteArray308[2] & 0xff);
 			int j1 = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
-			if (i1 < 0 || i1 > anInt312) {
+			if ((i1 < 0) || (i1 > anInt312)) {
 				return null;
 			}
-			if (j1 <= 0 || (long) j1 > aRandomAccessFile309.length() / 520L) {
+			if ((j1 <= 0) || ((long) j1 > (aRandomAccessFile309.length() / 520L))) {
 				return null;
 			}
 			byte[] abyte0 = new byte[i1];
@@ -52,7 +52,7 @@ public class FileStore {
 					i2 = 512;
 				}
 				int j2;
-				for (; k < i2 + 8; k += j2) {
+				for (; k < (i2 + 8); k += j2) {
 					j2 = aRandomAccessFile309.read(aByteArray308, k, (i2 + 8) - k);
 					if (j2 == -1) {
 						return null;
@@ -62,10 +62,10 @@ public class FileStore {
 				int l2 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
 				int i3 = ((aByteArray308[4] & 0xff) << 16) + ((aByteArray308[5] & 0xff) << 8) + (aByteArray308[6] & 0xff);
 				int j3 = aByteArray308[7] & 0xff;
-				if (k2 != i || l2 != l1 || j3 != anInt311) {
+				if ((k2 != i) || (l2 != l1) || (j3 != anInt311)) {
 					return null;
 				}
-				if (i3 < 0 || (long) i3 > aRandomAccessFile309.length() / 520L) {
+				if ((i3 < 0) || ((long) i3 > (aRandomAccessFile309.length() / 520L))) {
 					return null;
 				}
 				for (int k3 = 0; k3 < i2; k3++) {
@@ -100,7 +100,7 @@ public class FileStore {
 					}
 				}
 				l = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
-				if (l <= 0 || (long) l > aRandomAccessFile309.length() / 520L) {
+				if ((l <= 0) || ((long) l > (aRandomAccessFile309.length() / 520L))) {
 					return false;
 				}
 			} else {
@@ -135,10 +135,10 @@ public class FileStore {
 						int j3 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
 						i2 = ((aByteArray308[4] & 0xff) << 16) + ((aByteArray308[5] & 0xff) << 8) + (aByteArray308[6] & 0xff);
 						int k3 = aByteArray308[7] & 0xff;
-						if (i3 != j || j3 != l1 || k3 != anInt311) {
+						if ((i3 != j) || (j3 != l1) || (k3 != anInt311)) {
 							return false;
 						}
-						if (i2 < 0 || (long) i2 > aRandomAccessFile309.length() / 520L) {
+						if ((i2 < 0) || ((long) i2 > (aRandomAccessFile309.length() / 520L))) {
 							return false;
 						}
 					}
@@ -153,7 +153,7 @@ public class FileStore {
 						i2++;
 					}
 				}
-				if (k - j1 <= 512) {
+				if ((k - j1) <= 512) {
 					i2 = 0;
 				}
 				aByteArray308[0] = (byte) (j >> 8);
@@ -181,7 +181,7 @@ public class FileStore {
 	}
 
 	public synchronized void method236(RandomAccessFile randomaccessfile, int j) throws IOException {
-		if (j < 0 || j > 0x3c00000) {
+		if ((j < 0) || (j > 0x3c00000)) {
 			System.out.println("Badseek - pos:" + j + " len:" + randomaccessfile.length());
 			j = 0x3c00000;
 			try {

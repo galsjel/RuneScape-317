@@ -129,11 +129,11 @@ public class NPCType {
 			int l = varbit.anInt649;
 			int i1 = varbit.anInt650;
 			int j1 = Game.anIntArray1232[i1 - l];
-			j = aGame82.anIntArray971[k] >> l & j1;
+			j = (aGame82.anIntArray971[k] >> l) & j1;
 		} else if (anInt59 != -1) {
 			j = aGame82.anIntArray971[anInt59];
 		}
-		if (j < 0 || j >= anIntArray88.length || anIntArray88[j] == -1) {
+		if ((j < 0) || (j >= anIntArray88.length) || (anIntArray88[j] == -1)) {
 			return null;
 		} else {
 			return method159(anIntArray88[j]);
@@ -180,12 +180,12 @@ public class NPCType {
 		}
 		Model model_1 = Model.EMPTY;
 		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));
-		if (k != -1 && j != -1) {
+		if ((k != -1) && (j != -1)) {
 			model_1.applySequenceFrames(k, j, ai);
 		} else if (k != -1) {
 			model_1.applySequenceFrame(k);
 		}
-		if (anInt91 != 128 || anInt86 != 128) {
+		if ((anInt91 != 128) || (anInt86 != 128)) {
 			model_1.scale(anInt91, anInt91, anInt86);
 		}
 		model_1.calculateBoundsCylinder();
@@ -224,7 +224,7 @@ public class NPCType {
 				anInt58 = buffer.method410();
 				anInt83 = buffer.method410();
 				anInt55 = buffer.method410();
-			} else if (i >= 30 && i < 40) {
+			} else if ((i >= 30) && (i < 40)) {
 				if (aStringArray66 == null) {
 					aStringArray66 = new String[5];
 				}

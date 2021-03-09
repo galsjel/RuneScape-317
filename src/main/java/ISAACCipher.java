@@ -41,10 +41,10 @@ public class ISAACCipher {
 			} else if ((i & 3) == 3) {
 				anInt337 ^= anInt337 >>> 16;
 			}
-			anInt337 += anIntArray336[i + 128 & 0xff];
+			anInt337 += anIntArray336[(i + 128) & 0xff];
 			int k;
 			anIntArray336[i] = k = anIntArray336[(j & 0x3fc) >> 2] + anInt337 + anInt338;
-			anIntArray335[i] = anInt338 = anIntArray336[(k >> 8 & 0x3fc) >> 2] + j;
+			anIntArray335[i] = anInt338 = anIntArray336[((k >> 8) & 0x3fc) >> 2] + j;
 		}
 	}
 

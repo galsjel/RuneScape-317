@@ -39,11 +39,11 @@ public class BitmapFont extends Draw2D {
 			} else if (k1 == 1) {
 				for (int j2 = 0; j2 < i1; j2++) {
 					for (int l2 = 0; l2 < j1; l2++) {
-						aByteArrayArray1491[l][j2 + l2 * i1] = buffer.method409();
+						aByteArrayArray1491[l][j2 + (l2 * i1)] = buffer.method409();
 					}
 				}
 			}
-			if (j1 > anInt1497 && l < 128) {
+			if ((j1 > anInt1497) && (l < 128)) {
 				anInt1497 = j1;
 			}
 			anIntArray1494[l] = 1;
@@ -52,15 +52,15 @@ public class BitmapFont extends Draw2D {
 			for (int i3 = j1 / 7; i3 < j1; i3++) {
 				k2 += aByteArrayArray1491[l][i3 * i1];
 			}
-			if (k2 <= j1 / 7) {
+			if (k2 <= (j1 / 7)) {
 				anIntArray1496[l]--;
 				anIntArray1494[l] = 0;
 			}
 			k2 = 0;
 			for (int j3 = j1 / 7; j3 < j1; j3++) {
-				k2 += aByteArrayArray1491[l][(i1 - 1) + j3 * i1];
+				k2 += aByteArrayArray1491[l][(i1 - 1) + (j3 * i1)];
 			}
-			if (k2 <= j1 / 7) {
+			if (k2 <= (j1 / 7)) {
 				anIntArray1496[l]--;
 			}
 		}
@@ -76,11 +76,11 @@ public class BitmapFont extends Draw2D {
 	}
 
 	public void method381(int i, String s, int k, int l) {
-		method385(i, s, k, l - method384(s) / 2);
+		method385(i, s, k, l - (method384(s) / 2));
 	}
 
 	public void method382(int i, int j, String s, int l, boolean flag) {
-		method389(flag, j - method383(s) / 2, i, s, l);
+		method389(flag, j - (method383(s) / 2), i, s, l);
 	}
 
 	public int method383(String s) {
@@ -89,7 +89,7 @@ public class BitmapFont extends Draw2D {
 		}
 		int j = 0;
 		for (int k = 0; k < s.length(); k++) {
-			if (s.charAt(k) == '@' && k + 4 < s.length() && s.charAt(k + 4) == '@') {
+			if ((s.charAt(k) == '@') && ((k + 4) < s.length()) && (s.charAt(k + 4) == '@')) {
 				k += 4;
 			} else {
 				j += anIntArray1496[s.charAt(k)];
@@ -132,7 +132,7 @@ public class BitmapFont extends Draw2D {
 		for (int i1 = 0; i1 < s.length(); i1++) {
 			char c = s.charAt(i1);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], j + anIntArray1494[c], l + anIntArray1495[c] + (int) (Math.sin((double) i1 / 2D + (double) k / 5D) * 5D), anIntArray1492[c], anIntArray1493[c], i);
+				method392(aByteArrayArray1491[c], j + anIntArray1494[c], l + anIntArray1495[c] + (int) (Math.sin(((double) i1 / 2D) + ((double) k / 5D)) * 5D), anIntArray1492[c], anIntArray1493[c], i);
 			}
 			j += anIntArray1496[c];
 		}
@@ -147,7 +147,7 @@ public class BitmapFont extends Draw2D {
 		for (int i1 = 0; i1 < s.length(); i1++) {
 			char c = s.charAt(i1);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], i + anIntArray1494[c] + (int) (Math.sin((double) i1 / 5D + (double) j / 5D) * 5D), k + anIntArray1495[c] + (int) (Math.sin((double) i1 / 3D + (double) j / 5D) * 5D), anIntArray1492[c], anIntArray1493[c], l);
+				method392(aByteArrayArray1491[c], i + anIntArray1494[c] + (int) (Math.sin(((double) i1 / 5D) + ((double) j / 5D)) * 5D), k + anIntArray1495[c] + (int) (Math.sin(((double) i1 / 3D) + ((double) j / 5D)) * 5D), anIntArray1492[c], anIntArray1493[c], l);
 			}
 			i += anIntArray1496[c];
 		}
@@ -157,7 +157,7 @@ public class BitmapFont extends Draw2D {
 		if (s == null) {
 			return;
 		}
-		double d = 7D - (double) i / 8D;
+		double d = 7D - ((double) i / 8D);
 		if (d < 0.0D) {
 			d = 0.0D;
 		}
@@ -166,7 +166,7 @@ public class BitmapFont extends Draw2D {
 		for (int k1 = 0; k1 < s.length(); k1++) {
 			char c = s.charAt(k1);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], l + anIntArray1494[c], k + anIntArray1495[c] + (int) (Math.sin((double) k1 / 1.5D + (double) j) * d), anIntArray1492[c], anIntArray1493[c], i1);
+				method392(aByteArrayArray1491[c], l + anIntArray1494[c], k + anIntArray1495[c] + (int) (Math.sin(((double) k1 / 1.5D) + (double) j) * d), anIntArray1492[c], anIntArray1493[c], i1);
 			}
 			l += anIntArray1496[c];
 		}
@@ -180,7 +180,7 @@ public class BitmapFont extends Draw2D {
 		}
 		k -= anInt1497;
 		for (int i1 = 0; i1 < s.length(); i1++) {
-			if (s.charAt(i1) == '@' && i1 + 4 < s.length() && s.charAt(i1 + 4) == '@') {
+			if ((s.charAt(i1) == '@') && ((i1 + 4) < s.length()) && (s.charAt(i1 + 4) == '@')) {
 				int j1 = method391(s.substring(i1 + 1, i1 + 4));
 				if (j1 != -1) {
 					j = j1;
@@ -210,7 +210,7 @@ public class BitmapFont extends Draw2D {
 		int j1 = 192 + (aRandom1498.nextInt() & 0x1f);
 		i1 -= anInt1497;
 		for (int k1 = 0; k1 < s.length(); k1++) {
-			if (s.charAt(k1) == '@' && k1 + 4 < s.length() && s.charAt(k1 + 4) == '@') {
+			if ((s.charAt(k1) == '@') && ((k1 + 4) < s.length()) && (s.charAt(k1 + 4) == '@')) {
 				int l1 = method391(s.substring(k1 + 1, k1 + 4));
 				if (l1 != -1) {
 					j = l1;
@@ -294,7 +294,7 @@ public class BitmapFont extends Draw2D {
 	}
 
 	public void method392(byte[] abyte0, int i, int j, int k, int l, int i1) {
-		int j1 = i + j * Draw2D.width;
+		int j1 = i + (j * Draw2D.width);
 		int k1 = Draw2D.width - k;
 		int l1 = 0;
 		int i2 = 0;
@@ -305,7 +305,7 @@ public class BitmapFont extends Draw2D {
 			i2 += j2 * k;
 			j1 += j2 * Draw2D.width;
 		}
-		if (j + l >= Draw2D.bottom) {
+		if ((j + l) >= Draw2D.bottom) {
 			l -= ((j + l) - Draw2D.bottom) + 1;
 		}
 		if (i < Draw2D.left) {
@@ -317,13 +317,13 @@ public class BitmapFont extends Draw2D {
 			l1 += k2;
 			k1 += k2;
 		}
-		if (i + k >= Draw2D.right) {
+		if ((i + k) >= Draw2D.right) {
 			int l2 = ((i + k) - Draw2D.right) + 1;
 			k -= l2;
 			l1 += l2;
 			k1 += l2;
 		}
-		if (k <= 0 || l <= 0) {
+		if ((k <= 0) || (l <= 0)) {
 		} else {
 			method393(Draw2D.pixels, abyte0, i1, i2, j1, k, l, k1, l1);
 		}
@@ -368,7 +368,7 @@ public class BitmapFont extends Draw2D {
 	}
 
 	public void method394(int i, int j, byte[] abyte0, int k, int l, int i1, int j1) {
-		int k1 = j + l * Draw2D.width;
+		int k1 = j + (l * Draw2D.width);
 		int l1 = Draw2D.width - k;
 		int i2 = 0;
 		int j2 = 0;
@@ -379,7 +379,7 @@ public class BitmapFont extends Draw2D {
 			j2 += k2 * k;
 			k1 += k2 * Draw2D.width;
 		}
-		if (l + i1 >= Draw2D.bottom) {
+		if ((l + i1) >= Draw2D.bottom) {
 			i1 -= ((l + i1) - Draw2D.bottom) + 1;
 		}
 		if (j < Draw2D.left) {
@@ -391,26 +391,26 @@ public class BitmapFont extends Draw2D {
 			i2 += l2;
 			l1 += l2;
 		}
-		if (j + k >= Draw2D.right) {
+		if ((j + k) >= Draw2D.right) {
 			int i3 = ((j + k) - Draw2D.right) + 1;
 			k -= i3;
 			i2 += i3;
 			l1 += i3;
 		}
-		if (k <= 0 || i1 <= 0) {
+		if ((k <= 0) || (i1 <= 0)) {
 			return;
 		}
 		method395(abyte0, i1, k1, Draw2D.pixels, j2, k, i2, l1, j1, i);
 	}
 
 	public void method395(byte[] abyte0, int i, int j, int[] ai, int l, int i1, int j1, int k1, int l1, int i2) {
-		l1 = ((l1 & 0xff00ff) * i2 & 0xff00ff00) + ((l1 & 0xff00) * i2 & 0xff0000) >> 8;
+		l1 = ((((l1 & 0xff00ff) * i2) & 0xff00ff00) + (((l1 & 0xff00) * i2) & 0xff0000)) >> 8;
 		i2 = 256 - i2;
 		for (int j2 = -i; j2 < 0; j2++) {
 			for (int k2 = -i1; k2 < 0; k2++) {
 				if (abyte0[l++] != 0) {
 					int l2 = ai[j];
-					ai[j++] = (((l2 & 0xff00ff) * i2 & 0xff00ff00) + ((l2 & 0xff00) * i2 & 0xff0000) >> 8) + l1;
+					ai[j++] = (((((l2 & 0xff00ff) * i2) & 0xff00ff00) + (((l2 & 0xff00) * i2) & 0xff0000)) >> 8) + l1;
 				} else {
 					j++;
 				}

@@ -100,7 +100,7 @@ public class Censor {
 			} else {
 				ac[i] = ' ';
 			}
-			if (i == 0 || ac[i] != ' ' || ac[i - 1] != ' ') {
+			if ((i == 0) || (ac[i] != ' ') || (ac[i - 1] != ' ')) {
 				i++;
 			}
 		}
@@ -110,7 +110,7 @@ public class Censor {
 	}
 
 	public static boolean method496(char c) {
-		return c >= ' ' && c <= '\177' || c == ' ' || c == '\n' || c == '\t' || c == '\243' || c == '\u20AC';
+		return ((c >= ' ') && (c <= '\177')) || (c == ' ') || (c == '\n') || (c == '\t') || (c == '\243') || (c == '\u20AC');
 	}
 
 	public static String method497(String s, int i) {
@@ -141,7 +141,7 @@ public class Censor {
 
 	public static void method498(char[] ac, int i, char[] ac1) {
 		for (int j = 0; j < ac.length; j++) {
-			if (ac1[j] != '*' && method522(ac[j])) {
+			if ((ac1[j] != '*') && method522(ac[j])) {
 				ac1[j] = ac[j];
 			}
 		}
@@ -194,7 +194,7 @@ public class Censor {
 			return;
 		}
 		int j;
-		for (int k = 0; k <= ac.length - ac1.length; k += j) {
+		for (int k = 0; k <= (ac.length - ac1.length); k += j) {
 			int l = k;
 			int i1 = 0;
 			j = 1;
@@ -202,10 +202,10 @@ public class Censor {
 				int j1;
 				char c = ac[l];
 				char c1 = '\0';
-				if (l + 1 < ac.length) {
+				if ((l + 1) < ac.length) {
 					c1 = ac[l + 1];
 				}
-				if (i1 < ac1.length && (j1 = method511(c, ac1[i1], c1)) > 0) {
+				if ((i1 < ac1.length) && (((j1 = method511(c, ac1[i1], c1))) > 0)) {
 					l += j1;
 					i1++;
 					continue;
@@ -220,7 +220,7 @@ public class Censor {
 					}
 					continue;
 				}
-				if (i1 >= ac1.length || !method517(c)) {
+				if ((i1 >= ac1.length) || !method517(c)) {
 					break;
 				}
 				l++;
@@ -229,7 +229,7 @@ public class Censor {
 				boolean flag1 = false;
 				int k1 = method503(ac, ac3, k);
 				int l1 = method504(ac2, l - 1, ac);
-				if (k1 > 2 || l1 > 2) {
+				if ((k1 > 2) || (l1 > 2)) {
 					flag1 = true;
 				}
 				if (flag1) {
@@ -269,14 +269,14 @@ public class Censor {
 	}
 
 	public static int method504(char[] ac, int i, char[] ac1) {
-		if (i + 1 == ac1.length) {
+		if ((i + 1) == ac1.length) {
 			return 2;
 		}
 		for (int j = i + 1; j < ac1.length; j++) {
 			if (!method517(ac1[j])) {
 				break;
 			}
-			if (ac1[j] == '.' || ac1[j] == ',') {
+			if ((ac1[j] == '.') || (ac1[j] == ',')) {
 				return 3;
 			}
 		}
@@ -312,7 +312,7 @@ public class Censor {
 			return;
 		}
 		int j;
-		for (int k = 0; k <= ac3.length - ac1.length; k += j) {
+		for (int k = 0; k <= (ac3.length - ac1.length); k += j) {
 			int l = k;
 			int i1 = 0;
 			j = 1;
@@ -320,10 +320,10 @@ public class Censor {
 				int j1;
 				char c = ac3[l];
 				char c1 = '\0';
-				if (l + 1 < ac3.length) {
+				if ((l + 1) < ac3.length) {
 					c1 = ac3[l + 1];
 				}
-				if (i1 < ac1.length && (j1 = method511(c, ac1[i1], c1)) > 0) {
+				if ((i1 < ac1.length) && (((j1 = method511(c, ac1[i1], c1))) > 0)) {
 					l += j1;
 					i1++;
 					continue;
@@ -338,7 +338,7 @@ public class Censor {
 					}
 					continue;
 				}
-				if (i1 >= ac1.length || !method517(c)) {
+				if ((i1 >= ac1.length) || !method517(c)) {
 					break;
 				}
 				l++;
@@ -347,13 +347,13 @@ public class Censor {
 				boolean flag1 = false;
 				int k1 = method507(ac3, k, ac2);
 				int l1 = method508(ac3, ac, l - 1);
-				if (i == 1 && k1 > 0 && l1 > 0) {
+				if ((i == 1) && (k1 > 0) && (l1 > 0)) {
 					flag1 = true;
 				}
-				if (i == 2 && (k1 > 2 && l1 > 0 || k1 > 0 && l1 > 2)) {
+				if ((i == 2) && (((k1 > 2) && (l1 > 0)) || ((k1 > 0) && (l1 > 2)))) {
 					flag1 = true;
 				}
-				if (i == 3 && k1 > 0 && l1 > 2) {
+				if ((i == 3) && (k1 > 0) && (l1 > 2)) {
 					flag1 = true;
 				}
 				if (flag1) {
@@ -431,7 +431,7 @@ public class Censor {
 			if (!method517(ac[k])) {
 				break;
 			}
-			if (ac[k] == ',' || ac[k] == '.') {
+			if ((ac[k] == ',') || (ac[k] == '.')) {
 				return 3;
 			}
 		}
@@ -451,14 +451,14 @@ public class Censor {
 	}
 
 	public static int method508(char[] ac, char[] ac1, int i) {
-		if (i + 1 == ac.length) {
+		if ((i + 1) == ac.length) {
 			return 2;
 		}
 		for (int j = i + 1; j < ac.length; j++) {
 			if (!method517(ac[j])) {
 				break;
 			}
-			if (ac[j] == '\\' || ac[j] == '/') {
+			if ((ac[j] == '\\') || (ac[j] == '/')) {
 				return 3;
 			}
 		}
@@ -482,7 +482,7 @@ public class Censor {
 			return;
 		}
 		int j;
-		for (int k = 0; k <= ac.length - ac1.length; k += j) {
+		for (int k = 0; k <= (ac.length - ac1.length); k += j) {
 			int l = k;
 			int i1 = 0;
 			int j1 = 0;
@@ -490,18 +490,18 @@ public class Censor {
 			boolean flag1 = false;
 			boolean flag2 = false;
 			boolean flag3 = false;
-			while (l < ac.length && (!flag2 || !flag3)) {
+			while ((l < ac.length) && (!flag2 || !flag3)) {
 				int k1;
 				char c = ac[l];
 				char c2 = '\0';
-				if (l + 1 < ac.length) {
+				if ((l + 1) < ac.length) {
 					c2 = ac[l + 1];
 				}
-				if (i1 < ac1.length && (k1 = method512(c2, c, ac1[i1])) > 0) {
-					if (k1 == 1 && method520(c)) {
+				if ((i1 < ac1.length) && (((k1 = method512(c2, c, ac1[i1]))) > 0)) {
+					if ((k1 == 1) && method520(c)) {
 						flag2 = true;
 					}
-					if (k1 == 2 && (method520(c) || method520(c2))) {
+					if ((k1 == 2) && (method520(c) || method520(c2))) {
 						flag2 = true;
 					}
 					l += k1;
@@ -518,25 +518,25 @@ public class Censor {
 					}
 					continue;
 				}
-				if (i1 >= ac1.length || !method518(c)) {
+				if ((i1 >= ac1.length) || !method518(c)) {
 					break;
 				}
-				if (method517(c) && c != '\'') {
+				if (method517(c) && (c != '\'')) {
 					flag1 = true;
 				}
 				if (method520(c)) {
 					flag3 = true;
 				}
 				l++;
-				if ((++j1 * 100) / (l - k) > 90) {
+				if (((++j1 * 100) / (l - k)) > 90) {
 					break;
 				}
 			}
-			if (i1 >= ac1.length && (!flag2 || !flag3)) {
+			if ((i1 >= ac1.length) && (!flag2 || !flag3)) {
 				boolean flag4 = true;
 				if (!flag1) {
 					char c1 = ' ';
-					if (k - 1 >= 0) {
+					if ((k - 1) >= 0) {
 						c1 = ac[k - 1];
 					}
 					char c3 = ' ';
@@ -545,16 +545,16 @@ public class Censor {
 					}
 					byte byte0 = method513(c1);
 					byte byte1 = method513(c3);
-					if (abyte0 != null && method510(byte0, abyte0, byte1)) {
+					if ((abyte0 != null) && method510(byte0, abyte0, byte1)) {
 						flag4 = false;
 					}
 				} else {
 					boolean flag5 = false;
 					boolean flag6 = false;
-					if (k - 1 < 0 || method517(ac[k - 1]) && ac[k - 1] != '\'') {
+					if (((k - 1) < 0) || (method517(ac[k - 1]) && (ac[k - 1] != '\''))) {
 						flag5 = true;
 					}
-					if (l >= ac.length || method517(ac[l]) && ac[l] != '\'') {
+					if ((l >= ac.length) || (method517(ac[l]) && (ac[l] != '\''))) {
 						flag6 = true;
 					}
 					if (!flag5 || !flag6) {
@@ -563,12 +563,12 @@ public class Censor {
 						if (flag5) {
 							k2 = k;
 						}
-						for (; !flag7 && k2 < l; k2++) {
-							if (k2 >= 0 && (!method517(ac[k2]) || ac[k2] == '\'')) {
+						for (; !flag7 && (k2 < l); k2++) {
+							if ((k2 >= 0) && (!method517(ac[k2]) || (ac[k2] == '\''))) {
 								char[] ac2 = new char[3];
 								int j3;
 								for (j3 = 0; j3 < 3; j3++) {
-									if (k2 + j3 >= ac.length || method517(ac[k2 + j3]) && ac[k2 + j3] != '\'') {
+									if (((k2 + j3) >= ac.length) || (method517(ac[k2 + j3]) && (ac[k2 + j3] != '\''))) {
 										break;
 									}
 									ac2[j3] = ac[k2 + j3];
@@ -577,7 +577,7 @@ public class Censor {
 								if (j3 == 0) {
 									flag8 = false;
 								}
-								if (j3 < 3 && k2 - 1 >= 0 && (!method517(ac[k2 - 1]) || ac[k2 - 1] == '\'')) {
+								if ((j3 < 3) && ((k2 - 1) >= 0) && (!method517(ac[k2 - 1]) || (ac[k2 - 1] == '\''))) {
 									flag8 = false;
 								}
 								if (flag8 && !method523(ac2)) {
@@ -619,24 +619,24 @@ public class Censor {
 
 	public static boolean method510(byte byte0, byte[][] abyte0, byte byte2) {
 		int i = 0;
-		if (abyte0[i][0] == byte0 && abyte0[i][1] == byte2) {
+		if ((abyte0[i][0] == byte0) && (abyte0[i][1] == byte2)) {
 			return true;
 		}
 		int j = abyte0.length - 1;
-		if (abyte0[j][0] == byte0 && abyte0[j][1] == byte2) {
+		if ((abyte0[j][0] == byte0) && (abyte0[j][1] == byte2)) {
 			return true;
 		}
 		do {
 			int k = (i + j) / 2;
-			if (abyte0[k][0] == byte0 && abyte0[k][1] == byte2) {
+			if ((abyte0[k][0] == byte0) && (abyte0[k][1] == byte2)) {
 				return true;
 			}
-			if (byte0 < abyte0[k][0] || byte0 == abyte0[k][0] && byte2 < abyte0[k][1]) {
+			if ((byte0 < abyte0[k][0]) || ((byte0 == abyte0[k][0]) && (byte2 < abyte0[k][1]))) {
 				j = k;
 			} else {
 				i = k;
 			}
-		} while (i != j && i + 1 != j);
+		} while ((i != j) && ((i + 1) != j));
 		return false;
 	}
 
@@ -644,64 +644,64 @@ public class Censor {
 		if (c1 == c) {
 			return 1;
 		}
-		if (c1 == 'o' && c == '0') {
+		if ((c1 == 'o') && (c == '0')) {
 			return 1;
 		}
-		if (c1 == 'o' && c == '(' && c2 == ')') {
+		if ((c1 == 'o') && (c == '(') && (c2 == ')')) {
 			return 2;
 		}
-		if (c1 == 'c' && (c == '(' || c == '<' || c == '[')) {
+		if ((c1 == 'c') && ((c == '(') || (c == '<') || (c == '['))) {
 			return 1;
 		}
-		if (c1 == 'e' && c == '\u20AC') {
+		if ((c1 == 'e') && (c == '\u20AC')) {
 			return 1;
 		}
-		if (c1 == 's' && c == '$') {
+		if ((c1 == 's') && (c == '$')) {
 			return 1;
 		}
-		return c1 != 'l' || c != 'i' ? 0 : 1;
+		return ((c1 != 'l') || (c != 'i')) ? 0 : 1;
 	}
 
 	public static int method512(char c, char c1, char c2) {
 		if (c2 == c1) {
 			return 1;
 		}
-		if (c2 >= 'a' && c2 <= 'm') {
+		if ((c2 >= 'a') && (c2 <= 'm')) {
 			if (c2 == 'a') {
-				if (c1 == '4' || c1 == '@' || c1 == '^') {
+				if ((c1 == '4') || (c1 == '@') || (c1 == '^')) {
 					return 1;
 				}
-				return c1 != '/' || c != '\\' ? 0 : 2;
+				return ((c1 != '/') || (c != '\\')) ? 0 : 2;
 			}
 			if (c2 == 'b') {
-				if (c1 == '6' || c1 == '8') {
+				if ((c1 == '6') || (c1 == '8')) {
 					return 1;
 				}
-				return (c1 != '1' || c != '3') && (c1 != 'i' || c != '3') ? 0 : 2;
+				return (((c1 != '1') || (c != '3')) && ((c1 != 'i') || (c != '3'))) ? 0 : 2;
 			}
 			if (c2 == 'c') {
-				return c1 != '(' && c1 != '<' && c1 != '{' && c1 != '[' ? 0 : 1;
+				return ((c1 != '(') && (c1 != '<') && (c1 != '{') && (c1 != '[')) ? 0 : 1;
 			}
 			if (c2 == 'd') {
-				return (c1 != '[' || c != ')') && (c1 != 'i' || c != ')') ? 0 : 2;
+				return (((c1 != '[') || (c != ')')) && ((c1 != 'i') || (c != ')'))) ? 0 : 2;
 			}
 			if (c2 == 'e') {
-				return c1 != '3' && c1 != '\u20AC' ? 0 : 1;
+				return ((c1 != '3') && (c1 != '\u20AC')) ? 0 : 1;
 			}
 			if (c2 == 'f') {
-				if (c1 == 'p' && c == 'h') {
+				if ((c1 == 'p') && (c == 'h')) {
 					return 2;
 				}
-				return c1 != '\243' ? 0 : 1;
+				return (c1 != '\243') ? 0 : 1;
 			}
 			if (c2 == 'g') {
-				return c1 != '9' && c1 != '6' && c1 != 'q' ? 0 : 1;
+				return ((c1 != '9') && (c1 != '6') && (c1 != 'q')) ? 0 : 1;
 			}
 			if (c2 == 'h') {
-				return c1 != '#' ? 0 : 1;
+				return (c1 != '#') ? 0 : 1;
 			}
 			if (c2 == 'i') {
-				return c1 != 'y' && c1 != 'l' && c1 != 'j' && c1 != '1' && c1 != '!' && c1 != ':' && c1 != ';' && c1 != '|' ? 0 : 1;
+				return ((c1 != 'y') && (c1 != 'l') && (c1 != 'j') && (c1 != '1') && (c1 != '!') && (c1 != ':') && (c1 != ';') && (c1 != '|')) ? 0 : 1;
 			}
 			if (c2 == 'j') {
 				return 0;
@@ -710,21 +710,21 @@ public class Censor {
 				return 0;
 			}
 			if (c2 == 'l') {
-				return c1 != '1' && c1 != '|' && c1 != 'i' ? 0 : 1;
+				return ((c1 != '1') && (c1 != '|') && (c1 != 'i')) ? 0 : 1;
 			}
 			if (c2 == 'm') {
 				return 0;
 			}
 		}
-		if (c2 >= 'n' && c2 <= 'z') {
+		if ((c2 >= 'n') && (c2 <= 'z')) {
 			if (c2 == 'n') {
 				return 0;
 			}
 			if (c2 == 'o') {
-				if (c1 == '0' || c1 == '*') {
+				if ((c1 == '0') || (c1 == '*')) {
 					return 1;
 				}
-				return (c1 != '(' || c != ')') && (c1 != '[' || c != ']') && (c1 != '{' || c != '}') && (c1 != '<' || c != '>') ? 0 : 2;
+				return (((c1 != '(') || (c != ')')) && ((c1 != '[') || (c != ']')) && ((c1 != '{') || (c != '}')) && ((c1 != '<') || (c != '>'))) ? 0 : 2;
 			}
 			if (c2 == 'p') {
 				return 0;
@@ -736,25 +736,25 @@ public class Censor {
 				return 0;
 			}
 			if (c2 == 's') {
-				return c1 != '5' && c1 != 'z' && c1 != '$' && c1 != '2' ? 0 : 1;
+				return ((c1 != '5') && (c1 != 'z') && (c1 != '$') && (c1 != '2')) ? 0 : 1;
 			}
 			if (c2 == 't') {
-				return c1 != '7' && c1 != '+' ? 0 : 1;
+				return ((c1 != '7') && (c1 != '+')) ? 0 : 1;
 			}
 			if (c2 == 'u') {
 				if (c1 == 'v') {
 					return 1;
 				}
-				return (c1 != '\\' || c != '/') && (c1 != '\\' || c != '|') && (c1 != '|' || c != '/') ? 0 : 2;
+				return (((c1 != '\\') || (c != '/')) && ((c1 != '\\') || (c != '|')) && ((c1 != '|') || (c != '/'))) ? 0 : 2;
 			}
 			if (c2 == 'v') {
-				return (c1 != '\\' || c != '/') && (c1 != '\\' || c != '|') && (c1 != '|' || c != '/') ? 0 : 2;
+				return (((c1 != '\\') || (c != '/')) && ((c1 != '\\') || (c != '|')) && ((c1 != '|') || (c != '/'))) ? 0 : 2;
 			}
 			if (c2 == 'w') {
-				return c1 != 'v' || c != 'v' ? 0 : 2;
+				return ((c1 != 'v') || (c != 'v')) ? 0 : 2;
 			}
 			if (c2 == 'x') {
-				return (c1 != ')' || c != '(') && (c1 != '}' || c != '{') && (c1 != ']' || c != '[') && (c1 != '>' || c != '<') ? 0 : 2;
+				return (((c1 != ')') || (c != '(')) && ((c1 != '}') || (c != '{')) && ((c1 != ']') || (c != '[')) && ((c1 != '>') || (c != '<'))) ? 0 : 2;
 			}
 			if (c2 == 'y') {
 				return 0;
@@ -763,40 +763,40 @@ public class Censor {
 				return 0;
 			}
 		}
-		if (c2 >= '0' && c2 <= '9') {
+		if ((c2 >= '0') && (c2 <= '9')) {
 			if (c2 == '0') {
-				if (c1 == 'o' || c1 == 'O') {
+				if ((c1 == 'o') || (c1 == 'O')) {
 					return 1;
 				}
-				return (c1 != '(' || c != ')') && (c1 != '{' || c != '}') && (c1 != '[' || c != ']') ? 0 : 2;
+				return (((c1 != '(') || (c != ')')) && ((c1 != '{') || (c != '}')) && ((c1 != '[') || (c != ']'))) ? 0 : 2;
 			}
 			if (c2 == '1') {
-				return c1 != 'l' ? 0 : 1;
+				return (c1 != 'l') ? 0 : 1;
 			} else {
 				return 0;
 			}
 		}
 		if (c2 == ',') {
-			return c1 != '.' ? 0 : 1;
+			return (c1 != '.') ? 0 : 1;
 		}
 		if (c2 == '.') {
-			return c1 != ',' ? 0 : 1;
+			return (c1 != ',') ? 0 : 1;
 		}
 		if (c2 == '!') {
-			return c1 != 'i' ? 0 : 1;
+			return (c1 != 'i') ? 0 : 1;
 		} else {
 			return 0;
 		}
 	}
 
 	public static byte method513(char c) {
-		if (c >= 'a' && c <= 'z') {
+		if ((c >= 'a') && (c <= 'z')) {
 			return (byte) ((c - 97) + 1);
 		}
 		if (c == '\'') {
 			return 28;
 		}
-		if (c >= '0' && c <= '9') {
+		if ((c >= '0') && (c <= '9')) {
 			return (byte) ((c - 48) + 29);
 		} else {
 			return 27;
@@ -810,7 +810,7 @@ public class Censor {
 		int i1 = 0;
 		while ((j = method515(ac, k)) != -1) {
 			boolean flag = false;
-			for (int j1 = k; j1 >= 0 && j1 < j && !flag; j1++) {
+			for (int j1 = k; (j1 >= 0) && (j1 < j) && !flag; j1++) {
 				if (!method517(ac[j1]) && !method518(ac[j1])) {
 					flag = true;
 				}
@@ -824,9 +824,9 @@ public class Censor {
 			k = method516(ac, j);
 			int k1 = 0;
 			for (int l1 = j; l1 < k; l1++) {
-				k1 = (k1 * 10 + ac[l1]) - 48;
+				k1 = ((k1 * 10) + ac[l1]) - 48;
 			}
-			if (k1 > 255 || k - j > 8) {
+			if ((k1 > 255) || ((k - j) > 8)) {
 				l = 0;
 			} else {
 				l++;
@@ -841,8 +841,8 @@ public class Censor {
 	}
 
 	public static int method515(char[] ac, int i) {
-		for (int k = i; k < ac.length && k >= 0; k++) {
-			if (ac[k] >= '0' && ac[k] <= '9') {
+		for (int k = i; (k < ac.length) && (k >= 0); k++) {
+			if ((ac[k] >= '0') && (ac[k] <= '9')) {
 				return k;
 			}
 		}
@@ -850,8 +850,8 @@ public class Censor {
 	}
 
 	public static int method516(char[] ac, int j) {
-		for (int k = j; k < ac.length && k >= 0; k++) {
-			if (ac[k] < '0' || ac[k] > '9') {
+		for (int k = j; (k < ac.length) && (k >= 0); k++) {
+			if ((ac[k] < '0') || (ac[k] > '9')) {
 				return k;
 			}
 		}
@@ -863,32 +863,32 @@ public class Censor {
 	}
 
 	public static boolean method518(char c) {
-		if (c < 'a' || c > 'z') {
+		if ((c < 'a') || (c > 'z')) {
 			return true;
 		}
-		return c == 'v' || c == 'x' || c == 'j' || c == 'q' || c == 'z';
+		return (c == 'v') || (c == 'x') || (c == 'j') || (c == 'q') || (c == 'z');
 	}
 
 	public static boolean method519(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+		return ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));
 	}
 
 	public static boolean method520(char c) {
-		return c >= '0' && c <= '9';
+		return (c >= '0') && (c <= '9');
 	}
 
 	public static boolean method521(char c) {
-		return c >= 'a' && c <= 'z';
+		return (c >= 'a') && (c <= 'z');
 	}
 
 	public static boolean method522(char c) {
-		return c >= 'A' && c <= 'Z';
+		return (c >= 'A') && (c <= 'Z');
 	}
 
 	public static boolean method523(char[] ac) {
 		boolean flag = true;
 		for (char c : ac) {
-			if (!method520(c) && c != 0) {
+			if (!method520(c) && (c != 0)) {
 				flag = false;
 				break;
 			}
@@ -899,7 +899,7 @@ public class Censor {
 		int j = method524(ac);
 		int k = 0;
 		int l = anIntArray620.length - 1;
-		if (j == anIntArray620[k] || j == anIntArray620[l]) {
+		if ((j == anIntArray620[k]) || (j == anIntArray620[l])) {
 			return true;
 		}
 		do {
@@ -912,7 +912,7 @@ public class Censor {
 			} else {
 				k = i1;
 			}
-		} while (k != l && k + 1 != l);
+		} while ((k != l) && ((k + 1) != l));
 		return false;
 	}
 
@@ -923,12 +923,12 @@ public class Censor {
 		int k = 0;
 		for (int l = 0; l < ac.length; l++) {
 			char c = ac[ac.length - l - 1];
-			if (c >= 'a' && c <= 'z') {
-				k = k * 38 + ((c - 97) + 1);
+			if ((c >= 'a') && (c <= 'z')) {
+				k = (k * 38) + ((c - 97) + 1);
 			} else if (c == '\'') {
-				k = k * 38 + 27;
-			} else if (c >= '0' && c <= '9') {
-				k = k * 38 + ((c - 48) + 28);
+				k = (k * 38) + 27;
+			} else if ((c >= '0') && (c <= '9')) {
+				k = (k * 38) + ((c - 48) + 28);
 			} else if (c != 0) {
 				return 0;
 			}

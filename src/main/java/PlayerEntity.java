@@ -47,7 +47,7 @@ public class PlayerEntity extends PathingEntity {
 		if (aBoolean1699) {
 			return model;
 		}
-		if (super.anInt1520 != -1 && super.anInt1521 != -1) {
+		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
 			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
 			Model class30_sub2_sub4_sub6_2 = type.method266();
 			if (class30_sub2_sub4_sub6_2 != null) {
@@ -57,7 +57,7 @@ public class PlayerEntity extends PathingEntity {
 				model_3.applySequenceFrame(type.aType_407.anIntArray353[super.anInt1521]);
 				model_3.labelFaces = null;
 				model_3.labelVertices = null;
-				if (type.anInt410 != 128 || type.anInt411 != 128) {
+				if ((type.anInt410 != 128) || (type.anInt411 != 128)) {
 					model_3.scale(type.anInt410, type.anInt410, type.anInt411);
 				}
 				model_3.calculateNormals(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
@@ -69,7 +69,7 @@ public class PlayerEntity extends PathingEntity {
 			if (Game.anInt1161 >= anInt1708) {
 				aModel_1714 = null;
 			}
-			if (Game.anInt1161 >= anInt1707 && Game.anInt1161 < anInt1708) {
+			if ((Game.anInt1161 >= anInt1707) && (Game.anInt1161 < anInt1708)) {
 				Model model_1 = aModel_1714;
 				model_1.translate(anInt1711 - super.anInt1550, anInt1712 - anInt1709, anInt1713 - super.anInt1551);
 				if (super.anInt1510 == 512) {
@@ -115,11 +115,11 @@ public class PlayerEntity extends PathingEntity {
 			}
 			int i1 = buffer.method408();
 			anIntArray1717[j] = (k << 8) + i1;
-			if (j == 0 && anIntArray1717[0] == 65535) {
+			if ((j == 0) && (anIntArray1717[0] == 65535)) {
 				aType_1698 = NPCType.method159(buffer.method410());
 				break;
 			}
-			if (anIntArray1717[j] >= 512 && anIntArray1717[j] - 512 < ObjType.anInt203) {
+			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
 				int l1 = ObjType.method198(anIntArray1717[j] - 512).anInt202;
 				if (l1 != 0) {
 					anInt1701 = l1;
@@ -128,7 +128,7 @@ public class PlayerEntity extends PathingEntity {
 		}
 		for (int l = 0; l < 5; l++) {
 			int j1 = buffer.method408();
-			if (j1 < 0 || j1 >= Game.anIntArrayArray1003[l].length) {
+			if ((j1 < 0) || (j1 >= Game.anIntArrayArray1003[l].length)) {
 				j1 = 0;
 			}
 			anIntArray1700[l] = j1;
@@ -173,10 +173,10 @@ public class PlayerEntity extends PathingEntity {
 			}
 		}
 		if (anIntArray1717[0] >= 256) {
-			aLong1718 += anIntArray1717[0] - 256 >> 4;
+			aLong1718 += (anIntArray1717[0] - 256) >> 4;
 		}
 		if (anIntArray1717[1] >= 256) {
-			aLong1718 += anIntArray1717[1] - 256 >> 8;
+			aLong1718 += (anIntArray1717[1] - 256) >> 8;
 		}
 		for (int i2 = 0; i2 < 5; i2++) {
 			aLong1718 <<= 3;
@@ -189,7 +189,7 @@ public class PlayerEntity extends PathingEntity {
 	public Model method452() {
 		if (aType_1698 != null) {
 			int j = -1;
-			if (super.anInt1526 >= 0 && super.anInt1529 == 0) {
+			if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
 				j = SeqType.aTypeArray351[super.anInt1526].anIntArray353[super.anInt1527];
 			} else if (super.anInt1517 >= 0) {
 				j = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
@@ -201,19 +201,19 @@ public class PlayerEntity extends PathingEntity {
 		int i1 = -1;
 		int j1 = -1;
 		int k1 = -1;
-		if (super.anInt1526 >= 0 && super.anInt1529 == 0) {
+		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
 			SeqType type = SeqType.aTypeArray351[super.anInt1526];
 			k = type.anIntArray353[super.anInt1527];
-			if (super.anInt1517 >= 0 && super.anInt1517 != super.anInt1511) {
+			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
 				i1 = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
 			}
 			if (type.anInt360 >= 0) {
 				j1 = type.anInt360;
-				l += (long) j1 - anIntArray1717[5] << 8;
+				l += ((long) j1 - anIntArray1717[5]) << 8;
 			}
 			if (type.anInt361 >= 0) {
 				k1 = type.anInt361;
-				l += (long) k1 - anIntArray1717[3] << 16;
+				l += ((long) k1 - anIntArray1717[3]) << 16;
 			}
 		} else if (super.anInt1517 >= 0) {
 			k = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
@@ -223,16 +223,16 @@ public class PlayerEntity extends PathingEntity {
 			boolean flag = false;
 			for (int i2 = 0; i2 < 12; i2++) {
 				int k2 = anIntArray1717[i2];
-				if (k1 >= 0 && i2 == 3) {
+				if ((k1 >= 0) && (i2 == 3)) {
 					k2 = k1;
 				}
-				if (j1 >= 0 && i2 == 5) {
+				if ((j1 >= 0) && (i2 == 5)) {
 					k2 = j1;
 				}
-				if (k2 >= 256 && k2 < 512 && !IDKType.aIDKTypeArray656[k2 - 256].method537()) {
+				if ((k2 >= 256) && (k2 < 512) && !IDKType.aIDKTypeArray656[k2 - 256].method537()) {
 					flag = true;
 				}
-				if (k2 >= 512 && !ObjType.method198(k2 - 512).method195(anInt1702)) {
+				if ((k2 >= 512) && !ObjType.method198(k2 - 512).method195(anInt1702)) {
 					flag = true;
 				}
 			}
@@ -250,13 +250,13 @@ public class PlayerEntity extends PathingEntity {
 			int j2 = 0;
 			for (int l2 = 0; l2 < 12; l2++) {
 				int i3 = anIntArray1717[l2];
-				if (k1 >= 0 && l2 == 3) {
+				if ((k1 >= 0) && (l2 == 3)) {
 					i3 = k1;
 				}
-				if (j1 >= 0 && l2 == 5) {
+				if ((j1 >= 0) && (l2 == 5)) {
 					i3 = j1;
 				}
-				if (i3 >= 256 && i3 < 512) {
+				if ((i3 >= 256) && (i3 < 512)) {
 					Model model_3 = IDKType.aIDKTypeArray656[i3 - 256].method538();
 					if (model_3 != null) {
 						aclass30_sub2_sub4_sub6[j2++] = model_3;
@@ -288,7 +288,7 @@ public class PlayerEntity extends PathingEntity {
 		}
 		Model class30_sub2_sub4_sub6_2 = Model.EMPTY;
 		class30_sub2_sub4_sub6_2.set(model_1, SeqFrame.isNull(k) & SeqFrame.isNull(i1));
-		if (k != -1 && i1 != -1) {
+		if ((k != -1) && (i1 != -1)) {
 			class30_sub2_sub4_sub6_2.applySequenceFrames(k, i1, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
 		} else if (k != -1) {
 			class30_sub2_sub4_sub6_2.applySequenceFrame(k);
@@ -314,10 +314,10 @@ public class PlayerEntity extends PathingEntity {
 		boolean flag = false;
 		for (int i = 0; i < 12; i++) {
 			int j = anIntArray1717[i];
-			if (j >= 256 && j < 512 && !IDKType.aIDKTypeArray656[j - 256].method539()) {
+			if ((j >= 256) && (j < 512) && !IDKType.aIDKTypeArray656[j - 256].method539()) {
 				flag = true;
 			}
-			if (j >= 512 && !ObjType.method198(j - 512).method192(anInt1702)) {
+			if ((j >= 512) && !ObjType.method198(j - 512).method192(anInt1702)) {
 				flag = true;
 			}
 		}
@@ -328,7 +328,7 @@ public class PlayerEntity extends PathingEntity {
 		int k = 0;
 		for (int l = 0; l < 12; l++) {
 			int i1 = anIntArray1717[l];
-			if (i1 >= 256 && i1 < 512) {
+			if ((i1 >= 256) && (i1 < 512)) {
 				Model model_1 = IDKType.aIDKTypeArray656[i1 - 256].method540();
 				if (model_1 != null) {
 					aclass30_sub2_sub4_sub6[k++] = model_1;

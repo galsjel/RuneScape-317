@@ -60,9 +60,9 @@ public class SpotAnimType {
 				anInt413 = buffer.method408();
 			} else if (i == 8) {
 				anInt414 = buffer.method408();
-			} else if (i >= 40 && i < 50) {
+			} else if ((i >= 40) && (i < 50)) {
 				anIntArray408[i - 40] = buffer.method410();
-			} else if (i >= 50 && i < 60) {
+			} else if ((i >= 50) && (i < 60)) {
 				anIntArray409[i - 50] = buffer.method410();
 			} else {
 				System.out.println("Error unrecognised spotanim config code: " + i);

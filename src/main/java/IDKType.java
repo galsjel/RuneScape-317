@@ -46,11 +46,11 @@ public class IDKType {
 				}
 			} else if (i == 3) {
 				aBoolean662 = true;
-			} else if (i >= 40 && i < 50) {
+			} else if ((i >= 40) && (i < 50)) {
 				anIntArray659[i - 40] = buffer.method410();
-			} else if (i >= 50 && i < 60) {
+			} else if ((i >= 50) && (i < 60)) {
 				anIntArray660[i - 50] = buffer.method410();
-			} else if (i >= 60 && i < 70) {
+			} else if ((i >= 60) && (i < 70)) {
 				anIntArray661[i - 60] = buffer.method410();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
@@ -97,7 +97,7 @@ public class IDKType {
 	public boolean method539() {
 		boolean flag1 = true;
 		for (int i = 0; i < 5; i++) {
-			if (anIntArray661[i] != -1 && !Model.validate(anIntArray661[i])) {
+			if ((anIntArray661[i] != -1) && !Model.validate(anIntArray661[i])) {
 				flag1 = false;
 			}
 		}

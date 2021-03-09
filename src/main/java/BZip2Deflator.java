@@ -177,11 +177,11 @@ public class BZip2Deflator {
 			}
 			block.anInt580 = 0;
 			byte0 = method228(block);
-			block.anInt580 = block.anInt580 << 8 | byte0 & 0xff;
+			block.anInt580 = (block.anInt580 << 8) | (byte0 & 0xff);
 			byte0 = method228(block);
-			block.anInt580 = block.anInt580 << 8 | byte0 & 0xff;
+			block.anInt580 = (block.anInt580 << 8) | (byte0 & 0xff);
 			byte0 = method228(block);
-			block.anInt580 = block.anInt580 << 8 | byte0 & 0xff;
+			block.anInt580 = (block.anInt580 << 8) | (byte0 & 0xff);
 			for (int j = 0; j < 16; j++) {
 				byte byte1 = method229(block);
 				block.aBooleanArray590[j] = byte1 == 1;
@@ -194,7 +194,7 @@ public class BZip2Deflator {
 					for (int i3 = 0; i3 < 16; i3++) {
 						byte byte2 = method229(block);
 						if (byte2 == 1) {
-							block.aBooleanArray589[l * 16 + i3] = true;
+							block.aBooleanArray589[(l * 16) + i3] = true;
 						}
 					}
 				}
@@ -268,7 +268,7 @@ public class BZip2Deflator {
 			int j9 = 4095;
 			for (int l8 = 15; l8 >= 0; l8--) {
 				for (int i9 = 15; i9 >= 0; i9--) {
-					block.aByteArray592[j9] = (byte) (l8 * 16 + i9);
+					block.aByteArray592[j9] = (byte) ((l8 * 16) + i9);
 					j9--;
 				}
 				block.anIntArray593[l8] = j9 + 1;
@@ -287,12 +287,12 @@ public class BZip2Deflator {
 			int i7 = k8;
 			int l7;
 			byte byte9;
-			for (l7 = method230(i7, block); l7 > ai[i7]; l7 = l7 << 1 | byte9) {
+			for (l7 = method230(i7, block); l7 > ai[i7]; l7 = (l7 << 1) | byte9) {
 				i7++;
 				byte9 = method229(block);
 			}
 			for (int k5 = ai2[l7 - ai1[i7]]; k5 != l4; ) {
-				if (k5 == 0 || k5 == 1) {
+				if ((k5 == 0) || (k5 == 1)) {
 					int j6 = -1;
 					int k6 = 1;
 					do {
@@ -315,12 +315,12 @@ public class BZip2Deflator {
 						int j7 = k8;
 						int i8;
 						byte byte10;
-						for (i8 = method230(j7, block); i8 > ai[j7]; i8 = i8 << 1 | byte10) {
+						for (i8 = method230(j7, block); i8 > ai[j7]; i8 = (i8 << 1) | byte10) {
 							j7++;
 							byte10 = method229(block);
 						}
 						k5 = ai2[i8 - ai1[j7]];
-					} while (k5 == 0 || k5 == 1);
+					} while ((k5 == 0) || (k5 == 1));
 					j6++;
 					byte byte5 = block.aByteArray591[block.aByteArray592[block.anIntArray593[0]] & 0xff];
 					block.anIntArray583[byte5 & 0xff] += j6;
@@ -387,7 +387,7 @@ public class BZip2Deflator {
 					int k7 = k8;
 					int j8;
 					byte byte11;
-					for (j8 = method230(k7, block); j8 > ai[k7]; j8 = j8 << 1 | byte11) {
+					for (j8 = method230(k7, block); j8 > ai[k7]; j8 = (j8 << 1) | byte11) {
 						k7++;
 						byte11 = method229(block);
 					}
@@ -416,7 +416,7 @@ public class BZip2Deflator {
 			block.anInt584++;
 			block.anInt601 = i6;
 			method226(block);
-			flag19 = block.anInt584 == block.anInt601 + 1 && block.anInt574 == 0;
+			flag19 = (block.anInt584 == (block.anInt601 + 1)) && (block.anInt574 == 0);
 		}
 	}
 
@@ -432,12 +432,12 @@ public class BZip2Deflator {
 		int j;
 		do {
 			if (block.anInt577 >= i) {
-				int k = block.anInt576 >> block.anInt577 - i & (1 << i) - 1;
+				int k = (block.anInt576 >> (block.anInt577 - i)) & ((1 << i) - 1);
 				block.anInt577 -= i;
 				j = k;
 				break;
 			}
-			block.anInt576 = block.anInt576 << 8 | block.aByteArray563[block.anInt564] & 0xff;
+			block.anInt576 = (block.anInt576 << 8) | (block.aByteArray563[block.anInt564] & 0xff);
 			block.anInt577 += 8;
 			block.anInt564++;
 			block.anInt565--;
@@ -488,7 +488,7 @@ public class BZip2Deflator {
 			i3 <<= 1;
 		}
 		for (int k2 = i + 1; k2 <= j; k2++) {
-			ai1[k2] = (ai[k2 - 1] + 1 << 1) - ai1[k2];
+			ai1[k2] = ((ai[k2 - 1] + 1) << 1) - ai1[k2];
 		}
 	}
 

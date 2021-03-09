@@ -97,7 +97,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 			}
 			if (j > 256) {
 				j = 256;
-				k = (int) ((long) anInt5 - (l1 - aLongArray7[i]) / 10L);
+				k = (int) ((long) anInt5 - ((l1 - aLongArray7[i]) / 10L));
 			}
 			if (k > anInt5) {
 				k = anInt5;
@@ -309,7 +309,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		if (i == 10) {
 			j = 10;
 		}
-		if (i >= 112 && i <= 123) {
+		if ((i >= 112) && (i <= 123)) {
 			j = (1008 + i) - 112;
 		}
 		if (i == 36) {
@@ -324,12 +324,12 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		if (i == 34) {
 			j = 1003;
 		}
-		if (j > 0 && j < 128) {
+		if ((j > 0) && (j < 128)) {
 			anIntArray30[j] = 1;
 		}
 		if (j > 4) {
 			anIntArray31[anInt33] = j;
-			anInt33 = anInt33 + 1 & 0x7f;
+			anInt33 = (anInt33 + 1) & 0x7f;
 		}
 	}
 
@@ -367,7 +367,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		if (i == 10) {
 			c = '\n';
 		}
-		if (c > 0 && c < '\200') {
+		if ((c > 0) && (c < '\200')) {
 			anIntArray30[c] = 0;
 		}
 	}
@@ -379,7 +379,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		int k = -1;
 		if (anInt33 != anInt32) {
 			k = anIntArray31[anInt32];
-			anInt32 = anInt32 + 1 & 0x7f;
+			anInt32 = (anInt32 + 1) & 0x7f;
 		}
 		return k;
 	}
@@ -470,12 +470,12 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 			aBoolean16 = false;
 		}
 		Color color = new Color(140, 17, 17);
-		int j = anInt11 / 2 - 18;
+		int j = (anInt11 / 2) - 18;
 		aGraphics12.setColor(color);
-		aGraphics12.drawRect(anInt10 / 2 - 152, j, 304, 34);
-		aGraphics12.fillRect(anInt10 / 2 - 150, j + 2, i * 3, 30);
+		aGraphics12.drawRect((anInt10 / 2) - 152, j, 304, 34);
+		aGraphics12.fillRect((anInt10 / 2) - 150, j + 2, i * 3, 30);
 		aGraphics12.setColor(Color.black);
-		aGraphics12.fillRect((anInt10 / 2 - 150) + i * 3, j + 2, 300 - i * 3, 30);
+		aGraphics12.fillRect(((anInt10 / 2) - 150) + (i * 3), j + 2, 300 - (i * 3), 30);
 		aGraphics12.setFont(font);
 		aGraphics12.setColor(Color.white);
 		aGraphics12.drawString(s, (anInt10 - fontmetrics.stringWidth(s)) / 2, j + 22);

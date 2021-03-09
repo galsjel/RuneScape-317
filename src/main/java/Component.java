@@ -95,7 +95,7 @@ public class Component {
 			component.aByte254 = (byte) buffer.method408();
 			component.anInt230 = buffer.method408();
 			if (component.anInt230 != 0) {
-				component.anInt230 = (component.anInt230 - 1 << 8) + buffer.method408();
+				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.method408();
 			} else {
 				component.anInt230 = -1;
 			}
@@ -154,7 +154,7 @@ public class Component {
 						component.anIntArray215[j2] = buffer.method411();
 						component.anIntArray247[j2] = buffer.method411();
 						String s1 = buffer.method415();
-						if (archive_1 != null && s1.length() > 0) {
+						if ((archive_1 != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
 							component.aImageArray209[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), archive_1, s1.substring(0, i5));
 						}
@@ -171,7 +171,7 @@ public class Component {
 			if (component.anInt262 == 3) {
 				component.aBoolean227 = buffer.method408() == 1;
 			}
-			if (component.anInt262 == 4 || component.anInt262 == 1) {
+			if ((component.anInt262 == 4) || (component.anInt262 == 1)) {
 				component.aBoolean223 = buffer.method408() == 1;
 				int k2 = buffer.method408();
 				if (aclass30_sub2_sub1_sub4 != null) {
@@ -183,22 +183,22 @@ public class Component {
 				component.aString248 = buffer.method415();
 				component.aString228 = buffer.method415();
 			}
-			if (component.anInt262 == 1 || component.anInt262 == 3 || component.anInt262 == 4) {
+			if ((component.anInt262 == 1) || (component.anInt262 == 3) || (component.anInt262 == 4)) {
 				component.anInt232 = buffer.method413();
 			}
-			if (component.anInt262 == 3 || component.anInt262 == 4) {
+			if ((component.anInt262 == 3) || (component.anInt262 == 4)) {
 				component.anInt219 = buffer.method413();
 				component.anInt216 = buffer.method413();
 				component.anInt239 = buffer.method413();
 			}
 			if (component.anInt262 == 5) {
 				String s = buffer.method415();
-				if (archive_1 != null && s.length() > 0) {
+				if ((archive_1 != null) && (s.length() > 0)) {
 					int i4 = s.lastIndexOf(",");
 					component.aImage_207 = method207(Integer.parseInt(s.substring(i4 + 1)), archive_1, s.substring(0, i4));
 				}
 				s = buffer.method415();
-				if (archive_1 != null && s.length() > 0) {
+				if ((archive_1 != null) && (s.length() > 0)) {
 					int j4 = s.lastIndexOf(",");
 					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), archive_1, s.substring(0, j4));
 				}
@@ -207,22 +207,22 @@ public class Component {
 				int l = buffer.method408();
 				if (l != 0) {
 					component.anInt233 = 1;
-					component.anInt234 = (l - 1 << 8) + buffer.method408();
+					component.anInt234 = ((l - 1) << 8) + buffer.method408();
 				}
 				l = buffer.method408();
 				if (l != 0) {
 					component.anInt255 = 1;
-					component.anInt256 = (l - 1 << 8) + buffer.method408();
+					component.anInt256 = ((l - 1) << 8) + buffer.method408();
 				}
 				l = buffer.method408();
 				if (l != 0) {
-					component.anInt257 = (l - 1 << 8) + buffer.method408();
+					component.anInt257 = ((l - 1) << 8) + buffer.method408();
 				} else {
 					component.anInt257 = -1;
 				}
 				l = buffer.method408();
 				if (l != 0) {
-					component.anInt258 = (l - 1 << 8) + buffer.method408();
+					component.anInt258 = ((l - 1) << 8) + buffer.method408();
 				} else {
 					component.anInt258 = -1;
 				}
@@ -251,12 +251,12 @@ public class Component {
 					}
 				}
 			}
-			if (component.anInt217 == 2 || component.anInt262 == 2) {
+			if ((component.anInt217 == 2) || (component.anInt262 == 2)) {
 				component.aString222 = buffer.method415();
 				component.aString218 = buffer.method415();
 				component.anInt237 = buffer.method410();
 			}
-			if (component.anInt217 == 1 || component.anInt217 == 4 || component.anInt217 == 5 || component.anInt217 == 6) {
+			if ((component.anInt217 == 1) || (component.anInt217 == 4) || (component.anInt217 == 5) || (component.anInt217 == 6)) {
 				component.aString221 = buffer.method415();
 				if (component.aString221.length() == 0) {
 					if (component.anInt217 == 1) {
@@ -294,7 +294,7 @@ public class Component {
 
 	public static void method208(int i, int j, Model model) {
 		A_CACHE___264.method224();
-		if (model != null && j != 4) {
+		if ((model != null) && (j != 4)) {
 			A_CACHE___264.method223(model, (j << 16) + i);
 		}
 	}
@@ -344,11 +344,11 @@ public class Component {
 		if (model == null) {
 			return null;
 		}
-		if (k == -1 && j == -1 && model.faceColor == null) {
+		if ((k == -1) && (j == -1) && (model.faceColor == null)) {
 			return model;
 		}
 		Model model_1 = new Model(true, SeqFrame.isNull(k) & SeqFrame.isNull(j), false, model);
-		if (k != -1 || j != -1) {
+		if ((k != -1) || (j != -1)) {
 			model_1.createLabelReferences();
 		}
 		if (k != -1) {

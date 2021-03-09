@@ -73,7 +73,7 @@ public class Signlink implements Runnable {
 
 	public static String findcachedir() {
 		String[] as = {"c:/windows/", "c:/winnt/", "d:/windows/", "d:/winnt/", "e:/windows/", "e:/winnt/", "f:/windows/", "f:/winnt/", "c:/", "~/", "/tmp/", "", "c:/rscache", "/rscache"};
-		if (storeid < 32 || storeid > 34) {
+		if ((storeid < 32) || (storeid > 34)) {
 			storeid = 32;
 		}
 		String s = ".file_store_" + storeid;
@@ -98,7 +98,7 @@ public class Signlink implements Runnable {
 	public static int getuid(String s) {
 		try {
 			File file = new File(s + "uid.dat");
-			if (!file.exists() || file.length() < 4L) {
+			if (!file.exists() || (file.length() < 4L)) {
 				DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(s + "uid.dat"));
 				dataoutputstream.writeInt((int) (Math.random() * 99999999D));
 				dataoutputstream.close();
@@ -211,7 +211,7 @@ public class Signlink implements Runnable {
 		uid = getuid(s);
 		try {
 			File file = new File(s + "main_file_cache.dat");
-			if (file.exists() && file.length() > 0x3200000L) {
+			if (file.exists() && (file.length() > 0x3200000L)) {
 				file.delete();
 			}
 			cache_dat = new RandomAccessFile(s + "main_file_cache.dat", "rw");

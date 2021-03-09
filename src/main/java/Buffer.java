@@ -21,7 +21,7 @@ public class Buffer extends DoublyLinkedListNode {
 			int i = j;
 			for (int k = 0; k < 8; k++) {
 				if ((i & 1) == 1) {
-					i = i >>> 1 ^ 0xedb88320;
+					i = (i >>> 1) ^ 0xedb88320;
 				} else {
 					i >>>= 1;
 				}
@@ -46,13 +46,13 @@ public class Buffer extends DoublyLinkedListNode {
 	public static Buffer method396(int i) {
 		synchronized (A_LIST___1415) {
 			Buffer class30_sub2_sub2_2 = null;
-			if (i == 0 && anInt1411 > 0) {
+			if ((i == 0) && (anInt1411 > 0)) {
 				anInt1411--;
 				class30_sub2_sub2_2 = (Buffer) A_LIST___1414.method251();
-			} else if (i == 1 && anInt1412 > 0) {
+			} else if ((i == 1) && (anInt1412 > 0)) {
 				anInt1412--;
 				class30_sub2_sub2_2 = (Buffer) A_LIST___1415.method251();
-			} else if (i == 2 && anInt1413 > 0) {
+			} else if ((i == 2) && (anInt1413 > 0)) {
 				anInt1413--;
 				class30_sub2_sub2_2 = (Buffer) A_LIST___1416.method251();
 			}
@@ -129,7 +129,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void method406(byte[] abyte0, int i, int j) {
-		for (int k = j; k < j + i; k++) {
+		for (int k = j; k < (j + i); k++) {
 			aByteArray1405[position++] = abyte0[k];
 		}
 	}
@@ -188,14 +188,14 @@ public class Buffer extends DoublyLinkedListNode {
 		while (aByteArray1405[position++] != 10) {
 		}
 		byte[] abyte0 = new byte[position - i - 1];
-		for (int j = i; j < position - 1; j++) {
+		for (int j = i; j < (position - 1); j++) {
 			abyte0[j - i] = aByteArray1405[j];
 		}
 		return abyte0;
 	}
 
 	public void method417(int i, int j, byte[] abyte0) {
-		for (int l = j; l < j + i; l++) {
+		for (int l = j; l < (j + i); l++) {
 			abyte0[l] = aByteArray1405[position++];
 		}
 	}
@@ -210,13 +210,13 @@ public class Buffer extends DoublyLinkedListNode {
 		int i1 = 0;
 		anInt1407 += i;
 		for (; i > l; l = 8) {
-			i1 += (aByteArray1405[k++] & anIntArray1409[l]) << i - l;
+			i1 += (aByteArray1405[k++] & anIntArray1409[l]) << (i - l);
 			i -= l;
 		}
 		if (i == l) {
 			i1 += aByteArray1405[k] & anIntArray1409[l];
 		} else {
-			i1 += aByteArray1405[k] >> l - i & anIntArray1409[i];
+			i1 += (aByteArray1405[k] >> (l - i)) & anIntArray1409[i];
 		}
 		return i1;
 	}
@@ -265,7 +265,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method426() {
-		return aByteArray1405[position++] - 128 & 0xff;
+		return (aByteArray1405[position++] - 128) & 0xff;
 	}
 
 	public int method427() {
@@ -273,7 +273,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public int method428() {
-		return 128 - aByteArray1405[position++] & 0xff;
+		return (128 - aByteArray1405[position++]) & 0xff;
 	}
 
 	public byte method429() {
@@ -306,12 +306,12 @@ public class Buffer extends DoublyLinkedListNode {
 
 	public int method435() {
 		position += 2;
-		return ((aByteArray1405[position - 2] & 0xff) << 8) + (aByteArray1405[position - 1] - 128 & 0xff);
+		return ((aByteArray1405[position - 2] & 0xff) << 8) + ((aByteArray1405[position - 1] - 128) & 0xff);
 	}
 
 	public int method436() {
 		position += 2;
-		return ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] - 128 & 0xff);
+		return ((aByteArray1405[position - 1] & 0xff) << 8) + ((aByteArray1405[position - 2] - 128) & 0xff);
 	}
 
 	public int method437() {
@@ -325,7 +325,7 @@ public class Buffer extends DoublyLinkedListNode {
 
 	public int method438() {
 		position += 2;
-		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + (aByteArray1405[position - 2] - 128 & 0xff);
+		int j = ((aByteArray1405[position - 1] & 0xff) << 8) + ((aByteArray1405[position - 2] - 128) & 0xff);
 		if (j > 32767) {
 			j -= 0x10000;
 		}

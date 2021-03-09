@@ -56,7 +56,7 @@ public class OnDemand implements Runnable {
 	}
 
 	public boolean method549(int i, int j, byte[] abyte0) {
-		if (abyte0 == null || abyte0.length < 2) {
+		if ((abyte0 == null) || (abyte0.length < 2)) {
 			return false;
 		}
 		int k = abyte0.length - 2;
@@ -73,7 +73,7 @@ public class OnDemand implements Runnable {
 	public void method550() {
 		try {
 			int j = anInputStream1362.available();
-			if (anInt1347 == 0 && j >= 6) {
+			if ((anInt1347 == 0) && (j >= 6)) {
 				aBoolean1357 = true;
 				for (int k = 0; k < 6; k += anInputStream1362.read(aByteArray1339, k, 6 - k)) {
 				}
@@ -83,7 +83,7 @@ public class OnDemand implements Runnable {
 				int i2 = aByteArray1339[5] & 0xff;
 				aRequest_1369 = null;
 				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
-					if (request.anInt1419 == l && request.anInt1421 == j1) {
+					if ((request.anInt1419 == l) && (request.anInt1421 == j1)) {
 						aRequest_1369 = request;
 					}
 					if (aRequest_1369 != null) {
@@ -104,21 +104,21 @@ public class OnDemand implements Runnable {
 						}
 						aRequest_1369 = null;
 					} else {
-						if (aRequest_1369.aByteArray1420 == null && i2 == 0) {
+						if ((aRequest_1369.aByteArray1420 == null) && (i2 == 0)) {
 							aRequest_1369.aByteArray1420 = new byte[l1];
 						}
-						if (aRequest_1369.aByteArray1420 == null && i2 != 0) {
+						if ((aRequest_1369.aByteArray1420 == null) && (i2 != 0)) {
 							throw new IOException("missing start of file");
 						}
 					}
 				}
 				anInt1346 = i2 * 500;
 				anInt1347 = 500;
-				if (anInt1347 > l1 - i2 * 500) {
-					anInt1347 = l1 - i2 * 500;
+				if (anInt1347 > (l1 - (i2 * 500))) {
+					anInt1347 = l1 - (i2 * 500);
 				}
 			}
-			if (anInt1347 > 0 && j >= anInt1347) {
+			if ((anInt1347 > 0) && (j >= anInt1347)) {
 				aBoolean1357 = true;
 				byte[] abyte0 = aByteArray1339;
 				int i1 = 0;
@@ -128,11 +128,11 @@ public class OnDemand implements Runnable {
 				}
 				for (int k1 = 0; k1 < anInt1347; k1 += anInputStream1362.read(abyte0, k1 + i1, anInt1347 - k1)) {
 				}
-				if (anInt1347 + anInt1346 >= abyte0.length && aRequest_1369 != null) {
+				if (((anInt1347 + anInt1346) >= abyte0.length) && (aRequest_1369 != null)) {
 					if (aGame1343.aFileStoreArray970[0] != null) {
 						aGame1343.aFileStoreArray970[aRequest_1369.anInt1419 + 1].method234(abyte0.length, abyte0, aRequest_1369.anInt1421);
 					}
-					if (!aRequest_1369.aBoolean1422 && aRequest_1369.anInt1419 == 3) {
+					if (!aRequest_1369.aBoolean1422 && (aRequest_1369.anInt1419 == 3)) {
 						aRequest_1369.aBoolean1422 = true;
 						aRequest_1369.anInt1419 = 93;
 					}
@@ -235,7 +235,7 @@ public class OnDemand implements Runnable {
 	public void method554(boolean flag) {
 		int j = anIntArray1371.length;
 		for (int k = 0; k < j; k++) {
-			if (flag || anIntArray1356[k] != 0) {
+			if (flag || (anIntArray1356[k] != 0)) {
 				method563((byte) 2, 3, anIntArray1337[k]);
 				method563((byte) 2, 3, anIntArray1350[k]);
 			}
@@ -250,7 +250,7 @@ public class OnDemand implements Runnable {
 		try {
 			if (aSocket1363 == null) {
 				long l = System.currentTimeMillis();
-				if (l - aLong1335 < 4000L) {
+				if ((l - aLong1335) < 4000L) {
 					return;
 				}
 				aLong1335 = l;
@@ -295,7 +295,7 @@ public class OnDemand implements Runnable {
 	}
 
 	public void method558(int i, int j) {
-		if (i < 0 || i > anIntArrayArray1364.length || j < 0 || j > anIntArrayArray1364[i].length) {
+		if ((i < 0) || (i > anIntArrayArray1364.length) || (j < 0) || (j > anIntArrayArray1364[i].length)) {
 			return;
 		}
 		if (anIntArrayArray1364[i][j] == 0) {
@@ -303,7 +303,7 @@ public class OnDemand implements Runnable {
 		}
 		synchronized (aDoublyLinkedList_1361) {
 			for (OnDemandRequest request = (OnDemandRequest) aDoublyLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aDoublyLinkedList_1361.method153()) {
-				if (request.anInt1419 == i && request.anInt1421 == j) {
+				if ((request.anInt1419 == i) && (request.anInt1421 == j)) {
 					return;
 				}
 			}
@@ -327,7 +327,7 @@ public class OnDemand implements Runnable {
 			while (aBoolean1353) {
 				anInt1341++;
 				int i = 20;
-				if (anInt1332 == 0 && aGame1343.aFileStoreArray970[0] != null) {
+				if ((anInt1332 == 0) && (aGame1343.aFileStoreArray970[0] != null)) {
 					i = 50;
 				}
 				try {
@@ -342,7 +342,7 @@ public class OnDemand implements Runnable {
 					aBoolean1357 = false;
 					method567();
 					method565();
-					if (anInt1366 == 0 && j >= 5) {
+					if ((anInt1366 == 0) && (j >= 5)) {
 						break;
 					}
 					method568();
@@ -387,7 +387,7 @@ public class OnDemand implements Runnable {
 					anInt1373 = 0;
 					aString1333 = "";
 				}
-				if (aGame1343.aBoolean1157 && aSocket1363 != null && anOutputStream1354 != null && (anInt1332 > 0 || aGame1343.aFileStoreArray970[0] == null)) {
+				if (aGame1343.aBoolean1157 && (aSocket1363 != null) && (anOutputStream1354 != null) && ((anInt1332 > 0) || (aGame1343.aFileStoreArray970[0] == null))) {
 					anInt1334++;
 					if (anInt1334 > 500) {
 						anInt1334 = 0;
@@ -573,7 +573,7 @@ public class OnDemand implements Runnable {
 	}
 
 	public void method568() {
-		while (anInt1366 == 0 && anInt1367 < 10) {
+		while ((anInt1366 == 0) && (anInt1367 < 10)) {
 			if (anInt1332 == 0) {
 				break;
 			}

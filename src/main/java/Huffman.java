@@ -13,7 +13,7 @@ public class Huffman {
 		int k = -1;
 		for (int l = 0; l < i; l++) {
 			int i1 = buffer.method408();
-			int j1 = i1 >> 4 & 0xf;
+			int j1 = (i1 >> 4) & 0xf;
 			if (k == -1) {
 				if (j1 < 13) {
 					aCharArray631[j++] = aCharArray633[j1];
@@ -39,11 +39,11 @@ public class Huffman {
 		boolean flag1 = true;
 		for (int k1 = 0; k1 < j; k1++) {
 			char c = aCharArray631[k1];
-			if (flag1 && c >= 'a' && c <= 'z') {
+			if (flag1 && (c >= 'a') && (c <= 'z')) {
 				aCharArray631[k1] += '\uFFE0';
 				flag1 = false;
 			}
-			if (c == '.' || c == '!' || c == '?') {
+			if ((c == '.') || (c == '!') || (c == '?')) {
 				flag1 = true;
 			}
 		}

@@ -10,10 +10,10 @@ public class NPCEntity extends PathingEntity {
 	}
 
 	public Model method450() {
-		if (super.anInt1526 >= 0 && super.anInt1529 == 0) {
+		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
 			int k = SeqType.aTypeArray351[super.anInt1526].anIntArray353[super.anInt1527];
 			int i1 = -1;
-			if (super.anInt1517 >= 0 && super.anInt1517 != super.anInt1511) {
+			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
 				i1 = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
 			}
 			return aType_1696.method164(i1, k, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
@@ -35,7 +35,7 @@ public class NPCEntity extends PathingEntity {
 			return null;
 		}
 		super.anInt1507 = model.minY;
-		if (super.anInt1520 != -1 && super.anInt1521 != -1) {
+		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
 			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
 			Model model_1 = type.method266();
 			if (model_1 != null) {
@@ -46,7 +46,7 @@ public class NPCEntity extends PathingEntity {
 				class30_sub2_sub4_sub6_2.applySequenceFrame(j);
 				class30_sub2_sub4_sub6_2.labelFaces = null;
 				class30_sub2_sub4_sub6_2.labelVertices = null;
-				if (type.anInt410 != 128 || type.anInt411 != 128) {
+				if ((type.anInt410 != 128) || (type.anInt411 != 128)) {
 					class30_sub2_sub4_sub6_2.scale(type.anInt410, type.anInt410, type.anInt411);
 				}
 				class30_sub2_sub4_sub6_2.calculateNormals(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);

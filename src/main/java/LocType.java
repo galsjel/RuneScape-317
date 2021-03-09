@@ -178,9 +178,9 @@ public class LocType {
 			for (int i2 = 0; i2 < model.vertexCount; i2++) {
 				int j2 = model.vertexX[i2];
 				int k2 = model.vertexZ[i2];
-				int l2 = k + ((l - k) * (j2 + 64)) / 128;
-				int i3 = j1 + ((i1 - j1) * (j2 + 64)) / 128;
-				int j3 = l2 + ((i3 - l2) * (k2 + 64)) / 128;
+				int l2 = k + (((l - k) * (j2 + 64)) / 128);
+				int i3 = j1 + (((i1 - j1) * (j2 + 64)) / 128);
+				int j3 = l2 + (((i3 - l2) * (k2 + 64)) / 128);
 				model.vertexY[i2] += j3 - l1;
 			}
 			model.calculateBoundsY();
@@ -207,11 +207,11 @@ public class LocType {
 			int k = varbit.anInt649;
 			int l = varbit.anInt650;
 			int i1 = Game.anIntArray1232[l - k];
-			i = aGame765.anIntArray971[j] >> k & i1;
+			i = (aGame765.anIntArray971[j] >> k) & i1;
 		} else if (anInt749 != -1) {
 			i = aGame765.anIntArray971[anInt749];
 		}
-		if (i < 0 || i >= anIntArray759.length || anIntArray759[i] == -1) {
+		if ((i < 0) || (i >= anIntArray759.length) || (anIntArray759[i] == -1)) {
 			return null;
 		} else {
 			return method572(anIntArray759[i]);
@@ -293,10 +293,10 @@ public class LocType {
 			}
 		}
 		boolean flag;
-		flag = anInt748 != 128 || anInt772 != 128 || anInt740 != 128;
+		flag = (anInt748 != 128) || (anInt772 != 128) || (anInt740 != 128);
 		boolean flag2;
-		flag2 = anInt738 != 0 || anInt745 != 0 || anInt783 != 0;
-		Model model_3 = new Model(anIntArray784 == null, SeqFrame.isNull(k), l == 0 && k == -1 && !flag && !flag2, model);
+		flag2 = (anInt738 != 0) || (anInt745 != 0) || (anInt783 != 0);
+		Model model_3 = new Model(anIntArray784 == null, SeqFrame.isNull(k), (l == 0) && (k == -1) && !flag && !flag2, model);
 		if (k != -1) {
 			model_3.createLabelReferences();
 			model_3.applySequenceFrame(k);
@@ -317,7 +317,7 @@ public class LocType {
 		if (flag2) {
 			model_3.translate(anInt738, anInt745, anInt783);
 		}
-		model_3.calculateNormals(64 + aByte737, 768 + aByte742 * 5, -50, -10, -50, !aBoolean769);
+		model_3.calculateNormals(64 + aByte737, 768 + (aByte742 * 5), -50, -10, -50, !aBoolean769);
 		if (anInt760 == 1) {
 			model_3.anInt1654 = model_3.minY;
 		}
@@ -338,7 +338,7 @@ public class LocType {
 				if (j == 1) {
 					int k = buffer.method408();
 					if (k > 0) {
-						if (anIntArray773 == null || aBoolean752) {
+						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = new int[k];
 							anIntArray773 = new int[k];
 							for (int k1 = 0; k1 < k; k1++) {
@@ -356,7 +356,7 @@ public class LocType {
 				} else if (j == 5) {
 					int l = buffer.method408();
 					if (l > 0) {
-						if (anIntArray773 == null || aBoolean752) {
+						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = null;
 							anIntArray773 = new int[l];
 							for (int l1 = 0; l1 < l; l1++) {
@@ -396,7 +396,7 @@ public class LocType {
 					aByte737 = buffer.method409();
 				} else if (j == 39) {
 					aByte742 = buffer.method409();
-				} else if (j >= 30 && j < 39) {
+				} else if ((j >= 30) && (j < 39)) {
 					if (aStringArray786 == null) {
 						aStringArray786 = new String[5];
 					}
@@ -464,7 +464,7 @@ public class LocType {
 			}
 		} while (true);
 		if (i == -1) {
-			aBoolean778 = anIntArray773 != null && (anIntArray776 == null || anIntArray776[0] == 10);
+			aBoolean778 = (anIntArray773 != null) && ((anIntArray776 == null) || (anIntArray776[0] == 10));
 			if (aStringArray786 != null) {
 				aBoolean778 = true;
 			}

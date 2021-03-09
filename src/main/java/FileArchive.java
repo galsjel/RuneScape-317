@@ -35,7 +35,7 @@ public class FileArchive {
 		anIntArray729 = new int[anInt727];
 		anIntArray730 = new int[anInt727];
 		anIntArray731 = new int[anInt727];
-		int k = buffer.position + anInt727 * 10;
+		int k = buffer.position + (anInt727 * 10);
 		for (int l = 0; l < anInt727; l++) {
 			anIntArray728[l] = buffer.method413();
 			anIntArray729[l] = buffer.method412();
@@ -49,7 +49,7 @@ public class FileArchive {
 		int i = 0;
 		s = s.toUpperCase();
 		for (int j = 0; j < s.length(); j++) {
-			i = (i * 61 + s.charAt(j)) - 32;
+			i = ((i * 61) + s.charAt(j)) - 32;
 		}
 		for (int k = 0; k < anInt727; k++) {
 			if (anIntArray728[k] == i) {

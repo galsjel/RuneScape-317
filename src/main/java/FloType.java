@@ -71,8 +71,8 @@ public class FloType {
 	}
 
 	public void method262(int i) {
-		double d = (double) (i >> 16 & 0xff) / 256D;
-		double d1 = (double) (i >> 8 & 0xff) / 256D;
+		double d = (double) ((i >> 16) & 0xff) / 256D;
+		double d1 = (double) ((i >> 8) & 0xff) / 256D;
 		double d2 = (double) (i & 0xff) / 256D;
 		double d3 = d;
 		if (d1 < d3) {
@@ -101,9 +101,9 @@ public class FloType {
 			if (d == d4) {
 				d5 = (d1 - d2) / (d4 - d3);
 			} else if (d1 == d4) {
-				d5 = 2D + (d2 - d) / (d4 - d3);
+				d5 = 2D + ((d2 - d) / (d4 - d3));
 			} else if (d2 == d4) {
-				d5 = 4D + (d - d1) / (d4 - d3);
+				d5 = 4D + ((d - d1) / (d4 - d3));
 			}
 		}
 		d5 /= 6D;
@@ -163,7 +163,7 @@ public class FloType {
 		if (k > 243) {
 			j /= 2;
 		}
-		return (i / 4 << 10) + (j / 32 << 7) + k / 2;
+		return ((i / 4) << 10) + ((j / 32) << 7) + (k / 2);
 	}
 
 }
