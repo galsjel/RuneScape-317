@@ -72,18 +72,18 @@ public class ProjectileEntity extends Entity {
 		if (aType_1592.aType_407 != null) {
 			j = aType_1592.aType_407.anIntArray353[anInt1593];
 		}
-		Model model_1 = new Model(true, SeqTransform.method532(j), false, model);
+		Model model_1 = new Model(true, SeqFrame.isNull(j), false, model);
 		if (j != -1) {
-			model_1.method469();
-			model_1.method470(j);
-			model_1.anIntArrayArray1658 = null;
-			model_1.anIntArrayArray1657 = null;
+			model_1.createLabelReferences();
+			model_1.applySequenceFrame(j);
+			model_1.labelFaces = null;
+			model_1.labelVertices = null;
 		}
 		if (aType_1592.anInt410 != 128 || aType_1592.anInt411 != 128) {
-			model_1.method478(aType_1592.anInt410, aType_1592.anInt410, aType_1592.anInt411);
+			model_1.scale(aType_1592.anInt410, aType_1592.anInt410, aType_1592.anInt411);
 		}
-		model_1.method474(anInt1596);
-		model_1.method479(64 + aType_1592.anInt413, 850 + aType_1592.anInt414, -30, -50, -30, true);
+		model_1.rotateX(anInt1596);
+		model_1.calculateNormals(64 + aType_1592.anInt413, 850 + aType_1592.anInt414, -30, -50, -30, true);
 		return model_1;
 	}
 

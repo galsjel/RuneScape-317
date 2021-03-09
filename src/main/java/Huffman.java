@@ -89,10 +89,10 @@ public class Huffman {
 	}
 
 	public static String method527(String s) {
-		A_BUFFER___632.anInt1406 = 0;
+		A_BUFFER___632.position = 0;
 		method526(s, A_BUFFER___632);
-		int j = A_BUFFER___632.anInt1406;
-		A_BUFFER___632.anInt1406 = 0;
+		int j = A_BUFFER___632.position;
+		A_BUFFER___632.position = 0;
 		return method525(j, A_BUFFER___632);
 	}
 

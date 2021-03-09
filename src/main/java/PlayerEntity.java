@@ -42,8 +42,8 @@ public class PlayerEntity extends PathingEntity {
 		if (model == null) {
 			return null;
 		}
-		super.anInt1507 = model.anInt1426;
-		model.aBoolean1659 = true;
+		super.anInt1507 = model.minY;
+		model.pickBounds = true;
 		if (aBoolean1699) {
 			return model;
 		}
@@ -51,16 +51,16 @@ public class PlayerEntity extends PathingEntity {
 			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
 			Model class30_sub2_sub4_sub6_2 = type.method266();
 			if (class30_sub2_sub4_sub6_2 != null) {
-				Model model_3 = new Model(true, SeqTransform.method532(super.anInt1521), false, class30_sub2_sub4_sub6_2);
-				model_3.method475(0, -super.anInt1524, 0);
-				model_3.method469();
-				model_3.method470(type.aType_407.anIntArray353[super.anInt1521]);
-				model_3.anIntArrayArray1658 = null;
-				model_3.anIntArrayArray1657 = null;
+				Model model_3 = new Model(true, SeqFrame.isNull(super.anInt1521), false, class30_sub2_sub4_sub6_2);
+				model_3.translate(0, -super.anInt1524, 0);
+				model_3.createLabelReferences();
+				model_3.applySequenceFrame(type.aType_407.anIntArray353[super.anInt1521]);
+				model_3.labelFaces = null;
+				model_3.labelVertices = null;
 				if (type.anInt410 != 128 || type.anInt411 != 128) {
-					model_3.method478(type.anInt410, type.anInt410, type.anInt411);
+					model_3.scale(type.anInt410, type.anInt410, type.anInt411);
 				}
-				model_3.method479(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
+				model_3.calculateNormals(64 + type.anInt413, 850 + type.anInt414, -30, -50, -30, true);
 				Model[] aclass30_sub2_sub4_sub6_1 = {model, model_3};
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6_1);
 			}
@@ -71,38 +71,38 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (Game.anInt1161 >= anInt1707 && Game.anInt1161 < anInt1708) {
 				Model model_1 = aModel_1714;
-				model_1.method475(anInt1711 - super.anInt1550, anInt1712 - anInt1709, anInt1713 - super.anInt1551);
+				model_1.translate(anInt1711 - super.anInt1550, anInt1712 - anInt1709, anInt1713 - super.anInt1551);
 				if (super.anInt1510 == 512) {
-					model_1.method473();
-					model_1.method473();
-					model_1.method473();
+					model_1.rotateY90();
+					model_1.rotateY90();
+					model_1.rotateY90();
 				} else if (super.anInt1510 == 1024) {
-					model_1.method473();
-					model_1.method473();
+					model_1.rotateY90();
+					model_1.rotateY90();
 				} else if (super.anInt1510 == 1536) {
-					model_1.method473();
+					model_1.rotateY90();
 				}
 				Model[] aclass30_sub2_sub4_sub6 = {model, model_1};
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6);
 				if (super.anInt1510 == 512) {
-					model_1.method473();
+					model_1.rotateY90();
 				} else if (super.anInt1510 == 1024) {
-					model_1.method473();
-					model_1.method473();
+					model_1.rotateY90();
+					model_1.rotateY90();
 				} else if (super.anInt1510 == 1536) {
-					model_1.method473();
-					model_1.method473();
-					model_1.method473();
+					model_1.rotateY90();
+					model_1.rotateY90();
+					model_1.rotateY90();
 				}
-				model_1.method475(super.anInt1550 - anInt1711, anInt1709 - anInt1712, super.anInt1551 - anInt1713);
+				model_1.translate(super.anInt1550 - anInt1711, anInt1709 - anInt1712, super.anInt1551 - anInt1713);
 			}
 		}
-		model.aBoolean1659 = true;
+		model.pickBounds = true;
 		return model;
 	}
 
 	public void method451(Buffer buffer) {
-		buffer.anInt1406 = 0;
+		buffer.position = 0;
 		anInt1702 = buffer.method408();
 		anInt1706 = buffer.method408();
 		aType_1698 = null;
@@ -209,11 +209,11 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (type.anInt360 >= 0) {
 				j1 = type.anInt360;
-				l += j1 - anIntArray1717[5] << 8;
+				l += (long) j1 - anIntArray1717[5] << 8;
 			}
 			if (type.anInt361 >= 0) {
 				k1 = type.anInt361;
-				l += k1 - anIntArray1717[3] << 16;
+				l += (long) k1 - anIntArray1717[3] << 16;
 			}
 		} else if (super.anInt1517 >= 0) {
 			k = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
@@ -272,30 +272,30 @@ public class PlayerEntity extends PathingEntity {
 			model_1 = new Model(j2, aclass30_sub2_sub4_sub6);
 			for (int j3 = 0; j3 < 5; j3++) {
 				if (anIntArray1700[j3] != 0) {
-					model_1.method476(Game.anIntArrayArray1003[j3][0], Game.anIntArrayArray1003[j3][anIntArray1700[j3]]);
+					model_1.replaceColor(Game.anIntArrayArray1003[j3][0], Game.anIntArrayArray1003[j3][anIntArray1700[j3]]);
 					if (j3 == 1) {
-						model_1.method476(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j3]]);
+						model_1.replaceColor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j3]]);
 					}
 				}
 			}
-			model_1.method469();
-			model_1.method479(64, 850, -30, -50, -30, true);
+			model_1.createLabelReferences();
+			model_1.calculateNormals(64, 850, -30, -50, -30, true);
 			aCache_1704.method223(model_1, l);
 			aLong1697 = l;
 		}
 		if (aBoolean1699) {
 			return model_1;
 		}
-		Model class30_sub2_sub4_sub6_2 = Model.A_MODEL___1621;
-		class30_sub2_sub4_sub6_2.method464(model_1, SeqTransform.method532(k) & SeqTransform.method532(i1));
+		Model class30_sub2_sub4_sub6_2 = Model.EMPTY;
+		class30_sub2_sub4_sub6_2.set(model_1, SeqFrame.isNull(k) & SeqFrame.isNull(i1));
 		if (k != -1 && i1 != -1) {
-			class30_sub2_sub4_sub6_2.method471(SeqType.aTypeArray351[super.anInt1526].anIntArray357, i1, k);
+			class30_sub2_sub4_sub6_2.applySequenceFrames(k, i1, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
 		} else if (k != -1) {
-			class30_sub2_sub4_sub6_2.method470(k);
+			class30_sub2_sub4_sub6_2.applySequenceFrame(k);
 		}
-		class30_sub2_sub4_sub6_2.method466();
-		class30_sub2_sub4_sub6_2.anIntArrayArray1658 = null;
-		class30_sub2_sub4_sub6_2.anIntArrayArray1657 = null;
+		class30_sub2_sub4_sub6_2.calculateBoundsCylinder();
+		class30_sub2_sub4_sub6_2.labelFaces = null;
+		class30_sub2_sub4_sub6_2.labelVertices = null;
 		return class30_sub2_sub4_sub6_2;
 	}
 
@@ -344,9 +344,9 @@ public class PlayerEntity extends PathingEntity {
 		Model model = new Model(k, aclass30_sub2_sub4_sub6);
 		for (int j1 = 0; j1 < 5; j1++) {
 			if (anIntArray1700[j1] != 0) {
-				model.method476(Game.anIntArrayArray1003[j1][0], Game.anIntArrayArray1003[j1][anIntArray1700[j1]]);
+				model.replaceColor(Game.anIntArrayArray1003[j1][0], Game.anIntArrayArray1003[j1][anIntArray1700[j1]]);
 				if (j1 == 1) {
-					model.method476(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j1]]);
+					model.replaceColor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j1]]);
 				}
 			}
 		}

@@ -569,8 +569,8 @@ public class Game extends GameShell {
 			method13(60, "Connecting to update server");
 			aOnDemand_1068 = new OnDemand();
 			aOnDemand_1068.method551(archive_6, this);
-			SeqTransform.method528(aOnDemand_1068.method557());
-			Model.method459(aOnDemand_1068.method555(0), aOnDemand_1068);
+			SeqFrame.init(aOnDemand_1068.method557());
+			Model.init(aOnDemand_1068.method555(0), aOnDemand_1068);
 			if (!aBoolean960) {
 				anInt1227 = 0;
 				try {
@@ -876,7 +876,7 @@ public class Game extends GameShell {
 			for (int i8 = 0; i8 < 9; i8++) {
 				int k8 = 128 + i8 * 32 + 15;
 				int l8 = 600 + k8 * 3;
-				int i9 = Draw3D.anIntArray1470[k8];
+				int i9 = Draw3D.sin[k8];
 				ai[i8] = l8 * i9 >> 16;
 			}
 			SceneGraph.method310(500, 800, 512, 334, ai);
@@ -1034,8 +1034,8 @@ public class Game extends GameShell {
 		PlayerEntity.aCache_1704 = null;
 		Draw3D.method363();
 		SceneGraph.method273();
-		Model.method458();
-		SeqTransform.method530();
+		Model.clear();
+		SeqFrame.clear();
 		System.gc();
 	}
 
@@ -1098,10 +1098,10 @@ public class Game extends GameShell {
 		byte byte1 = 20;
 		aFont_1272.method381(0xffffff, "RuneScape is loading - please wait...", c1 / 2 - 26 - byte1, c / 2);
 		int j = c1 / 2 - 18 - byte1;
-		Draw2D.method337(c / 2 - 152, 304, 34, 0x8c1111, j);
-		Draw2D.method337(c / 2 - 151, 302, 32, 0, j + 1);
-		Draw2D.method336(30, j + 2, c / 2 - 150, 0x8c1111, i * 3);
-		Draw2D.method336(30, j + 2, (c / 2 - 150) + i * 3, 0, 300 - i * 3);
+		Draw2D.drawRect(c / 2 - 152, j, 304, 34, 0x8c1111);
+		Draw2D.drawRect(c / 2 - 151, j + 1, 302, 32, 0);
+		Draw2D.fillRect(c / 2 - 150, j + 2, i * 3, 30, 0x8c1111);
+		Draw2D.fillRect((c / 2 - 150) + i * 3, j + 2, 300 - i * 3, 30, 0);
 		aFont_1272.method381(0xffffff, s, (c1 / 2 + 5) - byte1, c / 2);
 		aArea_1109.method238(171, super.aGraphics12, 202);
 		if (aBoolean1255) {
@@ -1321,7 +1321,7 @@ public class Game extends GameShell {
 		} else {
 			BitmapFont font = aFont_1271;
 			int j = 0;
-			Draw2D.method333(77, 0, 463, 0);
+			Draw2D.setBounds(77, 0, 463, 0);
 			for (int k = 0; k < 100; k++) {
 				if (aStringArray944[k] != null) {
 					int l = anIntArray942[k];
@@ -1405,7 +1405,7 @@ public class Game extends GameShell {
 					}
 				}
 			}
-			Draw2D.method332();
+			Draw2D.resetBounds();
 			anInt1211 = j * 14 + 7;
 			if (anInt1211 < 78) {
 				anInt1211 = 78;
@@ -1419,7 +1419,7 @@ public class Game extends GameShell {
 			}
 			font.method385(0, s + ":", 90, 4);
 			font.method385(255, aString887 + "*", 90, 6 + font.method383(s + ": "));
-			Draw2D.method339(77, 0, 479, 0);
+			Draw2D.drawLineX(0, 77, 479, 0);
 		}
 		if (aBoolean885 && anInt948 == 2) {
 			method40();
@@ -1684,7 +1684,7 @@ public class Game extends GameShell {
 			for (int i1 = 0; i1 < j; i1++) {
 				int l1 = aOnDemand_1068.method559(i1);
 				if ((l1 & 0x79) == 0) {
-					Model.method461(i1);
+					Model.unload(i1);
 				}
 			}
 		}
@@ -2083,21 +2083,21 @@ public class Game extends GameShell {
 	public void method30(int j, int k, int l, int i1, int j1) {
 		aImage_1024.method361(i1, l);
 		aImage_1025.method361(i1, (l + j) - 16);
-		Draw2D.method336(j - 32, l + 16, i1, anInt1002, 16);
+		Draw2D.fillRect(i1, l + 16, 16, j - 32, anInt1002);
 		int k1 = ((j - 32) * j) / j1;
 		if (k1 < 8) {
 			k1 = 8;
 		}
 		int l1 = ((j - 32 - k1) * k) / (j1 - j);
-		Draw2D.method336(k1, l + 16 + l1, i1, anInt1063, 16);
-		Draw2D.method341(l + 16 + l1, anInt902, k1, i1);
-		Draw2D.method341(l + 16 + l1, anInt902, k1, i1 + 1);
-		Draw2D.method339(l + 16 + l1, anInt902, 16, i1);
-		Draw2D.method339(l + 17 + l1, anInt902, 16, i1);
-		Draw2D.method341(l + 16 + l1, anInt927, k1, i1 + 15);
-		Draw2D.method341(l + 17 + l1, anInt927, k1 - 1, i1 + 14);
-		Draw2D.method339(l + 15 + l1 + k1, anInt927, 16, i1);
-		Draw2D.method339(l + 14 + l1 + k1, anInt927, 15, i1 + 1);
+		Draw2D.fillRect(i1, l + 16 + l1, 16, k1, anInt1063);
+		Draw2D.drawLineY(l + 16 + l1, anInt902, k1, i1);
+		Draw2D.drawLineY(l + 16 + l1, anInt902, k1, i1 + 1);
+		Draw2D.drawLineX(i1, l + 16 + l1, 16, anInt902);
+		Draw2D.drawLineX(i1, l + 17 + l1, 16, anInt902);
+		Draw2D.drawLineY(l + 16 + l1, anInt927, k1, i1 + 15);
+		Draw2D.drawLineY(l + 17 + l1, anInt927, k1 - 1, i1 + 14);
+		Draw2D.drawLineX(i1, l + 15 + l1 + k1, 16, anInt927);
+		Draw2D.drawLineX(i1 + 1, l + 14 + l1 + k1, 15, anInt927);
 	}
 
 	public void method31(Buffer buffer, int i) {
@@ -2113,8 +2113,8 @@ public class Game extends GameShell {
 				aNpcArray835[l] = null;
 			}
 		}
-		if (buffer.anInt1406 != i) {
-			Signlink.reporterror(aString1173 + " size mismatch in getnpcpos - pos:" + buffer.anInt1406 + " psize:" + i);
+		if (buffer.position != i) {
+			Signlink.reporterror(aString1173 + " size mismatch in getnpcpos - pos:" + buffer.position + " psize:" + i);
 			throw new RuntimeException("eek");
 		}
 		for (int i1 = 0; i1 < anInt836; i1++) {
@@ -2351,8 +2351,8 @@ public class Game extends GameShell {
 					if (i1 > 30) {
 						i1 = 30;
 					}
-					Draw2D.method336(5, anInt964 - 3, anInt963 - 15, 65280, i1);
-					Draw2D.method336(5, anInt964 - 3, (anInt963 - 15) + i1, 0xff0000, 30 - i1);
+					Draw2D.fillRect(anInt963 - 15, anInt964 - 3, i1, 5, 65280);
+					Draw2D.fillRect((anInt963 - 15) + i1, anInt964 - 3, 30 - i1, 5, 0xff0000);
 				}
 			}
 			for (int j1 = 0; j1 < 4; j1++) {
@@ -2458,10 +2458,10 @@ public class Game extends GameShell {
 				if (anIntArray981[k] == 4) {
 					int i4 = aFont_1272.method384(s);
 					int k4 = ((150 - anIntArray982[k]) * (i4 + 100)) / 150;
-					Draw2D.method333(334, anInt963 - 50, anInt963 + 50, 0);
+					Draw2D.setBounds(334, anInt963 - 50, anInt963 + 50, 0);
 					aFont_1272.method385(0, s, anInt964 + 1, (anInt963 + 50) - k4);
 					aFont_1272.method385(i3, s, anInt964, (anInt963 + 50) - k4);
-					Draw2D.method332();
+					Draw2D.resetBounds();
 				}
 				if (anIntArray981[k] == 5) {
 					int j4 = 150 - anIntArray982[k];
@@ -2471,10 +2471,10 @@ public class Game extends GameShell {
 					} else if (j4 > 125) {
 						l4 = j4 - 125;
 					}
-					Draw2D.method333(anInt964 + 5, 0, 512, anInt964 - aFont_1272.anInt1497 - 1);
+					Draw2D.setBounds(anInt964 + 5, 0, 512, anInt964 - aFont_1272.anInt1497 - 1);
 					aFont_1272.method381(0, s, anInt964 + 1 + l4, anInt963);
 					aFont_1272.method381(i3, s, anInt964 + l4, anInt963);
-					Draw2D.method332();
+					Draw2D.resetBounds();
 				}
 			} else {
 				aFont_1272.method381(0, s, anInt964 + 1, anInt963);
@@ -2693,9 +2693,9 @@ public class Game extends GameShell {
 		int k = anInt951;
 		int l = anInt952;
 		int i1 = 0x5d5447;
-		Draw2D.method336(l, j, i, i1, k);
-		Draw2D.method336(16, j + 1, i + 1, 0, k - 2);
-		Draw2D.method337(i + 1, k - 2, l - 19, 0, j + 18);
+		Draw2D.fillRect(i, j, k, l, i1);
+		Draw2D.fillRect(i + 1, j + 1, k - 2, 16, 0);
+		Draw2D.drawRect(i + 1, j + 18, k - 2, l - 19, 0);
 		aFont_1272.method385(i1, "Choose Option", j + 14, i + 3);
 		int j1 = super.anInt20;
 		int k1 = super.anInt21;
@@ -3366,7 +3366,7 @@ public class Game extends GameShell {
 					return;
 				}
 				if (request.anInt1419 == 0) {
-					Model.method460(request.aByteArray1420, request.anInt1421);
+					Model.load(request.aByteArray1420, request.anInt1421);
 					if ((aOnDemand_1068.method559(request.anInt1421) & 0x62) != 0) {
 						aBoolean1153 = true;
 						if (anInt1276 != -1) {
@@ -3375,7 +3375,7 @@ public class Game extends GameShell {
 					}
 				}
 				if (request.anInt1419 == 1 && request.aByteArray1420 != null) {
-					SeqTransform.method529(request.aByteArray1420);
+					SeqFrame.readAnimation(request.aByteArray1420);
 				}
 				if (request.anInt1419 == 2 && request.anInt1421 == anInt1227 && request.aByteArray1420 != null) {
 					method21(aBoolean1228, request.aByteArray1420);
@@ -3514,10 +3514,10 @@ public class Game extends GameShell {
 				if (super.anInt26 != 0 || aMouseRecorder_879.anInt810 >= 40) {
 					aBuffer_1192.method397(45);
 					aBuffer_1192.method398(0);
-					int j2 = aBuffer_1192.anInt1406;
+					int j2 = aBuffer_1192.position;
 					int j3 = 0;
 					for (int j4 = 0; j4 < aMouseRecorder_879.anInt810; j4++) {
-						if (j2 - aBuffer_1192.anInt1406 >= 240) {
+						if (j2 - aBuffer_1192.position >= 240) {
 							break;
 						}
 						j3++;
@@ -3562,7 +3562,7 @@ public class Game extends GameShell {
 							}
 						}
 					}
-					aBuffer_1192.method407(aBuffer_1192.anInt1406 - j2);
+					aBuffer_1192.method407(aBuffer_1192.position - j2);
 					if (j3 >= aMouseRecorder_879.anInt810) {
 						aMouseRecorder_879.anInt810 = 0;
 					} else {
@@ -3762,9 +3762,9 @@ public class Game extends GameShell {
 			aBuffer_1192.method397(0);
 		}
 		try {
-			if (aConnection_1168 != null && aBuffer_1192.anInt1406 > 0) {
-				aConnection_1168.method271(aBuffer_1192.anInt1406, aBuffer_1192.aByteArray1405, 0);
-				aBuffer_1192.anInt1406 = 0;
+			if (aConnection_1168 != null && aBuffer_1192.position > 0) {
+				aConnection_1168.method271(aBuffer_1192.position, aBuffer_1192.aByteArray1405, 0);
+				aBuffer_1192.position = 0;
 				anInt1010 = 0;
 			}
 		} catch (IOException _ex) {
@@ -3798,23 +3798,23 @@ public class Game extends GameShell {
 		aArea_1124 = null;
 		aArea_1125 = null;
 		aArea_1110 = new DrawArea(128, 265, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1111 = new DrawArea(128, 265, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1107 = new DrawArea(509, 171, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1108 = new DrawArea(360, 132, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1109 = new DrawArea(360, 200, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1112 = new DrawArea(202, 238, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1113 = new DrawArea(203, 238, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1114 = new DrawArea(74, 94, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1115 = new DrawArea(75, 94, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		if (aArchive_1053 != null) {
 			method56();
 			method51();
@@ -3918,7 +3918,7 @@ public class Game extends GameShell {
 				byte[] abyte1 = new byte[6];
 				datainputstream.readFully(abyte1, 0, 6);
 				Buffer buffer = new Buffer(abyte1);
-				buffer.anInt1406 = 3;
+				buffer.position = 3;
 				int i2 = buffer.method412() + 6;
 				int j2 = 6;
 				abyte0 = new byte[i2];
@@ -4829,8 +4829,8 @@ public class Game extends GameShell {
 			anInt1133++;
 		}
 		int j = -1;
-		for (int k = 0; k < Model.anInt1687; k++) {
-			int l = Model.anIntArray1688[k];
+		for (int k = 0; k < Model.pickedCount; k++) {
+			int l = Model.pickedBitsets[k];
 			int i1 = l & 0x7f;
 			int j1 = l >> 7 & 0x7f;
 			int k1 = l >> 29 & 3;
@@ -5053,10 +5053,10 @@ public class Game extends GameShell {
 					if (anInt1064 == 3 && aString1212.length() > 0) {
 						aBuffer_1192.method397(126);
 						aBuffer_1192.method398(0);
-						int k = aBuffer_1192.anInt1406;
+						int k = aBuffer_1192.position;
 						aBuffer_1192.method404(aLong953);
 						Huffman.method526(aString1212, aBuffer_1192);
-						aBuffer_1192.method407(aBuffer_1192.anInt1406 - k);
+						aBuffer_1192.method407(aBuffer_1192.position - k);
 						aString1212 = Huffman.method527(aString1212);
 						aString1212 = Censor.method497(aString1212, 0);
 						method77(aString1212, 6, Base37.method587(Base37.method584(aLong953)));
@@ -5219,13 +5219,13 @@ public class Game extends GameShell {
 						}
 						aBuffer_1192.method397(4);
 						aBuffer_1192.method398(0);
-						int j3 = aBuffer_1192.anInt1406;
+						int j3 = aBuffer_1192.position;
 						aBuffer_1192.method425(i3);
 						aBuffer_1192.method425(j2);
-						aBuffer_834.anInt1406 = 0;
+						aBuffer_834.position = 0;
 						Huffman.method526(aString887, aBuffer_834);
-						aBuffer_1192.method441(0, aBuffer_834.aByteArray1405, aBuffer_834.anInt1406);
-						aBuffer_1192.method407(aBuffer_1192.anInt1406 - j3);
+						aBuffer_1192.method441(0, aBuffer_834.aByteArray1405, aBuffer_834.position);
+						aBuffer_1192.method407(aBuffer_1192.position - j3);
 						aString887 = Huffman.method527(aString887);
 						aString887 = Censor.method497(aString887, 0);
 						aPlayer_1126.aString1506 = aString887;
@@ -5455,15 +5455,15 @@ public class Game extends GameShell {
 				Model model = new Model(i2, aclass30_sub2_sub4_sub6);
 				for (int l2 = 0; l2 < 5; l2++) {
 					if (anIntArray990[l2] != 0) {
-						model.method476(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
+						model.replaceColor(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
 						if (l2 == 1) {
-							model.method476(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
+							model.replaceColor(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
 						}
 					}
 				}
-				model.method469();
-				model.method470(SeqType.aTypeArray351[aPlayer_1126.anInt1511].anIntArray353[0]);
-				model.method479(64, 850, -30, -50, -30, true);
+				model.createLabelReferences();
+				model.applySequenceFrame(SeqType.aTypeArray351[aPlayer_1126.anInt1511].anIntArray353[0]);
+				model.calculateNormals(64, 850, -30, -50, -30, true);
 				component.anInt233 = 5;
 				component.anInt234 = 0;
 				Component.method208(0, 5, model);
@@ -5767,11 +5767,11 @@ public class Game extends GameShell {
 		aArea_1115 = null;
 		aArea_1166 = new DrawArea(479, 96, method11());
 		aArea_1164 = new DrawArea(172, 156, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aImage_1197.method361(0, 0);
 		aArea_1163 = new DrawArea(190, 261, method11());
 		aArea_1165 = new DrawArea(512, 334, method11());
-		Draw2D.method334();
+		Draw2D.clear();
 		aArea_1123 = new DrawArea(496, 50, method11());
 		aArea_1124 = new DrawArea(269, 37, method11());
 		aArea_1125 = new DrawArea(249, 45, method11());
@@ -5793,8 +5793,8 @@ public class Game extends GameShell {
 		int l = k * k + j * j;
 		if (l > 4225 && l < 90000) {
 			int i1 = anInt1185 + anInt1209 & 0x7ff;
-			int j1 = Model.anIntArray1689[i1];
-			int k1 = Model.anIntArray1690[i1];
+			int j1 = Model.sin[i1];
+			int k1 = Model.cos[i1];
 			j1 = (j1 * 256) / (anInt1170 + 256);
 			k1 = (k1 * 256) / (anInt1170 + 256);
 			int l1 = j * j1 + k * k1 >> 16;
@@ -5892,7 +5892,7 @@ public class Game extends GameShell {
 			aConnection_1168 = new Connection(this, method19(43594 + anInt958));
 			long l = Base37.method583(s);
 			int i = (int) (l >> 16 & 31L);
-			aBuffer_1192.anInt1406 = 0;
+			aBuffer_1192.position = 0;
 			aBuffer_1192.method398(14);
 			aBuffer_1192.method398(i);
 			aConnection_1168.method271(2, aBuffer_1192.aByteArray1405, 0);
@@ -5903,14 +5903,14 @@ public class Game extends GameShell {
 			int i1 = k;
 			if (k == 0) {
 				aConnection_1168.method270(aBuffer_1083.aByteArray1405, 0, 8);
-				aBuffer_1083.anInt1406 = 0;
+				aBuffer_1083.position = 0;
 				aLong1215 = aBuffer_1083.method414();
 				int[] ai = new int[4];
 				ai[0] = (int) (Math.random() * 99999999D);
 				ai[1] = (int) (Math.random() * 99999999D);
 				ai[2] = (int) (aLong1215 >> 32);
 				ai[3] = (int) aLong1215;
-				aBuffer_1192.anInt1406 = 0;
+				aBuffer_1192.position = 0;
 				aBuffer_1192.method398(10);
 				aBuffer_1192.method402(ai[0]);
 				aBuffer_1192.method402(ai[1]);
@@ -5920,26 +5920,26 @@ public class Game extends GameShell {
 				aBuffer_1192.method405(s);
 				aBuffer_1192.method405(s1);
 				aBuffer_1192.method423(aBigInteger1032, aBigInteger856);
-				aBuffer_847.anInt1406 = 0;
+				aBuffer_847.position = 0;
 				if (flag) {
 					aBuffer_847.method398(18);
 				} else {
 					aBuffer_847.method398(16);
 				}
-				aBuffer_847.method398(aBuffer_1192.anInt1406 + 36 + 1 + 1 + 2);
+				aBuffer_847.method398(aBuffer_1192.position + 36 + 1 + 1 + 2);
 				aBuffer_847.method398(255);
 				aBuffer_847.method399(317);
 				aBuffer_847.method398(aBoolean960 ? 1 : 0);
 				for (int l1 = 0; l1 < 9; l1++) {
 					aBuffer_847.method402(anIntArray1090[l1]);
 				}
-				aBuffer_847.method406(aBuffer_1192.aByteArray1405, aBuffer_1192.anInt1406, 0);
+				aBuffer_847.method406(aBuffer_1192.aByteArray1405, aBuffer_1192.position, 0);
 				aBuffer_1192.aISAACCipher_1410 = new ISAACCipher(ai);
 				for (int j2 = 0; j2 < 4; j2++) {
 					ai[j2] += 50;
 				}
 				aISAACCipher_1000 = new ISAACCipher(ai);
-				aConnection_1168.method271(aBuffer_847.anInt1406, aBuffer_847.aByteArray1405, 0);
+				aConnection_1168.method271(aBuffer_847.position, aBuffer_847.aByteArray1405, 0);
 				k = aConnection_1168.method268();
 			}
 			if (k == 1) {
@@ -5959,8 +5959,8 @@ public class Game extends GameShell {
 				super.aBoolean17 = true;
 				aBoolean954 = true;
 				aBoolean1157 = true;
-				aBuffer_1192.anInt1406 = 0;
-				aBuffer_1083.anInt1406 = 0;
+				aBuffer_1192.position = 0;
+				aBuffer_1083.position = 0;
 				anInt1008 = -1;
 				anInt841 = -1;
 				anInt842 = -1;
@@ -6099,8 +6099,8 @@ public class Game extends GameShell {
 			}
 			if (k == 15) {
 				aBoolean1157 = true;
-				aBuffer_1192.anInt1406 = 0;
-				aBuffer_1083.anInt1406 = 0;
+				aBuffer_1192.position = 0;
+				aBuffer_1083.position = 0;
 				anInt1008 = -1;
 				anInt841 = -1;
 				anInt842 = -1;
@@ -6658,10 +6658,10 @@ public class Game extends GameShell {
 						}
 					} else {
 						Buffer buffer = SoundTrack.method241(anIntArray1241[i], anIntArray1207[i]);
-						if (System.currentTimeMillis() + (long) (buffer.anInt1406 / 22) > aLong1172 + (long) (anInt1257 / 22)) {
-							anInt1257 = buffer.anInt1406;
+						if (System.currentTimeMillis() + (long) (buffer.position / 22) > aLong1172 + (long) (anInt1257 / 22)) {
+							anInt1257 = buffer.position;
 							aLong1172 = System.currentTimeMillis();
-							if (method59(buffer.aByteArray1405, buffer.anInt1406)) {
+							if (method59(buffer.aByteArray1405, buffer.position)) {
 								anInt874 = anIntArray1207[i];
 								anInt1289 = anIntArray1241[i];
 							} else {
@@ -6743,8 +6743,8 @@ public class Game extends GameShell {
 				i -= 73;
 				j -= 75;
 				int k = anInt1185 + anInt1209 & 0x7ff;
-				int i1 = Draw3D.anIntArray1470[k];
-				int j1 = Draw3D.anIntArray1471[k];
+				int i1 = Draw3D.sin[k];
+				int j1 = Draw3D.cos[k];
 				i1 = i1 * (anInt1170 + 256) >> 8;
 				j1 = j1 * (anInt1170 + 256) >> 8;
 				int k1 = j * i1 + i * j1 >> 11;
@@ -7432,11 +7432,11 @@ public class Game extends GameShell {
 		if (component.aBoolean266 && anInt1026 != component.anInt250 && anInt1048 != component.anInt250 && anInt1039 != component.anInt250) {
 			return;
 		}
-		int i1 = Draw2D.anInt1383;
-		int j1 = Draw2D.anInt1381;
-		int k1 = Draw2D.anInt1384;
-		int l1 = Draw2D.anInt1382;
-		Draw2D.method333(l + component.anInt267, k, k + component.anInt220, l);
+		int i1 = Draw2D.left;
+		int j1 = Draw2D.top;
+		int k1 = Draw2D.right;
+		int l1 = Draw2D.bottom;
+		Draw2D.setBounds(l + component.anInt267, k, k + component.anInt220, l);
 		int i2 = component.anIntArray240.length;
 		for (int j2 = 0; j2 < i2; j2++) {
 			int k2 = component.anIntArray241[j2] + k;
@@ -7473,7 +7473,7 @@ public class Game extends GameShell {
 								int k6 = 0;
 								int j7 = 0;
 								int j9 = component_1.anIntArray253[i3] - 1;
-								if (k5 > Draw2D.anInt1383 - 32 && k5 < Draw2D.anInt1384 && j6 > Draw2D.anInt1381 - 32 && j6 < Draw2D.anInt1382 || anInt1086 != 0 && anInt1085 == i3) {
+								if (k5 > Draw2D.left - 32 && k5 < Draw2D.right && j6 > Draw2D.top - 32 && j6 < Draw2D.bottom || anInt1086 != 0 && anInt1085 == i3) {
 									int l9 = 0;
 									if (anInt1282 == 1 && anInt1283 == i3 && anInt1284 == component_1.anInt250) {
 										l9 = 0xffffff;
@@ -7494,8 +7494,8 @@ public class Game extends GameShell {
 												j7 = 0;
 											}
 											class30_sub2_sub1_sub1_2.method350(k5 + k6, j6 + j7, 128);
-											if (j6 + j7 < Draw2D.anInt1381 && component.anInt224 > 0) {
-												int i10 = (anInt945 * (Draw2D.anInt1381 - j6 - j7)) / 3;
+											if (j6 + j7 < Draw2D.top && component.anInt224 > 0) {
+												int i10 = (anInt945 * (Draw2D.top - j6 - j7)) / 3;
 												if (i10 > anInt945 * 10) {
 													i10 = anInt945 * 10;
 												}
@@ -7505,8 +7505,8 @@ public class Game extends GameShell {
 												component.anInt224 -= i10;
 												anInt1088 += i10;
 											}
-											if (j6 + j7 + 32 > Draw2D.anInt1382 && component.anInt224 < component.anInt261 - component.anInt267) {
-												int j10 = (anInt945 * ((j6 + j7 + 32) - Draw2D.anInt1382)) / 3;
+											if (j6 + j7 + 32 > Draw2D.bottom && component.anInt224 < component.anInt261 - component.anInt267) {
+												int j10 = (anInt945 * ((j6 + j7 + 32) - Draw2D.bottom)) / 3;
 												if (j10 > anInt945 * 10) {
 													j10 = anInt945 * 10;
 												}
@@ -7556,14 +7556,14 @@ public class Game extends GameShell {
 					}
 					if (component_1.aByte254 == 0) {
 						if (component_1.aBoolean227) {
-							Draw2D.method336(component_1.anInt267, l2, k2, j3, component_1.anInt220);
+							Draw2D.fillRect(k2, l2, component_1.anInt220, component_1.anInt267, j3);
 						} else {
-							Draw2D.method337(k2, component_1.anInt220, component_1.anInt267, j3, l2);
+							Draw2D.drawRect(k2, l2, component_1.anInt220, component_1.anInt267, j3);
 						}
 					} else if (component_1.aBoolean227) {
-						Draw2D.method335(j3, l2, component_1.anInt220, component_1.anInt267, 256 - (component_1.aByte254 & 0xff), k2);
+						Draw2D.fillRect(k2, l2, component_1.anInt220, component_1.anInt267, j3, 256 - (component_1.aByte254 & 0xff));
 					} else {
-						Draw2D.method338(l2, component_1.anInt267, 256 - (component_1.aByte254 & 0xff), j3, component_1.anInt220, k2);
+						Draw2D.drawRect(k2, l2, component_1.anInt220, component_1.anInt267, j3, 256 - (component_1.aByte254 & 0xff));
 					}
 				} else if (component_1.anInt262 == 4) {
 					BitmapFont font = component_1.aFont_243;
@@ -7591,7 +7591,7 @@ public class Game extends GameShell {
 						s = "Please wait...";
 						i4 = component_1.anInt232;
 					}
-					if (Draw2D.anInt1379 == 479) {
+					if (Draw2D.width == 479) {
 						if (i4 == 0xffff00) {
 							i4 = 255;
 						}
@@ -7663,12 +7663,12 @@ public class Game extends GameShell {
 						image.method348(k2, l2);
 					}
 				} else if (component_1.anInt262 == 6) {
-					int k3 = Draw3D.anInt1466;
-					int j4 = Draw3D.anInt1467;
-					Draw3D.anInt1466 = k2 + component_1.anInt220 / 2;
-					Draw3D.anInt1467 = l2 + component_1.anInt267 / 2;
-					int i5 = Draw3D.anIntArray1470[component_1.anInt270] * component_1.anInt269 >> 16;
-					int l5 = Draw3D.anIntArray1471[component_1.anInt270] * component_1.anInt269 >> 16;
+					int k3 = Draw3D.centerX;
+					int j4 = Draw3D.centerY;
+					Draw3D.centerX = k2 + component_1.anInt220 / 2;
+					Draw3D.centerY = l2 + component_1.anInt267 / 2;
+					int i5 = Draw3D.sin[component_1.anInt270] * component_1.anInt269 >> 16;
+					int l5 = Draw3D.cos[component_1.anInt270] * component_1.anInt269 >> 16;
 					boolean flag2 = method131(component_1);
 					int i7;
 					if (flag2) {
@@ -7684,10 +7684,10 @@ public class Game extends GameShell {
 						model = component_1.method209(type.anIntArray354[component_1.anInt246], type.anIntArray353[component_1.anInt246], flag2);
 					}
 					if (model != null) {
-						model.method482(0, component_1.anInt271, 0, component_1.anInt270, 0, i5, l5);
+						model.drawSimple(0, component_1.anInt271, 0, component_1.anInt270, 0, i5, l5);
 					}
-					Draw3D.anInt1466 = k3;
-					Draw3D.anInt1467 = j4;
+					Draw3D.centerX = k3;
+					Draw3D.centerY = j4;
 				} else if (component_1.anInt262 == 7) {
 					BitmapFont class30_sub2_sub1_sub4_1 = component_1.aFont_243;
 					int k4 = 0;
@@ -7713,7 +7713,7 @@ public class Game extends GameShell {
 				}
 			}
 		}
-		Draw2D.method333(l1, i1, k1, j1);
+		Draw2D.setBounds(l1, i1, k1, j1);
 	}
 
 	public void method106(Image8 image) {
@@ -7816,7 +7816,7 @@ public class Game extends GameShell {
 			int i1 = buffer.method434();
 			int j2 = buffer.method408();
 			int j3 = buffer.method427();
-			int k3 = buffer.anInt1406;
+			int k3 = buffer.position;
 			if (player.aString1703 != null && player.aBoolean1710) {
 				long l3 = Base37.method583(player.aString1703);
 				boolean flag = false;
@@ -7831,9 +7831,9 @@ public class Game extends GameShell {
 				}
 				if (!flag && anInt1251 == 0) {
 					try {
-						aBuffer_834.anInt1406 = 0;
+						aBuffer_834.position = 0;
 						buffer.method442(j3, 0, aBuffer_834.aByteArray1405);
-						aBuffer_834.anInt1406 = 0;
+						aBuffer_834.position = 0;
 						String s = Huffman.method525(j3, aBuffer_834);
 						s = Censor.method497(s, 0);
 						player.aString1506 = s;
@@ -7852,7 +7852,7 @@ public class Game extends GameShell {
 					}
 				}
 			}
-			buffer.anInt1406 = k3 + j3;
+			buffer.position = k3 + j3;
 		}
 		if ((i & 1) != 0) {
 			player.anInt1502 = buffer.method434();
@@ -8544,7 +8544,7 @@ public class Game extends GameShell {
 		aArea_1164.method237();
 		if (anInt1021 == 2) {
 			byte[] abyte0 = aImage_1197.aByteArray1450;
-			int[] ai = Draw2D.anIntArray1378;
+			int[] ai = Draw2D.pixels;
 			int k2 = abyte0.length;
 			for (int i5 = 0; i5 < k2; i5++) {
 				if (abyte0[i5] == 0) {
@@ -8644,7 +8644,7 @@ public class Game extends GameShell {
 			int l4 = (anInt1262 * 4 + 2) - aPlayer_1126.anInt1551 / 32;
 			method141(aImage_870, j2, l4);
 		}
-		Draw2D.method336(3, 78, 97, 0xffffff, 3);
+		Draw2D.fillRect(97, 78, 3, 3, 0xffffff);
 		aArea_1165.method237();
 	}
 
@@ -8662,10 +8662,10 @@ public class Game extends GameShell {
 		i -= anInt858;
 		i1 -= anInt859;
 		l -= anInt860;
-		int j1 = Model.anIntArray1689[anInt861];
-		int k1 = Model.anIntArray1690[anInt861];
-		int l1 = Model.anIntArray1689[anInt862];
-		int i2 = Model.anIntArray1690[anInt862];
+		int j1 = Model.sin[anInt861];
+		int k1 = Model.cos[anInt861];
+		int l1 = Model.sin[anInt862];
+		int i2 = Model.cos[anInt862];
 		int j2 = l * l1 + i * i2 >> 16;
 		l = l * i2 - i * l1 >> 16;
 		i = j2;
@@ -8673,8 +8673,8 @@ public class Game extends GameShell {
 		l = i1 * j1 + l * k1 >> 16;
 		i1 = j2;
 		if (l >= 50) {
-			anInt963 = Draw3D.anInt1466 + (i << 9) / l;
-			anInt964 = Draw3D.anInt1467 + (i1 << 9) / l;
+			anInt963 = Draw3D.centerX + (i << 9) / l;
+			anInt964 = Draw3D.centerY + (i1 << 9) / l;
 		} else {
 			anInt963 = -1;
 			anInt964 = -1;
@@ -9471,8 +9471,8 @@ public class Game extends GameShell {
 		if (l > 6400) {
 			return;
 		}
-		int i1 = Model.anIntArray1689[k];
-		int j1 = Model.anIntArray1690[k];
+		int i1 = Model.sin[k];
+		int j1 = Model.cos[k];
 		i1 = (i1 * 256) / (anInt1170 + 256);
 		j1 = (j1 * 256) / (anInt1170 + 256);
 		int k1 = j * i1 + i * j1 >> 16;
@@ -9559,8 +9559,8 @@ public class Game extends GameShell {
 				aPlayerArray890[l] = null;
 			}
 		}
-		if (buffer.anInt1406 != i) {
-			Signlink.reporterror("Error packet size mismatch in getplayer pos:" + buffer.anInt1406 + " psize:" + i);
+		if (buffer.position != i) {
+			Signlink.reporterror("Error packet size mismatch in getplayer pos:" + buffer.position + " psize:" + i);
 			throw new RuntimeException("eek");
 		}
 		for (int i1 = 0; i1 < anInt891; i1++) {
@@ -9578,15 +9578,15 @@ public class Game extends GameShell {
 		int k2 = 0;
 		int l2 = j;
 		if (l1 != 0) {
-			int i3 = Model.anIntArray1689[l1];
-			int k3 = Model.anIntArray1690[l1];
+			int i3 = Model.sin[l1];
+			int k3 = Model.cos[l1];
 			int i4 = k2 * k3 - l2 * i3 >> 16;
 			l2 = k2 * i3 + l2 * k3 >> 16;
 			k2 = i4;
 		}
 		if (i2 != 0) {
-			int j3 = Model.anIntArray1689[i2];
-			int l3 = Model.anIntArray1690[i2];
+			int j3 = Model.sin[i2];
+			int l3 = Model.cos[i2];
 			int j4 = l2 * j3 + j2 * l3 >> 16;
 			l2 = l2 * l3 - j2 * j3 >> 16;
 			j2 = j4;
@@ -9628,7 +9628,7 @@ public class Game extends GameShell {
 			if (anInt1007 == -2) {
 				if (i > 1) {
 					aConnection_1168.method270(aBuffer_1083.aByteArray1405, 0, 2);
-					aBuffer_1083.anInt1406 = 0;
+					aBuffer_1083.position = 0;
 					anInt1007 = aBuffer_1083.method410();
 					i -= 2;
 				} else {
@@ -9638,7 +9638,7 @@ public class Game extends GameShell {
 			if (i < anInt1007) {
 				return false;
 			}
-			aBuffer_1083.anInt1406 = 0;
+			aBuffer_1083.position = 0;
 			aConnection_1168.method270(aBuffer_1083.aByteArray1405, 0, anInt1007);
 			anInt1009 = 0;
 			anInt843 = anInt842;
@@ -10039,7 +10039,7 @@ public class Game extends GameShell {
 			if (anInt1008 == 60) {
 				anInt1269 = aBuffer_1083.method408();
 				anInt1268 = aBuffer_1083.method427();
-				while (aBuffer_1083.anInt1406 < anInt1007) {
+				while (aBuffer_1083.position < anInt1007) {
 					int k3 = aBuffer_1083.method408();
 					method137(aBuffer_1083, k3);
 				}
@@ -10639,7 +10639,7 @@ public class Game extends GameShell {
 				aBoolean1153 = true;
 				int i9 = aBuffer_1083.method410();
 				Component component_2 = Component.aComponentArray210[i9];
-				while (aBuffer_1083.anInt1406 < anInt1007) {
+				while (aBuffer_1083.position < anInt1007) {
 					int j20 = aBuffer_1083.method422();
 					int i23 = aBuffer_1083.method410();
 					int l25 = aBuffer_1083.method408();
@@ -10754,12 +10754,12 @@ public class Game extends GameShell {
 			}
 		}
 		int k2 = Draw3D.anInt1481;
-		Model.aBoolean1684 = true;
-		Model.anInt1687 = 0;
-		Model.anInt1685 = super.anInt20 - 4;
-		Model.anInt1686 = super.anInt21 - 4;
-		Draw2D.method334();
-		aGraph_946.method313(anInt858, anInt860, anInt862, anInt859, j, anInt861, false);
+		Model.checkHover = true;
+		Model.pickedCount = 0;
+		Model.mouseX = super.anInt20 - 4;
+		Model.mouseY = super.anInt21 - 4;
+		Draw2D.clear();
+		aGraph_946.method313(anInt858, anInt860, anInt862, anInt859, j, anInt861);
 		aGraph_946.method288();
 		method34();
 		method61();

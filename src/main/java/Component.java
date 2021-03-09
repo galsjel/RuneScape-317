@@ -78,7 +78,7 @@ public class Component {
 		int i = -1;
 		int j = buffer.method410();
 		aComponentArray210 = new Component[j];
-		while (buffer.anInt1406 < buffer.aByteArray1405.length) {
+		while (buffer.position < buffer.aByteArray1405.length) {
 			int k = buffer.method410();
 			if (k == 65535) {
 				i = buffer.method410();
@@ -314,7 +314,7 @@ public class Component {
 			return model;
 		}
 		if (i == 1) {
-			model = Model.method462(j);
+			model = Model.tryGet(j);
 		}
 		if (i == 2) {
 			model = NPCType.method159(j).method160();
@@ -344,20 +344,20 @@ public class Component {
 		if (model == null) {
 			return null;
 		}
-		if (k == -1 && j == -1 && model.anIntArray1640 == null) {
+		if (k == -1 && j == -1 && model.faceColor == null) {
 			return model;
 		}
-		Model model_1 = new Model(true, SeqTransform.method532(k) & SeqTransform.method532(j), false, model);
+		Model model_1 = new Model(true, SeqFrame.isNull(k) & SeqFrame.isNull(j), false, model);
 		if (k != -1 || j != -1) {
-			model_1.method469();
+			model_1.createLabelReferences();
 		}
 		if (k != -1) {
-			model_1.method470(k);
+			model_1.applySequenceFrame(k);
 		}
 		if (j != -1) {
-			model_1.method470(j);
+			model_1.applySequenceFrame(j);
 		}
-		model_1.method479(64, 768, -50, -10, -50, true);
+		model_1.calculateNormals(64, 768, -50, -10, -50, true);
 		return model_1;
 	}
 

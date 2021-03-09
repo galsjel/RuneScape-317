@@ -64,7 +64,7 @@ public class LocType {
 		}
 		anInt771 = (anInt771 + 1) % 20;
 		LocType type = aTypeArray782[anInt771];
-		aBuffer_753.anInt1406 = anIntArray755[i];
+		aBuffer_753.position = anIntArray755[i];
 		type.anInt754 = i;
 		type.method573();
 		type.method582(aBuffer_753);
@@ -153,13 +153,13 @@ public class LocType {
 			}
 			boolean flag1 = true;
 			for (int j : anIntArray773) {
-				flag1 &= Model.method463(j & 0xffff);
+				flag1 &= Model.validate(j & 0xffff);
 			}
 			return flag1;
 		}
 		for (int j = 0; j < anIntArray776.length; j++) {
 			if (anIntArray776[j] == i) {
-				return Model.method463(anIntArray773[j] & 0xffff);
+				return Model.validate(anIntArray773[j] & 0xffff);
 			}
 		}
 		return true;
@@ -175,15 +175,15 @@ public class LocType {
 		}
 		if (aBoolean762) {
 			int l1 = (k + l + i1 + j1) / 4;
-			for (int i2 = 0; i2 < model.anInt1626; i2++) {
-				int j2 = model.anIntArray1627[i2];
-				int k2 = model.anIntArray1629[i2];
+			for (int i2 = 0; i2 < model.vertexCount; i2++) {
+				int j2 = model.vertexX[i2];
+				int k2 = model.vertexZ[i2];
 				int l2 = k + ((l - k) * (j2 + 64)) / 128;
 				int i3 = j1 + ((i1 - j1) * (j2 + 64)) / 128;
 				int j3 = l2 + ((i3 - l2) * (k2 + 64)) / 128;
-				model.anIntArray1628[i2] += j3 - l1;
+				model.vertexY[i2] += j3 - l1;
 			}
-			model.method467();
+			model.calculateBoundsY();
 		}
 		return model;
 	}
@@ -194,7 +194,7 @@ public class LocType {
 		}
 		boolean flag1 = true;
 		for (int j : anIntArray773) {
-			flag1 &= Model.method463(j & 0xffff);
+			flag1 &= Model.validate(j & 0xffff);
 		}
 		return flag1;
 	}
@@ -242,12 +242,12 @@ public class LocType {
 				}
 				model = (Model) aCache_785.method222(l2);
 				if (model == null) {
-					model = Model.method462(l2 & 0xffff);
+					model = Model.tryGet(l2 & 0xffff);
 					if (model == null) {
 						return null;
 					}
 					if (flag1) {
-						model.method477();
+						model.rotateY180();
 					}
 					aCache_785.method223(model, l2);
 				}
@@ -282,12 +282,12 @@ public class LocType {
 			}
 			model = (Model) aCache_785.method222(j2);
 			if (model == null) {
-				model = Model.method462(j2 & 0xffff);
+				model = Model.tryGet(j2 & 0xffff);
 				if (model == null) {
 					return null;
 				}
 				if (flag3) {
-					model.method477();
+					model.rotateY180();
 				}
 				aCache_785.method223(model, j2);
 			}
@@ -296,30 +296,30 @@ public class LocType {
 		flag = anInt748 != 128 || anInt772 != 128 || anInt740 != 128;
 		boolean flag2;
 		flag2 = anInt738 != 0 || anInt745 != 0 || anInt783 != 0;
-		Model model_3 = new Model(anIntArray784 == null, SeqTransform.method532(k), l == 0 && k == -1 && !flag && !flag2, model);
+		Model model_3 = new Model(anIntArray784 == null, SeqFrame.isNull(k), l == 0 && k == -1 && !flag && !flag2, model);
 		if (k != -1) {
-			model_3.method469();
-			model_3.method470(k);
-			model_3.anIntArrayArray1658 = null;
-			model_3.anIntArrayArray1657 = null;
+			model_3.createLabelReferences();
+			model_3.applySequenceFrame(k);
+			model_3.labelFaces = null;
+			model_3.labelVertices = null;
 		}
 		while (l-- > 0) {
-			model_3.method473();
+			model_3.rotateY90();
 		}
 		if (anIntArray784 != null) {
 			for (int k2 = 0; k2 < anIntArray784.length; k2++) {
-				model_3.method476(anIntArray784[k2], anIntArray747[k2]);
+				model_3.replaceColor(anIntArray784[k2], anIntArray747[k2]);
 			}
 		}
 		if (flag) {
-			model_3.method478(anInt748, anInt740, anInt772);
+			model_3.scale(anInt748, anInt740, anInt772);
 		}
 		if (flag2) {
-			model_3.method475(anInt738, anInt745, anInt783);
+			model_3.translate(anInt738, anInt745, anInt783);
 		}
-		model_3.method479(64 + aByte737, 768 + aByte742 * 5, -50, -10, -50, !aBoolean769);
+		model_3.calculateNormals(64 + aByte737, 768 + aByte742 * 5, -50, -10, -50, !aBoolean769);
 		if (anInt760 == 1) {
-			model_3.anInt1654 = model_3.anInt1426;
+			model_3.anInt1654 = model_3.minY;
 		}
 		aCache_780.method223(model_3, l1);
 		return model_3;
@@ -346,7 +346,7 @@ public class LocType {
 								anIntArray776[k1] = buffer.method408();
 							}
 						} else {
-							buffer.anInt1406 += k * 3;
+							buffer.position += k * 3;
 						}
 					}
 				} else if (j == 2) {
@@ -363,7 +363,7 @@ public class LocType {
 								anIntArray773[l1] = buffer.method410();
 							}
 						} else {
-							buffer.anInt1406 += l * 2;
+							buffer.position += l * 2;
 						}
 					}
 				} else if (j == 14) {

@@ -88,7 +88,7 @@ public class ObjType {
 		}
 		anInt180 = (anInt180 + 1) % 10;
 		ObjType type = aTypeArray172[anInt180];
-		aBuffer_183.anInt1406 = anIntArray195[i];
+		aBuffer_183.position = anIntArray195[i];
 		type.anInt157 = i;
 		type.method197();
 		type.method203(aBuffer_183);
@@ -143,19 +143,19 @@ public class ObjType {
 			}
 		}
 		Image24 class30_sub2_sub1_sub1_1 = new Image24(32, 32);
-		int k1 = Draw3D.anInt1466;
-		int l1 = Draw3D.anInt1467;
+		int k1 = Draw3D.centerX;
+		int l1 = Draw3D.centerY;
 		int[] ai = Draw3D.anIntArray1472;
-		int[] ai1 = Draw2D.anIntArray1378;
-		int i2 = Draw2D.anInt1379;
-		int j2 = Draw2D.anInt1380;
-		int k2 = Draw2D.anInt1383;
-		int l2 = Draw2D.anInt1384;
-		int i3 = Draw2D.anInt1381;
-		int j3 = Draw2D.anInt1382;
-		Draw3D.aBoolean1464 = false;
-		Draw2D.method331(32, 32, class30_sub2_sub1_sub1_1.anIntArray1439);
-		Draw2D.method336(32, 0, 0, 0, 32);
+		int[] ai1 = Draw2D.pixels;
+		int i2 = Draw2D.width;
+		int j2 = Draw2D.height;
+		int k2 = Draw2D.left;
+		int l2 = Draw2D.right;
+		int i3 = Draw2D.top;
+		int j3 = Draw2D.bottom;
+		Draw3D.jagged = false;
+		Draw2D.bind(class30_sub2_sub1_sub1_1.anIntArray1439, 32, 32);
+		Draw2D.fillRect(0, 0, 32, 32, 0);
 		Draw3D.method364();
 		int k3 = type.anInt181;
 		if (k == -1) {
@@ -164,9 +164,9 @@ public class ObjType {
 		if (k > 0) {
 			k3 = (int) ((double) k3 * 1.04D);
 		}
-		int l3 = Draw3D.anIntArray1470[type.anInt190] * k3 >> 16;
-		int i4 = Draw3D.anIntArray1471[type.anInt190] * k3 >> 16;
-		model.method482(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + model.anInt1426 / 2 + type.anInt194, i4 + type.anInt194);
+		int l3 = Draw3D.sin[type.anInt190] * k3 >> 16;
+		int i4 = Draw3D.cos[type.anInt190] * k3 >> 16;
+		model.drawSimple(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + model.minY / 2 + type.anInt194, i4 + type.anInt194);
 		for (int i5 = 31; i5 >= 0; i5--) {
 			for (int j4 = 31; j4 >= 0; j4--) {
 				if (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + j4 * 32] == 0) {
@@ -219,12 +219,12 @@ public class ObjType {
 		if (k == 0) {
 			aCache_158.method223(class30_sub2_sub1_sub1_1, i);
 		}
-		Draw2D.method331(j2, i2, ai1);
-		Draw2D.method333(j3, k2, l2, i3);
-		Draw3D.anInt1466 = k1;
-		Draw3D.anInt1467 = l1;
+		Draw2D.bind(ai1, i2, j2);
+		Draw2D.setBounds(j3, k2, l2, i3);
+		Draw3D.centerX = k1;
+		Draw3D.centerY = l1;
 		Draw3D.anIntArray1472 = ai;
-		Draw3D.aBoolean1464 = true;
+		Draw3D.jagged = true;
 		if (type.aBoolean176) {
 			class30_sub2_sub1_sub1_1.anInt1444 = 33;
 		} else {
@@ -245,10 +245,10 @@ public class ObjType {
 			return true;
 		}
 		boolean flag = true;
-		if (!Model.method463(k)) {
+		if (!Model.validate(k)) {
 			flag = false;
 		}
-		if (l != -1 && !Model.method463(l)) {
+		if (l != -1 && !Model.validate(l)) {
 			flag = false;
 		}
 		return flag;
@@ -264,15 +264,15 @@ public class ObjType {
 		if (k == -1) {
 			return null;
 		}
-		Model model = Model.method462(k);
+		Model model = Model.tryGet(k);
 		if (l != -1) {
-			Model model_1 = Model.method462(l);
+			Model model_1 = Model.tryGet(l);
 			Model[] aclass30_sub2_sub4_sub6 = {model, model_1};
 			model = new Model(2, aclass30_sub2_sub4_sub6);
 		}
 		if (anIntArray156 != null) {
 			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.method476(anIntArray156[i1], anIntArray160[i1]);
+				model.replaceColor(anIntArray156[i1], anIntArray160[i1]);
 			}
 		}
 		return model;
@@ -291,13 +291,13 @@ public class ObjType {
 			return true;
 		}
 		boolean flag = true;
-		if (!Model.method463(k)) {
+		if (!Model.validate(k)) {
 			flag = false;
 		}
-		if (l != -1 && !Model.method463(l)) {
+		if (l != -1 && !Model.validate(l)) {
 			flag = false;
 		}
-		if (i1 != -1 && !Model.method463(i1)) {
+		if (i1 != -1 && !Model.validate(i1)) {
 			flag = false;
 		}
 		return flag;
@@ -315,28 +315,28 @@ public class ObjType {
 		if (j == -1) {
 			return null;
 		}
-		Model model = Model.method462(j);
+		Model model = Model.tryGet(j);
 		if (k != -1) {
 			if (l != -1) {
-				Model model_1 = Model.method462(k);
-				Model model_3 = Model.method462(l);
+				Model model_1 = Model.tryGet(k);
+				Model model_3 = Model.tryGet(l);
 				Model[] aclass30_sub2_sub4_sub6_1 = {model, model_1, model_3};
 				model = new Model(3, aclass30_sub2_sub4_sub6_1);
 			} else {
-				Model class30_sub2_sub4_sub6_2 = Model.method462(k);
+				Model class30_sub2_sub4_sub6_2 = Model.tryGet(k);
 				Model[] aclass30_sub2_sub4_sub6 = {model, class30_sub2_sub4_sub6_2};
 				model = new Model(2, aclass30_sub2_sub4_sub6);
 			}
 		}
 		if (i == 0 && aByte205 != 0) {
-			model.method475(0, aByte205, 0);
+			model.translate(0, aByte205, 0);
 		}
 		if (i == 1 && aByte154 != 0) {
-			model.method475(0, aByte154, 0);
+			model.translate(0, aByte154, 0);
 		}
 		if (anIntArray156 != null) {
 			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.method476(anIntArray156[i1], anIntArray160[i1]);
+				model.replaceColor(anIntArray156[i1], anIntArray160[i1]);
 			}
 		}
 		return model;
@@ -424,20 +424,20 @@ public class ObjType {
 		if (model != null) {
 			return model;
 		}
-		model = Model.method462(anInt174);
+		model = Model.tryGet(anInt174);
 		if (model == null) {
 			return null;
 		}
 		if (anInt167 != 128 || anInt192 != 128 || anInt191 != 128) {
-			model.method478(anInt167, anInt191, anInt192);
+			model.scale(anInt167, anInt191, anInt192);
 		}
 		if (anIntArray156 != null) {
 			for (int l = 0; l < anIntArray156.length; l++) {
-				model.method476(anIntArray156[l], anIntArray160[l]);
+				model.replaceColor(anIntArray156[l], anIntArray160[l]);
 			}
 		}
-		model.method479(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
-		model.aBoolean1659 = true;
+		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
+		model.pickBounds = true;
 		aCache_159.method223(model, anInt157);
 		return model;
 	}
@@ -454,13 +454,13 @@ public class ObjType {
 				return method198(j).method202(1);
 			}
 		}
-		Model model = Model.method462(anInt174);
+		Model model = Model.tryGet(anInt174);
 		if (model == null) {
 			return null;
 		}
 		if (anIntArray156 != null) {
 			for (int l = 0; l < anIntArray156.length; l++) {
-				model.method476(anIntArray156[l], anIntArray160[l]);
+				model.replaceColor(anIntArray156[l], anIntArray160[l]);
 			}
 		}
 		return model;

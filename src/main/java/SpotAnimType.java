@@ -75,13 +75,13 @@ public class SpotAnimType {
 		if (model != null) {
 			return model;
 		}
-		model = Model.method462(anInt405);
+		model = Model.tryGet(anInt405);
 		if (model == null) {
 			return null;
 		}
 		for (int i = 0; i < 6; i++) {
 			if (anIntArray408[0] != 0) {
-				model.method476(anIntArray408[i], anIntArray409[i]);
+				model.replaceColor(anIntArray408[i], anIntArray409[i]);
 			}
 		}
 		aCache_415.method223(model, anInt404);

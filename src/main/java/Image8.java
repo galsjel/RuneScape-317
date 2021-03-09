@@ -16,7 +16,7 @@ public class Image8 extends Draw2D {
 	public Image8(FileArchive archive, String s, int i) {
 		Buffer buffer = new Buffer(archive.method571(s + ".dat", null));
 		Buffer buffer_1 = new Buffer(archive.method571("index.dat", null));
-		buffer_1.anInt1406 = buffer.method410();
+		buffer_1.position = buffer.method410();
 		anInt1456 = buffer_1.method410();
 		anInt1457 = buffer_1.method410();
 		int j = buffer_1.method408();
@@ -25,9 +25,9 @@ public class Image8 extends Draw2D {
 			anIntArray1451[k + 1] = buffer_1.method412();
 		}
 		for (int l = 0; l < i; l++) {
-			buffer_1.anInt1406 += 2;
-			buffer.anInt1406 += buffer_1.method410() * buffer_1.method410();
-			buffer_1.anInt1406++;
+			buffer_1.position += 2;
+			buffer.position += buffer_1.method410() * buffer_1.method410();
+			buffer_1.position++;
 		}
 		anInt1454 = buffer_1.method408();
 		anInt1455 = buffer_1.method408();
@@ -140,39 +140,39 @@ public class Image8 extends Draw2D {
 	public void method361(int i, int k) {
 		i += anInt1454;
 		k += anInt1455;
-		int l = i + k * Draw2D.anInt1379;
+		int l = i + k * Draw2D.width;
 		int i1 = 0;
 		int j1 = anInt1453;
 		int k1 = anInt1452;
-		int l1 = Draw2D.anInt1379 - k1;
+		int l1 = Draw2D.width - k1;
 		int i2 = 0;
-		if (k < Draw2D.anInt1381) {
-			int j2 = Draw2D.anInt1381 - k;
+		if (k < Draw2D.top) {
+			int j2 = Draw2D.top - k;
 			j1 -= j2;
-			k = Draw2D.anInt1381;
+			k = Draw2D.top;
 			i1 += j2 * k1;
-			l += j2 * Draw2D.anInt1379;
+			l += j2 * Draw2D.width;
 		}
-		if (k + j1 > Draw2D.anInt1382) {
-			j1 -= (k + j1) - Draw2D.anInt1382;
+		if (k + j1 > Draw2D.bottom) {
+			j1 -= (k + j1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.anInt1383) {
-			int k2 = Draw2D.anInt1383 - i;
+		if (i < Draw2D.left) {
+			int k2 = Draw2D.left - i;
 			k1 -= k2;
-			i = Draw2D.anInt1383;
+			i = Draw2D.left;
 			i1 += k2;
 			l += k2;
 			i2 += k2;
 			l1 += k2;
 		}
-		if (i + k1 > Draw2D.anInt1384) {
-			int l2 = (i + k1) - Draw2D.anInt1384;
+		if (i + k1 > Draw2D.right) {
+			int l2 = (i + k1) - Draw2D.right;
 			k1 -= l2;
 			i2 += l2;
 			l1 += l2;
 		}
 		if (k1 > 0 && j1 > 0) {
-			method362(j1, Draw2D.anIntArray1378, aByteArray1450, l1, l, k1, i1, anIntArray1451, i2);
+			method362(j1, Draw2D.pixels, aByteArray1450, l1, l, k1, i1, anIntArray1451, i2);
 		}
 	}
 

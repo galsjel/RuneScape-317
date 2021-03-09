@@ -114,7 +114,7 @@ public class SceneBuilder {
 	}
 
 	public static int method184(int i, int i_216_, int i_217_, int i_218_) {
-		int i_219_ = (65536 - Draw3D.anIntArray1471[i_217_ * 1024 / i_218_] >> 1);
+		int i_219_ = (65536 - Draw3D.cos[i_217_ * 1024 / i_218_] >> 1);
 		return (i * (65536 - i_219_) >> 16) + (i_216_ * i_219_ >> 16);
 	}
 
@@ -526,7 +526,7 @@ public class SceneBuilder {
 								}
 								int i_58_ = 0;
 								if (i_53_ != -1) {
-									i_58_ = (Draw3D.anIntArray1482[method187(i_54_, 96)]);
+									i_58_ = (Draw3D.palette[method187(i_54_, 96)]);
 								}
 								if (i_44_ == 0) {
 									graph.method279(i_10_, i_29_, i_40_, 0, 0, -1, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), 0, 0, 0, 0, i_58_, 0);
@@ -546,7 +546,7 @@ public class SceneBuilder {
 										i_61_ = -1;
 									} else {
 										i_63_ = method177(type.anInt394, type.anInt395, type.anInt396);
-										i_62_ = (Draw3D.anIntArray1482[method185(type.anInt399, 96)]);
+										i_62_ = (Draw3D.palette[method185(type.anInt399, 96)]);
 									}
 									graph.method279(i_10_, i_29_, i_40_, i_59_, i_60_, i_61_, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
 								}
@@ -801,7 +801,7 @@ public class SceneBuilder {
 						if (model != null) {
 							for (int i_134_ = 0; i_134_ <= i_132_; i_134_++) {
 								for (int i_135_ = 0; i_135_ <= i_133_; i_135_++) {
-									int i_136_ = model.anInt1650 / 4;
+									int i_136_ = model.radius / 4;
 									if (i_136_ > 30) {
 										i_136_ = 30;
 									}

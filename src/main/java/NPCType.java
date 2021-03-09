@@ -53,7 +53,7 @@ public class NPCType {
 		}
 		anInt56 = (anInt56 + 1) % 20;
 		NPCType type = aTypeArray80[anInt56] = new NPCType();
-		aBuffer_60.anInt1406 = anIntArray72[i];
+		aBuffer_60.position = anIntArray72[i];
 		type.aLong78 = i;
 		type.method165(aBuffer_60);
 		return type;
@@ -96,7 +96,7 @@ public class NPCType {
 		}
 		boolean flag1 = false;
 		for (int value : anIntArray73) {
-			if (!Model.method463(value)) {
+			if (!Model.validate(value)) {
 				flag1 = true;
 			}
 		}
@@ -105,7 +105,7 @@ public class NPCType {
 		}
 		Model[] aclass30_sub2_sub4_sub6 = new Model[anIntArray73.length];
 		for (int j = 0; j < anIntArray73.length; j++) {
-			aclass30_sub2_sub4_sub6[j] = Model.method462(anIntArray73[j]);
+			aclass30_sub2_sub4_sub6[j] = Model.tryGet(anIntArray73[j]);
 		}
 		Model model;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
@@ -115,7 +115,7 @@ public class NPCType {
 		}
 		if (anIntArray76 != null) {
 			for (int k = 0; k < anIntArray76.length; k++) {
-				model.method476(anIntArray76[k], anIntArray70[k]);
+				model.replaceColor(anIntArray76[k], anIntArray70[k]);
 			}
 		}
 		return model;
@@ -153,7 +153,7 @@ public class NPCType {
 		if (model == null) {
 			boolean flag = false;
 			for (int value : anIntArray94) {
-				if (!Model.method463(value)) {
+				if (!Model.validate(value)) {
 					flag = true;
 				}
 			}
@@ -162,7 +162,7 @@ public class NPCType {
 			}
 			Model[] aclass30_sub2_sub4_sub6 = new Model[anIntArray94.length];
 			for (int j1 = 0; j1 < anIntArray94.length; j1++) {
-				aclass30_sub2_sub4_sub6[j1] = Model.method462(anIntArray94[j1]);
+				aclass30_sub2_sub4_sub6[j1] = Model.tryGet(anIntArray94[j1]);
 			}
 			if (aclass30_sub2_sub4_sub6.length == 1) {
 				model = aclass30_sub2_sub4_sub6[0];
@@ -171,28 +171,28 @@ public class NPCType {
 			}
 			if (anIntArray76 != null) {
 				for (int k1 = 0; k1 < anIntArray76.length; k1++) {
-					model.method476(anIntArray76[k1], anIntArray70[k1]);
+					model.replaceColor(anIntArray76[k1], anIntArray70[k1]);
 				}
 			}
-			model.method469();
-			model.method479(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
+			model.createLabelReferences();
+			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
 			aCache_95.method223(model, aLong78);
 		}
-		Model model_1 = Model.A_MODEL___1621;
-		model_1.method464(model, SeqTransform.method532(k) & SeqTransform.method532(j));
+		Model model_1 = Model.EMPTY;
+		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));
 		if (k != -1 && j != -1) {
-			model_1.method471(ai, j, k);
+			model_1.applySequenceFrames(k, j, ai);
 		} else if (k != -1) {
-			model_1.method470(k);
+			model_1.applySequenceFrame(k);
 		}
 		if (anInt91 != 128 || anInt86 != 128) {
-			model_1.method478(anInt91, anInt91, anInt86);
+			model_1.scale(anInt91, anInt91, anInt86);
 		}
-		model_1.method466();
-		model_1.anIntArrayArray1658 = null;
-		model_1.anIntArrayArray1657 = null;
+		model_1.calculateBoundsCylinder();
+		model_1.labelFaces = null;
+		model_1.labelVertices = null;
 		if (aByte68 == 1) {
-			model_1.aBoolean1659 = true;
+			model_1.pickBounds = true;
 		}
 		return model_1;
 	}

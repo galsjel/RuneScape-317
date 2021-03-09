@@ -40,7 +40,7 @@ public class VarpType {
 			}
 			aVarpArray701[j].method547(buffer, j);
 		}
-		if (buffer.anInt1406 != buffer.aByteArray1405.length) {
+		if (buffer.position != buffer.aByteArray1405.length) {
 			System.out.println("varptype load mismatch");
 		}
 	}

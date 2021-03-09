@@ -4,17 +4,17 @@
 
 public class Entity extends DoublyLinkedListNode {
 
-	public VertexNormal[] aNormalArray1425;
-	public int anInt1426 = 1000;
+	public VertexNormal[] vertexNormal;
+	public int minY = 1000;
 
 	public Entity() {
 	}
 
-	public void method443(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2) {
+	public void draw(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2) {
 		Model model = method444();
 		if (model != null) {
-			anInt1426 = model.anInt1426;
-			model.method443(i, j, k, l, i1, j1, k1, l1, i2);
+			minY = model.minY;
+			model.draw(i, j, k, l, i1, j1, k1, l1, i2);
 		}
 	}
 

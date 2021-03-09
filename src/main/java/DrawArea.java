@@ -30,7 +30,7 @@ public class DrawArea implements ImageProducer, ImageObserver {
 	}
 
 	public void method237() {
-		Draw2D.method331(anInt317, anInt316, anIntArray315);
+		Draw2D.bind(anIntArray315, anInt316, anInt317);
 	}
 
 	public void method238(int i, Graphics g, int k) {
