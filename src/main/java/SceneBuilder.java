@@ -71,7 +71,7 @@ public class SceneBuilder {
 	public static void method173(Packet packet, OnDemand onDemand) {
 		int i_110_ = -1;
 		for (; ; ) {
-			int i_111_ = packet.getUSmart();
+			int i_111_ = packet.getSmartU();
 			if (i_111_ == 0) {
 				break;
 			}
@@ -79,7 +79,7 @@ public class SceneBuilder {
 			LocType type = LocType.method572(i_110_);
 			type.method574(onDemand);
 			for (; ; ) {
-				int i_112_ = packet.getUSmart();
+				int i_112_ = packet.getSmartU();
 				if (i_112_ == 0) {
 					break;
 				}
@@ -334,7 +334,7 @@ public class SceneBuilder {
 		Packet packet = new Packet(is);
 		int i_252_ = -1;
 		for (; ; ) {
-			int i_253_ = packet.getUSmart();
+			int i_253_ = packet.getSmartU();
 			if (i_253_ == 0) {
 				break;
 			}
@@ -343,13 +343,13 @@ public class SceneBuilder {
 			boolean bool_255_ = false;
 			for (; ; ) {
 				if (bool_255_) {
-					int i_256_ = packet.getUSmart();
+					int i_256_ = packet.getSmartU();
 					if (i_256_ == 0) {
 						break;
 					}
 					packet.get1U();
 				} else {
-					int i_257_ = packet.getUSmart();
+					int i_257_ = packet.getSmartU();
 					if (i_257_ == 0) {
 						break;
 					}
@@ -1167,14 +1167,14 @@ public class SceneBuilder {
 		Packet packet = new Packet(is);
 		int i_203_ = -1;
 		for (; ; ) {
-			int i_204_ = packet.getUSmart();
+			int i_204_ = packet.getSmartU();
 			if (i_204_ == 0) {
 				break;
 			}
 			i_203_ += i_204_;
 			int i_205_ = 0;
 			for (; ; ) {
-				int i_206_ = packet.getUSmart();
+				int i_206_ = packet.getSmartU();
 				if (i_206_ == 0) {
 					break;
 				}
@@ -1231,14 +1231,14 @@ public class SceneBuilder {
 		Packet packet = new Packet(is);
 		int i_265_ = -1;
 		for (; ; ) {
-			int i_266_ = packet.getUSmart();
+			int i_266_ = packet.getSmartU();
 			if (i_266_ == 0) {
 				break;
 			}
 			i_265_ += i_266_;
 			int i_267_ = 0;
 			for (; ; ) {
-				int i_268_ = packet.getUSmart();
+				int i_268_ = packet.getSmartU();
 				if (i_268_ == 0) {
 					break;
 				}

@@ -6385,7 +6385,7 @@ public class Game extends GameShell {
 			}
 			if ((l & 8) != 0) {
 				int j1 = packet.get1UA();
-				int j2 = packet.getU1C();
+				int j2 = packet.get1UC();
 				npc.method447(j2, j1, anInt1161);
 				npc.anInt1532 = anInt1161 + 300;
 				npc.anInt1533 = packet.get1UA();
@@ -6416,12 +6416,12 @@ public class Game extends GameShell {
 				npc.anInt1535 = 100;
 			}
 			if ((l & 0x40) != 0) {
-				int l1 = packet.getU1C();
+				int l1 = packet.get1UC();
 				int k2 = packet.get1US();
 				npc.method447(k2, l1, anInt1161);
 				npc.anInt1532 = anInt1161 + 300;
 				npc.anInt1533 = packet.get1US();
-				npc.anInt1534 = packet.getU1C();
+				npc.anInt1534 = packet.get1UC();
 			}
 			if ((l & 2) != 0) {
 				npc.aType_1696 = NPCType.method159(packet.get2ULEA());
@@ -7779,7 +7779,7 @@ public class Game extends GameShell {
 			if (l == 65535) {
 				l = -1;
 			}
-			int i2 = packet.getU1C();
+			int i2 = packet.get1UC();
 			if ((l == player.anInt1526) && (l != -1)) {
 				int i3 = SeqType.aTypeArray351[l].anInt365;
 				if (i3 == 1) {
@@ -7815,7 +7815,7 @@ public class Game extends GameShell {
 		if ((i & 0x80) != 0) {
 			int i1 = packet.get2ULE();
 			int j2 = packet.get1U();
-			int j3 = packet.getU1C();
+			int j3 = packet.get1UC();
 			int k3 = packet.position;
 			if ((player.aString1703 != null) && player.aBoolean1710) {
 				long l3 = StringUtil.toBase37(player.aString1703);
@@ -7861,7 +7861,7 @@ public class Game extends GameShell {
 			}
 		}
 		if ((i & 0x10) != 0) {
-			int j1 = packet.getU1C();
+			int j1 = packet.get1UC();
 			byte[] abyte0 = new byte[j1];
 			Packet packet_1 = new Packet(abyte0);
 			packet.get(abyte0, 0, j1);
@@ -7877,7 +7877,7 @@ public class Game extends GameShell {
 			int k2 = packet.get1UA();
 			player.method447(k2, k1, anInt1161);
 			player.anInt1532 = anInt1161 + 300;
-			player.anInt1533 = packet.getU1C();
+			player.anInt1533 = packet.get1UC();
 			player.anInt1534 = packet.get1U();
 		}
 		if ((i & 0x200) != 0) {
@@ -7886,7 +7886,7 @@ public class Game extends GameShell {
 			player.method447(l2, l1, anInt1161);
 			player.anInt1532 = anInt1161 + 300;
 			player.anInt1533 = packet.get1U();
-			player.anInt1534 = packet.getU1C();
+			player.anInt1534 = packet.get1UC();
 		}
 	}
 
@@ -9275,7 +9275,7 @@ public class Game extends GameShell {
 			return;
 		}
 		if (j == 101) {
-			int l2 = packet.getU1C();
+			int l2 = packet.get1UC();
 			int k5 = l2 >> 2;
 			int j8 = l2 & 3;
 			int i11 = anIntArray1177[k5];
@@ -9651,7 +9651,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (anInt1008 == 176) {
-				anInt1167 = aPacket_1083.getU1C();
+				anInt1167 = aPacket_1083.get1UC();
 				anInt1154 = aPacket_1083.get2UA();
 				anInt1120 = aPacket_1083.get1U();
 				anInt1193 = aPacket_1083.get4ME();
@@ -9677,7 +9677,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (anInt1008 == 64) {
-				anInt1268 = aPacket_1083.getU1C();
+				anInt1268 = aPacket_1083.get1UC();
 				anInt1269 = aPacket_1083.get1US();
 				for (int j = anInt1268; j < (anInt1268 + 8); j++) {
 					for (int l9 = anInt1269; l9 < (anInt1269 + 8); l9++) {
@@ -10038,7 +10038,7 @@ public class Game extends GameShell {
 			}
 			if (anInt1008 == 60) {
 				anInt1269 = aPacket_1083.get1U();
-				anInt1268 = aPacket_1083.getU1C();
+				anInt1268 = aPacket_1083.get1UC();
 				while (aPacket_1083.position < anInt1007) {
 					int k3 = aPacket_1083.get1U();
 					method137(aPacket_1083, k3);
@@ -10073,7 +10073,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (anInt1008 == 104) {
-				int j4 = aPacket_1083.getU1C();
+				int j4 = aPacket_1083.get1UC();
 				int i12 = aPacket_1083.get1UA();
 				String s6 = aPacket_1083.getString();
 				if ((j4 >= 1) && (j4 <= 5)) {
@@ -10340,8 +10340,8 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (anInt1008 == 85) {
-				anInt1269 = aPacket_1083.getU1C();
-				anInt1268 = aPacket_1083.getU1C();
+				anInt1269 = aPacket_1083.get1UC();
+				anInt1268 = aPacket_1083.get1UC();
 				anInt1008 = -1;
 				return true;
 			}
@@ -10640,7 +10640,7 @@ public class Game extends GameShell {
 				int i9 = aPacket_1083.get2U();
 				Component component_2 = Component.aComponentArray210[i9];
 				while (aPacket_1083.position < anInt1007) {
-					int j20 = aPacket_1083.getUSmart();
+					int j20 = aPacket_1083.getSmartU();
 					int i23 = aPacket_1083.get2U();
 					int l25 = aPacket_1083.get1U();
 					if (l25 == 255) {
@@ -10660,7 +10660,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (anInt1008 == 106) {
-				anInt1221 = aPacket_1083.getU1C();
+				anInt1221 = aPacket_1083.get1UC();
 				aBoolean1153 = true;
 				aBoolean1103 = true;
 				anInt1008 = -1;

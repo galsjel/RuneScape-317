@@ -193,7 +193,7 @@ public class Packet extends DoublyLinkedListNode {
 		return (data[position++] - 128) & 0xff;
 	}
 
-	public int getU1C() {
+	public int get1UC() {
 		return -data[position++] & 0xff;
 	}
 
@@ -220,7 +220,7 @@ public class Packet extends DoublyLinkedListNode {
 	 *
 	 * @return the value.
 	 */
-	public int getUSmart() {
+	public int getSmartU() {
 		int i = data[position] & 0xff;
 		if (i < 0x80) {
 			return get1U();

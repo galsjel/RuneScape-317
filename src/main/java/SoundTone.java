@@ -261,16 +261,16 @@ public class SoundTone {
 			aEnvelope_105.method325(packet);
 		}
 		for (int j = 0; j < 10; j++) {
-			int k = packet.getUSmart();
+			int k = packet.getSmartU();
 			if (k == 0) {
 				break;
 			}
 			anIntArray106[j] = k;
 			anIntArray107[j] = packet.getSmart();
-			anIntArray108[j] = packet.getUSmart();
+			anIntArray108[j] = packet.getSmartU();
 		}
-		anInt109 = packet.getUSmart();
-		anInt110 = packet.getUSmart();
+		anInt109 = packet.getSmartU();
+		anInt110 = packet.getSmartU();
 		anInt113 = packet.get2U();
 		anInt114 = packet.get2U();
 		aSoundFilter_111 = new SoundFilter();
