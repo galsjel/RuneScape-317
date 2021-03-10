@@ -18,8 +18,8 @@ public class VarbitType {
 	}
 
 	public static void method533(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("varbit.dat", null));
-		anInt645 = buffer.get2U();
+		Packet packet = new Packet(archive.read("varbit.dat", null));
+		anInt645 = packet.get2U();
 		if (aVarbitArray646 == null) {
 			aVarbitArray646 = new VarbitType[anInt645];
 		}
@@ -27,34 +27,34 @@ public class VarbitType {
 			if (aVarbitArray646[j] == null) {
 				aVarbitArray646[j] = new VarbitType();
 			}
-			aVarbitArray646[j].method534(buffer);
+			aVarbitArray646[j].method534(packet);
 			if (aVarbitArray646[j].aBoolean651) {
 				VarpType.aVarpArray701[aVarbitArray646[j].anInt648].unusedBool3 = true;
 			}
 		}
-		if (buffer.position != buffer.data.length) {
+		if (packet.position != packet.data.length) {
 			System.out.println("varbit load mismatch");
 		}
 	}
 
-	public void method534(Buffer buffer) {
+	public void method534(Packet packet) {
 		do {
-			int j = buffer.get1U();
+			int j = packet.get1U();
 			if (j == 0) {
 				return;
 			}
 			if (j == 1) {
-				anInt648 = buffer.get2U();
-				anInt649 = buffer.get1U();
-				anInt650 = buffer.get1U();
+				anInt648 = packet.get2U();
+				anInt649 = packet.get1U();
+				anInt650 = packet.get1U();
 			} else if (j == 10) {
-				unusedString = buffer.getString();
+				unusedString = packet.getString();
 			} else if (j == 2) {
 				aBoolean651 = true;
 			} else if (j == 3) {
-				unusedInt0 = buffer.get4();
+				unusedInt0 = packet.get4();
 			} else if (j == 4) {
-				unusedInt1 = buffer.get4();
+				unusedInt1 = packet.get4();
 			} else {
 				System.out.println("Error unrecognised config code: " + j);
 			}

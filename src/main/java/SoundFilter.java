@@ -69,25 +69,25 @@ public class SoundFilter {
 		return anIntArray665[i] * 2;
 	}
 
-	public void method545(Buffer buffer, SoundEnvelope envelope) {
-		int i = buffer.get1U();
+	public void method545(Packet packet, SoundEnvelope envelope) {
+		int i = packet.get1U();
 		anIntArray665[0] = i >> 4;
 		anIntArray665[1] = i & 0xf;
 		if (i != 0) {
-			anIntArray668[0] = buffer.get2U();
-			anIntArray668[1] = buffer.get2U();
-			int j = buffer.get1U();
+			anIntArray668[0] = packet.get2U();
+			anIntArray668[1] = packet.get2U();
+			int j = packet.get1U();
 			for (int k = 0; k < 2; k++) {
 				for (int l = 0; l < anIntArray665[k]; l++) {
-					anIntArrayArrayArray666[k][0][l] = buffer.get2U();
-					anIntArrayArrayArray667[k][0][l] = buffer.get2U();
+					anIntArrayArrayArray666[k][0][l] = packet.get2U();
+					anIntArrayArrayArray667[k][0][l] = packet.get2U();
 				}
 			}
 			for (int i1 = 0; i1 < 2; i1++) {
 				for (int j1 = 0; j1 < anIntArray665[i1]; j1++) {
 					if ((j & (1 << (i1 * 4) << j1)) != 0) {
-						anIntArrayArrayArray666[i1][1][j1] = buffer.get2U();
-						anIntArrayArrayArray667[i1][1][j1] = buffer.get2U();
+						anIntArrayArrayArray666[i1][1][j1] = packet.get2U();
+						anIntArrayArrayArray667[i1][1][j1] = packet.get2U();
 					} else {
 						anIntArrayArrayArray666[i1][1][j1] = anIntArrayArrayArray666[i1][0][j1];
 						anIntArrayArrayArray667[i1][1][j1] = anIntArrayArrayArray667[i1][0][j1];
@@ -95,7 +95,7 @@ public class SoundFilter {
 				}
 			}
 			if ((j != 0) || (anIntArray668[1] != anIntArray668[0])) {
-				envelope.method326(buffer);
+				envelope.method326(packet);
 			}
 		} else {
 			anIntArray668[0] = anIntArray668[1] = 0;

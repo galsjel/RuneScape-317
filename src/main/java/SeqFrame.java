@@ -83,27 +83,27 @@ public class SeqFrame {
 	 * @see #get(int)
 	 */
 	public static void readAnimation(byte[] src) {
-		Buffer offsets = new Buffer(src);
+		Packet offsets = new Packet(src);
 		offsets.position = src.length - 8;
 
 		int offset = 0;
-		Buffer header = new Buffer(src);
+		Packet header = new Packet(src);
 		header.position = offset;
 		offset += offsets.get2U() + 2;
 
-		Buffer tran1 = new Buffer(src);
+		Packet tran1 = new Packet(src);
 		tran1.position = offset;
 		offset += offsets.get2U();
 
-		Buffer tran2 = new Buffer(src);
+		Packet tran2 = new Packet(src);
 		tran2.position = offset;
 		offset += offsets.get2U();
 
-		Buffer del = new Buffer(src);
+		Packet del = new Packet(src);
 		del.position = offset;
 		offset += offsets.get2U();
 
-		Buffer skel = new Buffer(src);
+		Packet skel = new Packet(src);
 		skel.position = offset;
 
 		SeqSkeleton skeleton = new SeqSkeleton(skel);

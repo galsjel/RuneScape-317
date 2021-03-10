@@ -6,7 +6,7 @@ public class LocType {
 
 	public static final Model[] A_MODEL_ARRAY_741 = new Model[4];
 	public static boolean aBoolean752;
-	public static Buffer aBuffer_753;
+	public static Packet aPacket_753;
 	public static int[] anIntArray755;
 	public static int anInt756;
 	public static Game aGame765;
@@ -64,10 +64,10 @@ public class LocType {
 		}
 		anInt771 = (anInt771 + 1) % 20;
 		LocType type = aTypeArray782[anInt771];
-		aBuffer_753.position = anIntArray755[i];
+		aPacket_753.position = anIntArray755[i];
 		type.anInt754 = i;
 		type.method573();
-		type.method582(aBuffer_753);
+		type.method582(aPacket_753);
 		return type;
 	}
 
@@ -76,18 +76,18 @@ public class LocType {
 		aCache_780 = null;
 		anIntArray755 = null;
 		aTypeArray782 = null;
-		aBuffer_753 = null;
+		aPacket_753 = null;
 	}
 
 	public static void method576(FileArchive archive) {
-		aBuffer_753 = new Buffer(archive.read("loc.dat", null));
-		Buffer buffer = new Buffer(archive.read("loc.idx", null));
-		anInt756 = buffer.get2U();
+		aPacket_753 = new Packet(archive.read("loc.dat", null));
+		Packet packet = new Packet(archive.read("loc.idx", null));
+		anInt756 = packet.get2U();
 		anIntArray755 = new int[anInt756];
 		int i = 2;
 		for (int j = 0; j < anInt756; j++) {
 			anIntArray755[j] = i;
-			i += buffer.get2U();
+			i += packet.get2U();
 		}
 		aTypeArray782 = new LocType[20];
 		for (int k = 0; k < 20; k++) {
@@ -325,57 +325,57 @@ public class LocType {
 		return model_3;
 	}
 
-	public void method582(Buffer buffer) {
+	public void method582(Packet packet) {
 		int i = -1;
 		label0:
 		do {
 			int j;
 			do {
-				j = buffer.get1U();
+				j = packet.get1U();
 				if (j == 0) {
 					break label0;
 				}
 				if (j == 1) {
-					int k = buffer.get1U();
+					int k = packet.get1U();
 					if (k > 0) {
 						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = new int[k];
 							anIntArray773 = new int[k];
 							for (int k1 = 0; k1 < k; k1++) {
-								anIntArray773[k1] = buffer.get2U();
-								anIntArray776[k1] = buffer.get1U();
+								anIntArray773[k1] = packet.get2U();
+								anIntArray776[k1] = packet.get1U();
 							}
 						} else {
-							buffer.position += k * 3;
+							packet.position += k * 3;
 						}
 					}
 				} else if (j == 2) {
-					aString739 = buffer.getString();
+					aString739 = packet.getString();
 				} else if (j == 3) {
-					aByteArray777 = buffer.getStringRaw();
+					aByteArray777 = packet.getStringRaw();
 				} else if (j == 5) {
-					int l = buffer.get1U();
+					int l = packet.get1U();
 					if (l > 0) {
 						if ((anIntArray773 == null) || aBoolean752) {
 							anIntArray776 = null;
 							anIntArray773 = new int[l];
 							for (int l1 = 0; l1 < l; l1++) {
-								anIntArray773[l1] = buffer.get2U();
+								anIntArray773[l1] = packet.get2U();
 							}
 						} else {
-							buffer.position += l * 2;
+							packet.position += l * 2;
 						}
 					}
 				} else if (j == 14) {
-					anInt744 = buffer.get1U();
+					anInt744 = packet.get1U();
 				} else if (j == 15) {
-					anInt761 = buffer.get1U();
+					anInt761 = packet.get1U();
 				} else if (j == 17) {
 					aBoolean767 = false;
 				} else if (j == 18) {
 					aBoolean757 = false;
 				} else if (j == 19) {
-					i = buffer.get1U();
+					i = packet.get1U();
 					if (i == 1) {
 						aBoolean778 = true;
 					}
@@ -386,54 +386,54 @@ public class LocType {
 				} else if (j == 23) {
 					aBoolean764 = true;
 				} else if (j == 24) {
-					anInt781 = buffer.get2U();
+					anInt781 = packet.get2U();
 					if (anInt781 == 65535) {
 						anInt781 = -1;
 					}
 				} else if (j == 28) {
-					anInt775 = buffer.get1U();
+					anInt775 = packet.get1U();
 				} else if (j == 29) {
-					aByte737 = buffer.get1();
+					aByte737 = packet.get1();
 				} else if (j == 39) {
-					aByte742 = buffer.get1();
+					aByte742 = packet.get1();
 				} else if ((j >= 30) && (j < 39)) {
 					if (aStringArray786 == null) {
 						aStringArray786 = new String[5];
 					}
-					aStringArray786[j - 30] = buffer.getString();
+					aStringArray786[j - 30] = packet.getString();
 					if (aStringArray786[j - 30].equalsIgnoreCase("hidden")) {
 						aStringArray786[j - 30] = null;
 					}
 				} else if (j == 40) {
-					int i1 = buffer.get1U();
+					int i1 = packet.get1U();
 					anIntArray784 = new int[i1];
 					anIntArray747 = new int[i1];
 					for (int i2 = 0; i2 < i1; i2++) {
-						anIntArray784[i2] = buffer.get2U();
-						anIntArray747[i2] = buffer.get2U();
+						anIntArray784[i2] = packet.get2U();
+						anIntArray747[i2] = packet.get2U();
 					}
 				} else if (j == 60) {
-					anInt746 = buffer.get2U();
+					anInt746 = packet.get2U();
 				} else if (j == 62) {
 					aBoolean751 = true;
 				} else if (j == 64) {
 					aBoolean779 = false;
 				} else if (j == 65) {
-					anInt748 = buffer.get2U();
+					anInt748 = packet.get2U();
 				} else if (j == 66) {
-					anInt772 = buffer.get2U();
+					anInt772 = packet.get2U();
 				} else if (j == 67) {
-					anInt740 = buffer.get2U();
+					anInt740 = packet.get2U();
 				} else if (j == 68) {
-					anInt758 = buffer.get2U();
+					anInt758 = packet.get2U();
 				} else if (j == 69) {
-					anInt768 = buffer.get1U();
+					anInt768 = packet.get1U();
 				} else if (j == 70) {
-					anInt738 = buffer.get2();
+					anInt738 = packet.get2();
 				} else if (j == 71) {
-					anInt745 = buffer.get2();
+					anInt745 = packet.get2();
 				} else if (j == 72) {
-					anInt783 = buffer.get2();
+					anInt783 = packet.get2();
 				} else if (j == 73) {
 					aBoolean736 = true;
 				} else if (j == 74) {
@@ -442,22 +442,22 @@ public class LocType {
 					if (j != 75) {
 						continue;
 					}
-					anInt760 = buffer.get1U();
+					anInt760 = packet.get1U();
 				}
 				continue label0;
 			} while (j != 77);
-			anInt774 = buffer.get2U();
+			anInt774 = packet.get2U();
 			if (anInt774 == 65535) {
 				anInt774 = -1;
 			}
-			anInt749 = buffer.get2U();
+			anInt749 = packet.get2U();
 			if (anInt749 == 65535) {
 				anInt749 = -1;
 			}
-			int j1 = buffer.get1U();
+			int j1 = packet.get1U();
 			anIntArray759 = new int[j1 + 1];
 			for (int j2 = 0; j2 <= j1; j2++) {
-				anIntArray759[j2] = buffer.get2U();
+				anIntArray759[j2] = packet.get2U();
 				if (anIntArray759[j2] == 65535) {
 					anIntArray759[j2] = -1;
 				}

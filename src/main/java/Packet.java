@@ -1,6 +1,30 @@
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
-public class Buffer extends DoublyLinkedListNode {
+/**
+ * A {@link Packet} encapsulates a finite amount of data and provides methods for reading and writing to that data.
+ * The <code>put()</code> and <code>get()</code> methods describe the type of data they use by attributes in their
+ * suffix. The naming convention is <code>put[type][U:unsigned][endianness][modifier]</code>.
+ * <p>
+ * <b>Types:</b><br/>
+ * # — the number of bytes<br/>
+ * Op — 1 byte which is modified by the {@link #cipher}<br/>
+ * Smart — 1 or 2 byte value [-16384...16383]<br/>
+ * USmart — 1 or 2 byte value [0...32768]<br/>
+ * String — {@link StandardCharsets#ISO_8859_1} encoding delimited by a newline character (\n)<br/>
+ * <p>
+ * <b><a href="https://en.wikipedia.org/wiki/Endianness">Endianness</a>:</b><br/>
+ * LE — little endian (DCBA)<br/>
+ * ME — middle endian (CDAB) <br/>
+ * RME — reversed middle endian (BADC)<br/>
+ * Note: ME and RME are not standard, and are a form of obfuscation similar to the <i>modifier</i> attribute.<br/>
+ * <p>
+ * <b>Modifiers:</b><br/>
+ * A — put(v + 128) — get: v - 128<br/>
+ * C — put(-v) — get: -v<br/>
+ * S — put(128 - v) — get: 128 - v<br/>
+ */
+public class Packet extends DoublyLinkedListNode {
 
 	public static final LinkedList pool0 = new LinkedList();
 	public static final LinkedList pool1 = new LinkedList();
@@ -10,39 +34,39 @@ public class Buffer extends DoublyLinkedListNode {
 	public static int poolSize1;
 	public static int poolSize2;
 
-	public static Buffer create(int sizeType) {
+	public static Packet create(int sizeType) {
 		synchronized (pool1) {
-			Buffer buffer = null;
+			Packet packet = null;
 
 			if ((sizeType == 0) && (poolSize0 > 0)) {
 				poolSize0--;
-				buffer = (Buffer) pool0.method251();
+				packet = (Packet) pool0.method251();
 			} else if ((sizeType == 1) && (poolSize1 > 0)) {
 				poolSize1--;
-				buffer = (Buffer) pool1.method251();
+				packet = (Packet) pool1.method251();
 			} else if ((sizeType == 2) && (poolSize2 > 0)) {
 				poolSize2--;
-				buffer = (Buffer) pool2.method251();
+				packet = (Packet) pool2.method251();
 			}
 
-			if (buffer != null) {
-				buffer.position = 0;
-				return buffer;
+			if (packet != null) {
+				packet.position = 0;
+				return packet;
 			}
 		}
 
-		Buffer buffer = new Buffer();
-		buffer.position = 0;
+		Packet packet = new Packet();
+		packet.position = 0;
 
 		if (sizeType == 0) {
-			buffer.data = new byte[100];
+			packet.data = new byte[100];
 		} else if (sizeType == 1) {
-			buffer.data = new byte[5000];
+			packet.data = new byte[5000];
 		} else {
-			buffer.data = new byte[30000];
+			packet.data = new byte[30000];
 		}
 
-		return buffer;
+		return packet;
 	}
 
 	public byte[] data;
@@ -50,10 +74,10 @@ public class Buffer extends DoublyLinkedListNode {
 	public int bitPosition;
 	public ISAACCipher cipher;
 
-	public Buffer() {
+	public Packet() {
 	}
 
-	public Buffer(byte[] src) {
+	public Packet(byte[] src) {
 		data = src;
 		position = 0;
 	}
@@ -130,7 +154,7 @@ public class Buffer extends DoublyLinkedListNode {
 	}
 
 	public void put(String s) {
-		put(s.getBytes());
+		put(s.getBytes(StandardCharsets.ISO_8859_1));
 		put1('\n');
 	}
 
@@ -177,15 +201,25 @@ public class Buffer extends DoublyLinkedListNode {
 		return (128 - data[position++]) & 0xff;
 	}
 
+	/**
+	 * Gets a 1 or 2 byte varint which has the range [-16384...16383].
+	 *
+	 * @return the value.
+	 */
 	public int getSmart() {
 		int i = data[position] & 0xff;
 		if (i < 0x80) {
 			return get1U() - 0x40;
 		} else {
-			return get2U() - 0xc000;
+			return get2U() - 0xC000;
 		}
 	}
 
+	/**
+	 * Gets a 1 or 2 byte varint which has the range [0...32768].
+	 *
+	 * @return the value.
+	 */
 	public int getUSmart() {
 		int i = data[position] & 0xff;
 		if (i < 0x80) {

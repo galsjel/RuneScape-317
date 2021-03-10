@@ -19,20 +19,20 @@ public class SoundEnvelope {
 	public SoundEnvelope() {
 	}
 
-	public void method325(Buffer buffer) {
-		anInt540 = buffer.get1U();
-		anInt538 = buffer.get4();
-		anInt539 = buffer.get4();
-		method326(buffer);
+	public void method325(Packet packet) {
+		anInt540 = packet.get1U();
+		anInt538 = packet.get4();
+		anInt539 = packet.get4();
+		method326(packet);
 	}
 
-	public void method326(Buffer buffer) {
-		anInt535 = buffer.get1U();
+	public void method326(Packet packet) {
+		anInt535 = packet.get1U();
 		anIntArray536 = new int[anInt535];
 		anIntArray537 = new int[anInt535];
 		for (int i = 0; i < anInt535; i++) {
-			anIntArray536[i] = buffer.get2U();
-			anIntArray537[i] = buffer.get2U();
+			anIntArray536[i] = packet.get2U();
+			anIntArray537[i] = packet.get2U();
 		}
 	}
 

@@ -231,51 +231,51 @@ public class SoundTone {
 		}
 	}
 
-	public void method169(Buffer buffer) {
+	public void method169(Packet packet) {
 		aEnvelope_98 = new SoundEnvelope();
-		aEnvelope_98.method325(buffer);
+		aEnvelope_98.method325(packet);
 		aEnvelope_99 = new SoundEnvelope();
-		aEnvelope_99.method325(buffer);
-		int i = buffer.get1U();
+		aEnvelope_99.method325(packet);
+		int i = packet.get1U();
 		if (i != 0) {
-			buffer.position--;
+			packet.position--;
 			aEnvelope_100 = new SoundEnvelope();
-			aEnvelope_100.method325(buffer);
+			aEnvelope_100.method325(packet);
 			aEnvelope_101 = new SoundEnvelope();
-			aEnvelope_101.method325(buffer);
+			aEnvelope_101.method325(packet);
 		}
-		i = buffer.get1U();
+		i = packet.get1U();
 		if (i != 0) {
-			buffer.position--;
+			packet.position--;
 			aEnvelope_102 = new SoundEnvelope();
-			aEnvelope_102.method325(buffer);
+			aEnvelope_102.method325(packet);
 			aEnvelope_103 = new SoundEnvelope();
-			aEnvelope_103.method325(buffer);
+			aEnvelope_103.method325(packet);
 		}
-		i = buffer.get1U();
+		i = packet.get1U();
 		if (i != 0) {
-			buffer.position--;
+			packet.position--;
 			aEnvelope_104 = new SoundEnvelope();
-			aEnvelope_104.method325(buffer);
+			aEnvelope_104.method325(packet);
 			aEnvelope_105 = new SoundEnvelope();
-			aEnvelope_105.method325(buffer);
+			aEnvelope_105.method325(packet);
 		}
 		for (int j = 0; j < 10; j++) {
-			int k = buffer.getUSmart();
+			int k = packet.getUSmart();
 			if (k == 0) {
 				break;
 			}
 			anIntArray106[j] = k;
-			anIntArray107[j] = buffer.getSmart();
-			anIntArray108[j] = buffer.getUSmart();
+			anIntArray107[j] = packet.getSmart();
+			anIntArray108[j] = packet.getUSmart();
 		}
-		anInt109 = buffer.getUSmart();
-		anInt110 = buffer.getUSmart();
-		anInt113 = buffer.get2U();
-		anInt114 = buffer.get2U();
+		anInt109 = packet.getUSmart();
+		anInt110 = packet.getUSmart();
+		anInt113 = packet.get2U();
+		anInt114 = packet.get2U();
 		aSoundFilter_111 = new SoundFilter();
 		aEnvelope_112 = new SoundEnvelope();
-		aSoundFilter_111.method545(buffer, aEnvelope_112);
+		aSoundFilter_111.method545(packet, aEnvelope_112);
 	}
 
 }

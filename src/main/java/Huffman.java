@@ -5,14 +5,14 @@
 public class Huffman {
 
 	public static final char[] aCharArray631 = new char[100];
-	public static final Buffer A_BUFFER___632 = new Buffer(new byte[100]);
+	public static final Packet A_PACKET___632 = new Packet(new byte[100]);
 	public static final char[] aCharArray633 = {' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']'};
 
-	public static String method525(int i, Buffer buffer) {
+	public static String method525(int i, Packet packet) {
 		int j = 0;
 		int k = -1;
 		for (int l = 0; l < i; l++) {
-			int i1 = buffer.get1U();
+			int i1 = packet.get1U();
 			int j1 = (i1 >> 4) & 0xf;
 			if (k == -1) {
 				if (j1 < 13) {
@@ -50,7 +50,7 @@ public class Huffman {
 		return new String(aCharArray631, 0, j);
 	}
 
-	public static void method526(String s, Buffer buffer) {
+	public static void method526(String s, Packet packet) {
 		if (s.length() > 80) {
 			s = s.substring(0, 80);
 		}
@@ -73,27 +73,27 @@ public class Huffman {
 				if (k < 13) {
 					i = k;
 				} else {
-					buffer.put1(k);
+					packet.put1(k);
 				}
 			} else if (k < 13) {
-				buffer.put1((i << 4) + k);
+				packet.put1((i << 4) + k);
 				i = -1;
 			} else {
-				buffer.put1((i << 4) + (k >> 4));
+				packet.put1((i << 4) + (k >> 4));
 				i = k & 0xf;
 			}
 		}
 		if (i != -1) {
-			buffer.put1(i << 4);
+			packet.put1(i << 4);
 		}
 	}
 
 	public static String method527(String s) {
-		A_BUFFER___632.position = 0;
-		method526(s, A_BUFFER___632);
-		int j = A_BUFFER___632.position;
-		A_BUFFER___632.position = 0;
-		return method525(j, A_BUFFER___632);
+		A_PACKET___632.position = 0;
+		method526(s, A_PACKET___632);
+		int j = A_PACKET___632.position;
+		A_PACKET___632.position = 0;
+		return method525(j, A_PACKET___632);
 	}
 
 }

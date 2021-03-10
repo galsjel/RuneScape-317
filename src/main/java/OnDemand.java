@@ -163,21 +163,21 @@ public class OnDemand implements Runnable {
 		for (int i = 0; i < 4; i++) {
 			byte[] abyte0 = archive.read(as[i], null);
 			int j = abyte0.length / 2;
-			Buffer buffer = new Buffer(abyte0);
+			Packet packet = new Packet(abyte0);
 			anIntArrayArray1364[i] = new int[j];
 			aByteArrayArray1342[i] = new byte[j];
 			for (int l = 0; l < j; l++) {
-				anIntArrayArray1364[i][l] = buffer.get2U();
+				anIntArrayArray1364[i][l] = packet.get2U();
 			}
 		}
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 		for (int k = 0; k < 4; k++) {
 			byte[] abyte1 = archive.read(as1[k], null);
 			int i1 = abyte1.length / 4;
-			Buffer buffer_1 = new Buffer(abyte1);
+			Packet packet_1 = new Packet(abyte1);
 			anIntArrayArray1365[k] = new int[i1];
 			for (int l1 = 0; l1 < i1; l1++) {
-				anIntArrayArray1365[k][l1] = buffer_1.get4();
+				anIntArrayArray1365[k][l1] = packet_1.get4();
 			}
 		}
 		byte[] abyte2 = archive.read("model_index", null);
@@ -191,7 +191,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 		abyte2 = archive.read("map_index", null);
-		Buffer class30_sub2_sub2_2 = new Buffer(abyte2);
+		Packet class30_sub2_sub2_2 = new Packet(abyte2);
 		j1 = abyte2.length / 7;
 		anIntArray1371 = new int[j1];
 		anIntArray1350 = new int[j1];
@@ -204,14 +204,14 @@ public class OnDemand implements Runnable {
 			anIntArray1356[i2] = class30_sub2_sub2_2.get1U();
 		}
 		abyte2 = archive.read("anim_index", null);
-		class30_sub2_sub2_2 = new Buffer(abyte2);
+		class30_sub2_sub2_2 = new Packet(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1360 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++) {
 			anIntArray1360[j2] = class30_sub2_sub2_2.get2U();
 		}
 		abyte2 = archive.read("midi_index", null);
-		class30_sub2_sub2_2 = new Buffer(abyte2);
+		class30_sub2_sub2_2 = new Packet(abyte2);
 		j1 = abyte2.length;
 		anIntArray1348 = new int[j1];
 		for (int k2 = 0; k2 < j1; k2++) {

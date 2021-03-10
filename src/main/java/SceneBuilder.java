@@ -68,10 +68,10 @@ public class SceneBuilder {
 		return i_109_;
 	}
 
-	public static void method173(Buffer buffer, OnDemand onDemand) {
+	public static void method173(Packet packet, OnDemand onDemand) {
 		int i_110_ = -1;
 		for (; ; ) {
-			int i_111_ = buffer.getUSmart();
+			int i_111_ = packet.getUSmart();
 			if (i_111_ == 0) {
 				break;
 			}
@@ -79,11 +79,11 @@ public class SceneBuilder {
 			LocType type = LocType.method572(i_110_);
 			type.method574(onDemand);
 			for (; ; ) {
-				int i_112_ = buffer.getUSmart();
+				int i_112_ = packet.getUSmart();
 				if (i_112_ == 0) {
 					break;
 				}
-				buffer.get1U();
+				packet.get1U();
 			}
 		}
 	}
@@ -331,10 +331,10 @@ public class SceneBuilder {
 
 	public static boolean method189(int i, byte[] is, int i_250_) {
 		boolean bool = true;
-		Buffer buffer = new Buffer(is);
+		Packet packet = new Packet(is);
 		int i_252_ = -1;
 		for (; ; ) {
-			int i_253_ = buffer.getUSmart();
+			int i_253_ = packet.getUSmart();
 			if (i_253_ == 0) {
 				break;
 			}
@@ -343,20 +343,20 @@ public class SceneBuilder {
 			boolean bool_255_ = false;
 			for (; ; ) {
 				if (bool_255_) {
-					int i_256_ = buffer.getUSmart();
+					int i_256_ = packet.getUSmart();
 					if (i_256_ == 0) {
 						break;
 					}
-					buffer.get1U();
+					packet.get1U();
 				} else {
-					int i_257_ = buffer.getUSmart();
+					int i_257_ = packet.getUSmart();
 					if (i_257_ == 0) {
 						break;
 					}
 					i_254_ += i_257_ - 1;
 					int i_258_ = i_254_ & 0x3f;
 					int i_259_ = (i_254_ >> 6) & 0x3f;
-					int i_260_ = buffer.get1U() >> 2;
+					int i_260_ = packet.get1U() >> 2;
 					int i_261_ = i_259_ + i;
 					int i_262_ = i_258_ + i_250_;
 					if ((i_261_ > 0) && (i_262_ > 0) && (i_261_ < 103) && (i_262_ < 103)) {
@@ -1062,14 +1062,14 @@ public class SceneBuilder {
 				}
 			}
 		}
-		Buffer buffer = new Buffer(is);
+		Packet packet = new Packet(is);
 		for (int i_172_ = 0; i_172_ < 4; i_172_++) {
 			for (int i_173_ = 0; i_173_ < 64; i_173_++) {
 				for (int i_174_ = 0; i_174_ < 64; i_174_++) {
 					if ((i_172_ == i) && (i_173_ >= i_165_) && (i_173_ < (i_165_ + 8)) && (i_174_ >= i_166_) && (i_174_ < (i_166_ + 8))) {
-						method181(i_168_ + ChunkUtil.method156(i_174_ & 0x7, i_162_, i_173_ & 0x7), 0, buffer, i_164_ + ChunkUtil.method155(i_162_, i_174_ & 0x7, i_173_ & 0x7), i_167_, i_162_, 0);
+						method181(i_168_ + ChunkUtil.method156(i_174_ & 0x7, i_162_, i_173_ & 0x7), 0, packet, i_164_ + ChunkUtil.method155(i_162_, i_174_ & 0x7, i_173_ & 0x7), i_167_, i_162_, 0);
 					} else {
-						method181(-1, 0, buffer, -1, 0, 0, 0);
+						method181(-1, 0, packet, -1, 0, 0, 0);
 					}
 				}
 			}
@@ -1086,21 +1086,21 @@ public class SceneBuilder {
 				}
 			}
 		}
-		Buffer buffer = new Buffer(is);
+		Packet packet = new Packet(is);
 		for (int i_182_ = 0; i_182_ < 4; i_182_++) {
 			for (int i_183_ = 0; i_183_ < 64; i_183_++) {
 				for (int i_184_ = 0; i_184_ < 64; i_184_++) {
-					method181(i_184_ + i, i_177_, buffer, i_183_ + i_175_, i_182_, 0, i_176_);
+					method181(i_184_ + i, i_177_, packet, i_183_ + i_175_, i_182_, 0, i_176_);
 				}
 			}
 		}
 	}
 
-	public void method181(int i, int i_185_, Buffer buffer, int i_186_, int i_187_, int i_188_, int i_190_) {
+	public void method181(int i, int i_185_, Packet packet, int i_186_, int i_187_, int i_188_, int i_190_) {
 		if ((i_186_ >= 0) && (i_186_ < 104) && (i >= 0) && (i < 104)) {
 			aByteArrayArrayArray149[i_187_][i_186_][i] = (byte) 0;
 			for (; ; ) {
-				int i_191_ = buffer.get1U();
+				int i_191_ = packet.get1U();
 				if (i_191_ == 0) {
 					if (i_187_ == 0) {
 						anIntArrayArrayArray129[0][i_186_][i] = -method172(932731 + i_186_ + i_190_, 556238 + i + i_185_) * 8;
@@ -1111,7 +1111,7 @@ public class SceneBuilder {
 					break;
 				}
 				if (i_191_ == 1) {
-					int i_192_ = buffer.get1U();
+					int i_192_ = packet.get1U();
 					if (i_192_ == 1) {
 						i_192_ = 0;
 					}
@@ -1124,7 +1124,7 @@ public class SceneBuilder {
 					break;
 				}
 				if (i_191_ <= 49) {
-					aByteArrayArrayArray130[i_187_][i_186_][i] = buffer.get1();
+					aByteArrayArrayArray130[i_187_][i_186_][i] = packet.get1();
 					aByteArrayArrayArray136[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
 					aByteArrayArrayArray148[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
 				} else if (i_191_ <= 81) {
@@ -1135,16 +1135,16 @@ public class SceneBuilder {
 			}
 		} else {
 			for (; ; ) {
-				int i_193_ = buffer.get1U();
+				int i_193_ = packet.get1U();
 				if (i_193_ == 0) {
 					break;
 				}
 				if (i_193_ == 1) {
-					buffer.get1U();
+					packet.get1U();
 					break;
 				}
 				if (i_193_ <= 49) {
-					buffer.get1U();
+					packet.get1U();
 				}
 			}
 		}
@@ -1164,17 +1164,17 @@ public class SceneBuilder {
 	}
 
 	public void method183(SceneCollisionMap[] collisionMaps, SceneGraph graph, int i, int i_197_, int i_198_, int i_199_, byte[] is, int i_200_, int i_201_, int i_202_) {
-		Buffer buffer = new Buffer(is);
+		Packet packet = new Packet(is);
 		int i_203_ = -1;
 		for (; ; ) {
-			int i_204_ = buffer.getUSmart();
+			int i_204_ = packet.getUSmart();
 			if (i_204_ == 0) {
 				break;
 			}
 			i_203_ += i_204_;
 			int i_205_ = 0;
 			for (; ; ) {
-				int i_206_ = buffer.getUSmart();
+				int i_206_ = packet.getUSmart();
 				if (i_206_ == 0) {
 					break;
 				}
@@ -1182,7 +1182,7 @@ public class SceneBuilder {
 				int i_207_ = i_205_ & 0x3f;
 				int i_208_ = (i_205_ >> 6) & 0x3f;
 				int i_209_ = i_205_ >> 12;
-				int i_210_ = buffer.get1U();
+				int i_210_ = packet.get1U();
 				int i_211_ = i_210_ >> 2;
 				int i_212_ = i_210_ & 0x3;
 				if ((i_209_ == i) && (i_208_ >= i_200_) && (i_208_ < (i_200_ + 8)) && (i_207_ >= i_198_) && (i_207_ < (i_198_ + 8))) {
@@ -1228,17 +1228,17 @@ public class SceneBuilder {
 	}
 
 	public void method190(int i, SceneCollisionMap[] collisionMaps, int i_263_, SceneGraph graph, byte[] is) {
-		Buffer buffer = new Buffer(is);
+		Packet packet = new Packet(is);
 		int i_265_ = -1;
 		for (; ; ) {
-			int i_266_ = buffer.getUSmart();
+			int i_266_ = packet.getUSmart();
 			if (i_266_ == 0) {
 				break;
 			}
 			i_265_ += i_266_;
 			int i_267_ = 0;
 			for (; ; ) {
-				int i_268_ = buffer.getUSmart();
+				int i_268_ = packet.getUSmart();
 				if (i_268_ == 0) {
 					break;
 				}
@@ -1246,7 +1246,7 @@ public class SceneBuilder {
 				int i_269_ = i_267_ & 0x3f;
 				int i_270_ = (i_267_ >> 6) & 0x3f;
 				int i_271_ = i_267_ >> 12;
-				int i_272_ = buffer.get1U();
+				int i_272_ = packet.get1U();
 				int i_273_ = i_272_ >> 2;
 				int i_274_ = i_272_ & 0x3;
 				int i_275_ = i_270_ + i;

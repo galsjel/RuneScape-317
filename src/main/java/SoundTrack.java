@@ -7,7 +7,7 @@ public class SoundTrack {
 	public static final SoundTrack[] A_TRACK_ARRAY_325 = new SoundTrack[5000];
 	public static final int[] anIntArray326 = new int[5000];
 	public static byte[] aByteArray327;
-	public static Buffer aBuffer_328;
+	public static Packet aPacket_328;
 	public final SoundTone[] aToneArray329 = new SoundTone[10];
 	public int anInt330;
 	public int anInt331;
@@ -15,22 +15,22 @@ public class SoundTrack {
 	public SoundTrack() {
 	}
 
-	public static void method240(Buffer buffer) {
+	public static void method240(Packet packet) {
 		aByteArray327 = new byte[0x6baa8];
-		aBuffer_328 = new Buffer(aByteArray327);
+		aPacket_328 = new Packet(aByteArray327);
 		SoundTone.method166();
 		do {
-			int j = buffer.get2U();
+			int j = packet.get2U();
 			if (j == 65535) {
 				return;
 			}
 			A_TRACK_ARRAY_325[j] = new SoundTrack();
-			A_TRACK_ARRAY_325[j].method242(buffer);
+			A_TRACK_ARRAY_325[j].method242(packet);
 			anIntArray326[j] = A_TRACK_ARRAY_325[j].method243();
 		} while (true);
 	}
 
-	public static Buffer method241(int i, int j) {
+	public static Packet method241(int i, int j) {
 		if (A_TRACK_ARRAY_325[j] != null) {
 			SoundTrack track = A_TRACK_ARRAY_325[j];
 			return track.method244(i);
@@ -39,17 +39,17 @@ public class SoundTrack {
 		}
 	}
 
-	public void method242(Buffer buffer) {
+	public void method242(Packet packet) {
 		for (int i = 0; i < 10; i++) {
-			int j = buffer.get1U();
+			int j = packet.get1U();
 			if (j != 0) {
-				buffer.position--;
+				packet.position--;
 				aToneArray329[i] = new SoundTone();
-				aToneArray329[i].method169(buffer);
+				aToneArray329[i].method169(packet);
 			}
 		}
-		anInt330 = buffer.get2U();
-		anInt331 = buffer.get2U();
+		anInt330 = packet.get2U();
+		anInt331 = packet.get2U();
 	}
 
 	public int method243() {
@@ -77,24 +77,24 @@ public class SoundTrack {
 		return j;
 	}
 
-	public Buffer method244(int i) {
+	public Packet method244(int i) {
 		int k = method245(i);
-		aBuffer_328.position = 0;
-		aBuffer_328.put4(0x52494646);
-		aBuffer_328.put4LE(36 + k);
-		aBuffer_328.put4(0x57415645);
-		aBuffer_328.put4(0x666d7420);
-		aBuffer_328.put4LE(16);
-		aBuffer_328.put2LE(1);
-		aBuffer_328.put2LE(1);
-		aBuffer_328.put4LE(22050);
-		aBuffer_328.put4LE(22050);
-		aBuffer_328.put2LE(1);
-		aBuffer_328.put2LE(8);
-		aBuffer_328.put4(0x64617461);
-		aBuffer_328.put4LE(k);
-		aBuffer_328.position += k;
-		return aBuffer_328;
+		aPacket_328.position = 0;
+		aPacket_328.put4(0x52494646);
+		aPacket_328.put4LE(36 + k);
+		aPacket_328.put4(0x57415645);
+		aPacket_328.put4(0x666d7420);
+		aPacket_328.put4LE(16);
+		aPacket_328.put2LE(1);
+		aPacket_328.put2LE(1);
+		aPacket_328.put4LE(22050);
+		aPacket_328.put4LE(22050);
+		aPacket_328.put2LE(1);
+		aPacket_328.put2LE(8);
+		aPacket_328.put4(0x64617461);
+		aPacket_328.put4LE(k);
+		aPacket_328.position += k;
+		return aPacket_328;
 	}
 
 	public int method245(int i) {

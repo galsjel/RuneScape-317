@@ -17,29 +17,29 @@ public class BitmapFont extends Draw2D {
 	public boolean aBoolean1499 = false;
 
 	public BitmapFont(boolean flag, String s, FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(archive.read("index.dat", null));
-		buffer_1.position = buffer.get2U() + 4;
-		int k = buffer_1.get1U();
+		Packet packet = new Packet(archive.read(s + ".dat", null));
+		Packet packet_1 = new Packet(archive.read("index.dat", null));
+		packet_1.position = packet.get2U() + 4;
+		int k = packet_1.get1U();
 		if (k > 0) {
-			buffer_1.position += 3 * (k - 1);
+			packet_1.position += 3 * (k - 1);
 		}
 		for (int l = 0; l < 256; l++) {
-			anIntArray1494[l] = buffer_1.get1U();
-			anIntArray1495[l] = buffer_1.get1U();
-			int i1 = anIntArray1492[l] = buffer_1.get2U();
-			int j1 = anIntArray1493[l] = buffer_1.get2U();
-			int k1 = buffer_1.get1U();
+			anIntArray1494[l] = packet_1.get1U();
+			anIntArray1495[l] = packet_1.get1U();
+			int i1 = anIntArray1492[l] = packet_1.get2U();
+			int j1 = anIntArray1493[l] = packet_1.get2U();
+			int k1 = packet_1.get1U();
 			int l1 = i1 * j1;
 			aByteArrayArray1491[l] = new byte[l1];
 			if (k1 == 0) {
 				for (int i2 = 0; i2 < l1; i2++) {
-					aByteArrayArray1491[l][i2] = buffer.get1();
+					aByteArrayArray1491[l][i2] = packet.get1();
 				}
 			} else if (k1 == 1) {
 				for (int j2 = 0; j2 < i1; j2++) {
 					for (int l2 = 0; l2 < j1; l2++) {
-						aByteArrayArray1491[l][j2 + (l2 * i1)] = buffer.get1();
+						aByteArrayArray1491[l][j2 + (l2 * i1)] = packet.get1();
 					}
 				}
 			}

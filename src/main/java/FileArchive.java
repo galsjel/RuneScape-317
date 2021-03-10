@@ -16,33 +16,33 @@ public class FileArchive {
 	}
 
 	public void load(byte[] src) {
-		Buffer buffer = new Buffer(src);
+		Packet packet = new Packet(src);
 
-		int unpackedSize = buffer.get3();
-		int packedSize = buffer.get3();
+		int unpackedSize = packet.get3();
+		int packedSize = packet.get3();
 
 		if (packedSize != unpackedSize) {
 			data = new byte[unpackedSize];
 			BZip2.decompress(data, unpackedSize, src, 6, packedSize);
-			buffer = new Buffer(data);
+			packet = new Packet(data);
 			unpacked = true;
 		} else {
 			data = src;
 			unpacked = false;
 		}
 
-		fileCount = buffer.get2U();
+		fileCount = packet.get2U();
 		fileHash = new int[fileCount];
 		fileSizeInflated = new int[fileCount];
 		fileSizeDeflated = new int[fileCount];
 		fileOffset = new int[fileCount];
 
-		int offset = buffer.position + (fileCount * 10);
+		int offset = packet.position + (fileCount * 10);
 
 		for (int file = 0; file < fileCount; file++) {
-			fileHash[file] = buffer.get4();
-			fileSizeInflated[file] = buffer.get3();
-			fileSizeDeflated[file] = buffer.get3();
+			fileHash[file] = packet.get4();
+			fileSizeInflated[file] = packet.get3();
+			fileSizeDeflated[file] = packet.get3();
 			fileOffset[file] = offset;
 			offset += fileSizeDeflated[file];
 		}

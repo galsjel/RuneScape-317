@@ -9,7 +9,7 @@ public class ObjType {
 	public static ObjType[] aTypeArray172;
 	public static int anInt180;
 	public static boolean aBoolean182 = true;
-	public static Buffer aBuffer_183;
+	public static Packet aPacket_183;
 	public static int[] anIntArray195;
 	public static int anInt203;
 	public byte aByte154;
@@ -61,18 +61,18 @@ public class ObjType {
 		aCache_158 = null;
 		anIntArray195 = null;
 		aTypeArray172 = null;
-		aBuffer_183 = null;
+		aPacket_183 = null;
 	}
 
 	public static void method193(FileArchive archive) {
-		aBuffer_183 = new Buffer(archive.read("obj.dat", null));
-		Buffer buffer = new Buffer(archive.read("obj.idx", null));
-		anInt203 = buffer.get2U();
+		aPacket_183 = new Packet(archive.read("obj.dat", null));
+		Packet packet = new Packet(archive.read("obj.idx", null));
+		anInt203 = packet.get2U();
 		anIntArray195 = new int[anInt203];
 		int i = 2;
 		for (int j = 0; j < anInt203; j++) {
 			anIntArray195[j] = i;
-			i += buffer.get2U();
+			i += packet.get2U();
 		}
 		aTypeArray172 = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -88,10 +88,10 @@ public class ObjType {
 		}
 		anInt180 = (anInt180 + 1) % 10;
 		ObjType type = aTypeArray172[anInt180];
-		aBuffer_183.position = anIntArray195[i];
+		aPacket_183.position = anIntArray195[i];
 		type.anInt157 = i;
 		type.method197();
-		type.method203(aBuffer_183);
+		type.method203(aPacket_183);
 		if (type.anInt163 != -1) {
 			type.method199();
 		}
@@ -466,57 +466,57 @@ public class ObjType {
 		return model;
 	}
 
-	public void method203(Buffer buffer) {
+	public void method203(Packet packet) {
 		do {
-			int i = buffer.get1U();
+			int i = packet.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt174 = buffer.get2U();
+				anInt174 = packet.get2U();
 			} else if (i == 2) {
-				aString170 = buffer.getString();
+				aString170 = packet.getString();
 			} else if (i == 3) {
-				aByteArray178 = buffer.getStringRaw();
+				aByteArray178 = packet.getStringRaw();
 			} else if (i == 4) {
-				anInt181 = buffer.get2U();
+				anInt181 = packet.get2U();
 			} else if (i == 5) {
-				anInt190 = buffer.get2U();
+				anInt190 = packet.get2U();
 			} else if (i == 6) {
-				anInt198 = buffer.get2U();
+				anInt198 = packet.get2U();
 			} else if (i == 7) {
-				anInt169 = buffer.get2U();
+				anInt169 = packet.get2U();
 				if (anInt169 > 32767) {
 					anInt169 -= 0x10000;
 				}
 			} else if (i == 8) {
-				anInt194 = buffer.get2U();
+				anInt194 = packet.get2U();
 				if (anInt194 > 32767) {
 					anInt194 -= 0x10000;
 				}
 			} else if (i == 10) {
-				unusedInt = buffer.get2U();
+				unusedInt = packet.get2U();
 			} else if (i == 11) {
 				aBoolean176 = true;
 			} else if (i == 12) {
-				anInt155 = buffer.get4();
+				anInt155 = packet.get4();
 			} else if (i == 16) {
 				aBoolean161 = true;
 			} else if (i == 23) {
-				anInt165 = buffer.get2U();
-				aByte205 = buffer.get1();
+				anInt165 = packet.get2U();
+				aByte205 = packet.get1();
 			} else if (i == 24) {
-				anInt188 = buffer.get2U();
+				anInt188 = packet.get2U();
 			} else if (i == 25) {
-				anInt200 = buffer.get2U();
-				aByte154 = buffer.get1();
+				anInt200 = packet.get2U();
+				aByte154 = packet.get1();
 			} else if (i == 26) {
-				anInt164 = buffer.get2U();
+				anInt164 = packet.get2U();
 			} else if ((i >= 30) && (i < 35)) {
 				if (aStringArray168 == null) {
 					aStringArray168 = new String[5];
 				}
-				aStringArray168[i - 30] = buffer.getString();
+				aStringArray168[i - 30] = packet.getString();
 				if (aStringArray168[i - 30].equalsIgnoreCase("hidden")) {
 					aStringArray168[i - 30] = null;
 				}
@@ -524,52 +524,52 @@ public class ObjType {
 				if (aStringArray189 == null) {
 					aStringArray189 = new String[5];
 				}
-				aStringArray189[i - 35] = buffer.getString();
+				aStringArray189[i - 35] = packet.getString();
 			} else if (i == 40) {
-				int j = buffer.get1U();
+				int j = packet.get1U();
 				anIntArray156 = new int[j];
 				anIntArray160 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray156[k] = buffer.get2U();
-					anIntArray160[k] = buffer.get2U();
+					anIntArray156[k] = packet.get2U();
+					anIntArray160[k] = packet.get2U();
 				}
 			} else if (i == 78) {
-				anInt185 = buffer.get2U();
+				anInt185 = packet.get2U();
 			} else if (i == 79) {
-				anInt162 = buffer.get2U();
+				anInt162 = packet.get2U();
 			} else if (i == 90) {
-				anInt175 = buffer.get2U();
+				anInt175 = packet.get2U();
 			} else if (i == 91) {
-				anInt197 = buffer.get2U();
+				anInt197 = packet.get2U();
 			} else if (i == 92) {
-				anInt166 = buffer.get2U();
+				anInt166 = packet.get2U();
 			} else if (i == 93) {
-				anInt173 = buffer.get2U();
+				anInt173 = packet.get2U();
 			} else if (i == 95) {
-				anInt204 = buffer.get2U();
+				anInt204 = packet.get2U();
 			} else if (i == 97) {
-				anInt179 = buffer.get2U();
+				anInt179 = packet.get2U();
 			} else if (i == 98) {
-				anInt163 = buffer.get2U();
+				anInt163 = packet.get2U();
 			} else if ((i >= 100) && (i < 110)) {
 				if (anIntArray193 == null) {
 					anIntArray193 = new int[10];
 					anIntArray201 = new int[10];
 				}
-				anIntArray193[i - 100] = buffer.get2U();
-				anIntArray201[i - 100] = buffer.get2U();
+				anIntArray193[i - 100] = packet.get2U();
+				anIntArray201[i - 100] = packet.get2U();
 			} else if (i == 110) {
-				anInt167 = buffer.get2U();
+				anInt167 = packet.get2U();
 			} else if (i == 111) {
-				anInt192 = buffer.get2U();
+				anInt192 = packet.get2U();
 			} else if (i == 112) {
-				anInt191 = buffer.get2U();
+				anInt191 = packet.get2U();
 			} else if (i == 113) {
-				anInt196 = buffer.get1();
+				anInt196 = packet.get1();
 			} else if (i == 114) {
-				anInt184 = buffer.get1() * 5;
+				anInt184 = packet.get1() * 5;
 			} else if (i == 115) {
-				anInt202 = buffer.get1U();
+				anInt202 = packet.get1U();
 			}
 		} while (true);
 	}

@@ -17,8 +17,8 @@ public class IDKType {
 	}
 
 	public static void method535(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("idk.dat", null));
-		anInt655 = buffer.get2U();
+		Packet packet = new Packet(archive.read("idk.dat", null));
+		anInt655 = packet.get2U();
 		if (aIDKTypeArray656 == null) {
 			aIDKTypeArray656 = new IDKType[anInt655];
 		}
@@ -26,32 +26,32 @@ public class IDKType {
 			if (aIDKTypeArray656[j] == null) {
 				aIDKTypeArray656[j] = new IDKType();
 			}
-			aIDKTypeArray656[j].method536(buffer);
+			aIDKTypeArray656[j].method536(packet);
 		}
 	}
 
-	public void method536(Buffer buffer) {
+	public void method536(Packet packet) {
 		do {
-			int i = buffer.get1U();
+			int i = packet.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt657 = buffer.get1U();
+				anInt657 = packet.get1U();
 			} else if (i == 2) {
-				int j = buffer.get1U();
+				int j = packet.get1U();
 				anIntArray658 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray658[k] = buffer.get2U();
+					anIntArray658[k] = packet.get2U();
 				}
 			} else if (i == 3) {
 				aBoolean662 = true;
 			} else if ((i >= 40) && (i < 50)) {
-				anIntArray659[i - 40] = buffer.get2U();
+				anIntArray659[i - 40] = packet.get2U();
 			} else if ((i >= 50) && (i < 60)) {
-				anIntArray660[i - 50] = buffer.get2U();
+				anIntArray660[i - 50] = packet.get2U();
 			} else if ((i >= 60) && (i < 70)) {
-				anIntArray661[i - 60] = buffer.get2U();
+				anIntArray661[i - 60] = packet.get2U();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
 			}
