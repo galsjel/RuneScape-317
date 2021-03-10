@@ -1,104 +1,119 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
+/**
+ * https://www.rune-server.ee/runescape-development/rs2-client/snippets/421977-sound-effects.html
+ * https://ccrma.stanford.edu/~jos/filters/Direct_Form_I.html
+ * https://en.wikipedia.org/wiki/Digital_biquad_filter
+ */
 public class SoundFilter {
 
-	public static final float[][] aFloatArrayArray669 = new float[2][8];
-	public static final int[][] anIntArrayArray670 = new int[2][8];
-	public static float aFloat671;
-	public static int anInt672;
-	public final int[] anIntArray665 = new int[2];
-	public final int[][][] anIntArrayArrayArray666 = new int[2][2][4];
-	public final int[][][] anIntArrayArrayArray667 = new int[2][2][4];
-	public final int[] anIntArray668 = new int[2];
+	public static final float[][] coefficient = new float[2][8];
+	public static final int[][] coefficient16 = new int[2][8];
+	public static float unity;
+	public static int unity16;
+	public final int[] pairs = new int[2];
+	public final int[][][] frequencies = new int[2][2][4];
+	public final int[][][] ranges = new int[2][2][4];
+	public final int[] unities = new int[2];
 
 	public SoundFilter() {
 	}
 
-	public float method541(int i, int j, float f) {
-		float f1 = (float) anIntArrayArrayArray667[i][0][j] + (f * (float) (anIntArrayArrayArray667[i][1][j] - anIntArrayArrayArray667[i][0][j]));
-		f1 *= 0.001525879F;
-		return 1.0F - (float) Math.pow(10D, -f1 / 20F);
+	public float gain(int direction, int pair, float delta) {
+		float g = (float) ranges[direction][0][pair] + (delta * (float) (ranges[direction][1][pair] - ranges[direction][0][pair]));
+		g *= 0.001525879F;
+		return 1.0F - (float) Math.pow(10D, -g / 20F);
 	}
 
-	public float method542(float f) {
-		float f1 = 32.7032F * (float) Math.pow(2D, f);
-		return (f1 * 3.141593F) / 11025F;
+	public float normalize(float f) {
+		return (32.7032F * (float) Math.pow(2D, f) * 3.141593F) / 11025F;
 	}
 
-	public float method543(float f, int i, int j) {
-		float f1 = (float) anIntArrayArrayArray666[j][0][i] + (f * (float) (anIntArrayArrayArray666[j][1][i] - anIntArrayArrayArray666[j][0][i]));
+	public float phase(int direction, int pair, float delta) {
+		float f1 = (float) frequencies[direction][0][pair] + (delta * (float) (frequencies[direction][1][pair] - frequencies[direction][0][pair]));
 		f1 *= 0.0001220703F;
-		return method542(f1);
+		return normalize(f1);
 	}
 
-	public int method544(int i, float f) {
-		if (i == 0) {
-			float f1 = (float) anIntArray668[0] + ((float) (anIntArray668[1] - anIntArray668[0]) * f);
-			f1 *= 0.003051758F;
-			aFloat671 = (float) Math.pow(0.10000000000000001D, f1 / 20F);
-			anInt672 = (int) (aFloat671 * 65536F);
+	public int evaluate(int direction, float delta) {
+		if (direction == 0) {
+			float u = (float) unities[0] + ((float) (unities[1] - unities[0]) * delta);
+			u *= 0.003051758F;
+			unity = (float) Math.pow(0.10000000000000001D, u / 20F);
+			unity16 = (int) (unity * 65536F);
 		}
-		if (anIntArray665[i] == 0) {
+
+		if (pairs[direction] == 0) {
 			return 0;
 		}
-		float f2 = method541(i, 0, f);
-		aFloatArrayArray669[i][0] = -2F * f2 * (float) Math.cos(method543(f, 0, i));
-		aFloatArrayArray669[i][1] = f2 * f2;
-		for (int k = 1; k < anIntArray665[i]; k++) {
-			float f3 = method541(i, k, f);
-			float f4 = -2F * f3 * (float) Math.cos(method543(f, k, i));
-			float f5 = f3 * f3;
-			aFloatArrayArray669[i][(k * 2) + 1] = aFloatArrayArray669[i][(k * 2) - 1] * f5;
-			aFloatArrayArray669[i][k * 2] = (aFloatArrayArray669[i][(k * 2) - 1] * f4) + (aFloatArrayArray669[i][(k * 2) - 2] * f5);
-			for (int j1 = (k * 2) - 1; j1 >= 2; j1--) {
-				aFloatArrayArray669[i][j1] += (aFloatArrayArray669[i][j1 - 1] * f4) + (aFloatArrayArray669[i][j1 - 2] * f5);
+
+		float u = gain(direction, 0, delta);
+
+		coefficient[direction][0] = -2F * u * (float) Math.cos(phase(direction, 0, delta));
+		coefficient[direction][1] = u * u;
+
+		for (int pair = 1; pair < pairs[direction]; pair++) {
+			float g = gain(direction, pair, delta);
+			float a = -2F * g * (float) Math.cos(phase(direction, pair, delta));
+			float b = g * g;
+
+			coefficient[direction][(pair * 2) + 1] = coefficient[direction][(pair * 2) - 1] * b;
+			coefficient[direction][pair * 2] = (coefficient[direction][(pair * 2) - 1] * a) + (coefficient[direction][(pair * 2) - 2] * b);
+
+			for (int j = (pair * 2) - 1; j >= 2; j--) {
+				coefficient[direction][j] += (coefficient[direction][j - 1] * a) + (coefficient[direction][j - 2] * b);
 			}
-			aFloatArrayArray669[i][1] += (aFloatArrayArray669[i][0] * f4) + f5;
-			aFloatArrayArray669[i][0] += f4;
+
+			coefficient[direction][1] += (coefficient[direction][0] * a) + b;
+			coefficient[direction][0] += a;
 		}
-		if (i == 0) {
-			for (int l = 0; l < (anIntArray665[0] * 2); l++) {
-				aFloatArrayArray669[0][l] *= aFloat671;
+
+		if (direction == 0) {
+			for (int l = 0; l < (pairs[0] * 2); l++) {
+				coefficient[0][l] *= unity;
 			}
 		}
-		for (int i1 = 0; i1 < (anIntArray665[i] * 2); i1++) {
-			anIntArrayArray670[i][i1] = (int) (aFloatArrayArray669[i][i1] * 65536F);
+
+		for (int pair = 0; pair < (pairs[direction] * 2); pair++) {
+			coefficient16[direction][pair] = (int) (coefficient[direction][pair] * 65536F);
 		}
-		return anIntArray665[i] * 2;
+
+		return pairs[direction] * 2;
 	}
 
-	public void method545(Packet packet, SoundEnvelope envelope) {
-		int i = packet.get1U();
-		anIntArray665[0] = i >> 4;
-		anIntArray665[1] = i & 0xf;
-		if (i != 0) {
-			anIntArray668[0] = packet.get2U();
-			anIntArray668[1] = packet.get2U();
-			int j = packet.get1U();
-			for (int k = 0; k < 2; k++) {
-				for (int l = 0; l < anIntArray665[k]; l++) {
-					anIntArrayArrayArray666[k][0][l] = packet.get2U();
-					anIntArrayArrayArray667[k][0][l] = packet.get2U();
+	public void read(Packet packet, SoundEnvelope envelope) {
+		int count = packet.get1U();
+		pairs[0] = count >> 4;
+		pairs[1] = count & 0xf;
+
+		if (count != 0) {
+			unities[0] = packet.get2U();
+			unities[1] = packet.get2U();
+
+			int migration = packet.get1U();
+
+			for (int direction = 0; direction < 2; direction++) {
+				for (int pair = 0; pair < pairs[direction]; pair++) {
+					frequencies[direction][0][pair] = packet.get2U();
+					ranges[direction][0][pair] = packet.get2U();
 				}
 			}
-			for (int i1 = 0; i1 < 2; i1++) {
-				for (int j1 = 0; j1 < anIntArray665[i1]; j1++) {
-					if ((j & (1 << (i1 * 4) << j1)) != 0) {
-						anIntArrayArrayArray666[i1][1][j1] = packet.get2U();
-						anIntArrayArrayArray667[i1][1][j1] = packet.get2U();
+
+			for (int direction = 0; direction < 2; direction++) {
+				for (int pair = 0; pair < pairs[direction]; pair++) {
+					if ((migration & (1 << (direction * 4) << pair)) != 0) {
+						frequencies[direction][1][pair] = packet.get2U();
+						ranges[direction][1][pair] = packet.get2U();
 					} else {
-						anIntArrayArrayArray666[i1][1][j1] = anIntArrayArrayArray666[i1][0][j1];
-						anIntArrayArrayArray667[i1][1][j1] = anIntArrayArrayArray667[i1][0][j1];
+						frequencies[direction][1][pair] = frequencies[direction][0][pair];
+						ranges[direction][1][pair] = ranges[direction][0][pair];
 					}
 				}
 			}
-			if ((j != 0) || (anIntArray668[1] != anIntArray668[0])) {
-				envelope.method326(packet);
+
+			if ((migration != 0) || (unities[1] != unities[0])) {
+				envelope.readShape(packet);
 			}
 		} else {
-			anIntArray668[0] = anIntArray668[1] = 0;
+			unities[0] = unities[1] = 0;
 		}
 	}
 

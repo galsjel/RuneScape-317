@@ -6657,7 +6657,7 @@ public class Game extends GameShell {
 							flag1 = true;
 						}
 					} else {
-						Packet packet = SoundTrack.method241(anIntArray1241[i], anIntArray1207[i]);
+						Packet packet = SoundTrack.generate(anIntArray1241[i], anIntArray1207[i]);
 						if ((System.currentTimeMillis() + (long) (packet.position / 22)) > (aLong1172 + (long) (anInt1257 / 22))) {
 							anInt1257 = packet.position;
 							aLong1172 = System.currentTimeMillis();
@@ -9071,7 +9071,7 @@ public class Game extends GameShell {
 			if ((aPlayer_1126.anIntArray1500[0] >= (k3 - i14)) && (aPlayer_1126.anIntArray1500[0] <= (k3 + i14)) && (aPlayer_1126.anIntArray1501[0] >= (j6 - i14)) && (aPlayer_1126.anIntArray1501[0] <= (j6 + i14)) && aBoolean848 && !aBoolean960 && (anInt1062 < 50)) {
 				anIntArray1207[anInt1062] = i9;
 				anIntArray1241[anInt1062] = i16;
-				anIntArray1250[anInt1062] = SoundTrack.anIntArray326[i9];
+				anIntArray1250[anInt1062] = SoundTrack.delays[i9];
 				anInt1062++;
 			}
 		}
@@ -10066,7 +10066,7 @@ public class Game extends GameShell {
 				if (aBoolean848 && !aBoolean960 && (anInt1062 < 50)) {
 					anIntArray1207[anInt1062] = i4;
 					anIntArray1241[anInt1062] = l11;
-					anIntArray1250[anInt1062] = k17 + SoundTrack.anIntArray326[i4];
+					anIntArray1250[anInt1062] = k17 + SoundTrack.delays[i4];
 					anInt1062++;
 				}
 				anInt1008 = -1;
