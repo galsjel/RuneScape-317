@@ -23,7 +23,7 @@ public class FloType {
 
 	public static void method260(FileArchive archive) {
 		Buffer buffer = new Buffer(archive.read("flo.dat", null));
-		anInt387 = buffer.getU16();
+		anInt387 = buffer.get2U();
 		if (aTypeArray388 == null) {
 			aTypeArray388 = new FloType[anInt387];
 		}
@@ -37,15 +37,15 @@ public class FloType {
 
 	public void method261(Buffer buffer) {
 		do {
-			int i = buffer.getU8();
+			int i = buffer.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt390 = buffer.get24();
+				anInt390 = buffer.get3();
 				method262(anInt390);
 			} else if (i == 2) {
-				anInt391 = buffer.getU8();
+				anInt391 = buffer.get1U();
 			} else if (i == 3) {
 				unusedBool = true;
 			} else if (i == 5) {
@@ -57,7 +57,7 @@ public class FloType {
 				int k = anInt395;
 				int l = anInt396;
 				int i1 = anInt397;
-				int j1 = buffer.get24();
+				int j1 = buffer.get3();
 				method262(j1);
 				anInt394 = j;
 				anInt395 = k;

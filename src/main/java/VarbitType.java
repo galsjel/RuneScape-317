@@ -19,7 +19,7 @@ public class VarbitType {
 
 	public static void method533(FileArchive archive) {
 		Buffer buffer = new Buffer(archive.read("varbit.dat", null));
-		anInt645 = buffer.getU16();
+		anInt645 = buffer.get2U();
 		if (aVarbitArray646 == null) {
 			aVarbitArray646 = new VarbitType[anInt645];
 		}
@@ -39,22 +39,22 @@ public class VarbitType {
 
 	public void method534(Buffer buffer) {
 		do {
-			int j = buffer.getU8();
+			int j = buffer.get1U();
 			if (j == 0) {
 				return;
 			}
 			if (j == 1) {
-				anInt648 = buffer.getU16();
-				anInt649 = buffer.getU8();
-				anInt650 = buffer.getU8();
+				anInt648 = buffer.get2U();
+				anInt649 = buffer.get1U();
+				anInt650 = buffer.get1U();
 			} else if (j == 10) {
 				unusedString = buffer.getString();
 			} else if (j == 2) {
 				aBoolean651 = true;
 			} else if (j == 3) {
-				unusedInt0 = buffer.get32();
+				unusedInt0 = buffer.get4();
 			} else if (j == 4) {
-				unusedInt1 = buffer.get32();
+				unusedInt1 = buffer.get4();
 			} else {
 				System.out.println("Error unrecognised config code: " + j);
 			}

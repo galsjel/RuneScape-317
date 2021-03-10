@@ -76,83 +76,83 @@ public class Component {
 		aCache_238 = new LRUCache(50000);
 		Buffer buffer = new Buffer(archive.read("data", null));
 		int i = -1;
-		int j = buffer.getU16();
+		int j = buffer.get2U();
 		aComponentArray210 = new Component[j];
 		while (buffer.position < buffer.data.length) {
-			int k = buffer.getU16();
+			int k = buffer.get2U();
 			if (k == 65535) {
-				i = buffer.getU16();
-				k = buffer.getU16();
+				i = buffer.get2U();
+				k = buffer.get2U();
 			}
 			Component component = aComponentArray210[k] = new Component();
 			component.anInt250 = k;
 			component.anInt236 = i;
-			component.anInt262 = buffer.getU8();
-			component.anInt217 = buffer.getU8();
-			component.anInt214 = buffer.getU16();
-			component.anInt220 = buffer.getU16();
-			component.anInt267 = buffer.getU16();
-			component.aByte254 = (byte) buffer.getU8();
-			component.anInt230 = buffer.getU8();
+			component.anInt262 = buffer.get1U();
+			component.anInt217 = buffer.get1U();
+			component.anInt214 = buffer.get2U();
+			component.anInt220 = buffer.get2U();
+			component.anInt267 = buffer.get2U();
+			component.aByte254 = (byte) buffer.get1U();
+			component.anInt230 = buffer.get1U();
 			if (component.anInt230 != 0) {
-				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.getU8();
+				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.get1U();
 			} else {
 				component.anInt230 = -1;
 			}
-			int i1 = buffer.getU8();
+			int i1 = buffer.get1U();
 			if (i1 > 0) {
 				component.anIntArray245 = new int[i1];
 				component.anIntArray212 = new int[i1];
 				for (int j1 = 0; j1 < i1; j1++) {
-					component.anIntArray245[j1] = buffer.getU8();
-					component.anIntArray212[j1] = buffer.getU16();
+					component.anIntArray245[j1] = buffer.get1U();
+					component.anIntArray212[j1] = buffer.get2U();
 				}
 			}
-			int k1 = buffer.getU8();
+			int k1 = buffer.get1U();
 			if (k1 > 0) {
 				component.anIntArrayArray226 = new int[k1][];
 				for (int l1 = 0; l1 < k1; l1++) {
-					int i3 = buffer.getU16();
+					int i3 = buffer.get2U();
 					component.anIntArrayArray226[l1] = new int[i3];
 					for (int l4 = 0; l4 < i3; l4++) {
-						component.anIntArrayArray226[l1][l4] = buffer.getU16();
+						component.anIntArrayArray226[l1][l4] = buffer.get2U();
 					}
 				}
 			}
 			if (component.anInt262 == 0) {
-				component.anInt261 = buffer.getU16();
-				component.aBoolean266 = buffer.getU8() == 1;
-				int i2 = buffer.getU16();
+				component.anInt261 = buffer.get2U();
+				component.aBoolean266 = buffer.get1U() == 1;
+				int i2 = buffer.get2U();
 				component.anIntArray240 = new int[i2];
 				component.anIntArray241 = new int[i2];
 				component.anIntArray272 = new int[i2];
 				for (int j3 = 0; j3 < i2; j3++) {
-					component.anIntArray240[j3] = buffer.getU16();
-					component.anIntArray241[j3] = buffer.get16();
-					component.anIntArray272[j3] = buffer.get16();
+					component.anIntArray240[j3] = buffer.get2U();
+					component.anIntArray241[j3] = buffer.get2();
+					component.anIntArray272[j3] = buffer.get2();
 				}
 			}
 			if (component.anInt262 == 1) {
-				component.unusedInt = buffer.getU16();
-				component.unusedBool = buffer.getU8() == 1;
+				component.unusedInt = buffer.get2U();
+				component.unusedBool = buffer.get1U() == 1;
 			}
 			if (component.anInt262 == 2) {
 				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
 				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
-				component.aBoolean259 = buffer.getU8() == 1;
-				component.aBoolean249 = buffer.getU8() == 1;
-				component.aBoolean242 = buffer.getU8() == 1;
-				component.aBoolean235 = buffer.getU8() == 1;
-				component.anInt231 = buffer.getU8();
-				component.anInt244 = buffer.getU8();
+				component.aBoolean259 = buffer.get1U() == 1;
+				component.aBoolean249 = buffer.get1U() == 1;
+				component.aBoolean242 = buffer.get1U() == 1;
+				component.aBoolean235 = buffer.get1U() == 1;
+				component.anInt231 = buffer.get1U();
+				component.anInt244 = buffer.get1U();
 				component.anIntArray215 = new int[20];
 				component.anIntArray247 = new int[20];
 				component.aImageArray209 = new Image24[20];
 				for (int j2 = 0; j2 < 20; j2++) {
-					int k3 = buffer.getU8();
+					int k3 = buffer.get1U();
 					if (k3 == 1) {
-						component.anIntArray215[j2] = buffer.get16();
-						component.anIntArray247[j2] = buffer.get16();
+						component.anIntArray215[j2] = buffer.get2();
+						component.anIntArray247[j2] = buffer.get2();
 						String s1 = buffer.getString();
 						if ((archive_1 != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
@@ -169,27 +169,27 @@ public class Component {
 				}
 			}
 			if (component.anInt262 == 3) {
-				component.aBoolean227 = buffer.getU8() == 1;
+				component.aBoolean227 = buffer.get1U() == 1;
 			}
 			if ((component.anInt262 == 4) || (component.anInt262 == 1)) {
-				component.aBoolean223 = buffer.getU8() == 1;
-				int k2 = buffer.getU8();
+				component.aBoolean223 = buffer.get1U() == 1;
+				int k2 = buffer.get1U();
 				if (aclass30_sub2_sub1_sub4 != null) {
 					component.aFont_243 = aclass30_sub2_sub1_sub4[k2];
 				}
-				component.aBoolean268 = buffer.getU8() == 1;
+				component.aBoolean268 = buffer.get1U() == 1;
 			}
 			if (component.anInt262 == 4) {
 				component.aString248 = buffer.getString();
 				component.aString228 = buffer.getString();
 			}
 			if ((component.anInt262 == 1) || (component.anInt262 == 3) || (component.anInt262 == 4)) {
-				component.anInt232 = buffer.get32();
+				component.anInt232 = buffer.get4();
 			}
 			if ((component.anInt262 == 3) || (component.anInt262 == 4)) {
-				component.anInt219 = buffer.get32();
-				component.anInt216 = buffer.get32();
-				component.anInt239 = buffer.get32();
+				component.anInt219 = buffer.get4();
+				component.anInt216 = buffer.get4();
+				component.anInt239 = buffer.get4();
 			}
 			if (component.anInt262 == 5) {
 				String s = buffer.getString();
@@ -204,45 +204,45 @@ public class Component {
 				}
 			}
 			if (component.anInt262 == 6) {
-				int l = buffer.getU8();
+				int l = buffer.get1U();
 				if (l != 0) {
 					component.anInt233 = 1;
-					component.anInt234 = ((l - 1) << 8) + buffer.getU8();
+					component.anInt234 = ((l - 1) << 8) + buffer.get1U();
 				}
-				l = buffer.getU8();
+				l = buffer.get1U();
 				if (l != 0) {
 					component.anInt255 = 1;
-					component.anInt256 = ((l - 1) << 8) + buffer.getU8();
+					component.anInt256 = ((l - 1) << 8) + buffer.get1U();
 				}
-				l = buffer.getU8();
+				l = buffer.get1U();
 				if (l != 0) {
-					component.anInt257 = ((l - 1) << 8) + buffer.getU8();
+					component.anInt257 = ((l - 1) << 8) + buffer.get1U();
 				} else {
 					component.anInt257 = -1;
 				}
-				l = buffer.getU8();
+				l = buffer.get1U();
 				if (l != 0) {
-					component.anInt258 = ((l - 1) << 8) + buffer.getU8();
+					component.anInt258 = ((l - 1) << 8) + buffer.get1U();
 				} else {
 					component.anInt258 = -1;
 				}
-				component.anInt269 = buffer.getU16();
-				component.anInt270 = buffer.getU16();
-				component.anInt271 = buffer.getU16();
+				component.anInt269 = buffer.get2U();
+				component.anInt270 = buffer.get2U();
+				component.anInt271 = buffer.get2U();
 			}
 			if (component.anInt262 == 7) {
 				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
 				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
-				component.aBoolean223 = buffer.getU8() == 1;
-				int l2 = buffer.getU8();
+				component.aBoolean223 = buffer.get1U() == 1;
+				int l2 = buffer.get1U();
 				if (aclass30_sub2_sub1_sub4 != null) {
 					component.aFont_243 = aclass30_sub2_sub1_sub4[l2];
 				}
-				component.aBoolean268 = buffer.getU8() == 1;
-				component.anInt232 = buffer.get32();
-				component.anInt231 = buffer.get16();
-				component.anInt244 = buffer.get16();
-				component.aBoolean249 = buffer.getU8() == 1;
+				component.aBoolean268 = buffer.get1U() == 1;
+				component.anInt232 = buffer.get4();
+				component.anInt231 = buffer.get2();
+				component.anInt244 = buffer.get2();
+				component.aBoolean249 = buffer.get1U() == 1;
 				component.aStringArray225 = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
 					component.aStringArray225[k4] = buffer.getString();
@@ -254,7 +254,7 @@ public class Component {
 			if ((component.anInt217 == 2) || (component.anInt262 == 2)) {
 				component.aString222 = buffer.getString();
 				component.aString218 = buffer.getString();
-				component.anInt237 = buffer.getU16();
+				component.anInt237 = buffer.get2U();
 			}
 			if ((component.anInt217 == 1) || (component.anInt217 == 4) || (component.anInt217 == 5) || (component.anInt217 == 6)) {
 				component.aString221 = buffer.getString();

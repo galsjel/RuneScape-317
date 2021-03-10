@@ -194,7 +194,7 @@ public class Model extends Entity {
 		int z = 0;
 
 		for (int v = 0; v < vertexCount; v++) {
-			int flags = buf0.getU8();
+			int flags = buf0.get1U();
 
 			int dx = 0;
 			int dy = 0;
@@ -221,7 +221,7 @@ public class Model extends Entity {
 			z = vertexZ[v];
 
 			if (vertexLabel != null) {
-				vertexLabel[v] = buf4.getU8();
+				vertexLabel[v] = buf4.get1U();
 			}
 		}
 
@@ -232,22 +232,22 @@ public class Model extends Entity {
 		buf4.position = header.obFace5Position;
 
 		for (int face = 0; face < faceCount; face++) {
-			faceColor[face] = buf0.getU16();
+			faceColor[face] = buf0.get2U();
 
 			if (faceInfo != null) {
-				faceInfo[face] = buf1.getU8();
+				faceInfo[face] = buf1.get1U();
 			}
 
 			if (facePriority != null) {
-				facePriority[face] = buf2.getU8();
+				facePriority[face] = buf2.get1U();
 			}
 
 			if (faceAlpha != null) {
-				faceAlpha[face] = buf3.getU8();
+				faceAlpha[face] = buf3.get1U();
 			}
 
 			if (faceLabel != null) {
-				faceLabel[face] = buf4.getU8();
+				faceLabel[face] = buf4.get1U();
 			}
 		}
 
@@ -260,7 +260,7 @@ public class Model extends Entity {
 		int last = 0;
 
 		for (int face = 0; face < faceCount; face++) {
-			int orientation = buf1.getU8();
+			int orientation = buf1.get1U();
 
 			// fancy shmansy compression type stuff.
 			// vertex indices stored as deltas, with some faces
@@ -315,9 +315,9 @@ public class Model extends Entity {
 		buf0.position = header.obAxisPosition;
 
 		for (int face = 0; face < texturedFaceCount; face++) {
-			texturedVertexA[face] = buf0.getU16();
-			texturedVertexB[face] = buf0.getU16();
-			texturedVertexC[face] = buf0.getU16();
+			texturedVertexA[face] = buf0.get2U();
+			texturedVertexB[face] = buf0.get2U();
+			texturedVertexC[face] = buf0.get2U();
 		}
 	}
 
@@ -816,19 +816,19 @@ public class Model extends Entity {
 		buffer.position = src.length - 18;
 		ModelHeader header = headers[id] = new ModelHeader();
 		header.data = src;
-		header.vertexCount = buffer.getU16();
-		header.faceCount = buffer.getU16();
-		header.texturedFaceCount = buffer.getU8();
-		int k = buffer.getU8();
-		int l = buffer.getU8();
-		int i1 = buffer.getU8();
-		int j1 = buffer.getU8();
-		int k1 = buffer.getU8();
-		int l1 = buffer.getU16();
-		int i2 = buffer.getU16();
+		header.vertexCount = buffer.get2U();
+		header.faceCount = buffer.get2U();
+		header.texturedFaceCount = buffer.get1U();
+		int k = buffer.get1U();
+		int l = buffer.get1U();
+		int i1 = buffer.get1U();
+		int j1 = buffer.get1U();
+		int k1 = buffer.get1U();
+		int l1 = buffer.get2U();
+		int i2 = buffer.get2U();
 		//noinspection unused
-		int j2 = buffer.getU16();
-		int k2 = buffer.getU16();
+		int j2 = buffer.get2U();
+		int k2 = buffer.get2U();
 		int offset = 0;
 		header.obPoint1Position = offset;
 		offset += header.vertexCount;
@@ -1805,7 +1805,7 @@ public class Model extends Entity {
 
 		// Our pitch is clamped between 128 and 384 (22.5 degrees and 67.5 degrees)
 		// We know this will be positive and within 92->38% its original value.
-		int radiusCosEyePitch = (this.radius * cosEyePitch) >> 16;
+		int radiusCosEyePitch = (radius * cosEyePitch) >> 16;
 
 		// +Z goes forward, which makes this value supposedly the farthest Z the model should be away from the camera.
 		int maxZ = midZ + radiusCosEyePitch;
@@ -1819,7 +1819,7 @@ public class Model extends Entity {
 		int midX = ((relativeZ * sinEyeYaw) + (relativeX * cosEyeYaw)) >> 16;
 
 		// calculate left bound
-		int leftX = (midX - this.radius) << 9;
+		int leftX = (midX - radius) << 9;
 
 		// early fail
 		if ((leftX / maxZ) >= Draw2D.centerX) {
@@ -1827,7 +1827,7 @@ public class Model extends Entity {
 		}
 
 		// calculate right bound
-		int rightX = (midX + this.radius) << 9;
+		int rightX = (midX + radius) << 9;
 
 		// early fail
 		if ((rightX / maxZ) <= -Draw2D.centerX) {
@@ -1839,7 +1839,7 @@ public class Model extends Entity {
 
 		// Our pitch is clamped between 128 and 384 (22.5 degrees and 67.5 degrees)
 		// We know this will be positive and within 38->92% its original value.
-		int radiusSinEyePitch = (this.radius * sinEyePitch) >> 16;
+		int radiusSinEyePitch = (radius * sinEyePitch) >> 16;
 
 		// calculate bottom bound
 		int bottomY = (midY + radiusSinEyePitch) << 9;
@@ -1974,7 +1974,7 @@ public class Model extends Entity {
 			tmpDepthFaceCount[depth] = 0;
 		}
 
-		for (int f = 0; f < this.faceCount; f++) {
+		for (int f = 0; f < faceCount; f++) {
 			if ((faceInfo != null) && (faceInfo[f] == -1)) {
 				continue;
 			}

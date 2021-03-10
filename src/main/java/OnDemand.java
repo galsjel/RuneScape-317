@@ -167,7 +167,7 @@ public class OnDemand implements Runnable {
 			anIntArrayArray1364[i] = new int[j];
 			aByteArrayArray1342[i] = new byte[j];
 			for (int l = 0; l < j; l++) {
-				anIntArrayArray1364[i][l] = buffer.getU16();
+				anIntArrayArray1364[i][l] = buffer.get2U();
 			}
 		}
 		String[] as1 = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
@@ -177,7 +177,7 @@ public class OnDemand implements Runnable {
 			Buffer buffer_1 = new Buffer(abyte1);
 			anIntArrayArray1365[k] = new int[i1];
 			for (int l1 = 0; l1 < i1; l1++) {
-				anIntArrayArray1365[k][l1] = buffer_1.get32();
+				anIntArrayArray1365[k][l1] = buffer_1.get4();
 			}
 		}
 		byte[] abyte2 = archive.read("model_index", null);
@@ -198,24 +198,24 @@ public class OnDemand implements Runnable {
 		anIntArray1337 = new int[j1];
 		anIntArray1356 = new int[j1];
 		for (int i2 = 0; i2 < j1; i2++) {
-			anIntArray1371[i2] = class30_sub2_sub2_2.getU16();
-			anIntArray1350[i2] = class30_sub2_sub2_2.getU16();
-			anIntArray1337[i2] = class30_sub2_sub2_2.getU16();
-			anIntArray1356[i2] = class30_sub2_sub2_2.getU8();
+			anIntArray1371[i2] = class30_sub2_sub2_2.get2U();
+			anIntArray1350[i2] = class30_sub2_sub2_2.get2U();
+			anIntArray1337[i2] = class30_sub2_sub2_2.get2U();
+			anIntArray1356[i2] = class30_sub2_sub2_2.get1U();
 		}
 		abyte2 = archive.read("anim_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1360 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++) {
-			anIntArray1360[j2] = class30_sub2_sub2_2.getU16();
+			anIntArray1360[j2] = class30_sub2_sub2_2.get2U();
 		}
 		abyte2 = archive.read("midi_index", null);
 		class30_sub2_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length;
 		anIntArray1348 = new int[j1];
 		for (int k2 = 0; k2 < j1; k2++) {
-			anIntArray1348[k2] = class30_sub2_sub2_2.getU8();
+			anIntArray1348[k2] = class30_sub2_sub2_2.get1U();
 		}
 		aGame1343 = game1;
 		aBoolean1353 = true;

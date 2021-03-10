@@ -9,7 +9,7 @@ public class FileArchive {
 	public int[] fileSizeInflated;
 	public int[] fileSizeDeflated;
 	public int[] fileOffset;
-	public boolean inflated;
+	public boolean unpacked;
 
 	public FileArchive(byte[] src) {
 		load(src);
@@ -18,21 +18,20 @@ public class FileArchive {
 	public void load(byte[] src) {
 		Buffer buffer = new Buffer(src);
 
-		int inflatedSize = buffer.get24();
-		int deflatedSize = buffer.get24();
+		int unpackedSize = buffer.get3();
+		int packedSize = buffer.get3();
 
-		if (deflatedSize != inflatedSize) {
-			byte[] inflated = new byte[inflatedSize];
-			BZip2.inflate(inflated, inflatedSize, src, deflatedSize, 6);
-			data = inflated;
+		if (packedSize != unpackedSize) {
+			data = new byte[unpackedSize];
+			BZip2.decompress(data, unpackedSize, src, 6, packedSize);
 			buffer = new Buffer(data);
-			this.inflated = true;
+			unpacked = true;
 		} else {
 			data = src;
-			inflated = false;
+			unpacked = false;
 		}
 
-		fileCount = buffer.getU16();
+		fileCount = buffer.get2U();
 		fileHash = new int[fileCount];
 		fileSizeInflated = new int[fileCount];
 		fileSizeDeflated = new int[fileCount];
@@ -41,9 +40,9 @@ public class FileArchive {
 		int offset = buffer.position + (fileCount * 10);
 
 		for (int file = 0; file < fileCount; file++) {
-			fileHash[file] = buffer.get32();
-			fileSizeInflated[file] = buffer.get24();
-			fileSizeDeflated[file] = buffer.get24();
+			fileHash[file] = buffer.get4();
+			fileSizeInflated[file] = buffer.get3();
+			fileSizeDeflated[file] = buffer.get3();
 			fileOffset[file] = offset;
 			offset += fileSizeDeflated[file];
 		}
@@ -64,8 +63,8 @@ public class FileArchive {
 				dst = new byte[fileSizeInflated[file]];
 			}
 
-			if (!inflated) {
-				BZip2.inflate(dst, fileSizeInflated[file], data, fileSizeDeflated[file], fileOffset[file]);
+			if (!unpacked) {
+				BZip2.decompress(dst, fileSizeInflated[file], data, fileOffset[file], fileSizeDeflated[file]);
 			} else {
 				for (int i = 0; i < fileSizeInflated[file]; i++) {
 					dst[i] = data[fileOffset[file] + i];

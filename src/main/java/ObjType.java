@@ -67,12 +67,12 @@ public class ObjType {
 	public static void method193(FileArchive archive) {
 		aBuffer_183 = new Buffer(archive.read("obj.dat", null));
 		Buffer buffer = new Buffer(archive.read("obj.idx", null));
-		anInt203 = buffer.getU16();
+		anInt203 = buffer.get2U();
 		anIntArray195 = new int[anInt203];
 		int i = 2;
 		for (int j = 0; j < anInt203; j++) {
 			anIntArray195[j] = i;
-			i += buffer.getU16();
+			i += buffer.get2U();
 		}
 		aTypeArray172 = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -468,50 +468,50 @@ public class ObjType {
 
 	public void method203(Buffer buffer) {
 		do {
-			int i = buffer.getU8();
+			int i = buffer.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt174 = buffer.getU16();
+				anInt174 = buffer.get2U();
 			} else if (i == 2) {
 				aString170 = buffer.getString();
 			} else if (i == 3) {
-				aByteArray178 = buffer.getStringBytes();
+				aByteArray178 = buffer.getStringRaw();
 			} else if (i == 4) {
-				anInt181 = buffer.getU16();
+				anInt181 = buffer.get2U();
 			} else if (i == 5) {
-				anInt190 = buffer.getU16();
+				anInt190 = buffer.get2U();
 			} else if (i == 6) {
-				anInt198 = buffer.getU16();
+				anInt198 = buffer.get2U();
 			} else if (i == 7) {
-				anInt169 = buffer.getU16();
+				anInt169 = buffer.get2U();
 				if (anInt169 > 32767) {
 					anInt169 -= 0x10000;
 				}
 			} else if (i == 8) {
-				anInt194 = buffer.getU16();
+				anInt194 = buffer.get2U();
 				if (anInt194 > 32767) {
 					anInt194 -= 0x10000;
 				}
 			} else if (i == 10) {
-				unusedInt = buffer.getU16();
+				unusedInt = buffer.get2U();
 			} else if (i == 11) {
 				aBoolean176 = true;
 			} else if (i == 12) {
-				anInt155 = buffer.get32();
+				anInt155 = buffer.get4();
 			} else if (i == 16) {
 				aBoolean161 = true;
 			} else if (i == 23) {
-				anInt165 = buffer.getU16();
-				aByte205 = buffer.get8();
+				anInt165 = buffer.get2U();
+				aByte205 = buffer.get1();
 			} else if (i == 24) {
-				anInt188 = buffer.getU16();
+				anInt188 = buffer.get2U();
 			} else if (i == 25) {
-				anInt200 = buffer.getU16();
-				aByte154 = buffer.get8();
+				anInt200 = buffer.get2U();
+				aByte154 = buffer.get1();
 			} else if (i == 26) {
-				anInt164 = buffer.getU16();
+				anInt164 = buffer.get2U();
 			} else if ((i >= 30) && (i < 35)) {
 				if (aStringArray168 == null) {
 					aStringArray168 = new String[5];
@@ -526,50 +526,50 @@ public class ObjType {
 				}
 				aStringArray189[i - 35] = buffer.getString();
 			} else if (i == 40) {
-				int j = buffer.getU8();
+				int j = buffer.get1U();
 				anIntArray156 = new int[j];
 				anIntArray160 = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray156[k] = buffer.getU16();
-					anIntArray160[k] = buffer.getU16();
+					anIntArray156[k] = buffer.get2U();
+					anIntArray160[k] = buffer.get2U();
 				}
 			} else if (i == 78) {
-				anInt185 = buffer.getU16();
+				anInt185 = buffer.get2U();
 			} else if (i == 79) {
-				anInt162 = buffer.getU16();
+				anInt162 = buffer.get2U();
 			} else if (i == 90) {
-				anInt175 = buffer.getU16();
+				anInt175 = buffer.get2U();
 			} else if (i == 91) {
-				anInt197 = buffer.getU16();
+				anInt197 = buffer.get2U();
 			} else if (i == 92) {
-				anInt166 = buffer.getU16();
+				anInt166 = buffer.get2U();
 			} else if (i == 93) {
-				anInt173 = buffer.getU16();
+				anInt173 = buffer.get2U();
 			} else if (i == 95) {
-				anInt204 = buffer.getU16();
+				anInt204 = buffer.get2U();
 			} else if (i == 97) {
-				anInt179 = buffer.getU16();
+				anInt179 = buffer.get2U();
 			} else if (i == 98) {
-				anInt163 = buffer.getU16();
+				anInt163 = buffer.get2U();
 			} else if ((i >= 100) && (i < 110)) {
 				if (anIntArray193 == null) {
 					anIntArray193 = new int[10];
 					anIntArray201 = new int[10];
 				}
-				anIntArray193[i - 100] = buffer.getU16();
-				anIntArray201[i - 100] = buffer.getU16();
+				anIntArray193[i - 100] = buffer.get2U();
+				anIntArray201[i - 100] = buffer.get2U();
 			} else if (i == 110) {
-				anInt167 = buffer.getU16();
+				anInt167 = buffer.get2U();
 			} else if (i == 111) {
-				anInt192 = buffer.getU16();
+				anInt192 = buffer.get2U();
 			} else if (i == 112) {
-				anInt191 = buffer.getU16();
+				anInt191 = buffer.get2U();
 			} else if (i == 113) {
-				anInt196 = buffer.get8();
+				anInt196 = buffer.get1();
 			} else if (i == 114) {
-				anInt184 = buffer.get8() * 5;
+				anInt184 = buffer.get1() * 5;
 			} else if (i == 115) {
-				anInt202 = buffer.getU8();
+				anInt202 = buffer.get1U();
 			}
 		} while (true);
 	}

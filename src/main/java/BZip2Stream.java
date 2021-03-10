@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class BZip2Context {
+public class BZip2Stream {
 
 	public static int[] anIntArray587;
 	public byte[] aByteArray563;
@@ -43,7 +43,7 @@ public class BZip2Context {
 	public final int[] anIntArray600 = new int[6];
 	public int anInt601;
 
-	public BZip2Context() {
+	public BZip2Stream() {
 	}
 
 }

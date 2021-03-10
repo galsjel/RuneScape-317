@@ -27,7 +27,7 @@ public class SeqType {
 
 	public static void method257(FileArchive archive) {
 		Buffer buffer = new Buffer(archive.read("seq.dat", null));
-		anInt350 = buffer.getU16();
+		anInt350 = buffer.get2U();
 		if (aTypeArray351 == null) {
 			aTypeArray351 = new SeqType[anInt350];
 		}
@@ -55,50 +55,50 @@ public class SeqType {
 
 	public void method259(Buffer buffer) {
 		do {
-			int i = buffer.getU8();
+			int i = buffer.get1U();
 			if (i == 0) {
 				break;
 			}
 			if (i == 1) {
-				anInt352 = buffer.getU8();
+				anInt352 = buffer.get1U();
 				anIntArray353 = new int[anInt352];
 				anIntArray354 = new int[anInt352];
 				anIntArray355 = new int[anInt352];
 				for (int j = 0; j < anInt352; j++) {
-					anIntArray353[j] = buffer.getU16();
-					anIntArray354[j] = buffer.getU16();
+					anIntArray353[j] = buffer.get2U();
+					anIntArray354[j] = buffer.get2U();
 					if (anIntArray354[j] == 65535) {
 						anIntArray354[j] = -1;
 					}
-					anIntArray355[j] = buffer.getU16();
+					anIntArray355[j] = buffer.get2U();
 				}
 			} else if (i == 2) {
-				anInt356 = buffer.getU16();
+				anInt356 = buffer.get2U();
 			} else if (i == 3) {
-				int k = buffer.getU8();
+				int k = buffer.get1U();
 				anIntArray357 = new int[k + 1];
 				for (int l = 0; l < k; l++) {
-					anIntArray357[l] = buffer.getU8();
+					anIntArray357[l] = buffer.get1U();
 				}
 				anIntArray357[k] = 9999999;
 			} else if (i == 4) {
 				aBoolean358 = true;
 			} else if (i == 5) {
-				anInt359 = buffer.getU8();
+				anInt359 = buffer.get1U();
 			} else if (i == 6) {
-				anInt360 = buffer.getU16();
+				anInt360 = buffer.get2U();
 			} else if (i == 7) {
-				anInt361 = buffer.getU16();
+				anInt361 = buffer.get2U();
 			} else if (i == 8) {
-				anInt362 = buffer.getU8();
+				anInt362 = buffer.get1U();
 			} else if (i == 9) {
-				anInt363 = buffer.getU8();
+				anInt363 = buffer.get1U();
 			} else if (i == 10) {
-				anInt364 = buffer.getU8();
+				anInt364 = buffer.get1U();
 			} else if (i == 11) {
-				anInt365 = buffer.getU8();
+				anInt365 = buffer.get1U();
 			} else if (i == 12) {
-				unusedInt = buffer.get32();
+				unusedInt = buffer.get4();
 			} else {
 				System.out.println("Error unrecognised seq config code: " + i);
 			}

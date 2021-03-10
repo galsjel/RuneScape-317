@@ -20,19 +20,19 @@ public class SoundEnvelope {
 	}
 
 	public void method325(Buffer buffer) {
-		anInt540 = buffer.getU8();
-		anInt538 = buffer.get32();
-		anInt539 = buffer.get32();
+		anInt540 = buffer.get1U();
+		anInt538 = buffer.get4();
+		anInt539 = buffer.get4();
 		method326(buffer);
 	}
 
 	public void method326(Buffer buffer) {
-		anInt535 = buffer.getU8();
+		anInt535 = buffer.get1U();
 		anIntArray536 = new int[anInt535];
 		anIntArray537 = new int[anInt535];
 		for (int i = 0; i < anInt535; i++) {
-			anIntArray536[i] = buffer.getU16();
-			anIntArray537[i] = buffer.getU16();
+			anIntArray536[i] = buffer.get2U();
+			anIntArray537[i] = buffer.get2U();
 		}
 	}
 

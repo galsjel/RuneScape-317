@@ -148,7 +148,7 @@ public class Connection implements Runnable {
 	}
 
 	public void method272() {
-		System.out.println("dummy:" + aBoolean422);
+		System.out.println("closed:" + aBoolean422);
 		System.out.println("tcycl:" + anInt425);
 		System.out.println("tnum:" + anInt426);
 		System.out.println("writer:" + aBoolean427);

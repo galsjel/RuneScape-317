@@ -1,33 +1,28 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 
 public class Buffer extends DoublyLinkedListNode {
 
-	public static final LinkedList bufferPool0 = new LinkedList();
-	public static final LinkedList bufferPool1 = new LinkedList();
-	public static final LinkedList bufferPool2 = new LinkedList();
+	public static final LinkedList pool0 = new LinkedList();
+	public static final LinkedList pool1 = new LinkedList();
+	public static final LinkedList pool2 = new LinkedList();
 	private static final int[] BITMASK = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
-	public static int bufferPoolSize0;
-	public static int bufferPoolSize1;
-	public static int bufferPoolSize2;
+	public static int poolSize0;
+	public static int poolSize1;
+	public static int poolSize2;
 
 	public static Buffer create(int sizeType) {
-		synchronized (bufferPool1) {
+		synchronized (pool1) {
 			Buffer buffer = null;
 
-			if ((sizeType == 0) && (bufferPoolSize0 > 0)) {
-				bufferPoolSize0--;
-				buffer = (Buffer) bufferPool0.method251();
-			} else if ((sizeType == 1) && (bufferPoolSize1 > 0)) {
-				bufferPoolSize1--;
-				buffer = (Buffer) bufferPool1.method251();
-			} else if ((sizeType == 2) && (bufferPoolSize2 > 0)) {
-				bufferPoolSize2--;
-				buffer = (Buffer) bufferPool2.method251();
+			if ((sizeType == 0) && (poolSize0 > 0)) {
+				poolSize0--;
+				buffer = (Buffer) pool0.method251();
+			} else if ((sizeType == 1) && (poolSize1 > 0)) {
+				poolSize1--;
+				buffer = (Buffer) pool1.method251();
+			} else if ((sizeType == 2) && (poolSize2 > 0)) {
+				poolSize2--;
+				buffer = (Buffer) pool2.method251();
 			}
 
 			if (buffer != null) {
@@ -67,63 +62,63 @@ public class Buffer extends DoublyLinkedListNode {
 		data[position++] = (byte) (i + cipher.method246());
 	}
 
-	public void putSize8(int i) {
+	public void putSize1(int i) {
 		data[position - i - 1] = (byte) i;
 	}
 
-	public void put8(int i) {
+	public void put1(int i) {
 		data[position++] = (byte) i;
 	}
 
-	public void put8C(int i) {
+	public void put1C(int i) {
 		data[position++] = (byte) (-i);
 	}
 
-	public void put8S(int j) {
+	public void put1S(int j) {
 		data[position++] = (byte) (128 - j);
 	}
 
-	public void put16(int i) {
+	public void put2(int i) {
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put16A(int j) {
+	public void put2A(int j) {
 		data[position++] = (byte) (j >> 8);
 		data[position++] = (byte) (j + 128);
 	}
 
-	public void put16LE(int i) {
+	public void put2LE(int i) {
 		data[position++] = (byte) i;
 		data[position++] = (byte) (i >> 8);
 	}
 
-	public void put16LEA(int j) {
+	public void put2LEA(int j) {
 		data[position++] = (byte) (j + 128);
 		data[position++] = (byte) (j >> 8);
 	}
 
-	public void put24(int i) {
+	public void put3(int i) {
 		data[position++] = (byte) (i >> 16);
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put32(int i) {
+	public void put4(int i) {
 		data[position++] = (byte) (i >> 24);
 		data[position++] = (byte) (i >> 16);
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put32LE(int j) {
+	public void put4LE(int j) {
 		data[position++] = (byte) j;
 		data[position++] = (byte) (j >> 8);
 		data[position++] = (byte) (j >> 16);
 		data[position++] = (byte) (j >> 24);
 	}
 
-	public void put64(long l) {
+	public void put8(long l) {
 		data[position++] = (byte) (int) (l >> 56);
 		data[position++] = (byte) (int) (l >> 48);
 		data[position++] = (byte) (int) (l >> 40);
@@ -134,9 +129,9 @@ public class Buffer extends DoublyLinkedListNode {
 		data[position++] = (byte) (int) l;
 	}
 
-	public void putString(String s) {
-		put(s.getBytes(StandardCharsets.US_ASCII));
-		put8('\n');
+	public void put(String s) {
+		put(s.getBytes());
+		put1('\n');
 	}
 
 	public void put(byte[] src, int len, int off) {
@@ -154,73 +149,73 @@ public class Buffer extends DoublyLinkedListNode {
 		}
 	}
 
-	public byte get8() {
+	public byte get1() {
 		return data[position++];
 	}
 
-	public byte get8C() {
+	public byte get1C() {
 		return (byte) (-data[position++]);
 	}
 
-	public byte get8S() {
+	public byte get1S() {
 		return (byte) (128 - data[position++]);
 	}
 
-	public int getU8() {
+	public int get1U() {
 		return data[position++] & 0xff;
 	}
 
-	public int getU8A() {
+	public int get1UA() {
 		return (data[position++] - 128) & 0xff;
 	}
 
-	public int getU8C() {
+	public int getU1C() {
 		return -data[position++] & 0xff;
 	}
 
-	public int getU8S() {
+	public int get1US() {
 		return (128 - data[position++]) & 0xff;
 	}
 
 	public int getSmart() {
 		int i = data[position] & 0xff;
 		if (i < 0x80) {
-			return getU8() - 0x40;
+			return get1U() - 0x40;
 		} else {
-			return getU16() - 0xc000;
+			return get2U() - 0xc000;
 		}
 	}
 
 	public int getUSmart() {
 		int i = data[position] & 0xff;
 		if (i < 0x80) {
-			return getU8();
+			return get1U();
 		} else {
-			return getU16() - 0x7fff;
+			return get2U() - 0x7fff;
 		}
 	}
 
-	public int getU16() {
+	public int get2U() {
 		position += 2;
 		return ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int getU16A() {
+	public int get2UA() {
 		position += 2;
 		return ((data[position - 2] & 0xff) << 8) + ((data[position - 1] - 128) & 0xff);
 	}
 
-	public int getU16LE() {
+	public int get2ULE() {
 		position += 2;
 		return ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 	}
 
-	public int getU16LEA() {
+	public int get2ULEA() {
 		position += 2;
 		return ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
 	}
 
-	public int get16() {
+	public int get2() {
 		position += 2;
 		int i = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 		if (i > 0x7fff) {
@@ -229,7 +224,7 @@ public class Buffer extends DoublyLinkedListNode {
 		return i;
 	}
 
-	public int get16LE() {
+	public int get2LE() {
 		position += 2;
 		int j = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 		if (j > 0x7fff) {
@@ -238,7 +233,7 @@ public class Buffer extends DoublyLinkedListNode {
 		return j;
 	}
 
-	public int get16LEA() {
+	public int get2LEA() {
 		position += 2;
 		int j = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
 		if (j > 0x7fff) {
@@ -247,29 +242,29 @@ public class Buffer extends DoublyLinkedListNode {
 		return j;
 	}
 
-	public int get24() {
+	public int get3() {
 		position += 3;
 		return ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int get32() {
+	public int get4() {
 		position += 4;
 		return ((data[position - 4] & 0xff) << 24) + ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int get32ME() {
+	public int get4ME() {
 		position += 4;
 		return ((data[position - 3] & 0xff) << 24) + ((data[position - 4] & 0xff) << 16) + ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 	}
 
-	public int get32RME() {
+	public int get4RME() {
 		position += 4;
 		return ((data[position - 2] & 0xff) << 24) + ((data[position - 1] & 0xff) << 16) + ((data[position - 4] & 0xff) << 8) + (data[position - 3] & 0xff);
 	}
 
-	public long get64() {
-		long l = (long) get32() & 0xffffffffL;
-		long l1 = (long) get32() & 0xffffffffL;
+	public long get8() {
+		long l = (long) get4() & 0xffffffffL;
+		long l1 = (long) get4() & 0xffffffffL;
 		return (l << 32) + l1;
 	}
 
@@ -280,7 +275,7 @@ public class Buffer extends DoublyLinkedListNode {
 		return new String(data, start, position - start - 1);
 	}
 
-	public byte[] getStringBytes() {
+	public byte[] getStringRaw() {
 		int start = position;
 		while (data[position++] != '\n') {
 		}
@@ -306,7 +301,7 @@ public class Buffer extends DoublyLinkedListNode {
 		bitPosition = position * 8;
 	}
 
-	public int getN(int n) {
+	public int getBits(int n) {
 		int bytePos = bitPosition >> 3;
 		int remaining = 8 - (bitPosition & 7);
 		int value = 0;
@@ -334,7 +329,7 @@ public class Buffer extends DoublyLinkedListNode {
 		get(raw, 0, length);
 		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
 		position = 0;
-		put8(encrypted.length);
+		put1(encrypted.length);
 		put(encrypted, encrypted.length, 0);
 	}
 

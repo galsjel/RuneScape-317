@@ -28,50 +28,50 @@ public class Censor {
 	}
 
 	public static void method489(Buffer buffer) {
-		int i = buffer.get32();
+		int i = buffer.get4();
 		aCharArrayArray624 = new char[i][];
 		anIntArray625 = new int[i];
 		for (int j = 0; j < i; j++) {
-			anIntArray625[j] = buffer.getU8();
-			char[] ac = new char[buffer.getU8()];
+			anIntArray625[j] = buffer.get1U();
+			char[] ac = new char[buffer.get1U()];
 			for (int k = 0; k < ac.length; k++) {
-				ac[k] = (char) buffer.getU8();
+				ac[k] = (char) buffer.get1U();
 			}
 			aCharArrayArray624[j] = ac;
 		}
 	}
 
 	public static void method490(Buffer buffer) {
-		int j = buffer.get32();
+		int j = buffer.get4();
 		aCharArrayArray621 = new char[j][];
 		aByteArrayArrayArray622 = new byte[j][][];
 		method493(buffer, aCharArrayArray621, aByteArrayArrayArray622);
 	}
 
 	public static void method491(Buffer buffer) {
-		int i = buffer.get32();
+		int i = buffer.get4();
 		aCharArrayArray623 = new char[i][];
 		method494(aCharArrayArray623, buffer, -490);
 	}
 
 	public static void method492(Buffer buffer) {
-		anIntArray620 = new int[buffer.get32()];
+		anIntArray620 = new int[buffer.get4()];
 		for (int i = 0; i < anIntArray620.length; i++) {
-			anIntArray620[i] = buffer.getU16();
+			anIntArray620[i] = buffer.get2U();
 		}
 	}
 
 	public static void method493(Buffer buffer, char[][] ac, byte[][][] abyte0) {
 		for (int j = 0; j < ac.length; j++) {
-			char[] ac1 = new char[buffer.getU8()];
+			char[] ac1 = new char[buffer.get1U()];
 			for (int k = 0; k < ac1.length; k++) {
-				ac1[k] = (char) buffer.getU8();
+				ac1[k] = (char) buffer.get1U();
 			}
 			ac[j] = ac1;
-			byte[][] abyte1 = new byte[buffer.getU8()][2];
+			byte[][] abyte1 = new byte[buffer.get1U()][2];
 			for (int l = 0; l < abyte1.length; l++) {
-				abyte1[l][0] = (byte) buffer.getU8();
-				abyte1[l][1] = (byte) buffer.getU8();
+				abyte1[l][0] = (byte) buffer.get1U();
+				abyte1[l][1] = (byte) buffer.get1U();
 			}
 			if (abyte1.length > 0) {
 				abyte0[j] = abyte1;
@@ -84,9 +84,9 @@ public class Censor {
 			return;
 		}
 		for (int j = 0; j < ac.length; j++) {
-			char[] ac1 = new char[buffer.getU8()];
+			char[] ac1 = new char[buffer.get1U()];
 			for (int k = 0; k < ac1.length; k++) {
-				ac1[k] = (char) buffer.getU8();
+				ac1[k] = (char) buffer.get1U();
 			}
 			ac[j] = ac1;
 		}
