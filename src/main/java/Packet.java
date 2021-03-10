@@ -20,9 +20,9 @@ import java.nio.charset.StandardCharsets;
  * Note: ME and RME are not standard, and are a form of obfuscation similar to the <i>modifier</i> attribute.<br/>
  * <p>
  * <b>Modifiers:</b><br/>
- * A — put(v + 128) — get: v - 128<br/>
- * C — put(-v) — get: -v<br/>
- * S — put(128 - v) — get: 128 - v<br/>
+ * A — put(v + 128) — get returns (v - 128)<br/>
+ * C — put(-v) — get returns (-v)<br/>
+ * S — put(128 - v) — get returns (128 - v)<br/>
  */
 public class Packet extends DoublyLinkedListNode {
 

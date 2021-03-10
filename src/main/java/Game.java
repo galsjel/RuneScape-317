@@ -9613,7 +9613,7 @@ public class Game extends GameShell {
 				if (aISAACCipher_1000 != null) {
 					anInt1008 = (anInt1008 - aISAACCipher_1000.method246()) & 0xff;
 				}
-				anInt1007 = PacketConstants.anIntArray553[anInt1008];
+				anInt1007 = PacketConstants.SIZE[anInt1008];
 				i--;
 			}
 			if (anInt1007 == -1) {
