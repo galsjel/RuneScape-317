@@ -21,7 +21,7 @@ public class OnDemand implements Runnable {
 	public int[] anIntArray1337;
 	public final CRC32 aCRC32_1338 = new CRC32();
 	public final byte[] aByteArray1339 = new byte[500];
-	public int anInt1341;
+	public int cycle;
 	public final byte[][] aByteArrayArray1342 = new byte[4][];
 	public Game aGame1343;
 	public final LinkedList aList_1344 = new LinkedList();
@@ -219,7 +219,7 @@ public class OnDemand implements Runnable {
 		}
 		aGame1343 = game1;
 		aBoolean1353 = true;
-		aGame1343.method12(this, 2);
+		aGame1343.startThread(this, 2);
 	}
 
 	public int method552() {
@@ -322,10 +322,11 @@ public class OnDemand implements Runnable {
 		return aByteArray1372[i] & 0xff;
 	}
 
+	@Override
 	public void run() {
 		try {
 			while (aBoolean1353) {
-				anInt1341++;
+				cycle++;
 				int i = 20;
 				if ((anInt1332 == 0) && (aGame1343.aFileStoreArray970[0] != null)) {
 					i = 50;

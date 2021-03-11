@@ -30,7 +30,7 @@ public class LocEntity extends Entity {
 		if (l1 != -1) {
 			aType_1607 = SeqType.aTypeArray351[l1];
 			anInt1599 = 0;
-			anInt1608 = Game.anInt1161;
+			anInt1608 = Game.loopCycle;
 			if (flag && (aType_1607.anInt356 != -1)) {
 				anInt1599 = (int) (Math.random() * (double) aType_1607.anInt352);
 				anInt1608 -= (int) (Math.random() * (double) aType_1607.method258(anInt1599));
@@ -46,7 +46,7 @@ public class LocEntity extends Entity {
 	public Model getModel() {
 		int j = -1;
 		if (aType_1607 != null) {
-			int k = Game.anInt1161 - anInt1608;
+			int k = Game.loopCycle - anInt1608;
 			if ((k > 100) && (aType_1607.anInt356 > 0)) {
 				k = 100;
 			}
@@ -63,7 +63,7 @@ public class LocEntity extends Entity {
 				aType_1607 = null;
 				break;
 			}
-			anInt1608 = Game.anInt1161 - k;
+			anInt1608 = Game.loopCycle - k;
 			if (aType_1607 != null) {
 				j = aType_1607.anIntArray353[anInt1599];
 			}

@@ -59,7 +59,7 @@ public class NPCType {
 		return type;
 	}
 
-	public static void method162(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		aPacket_60 = new Packet(archive.read("npc.dat", null));
 		Packet packet = new Packet(archive.read("npc.idx", null));
 		anInt62 = packet.get2U();

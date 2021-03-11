@@ -64,7 +64,7 @@ public class ObjType {
 		aPacket_183 = null;
 	}
 
-	public static void method193(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		aPacket_183 = new Packet(archive.read("obj.dat", null));
 		Packet packet = new Packet(archive.read("obj.idx", null));
 		anInt203 = packet.get2U();

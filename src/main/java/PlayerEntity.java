@@ -66,10 +66,10 @@ public class PlayerEntity extends PathingEntity {
 			}
 		}
 		if (aModel_1714 != null) {
-			if (Game.anInt1161 >= anInt1708) {
+			if (Game.loopCycle >= anInt1708) {
 				aModel_1714 = null;
 			}
-			if ((Game.anInt1161 >= anInt1707) && (Game.anInt1161 < anInt1708)) {
+			if ((Game.loopCycle >= anInt1707) && (Game.loopCycle < anInt1708)) {
 				Model model_1 = aModel_1714;
 				model_1.translate(anInt1711 - super.anInt1550, anInt1712 - anInt1709, anInt1713 - super.anInt1551);
 				if (super.anInt1510 == 512) {

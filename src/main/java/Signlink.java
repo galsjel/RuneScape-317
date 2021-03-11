@@ -204,6 +204,7 @@ public class Signlink implements Runnable {
 		System.out.println("Error: " + s);
 	}
 
+	@Override
 	public void run() {
 		active = true;
 		String s = findcachedir();

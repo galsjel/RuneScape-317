@@ -16,7 +16,7 @@ public class IDKType {
 	public IDKType() {
 	}
 
-	public static void method535(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("idk.dat", null));
 		anInt655 = packet.get2U();
 		if (aIDKTypeArray656 == null) {

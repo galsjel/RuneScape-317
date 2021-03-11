@@ -79,7 +79,7 @@ public class LocType {
 		aPacket_753 = null;
 	}
 
-	public static void method576(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		aPacket_753 = new Packet(archive.read("loc.dat", null));
 		Packet packet = new Packet(archive.read("loc.idx", null));
 		anInt756 = packet.get2U();

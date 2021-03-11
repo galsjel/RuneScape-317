@@ -21,7 +21,7 @@ public class FloType {
 	public FloType() {
 	}
 
-	public static void method260(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("flo.dat", null));
 		anInt387 = packet.get2U();
 		if (aTypeArray388 == null) {

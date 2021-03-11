@@ -6,15 +6,15 @@ import java.awt.*;
 
 public class GameFrame extends Frame {
 
-	public final GameShell anShell_36;
+	public final GameShell shell;
 
-	public GameFrame(GameShell shell, int i, int j) {
-		anShell_36 = shell;
+	public GameFrame(GameShell shell, int width, int height) {
+		this.shell = shell;
 		setTitle("Jagex");
 		setResizable(false);
 		show();
 		toFront();
-		resize(i + 8, j + 28);
+		resize(width + 8, height + 28);
 	}
 
 	@Override
@@ -26,12 +26,12 @@ public class GameFrame extends Frame {
 
 	@Override
 	public void update(Graphics g) {
-		anShell_36.update(g);
+		shell.update(g);
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		anShell_36.paint(g);
+		shell.paint(g);
 	}
 
 }

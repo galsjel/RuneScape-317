@@ -24,7 +24,7 @@ public class VarpType {
 	public VarpType() {
 	}
 
-	public static void method546(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("varp.dat", null));
 		anInt702 = 0;
 		anInt700 = packet.get2U();

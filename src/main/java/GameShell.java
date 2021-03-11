@@ -6,155 +6,176 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 
-public class GameShell extends Applet implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
+public abstract class GameShell extends Applet implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
 
-	public final long[] aLongArray7 = new long[10];
-	public final int[] anIntArray30 = new int[128];
+	public final long[] otim = new long[10];
+	public final int[] actionKey = new int[128];
 	public final int[] anIntArray31 = new int[128];
-	public int anInt4;
-	public int anInt5 = 20;
-	public int anInt6 = 1;
-	public int anInt8;
-	public boolean aBoolean9 = false;
-	public int anInt10;
-	public int anInt11;
-	public Graphics aGraphics12;
-	public GameFrame aGameFrame__15;
-	public boolean aBoolean16 = true;
+	public int state;
+	public int deltime = 20;
+	public int mindel = 1;
+	public int fps;
+	public boolean debug = false;
+	public int screenWidth;
+	public int screenHeight;
+	public Graphics graphics;
+	public GameFrame frame;
+	public boolean refresh = true;
 	public boolean aBoolean17 = true;
-	public int anInt18;
-	public int anInt19;
+	public int idleCycles;
+	public int mouseButton;
 	public int anInt20;
 	public int anInt21;
-	public int anInt22;
-	public int anInt23;
-	public int anInt24;
-	public long aLong25;
-	public int anInt26;
-	public int anInt27;
-	public int anInt28;
-	public long aLong29;
+	public int lastMousePressButton;
+	public int lastMousePressX;
+	public int lastMousePressY;
+	public long lastMousePressTime;
+	public int mousePressButton;
+	public int mousePressX;
+	public int mousePressY;
+	public long mousePressTime;
 	public int anInt32;
 	public int anInt33;
 
-	public GameShell() {
+	public void init(int width, int height) {
+		screenWidth = width;
+		screenHeight = height;
+		frame = new GameFrame(this, screenWidth, screenHeight);
+		graphics = getComponent().getGraphics();
+		startThread(this, 1);
 	}
 
-	public void method1(int i, int j) {
-		anInt10 = j;
-		anInt11 = i;
-		aGameFrame__15 = new GameFrame(this, anInt10, anInt11);
-		aGraphics12 = method11().getGraphics();
-		method12(this, 1);
+	public void initApplet(int width, int height) {
+		screenWidth = width;
+		screenHeight = height;
+		graphics = getComponent().getGraphics();
+		startThread(this, 1);
 	}
 
-	public void method2(int i, int j) {
-		anInt10 = j;
-		anInt11 = i;
-		aGraphics12 = method11().getGraphics();
-		method12(this, 1);
-	}
-
+	@Override
 	public void run() {
-		method11().addMouseListener(this);
-		method11().addMouseMotionListener(this);
-		method11().addKeyListener(this);
-		method11().addFocusListener(this);
-		if (aGameFrame__15 != null) {
-			aGameFrame__15.addWindowListener(this);
+		getComponent().addMouseListener(this);
+		getComponent().addMouseMotionListener(this);
+		getComponent().addKeyListener(this);
+		getComponent().addFocusListener(this);
+
+		if (frame != null) {
+			frame.addWindowListener(this);
 		}
-		method13(0, "Loading...");
-		method6();
-		int i = 0;
-		int j = 256;
-		int k = 1;
-		int i1 = 0;
-		int j1 = 0;
+
+		showProgress(0, "Loading...");
+		load();
+
+		int opos = 0;
+		int ratio = 256;
+		int delta = 1;
+		int count = 0;
+		int intex = 0; // interrupt exceptions
+
 		for (int k1 = 0; k1 < 10; k1++) {
-			aLongArray7[k1] = System.currentTimeMillis();
+			otim[k1] = System.currentTimeMillis();
 		}
-		while (anInt4 >= 0) {
-			if (anInt4 > 0) {
-				anInt4--;
-				if (anInt4 == 0) {
-					method3();
+
+		while (state >= 0) {
+			if (state > 0) {
+				state--;
+				if (state == 0) {
+					shutdown();
 					return;
 				}
 			}
-			int i2 = j;
-			int j2 = k;
-			j = 300;
-			k = 1;
-			long l1 = System.currentTimeMillis();
-			if (aLongArray7[i] == 0L) {
-				j = i2;
-				k = j2;
-			} else if (l1 > aLongArray7[i]) {
-				j = (int) ((long) (2560 * anInt5) / (l1 - aLongArray7[i]));
+
+			int lastRatio = ratio;
+			int lastDelta = delta;
+
+			ratio = 300;
+			delta = 1;
+
+			long ntime = System.currentTimeMillis();
+
+			if (otim[opos] == 0L) {
+				ratio = lastRatio;
+				delta = lastDelta;
+			} else if (ntime > otim[opos]) {
+				ratio = (int) ((long) (2560 * deltime) / (ntime - otim[opos]));
 			}
-			if (j < 25) {
-				j = 25;
+
+			if (ratio < 25) {
+				ratio = 25;
 			}
-			if (j > 256) {
-				j = 256;
-				k = (int) ((long) anInt5 - ((l1 - aLongArray7[i]) / 10L));
+
+			if (ratio > 256) {
+				ratio = 256;
+				delta = (int) ((long) deltime - ((ntime - otim[opos]) / 10L));
 			}
-			if (k > anInt5) {
-				k = anInt5;
+
+			if (delta > deltime) {
+				delta = deltime;
 			}
-			aLongArray7[i] = l1;
-			i = (i + 1) % 10;
-			if (k > 1) {
+
+			otim[opos] = ntime;
+			opos = (opos + 1) % 10;
+
+			if (delta > 1) {
 				for (int k2 = 0; k2 < 10; k2++) {
-					if (aLongArray7[k2] != 0L) {
-						aLongArray7[k2] += k;
+					if (otim[k2] != 0L) {
+						otim[k2] += delta;
 					}
 				}
 			}
-			if (k < anInt6) {
-				k = anInt6;
+
+			if (delta < mindel) {
+				delta = mindel;
 			}
+
 			try {
-				Thread.sleep(k);
-			} catch (InterruptedException _ex) {
-				j1++;
+				Thread.sleep(delta);
+			} catch (InterruptedException e) {
+				intex++;
 			}
-			for (; i1 < 256; i1 += j) {
-				anInt26 = anInt22;
-				anInt27 = anInt23;
-				anInt28 = anInt24;
-				aLong29 = aLong25;
-				anInt22 = 0;
-				method7();
+
+			for (; count < 256; count += ratio) {
+				mousePressButton = lastMousePressButton;
+				mousePressX = lastMousePressX;
+				mousePressY = lastMousePressY;
+				mousePressTime = lastMousePressTime;
+				lastMousePressButton = 0;
+				update();
 				anInt32 = anInt33;
 			}
-			i1 &= 0xff;
-			if (anInt5 > 0) {
-				anInt8 = (1000 * j) / (anInt5 * 256);
+
+			count &= 0xff;
+
+			if (deltime > 0) {
+				fps = (1000 * ratio) / (deltime * 256);
 			}
-			method9();
-			if (aBoolean9) {
-				System.out.println("ntime:" + l1);
-				for (int l2 = 0; l2 < 10; l2++) {
-					int i3 = ((i - l2 - 1) + 20) % 10;
-					System.out.println("otim" + i3 + ":" + aLongArray7[i3]);
+
+			draw();
+
+			if (debug) {
+				System.out.println("ntime:" + ntime);
+				for (int i = 0; i < 10; i++) {
+					int o = ((opos - i - 1) + 20) % 10;
+					System.out.println("otim" + o + ":" + otim[o]);
 				}
-				System.out.println("fps:" + anInt8 + " ratio:" + j + " count:" + i1);
-				System.out.println("del:" + k + " deltime:" + anInt5 + " mindel:" + anInt6);
-				System.out.println("intex:" + j1 + " opos:" + i);
-				aBoolean9 = false;
-				j1 = 0;
+				System.out.println("fps:" + fps + " ratio:" + ratio + " count:" + count);
+				System.out.println("del:" + delta + " deltime:" + deltime + " mindel:" + mindel);
+				System.out.println("intex:" + intex + " opos:" + opos);
+				debug = false;
+				intex = 0;
 			}
 		}
-		if (anInt4 == -1) {
-			method3();
+
+		if (state == -1) {
+			shutdown();
 		}
 	}
 
-	public void method3() {
-		anInt4 = -2;
-		method8();
-		if (aGameFrame__15 != null) {
+	public void shutdown() {
+		state = -2;
+		unload();
+
+		if (frame != null) {
 			try {
 				Thread.sleep(1000L);
 			} catch (Exception ignored) {
@@ -166,213 +187,215 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		}
 	}
 
-	public void method4(int i) {
-		anInt5 = 1000 / i;
+	public void setFrameRate(int fps) {
+		deltime = 1000 / fps;
 	}
 
 	@Override
 	public void start() {
-		if (anInt4 >= 0) {
-			anInt4 = 0;
+		if (state >= 0) {
+			state = 0;
 		}
 	}
 
 	@Override
 	public void stop() {
-		if (anInt4 >= 0) {
-			anInt4 = 4000 / anInt5;
+		if (state >= 0) {
+			state = 4000 / deltime;
 		}
 	}
 
 	@Override
 	public void destroy() {
-		anInt4 = -1;
+		state = -1;
+
 		try {
 			Thread.sleep(5000L);
 		} catch (Exception ignored) {
 		}
-		if (anInt4 == -1) {
-			method3();
+
+		if (state == -1) {
+			shutdown();
 		}
 	}
 
 	@Override
 	public void update(Graphics g) {
-		if (aGraphics12 == null) {
-			aGraphics12 = g;
+		if (graphics == null) {
+			graphics = g;
 		}
-		aBoolean16 = true;
-		method10();
+		refresh = true;
+		refresh();
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		if (aGraphics12 == null) {
-			aGraphics12 = g;
+		if (graphics == null) {
+			graphics = g;
 		}
-		aBoolean16 = true;
-		method10();
+		refresh = true;
+		refresh();
 	}
 
-	public void mousePressed(MouseEvent mouseevent) {
-		int i = mouseevent.getX();
-		int j = mouseevent.getY();
-		if (aGameFrame__15 != null) {
-			i -= 4;
-			j -= 22;
+	@Override
+	public void mousePressed(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+
+		if (frame != null) {
+			x -= 4;
+			y -= 22;
 		}
-		anInt18 = 0;
-		anInt23 = i;
-		anInt24 = j;
-		aLong25 = System.currentTimeMillis();
-		if (mouseevent.isMetaDown()) {
-			anInt22 = 2;
-			anInt19 = 2;
+
+		idleCycles = 0;
+		lastMousePressX = x;
+		lastMousePressY = y;
+		lastMousePressTime = System.currentTimeMillis();
+
+		if (e.isMetaDown()) {
+			lastMousePressButton = 2;
+			mouseButton = 2;
 		} else {
-			anInt22 = 1;
-			anInt19 = 1;
+			lastMousePressButton = 1;
+			mouseButton = 1;
 		}
 	}
 
-	public void mouseReleased(MouseEvent mouseevent) {
-		anInt18 = 0;
-		anInt19 = 0;
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		idleCycles = 0;
+		mouseButton = 0;
 	}
 
-	public void mouseClicked(MouseEvent mouseevent) {
+	@Override
+	public void mouseClicked(MouseEvent e) {
 	}
 
-	public void mouseEntered(MouseEvent mouseevent) {
+	@Override
+	public void mouseEntered(MouseEvent e) {
 	}
 
-	public void mouseExited(MouseEvent mouseevent) {
-		anInt18 = 0;
+	@Override
+	public void mouseExited(MouseEvent e) {
+		idleCycles = 0;
 		anInt20 = -1;
 		anInt21 = -1;
 	}
 
-	public void mouseDragged(MouseEvent mouseevent) {
-		int i = mouseevent.getX();
-		int j = mouseevent.getY();
-		if (aGameFrame__15 != null) {
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int i = e.getX();
+		int j = e.getY();
+		if (frame != null) {
 			i -= 4;
 			j -= 22;
 		}
-		anInt18 = 0;
+		idleCycles = 0;
 		anInt20 = i;
 		anInt21 = j;
 	}
 
-	public void mouseMoved(MouseEvent mouseevent) {
-		int i = mouseevent.getX();
-		int j = mouseevent.getY();
-		if (aGameFrame__15 != null) {
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		int i = e.getX();
+		int j = e.getY();
+		if (frame != null) {
 			i -= 4;
 			j -= 22;
 		}
-		anInt18 = 0;
+		idleCycles = 0;
 		anInt20 = i;
 		anInt21 = j;
 	}
 
-	public void keyPressed(KeyEvent keyevent) {
-		anInt18 = 0;
-		int i = keyevent.getKeyCode();
-		int j = keyevent.getKeyChar();
-		if (j < 30) {
-			j = 0;
+	@Override
+	public void keyPressed(KeyEvent e) {
+		idleCycles = 0;
+		int code = e.getKeyCode();
+		int ch = e.getKeyChar();
+
+		if (ch < 30) {
+			ch = 0;
 		}
-		if (i == 37) {
-			j = 1;
+
+		if (code == KeyEvent.VK_LEFT) {
+			ch = 1;
+		} else if (code == KeyEvent.VK_RIGHT) {
+			ch = 2;
+		} else if (code == KeyEvent.VK_UP) {
+			ch = 3;
+		} else if (code == KeyEvent.VK_DOWN) {
+			ch = 4;
+		} else if (code == KeyEvent.VK_CONTROL) {
+			ch = 5;
+		} else if (code == KeyEvent.VK_BACK_SPACE) {
+			ch = 8;
+		} else if (code == KeyEvent.VK_DELETE) {
+			ch = 8;
+		} else if (code == KeyEvent.VK_TAB) {
+			ch = 9;
+		} else if (code == KeyEvent.VK_ENTER) {
+			ch = 10;
+		} else if ((code >= KeyEvent.VK_F1) && (code <= KeyEvent.VK_F12)) {
+			ch = (1008 + code) - KeyEvent.VK_F1;
+		} else if (code == KeyEvent.VK_HOME) {
+			ch = 1000;
+		} else if (code == KeyEvent.VK_END) {
+			ch = 1001;
+		} else if (code == KeyEvent.VK_PAGE_UP) {
+			ch = 1002;
+		} else if (code == KeyEvent.VK_PAGE_DOWN) {
+			ch = 1003;
 		}
-		if (i == 39) {
-			j = 2;
+
+		if ((ch > 0) && (ch < 128)) {
+			actionKey[ch] = 1;
 		}
-		if (i == 38) {
-			j = 3;
-		}
-		if (i == 40) {
-			j = 4;
-		}
-		if (i == 17) {
-			j = 5;
-		}
-		if (i == 8) {
-			j = 8;
-		}
-		if (i == 127) {
-			j = 8;
-		}
-		if (i == 9) {
-			j = 9;
-		}
-		if (i == 10) {
-			j = 10;
-		}
-		if ((i >= 112) && (i <= 123)) {
-			j = (1008 + i) - 112;
-		}
-		if (i == 36) {
-			j = 1000;
-		}
-		if (i == 35) {
-			j = 1001;
-		}
-		if (i == 33) {
-			j = 1002;
-		}
-		if (i == 34) {
-			j = 1003;
-		}
-		if ((j > 0) && (j < 128)) {
-			anIntArray30[j] = 1;
-		}
-		if (j > 4) {
-			anIntArray31[anInt33] = j;
+
+		if (ch > 4) {
+			anIntArray31[anInt33] = ch;
 			anInt33 = (anInt33 + 1) & 0x7f;
 		}
 	}
 
-	public void keyReleased(KeyEvent keyevent) {
-		anInt18 = 0;
-		int i = keyevent.getKeyCode();
-		char c = keyevent.getKeyChar();
-		if (c < '\036') {
-			c = '\0';
+	@Override
+	public void keyReleased(KeyEvent e) {
+		idleCycles = 0;
+
+		int code = e.getKeyCode();
+		char action = e.getKeyChar();
+
+		if (action < 30) {
+			action = 0;
 		}
-		if (i == 37) {
-			c = '\001';
+
+		if (code == KeyEvent.VK_LEFT) {
+			action = 1;
+		} else if (code == KeyEvent.VK_RIGHT) {
+			action = 2;
+		} else if (code == KeyEvent.VK_UP) {
+			action = 3;
+		} else if (code == KeyEvent.VK_DOWN) {
+			action = 4;
+		} else if (code == KeyEvent.VK_CONTROL) {
+			action = 5;
+		} else if (code == KeyEvent.VK_BACK_SPACE) {
+			action = 8;
+		} else if (code == KeyEvent.VK_DELETE) {
+			action = 8;
+		} else if (code == KeyEvent.VK_TAB) {
+			action = 9;
+		} else if (code == KeyEvent.VK_ENTER) {
+			action = 10;
 		}
-		if (i == 39) {
-			c = '\002';
-		}
-		if (i == 38) {
-			c = '\003';
-		}
-		if (i == 40) {
-			c = '\004';
-		}
-		if (i == 17) {
-			c = '\005';
-		}
-		if (i == 8) {
-			c = '\b';
-		}
-		if (i == 127) {
-			c = '\b';
-		}
-		if (i == 9) {
-			c = '\t';
-		}
-		if (i == 10) {
-			c = '\n';
-		}
-		if ((c > 0) && (c < '\200')) {
-			anIntArray30[c] = 0;
+
+		if ((action > 0) && (action < 128)) {
+			actionKey[action] = 0;
 		}
 	}
 
-	public void keyTyped(KeyEvent keyevent) {
+	@Override
+	public void keyTyped(KeyEvent e) {
 	}
 
 	public int method5() {
@@ -384,101 +407,135 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		return k;
 	}
 
-	public void focusGained(FocusEvent focusevent) {
+	@Override
+	public void focusGained(FocusEvent e) {
 		aBoolean17 = true;
-		aBoolean16 = true;
-		method10();
+		refresh = true;
+		refresh();
 	}
 
-	public void focusLost(FocusEvent focusevent) {
+	@Override
+	public void focusLost(FocusEvent e) {
 		aBoolean17 = false;
 		for (int i = 0; i < 128; i++) {
-			anIntArray30[i] = 0;
+			actionKey[i] = 0;
 		}
 	}
 
-	public void windowActivated(WindowEvent windowevent) {
+	@Override
+	public void windowActivated(WindowEvent e) {
 	}
 
-	public void windowClosed(WindowEvent windowevent) {
+	@Override
+	public void windowClosed(WindowEvent e) {
 	}
 
-	public void windowClosing(WindowEvent windowevent) {
+	@Override
+	public void windowClosing(WindowEvent e) {
 		destroy();
 	}
 
-	public void windowDeactivated(WindowEvent windowevent) {
+	@Override
+	public void windowDeactivated(WindowEvent e) {
 	}
 
-	public void windowDeiconified(WindowEvent windowevent) {
+	@Override
+	public void windowDeiconified(WindowEvent e) {
 	}
 
-	public void windowIconified(WindowEvent windowevent) {
+	@Override
+	public void windowIconified(WindowEvent e) {
 	}
 
-	public void windowOpened(WindowEvent windowevent) {
+	@Override
+	public void windowOpened(WindowEvent e) {
 	}
 
-	public void method6() {
-	}
+	/**
+	 * Called when the {@link GameShell} thread starts.
+	 *
+	 * @see #run()
+	 */
+	public abstract void load();
 
-	public void method7() {
-	}
+	/**
+	 * @see #run()
+	 */
+	public abstract void update();
 
-	public void method8() {
-	}
+	/**
+	 * @see #run()
+	 */
+	public abstract void unload();
 
-	public void method9() {
-	}
+	/**
+	 * @see #run()
+	 */
+	public abstract void draw();
 
-	public void method10() {
-	}
+	/**
+	 * Refresh is invoked whenever the shell is expected to potentially lost its display image.
+	 *
+	 * @see #update(Graphics)
+	 * @see #paint(Graphics)
+	 * @see #focusGained(FocusEvent)
+	 */
+	public abstract void refresh();
 
-	public java.awt.Component method11() {
-		if (aGameFrame__15 != null) {
-			return aGameFrame__15;
+	/**
+	 * Gets the draw component of this {@link GameShell}.
+	 *
+	 * @return the component.
+	 */
+	public java.awt.Component getComponent() {
+		if (frame != null) {
+			return frame;
 		} else {
 			return this;
 		}
 	}
 
-	public void method12(Runnable runnable, int i) {
+	public void startThread(Runnable runnable, int priority) {
 		Thread thread = new Thread(runnable);
 		thread.start();
-		thread.setPriority(i);
+		thread.setPriority(priority);
 	}
 
-	public void method13(int i, String s) {
-		while (aGraphics12 == null) {
-			aGraphics12 = method11().getGraphics();
+	public void showProgress(int percent, String message) {
+		while (graphics == null) {
+			graphics = getComponent().getGraphics();
 			try {
-				method11().repaint();
+				getComponent().repaint();
 			} catch (Exception ignored) {
 			}
+
 			try {
 				Thread.sleep(1000L);
 			} catch (Exception ignored) {
 			}
 		}
-		java.awt.Font font = new java.awt.Font("Helvetica", java.awt.Font.BOLD, 13);
-		FontMetrics fontmetrics = method11().getFontMetrics(font);
-		java.awt.Font font1 = new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 13);
-		method11().getFontMetrics(font1);
-		if (aBoolean16) {
-			aGraphics12.setColor(Color.black);
-			aGraphics12.fillRect(0, 0, anInt10, anInt11);
-			aBoolean16 = false;
+
+		java.awt.Font helvetica = new java.awt.Font("Helvetica", java.awt.Font.BOLD, 13);
+		FontMetrics metrics = getComponent().getFontMetrics(helvetica);
+
+		if (refresh) {
+			graphics.setColor(Color.black);
+			graphics.fillRect(0, 0, screenWidth, screenHeight);
+			refresh = false;
 		}
-		Color color = new Color(140, 17, 17);
-		int j = (anInt11 / 2) - 18;
-		aGraphics12.setColor(color);
-		aGraphics12.drawRect((anInt10 / 2) - 152, j, 304, 34);
-		aGraphics12.fillRect((anInt10 / 2) - 150, j + 2, i * 3, 30);
-		aGraphics12.setColor(Color.black);
-		aGraphics12.fillRect(((anInt10 / 2) - 150) + (i * 3), j + 2, 300 - (i * 3), 30);
-		aGraphics12.setFont(font);
-		aGraphics12.setColor(Color.white);
-		aGraphics12.drawString(s, (anInt10 - fontmetrics.stringWidth(s)) / 2, j + 22);
+
+		int y = (screenHeight / 2) - 18;
+
+		graphics.setColor(new Color(140, 17, 17));
+		graphics.drawRect((screenWidth / 2) - 152, y, 304, 34);
+		graphics.fillRect((screenWidth / 2) - 150, y + 2, percent * 3, 30);
+
+		graphics.setColor(Color.black);
+		graphics.fillRect(((screenWidth / 2) - 150) + (percent * 3), y + 2, 300 - (percent * 3), 30);
+
+		graphics.setFont(helvetica);
+		graphics.setColor(Color.white);
+		graphics.drawString(message, (screenWidth - metrics.stringWidth(message)) / 2, y + 22);
 	}
 
 }

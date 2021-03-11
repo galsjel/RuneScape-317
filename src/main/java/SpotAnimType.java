@@ -22,7 +22,7 @@ public class SpotAnimType {
 	public SpotAnimType() {
 	}
 
-	public static void method264(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("spotanim.dat", null));
 		anInt402 = packet.get2U();
 		if (aTypeArray403 == null) {

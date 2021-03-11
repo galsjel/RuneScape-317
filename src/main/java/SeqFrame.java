@@ -1,6 +1,3 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 /**
  * A {@link SeqFrame} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
@@ -30,7 +27,6 @@ public class SeqFrame {
 	/**
 	 * The frame parameters.
 	 */
-
 	public int[] x, y, z;
 
 	/**

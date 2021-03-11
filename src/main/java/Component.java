@@ -4,7 +4,7 @@
 
 public class Component {
 
-	public static Component[] aComponentArray210;
+	public static Component[] instances;
 	public static LRUCache aCache_238;
 	public static final LRUCache A_CACHE___264 = new LRUCache(30);
 	public Image24 aImage_207;
@@ -72,19 +72,19 @@ public class Component {
 	public Component() {
 	}
 
-	public static void method205(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
+	public static void load(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
 		aCache_238 = new LRUCache(50000);
 		Packet packet = new Packet(archive.read("data", null));
 		int i = -1;
 		int j = packet.get2U();
-		aComponentArray210 = new Component[j];
+		instances = new Component[j];
 		while (packet.position < packet.data.length) {
 			int k = packet.get2U();
 			if (k == 65535) {
 				i = packet.get2U();
 				k = packet.get2U();
 			}
-			Component component = aComponentArray210[k] = new Component();
+			Component component = instances[k] = new Component();
 			component.anInt250 = k;
 			component.anInt236 = i;
 			component.anInt262 = packet.get1U();

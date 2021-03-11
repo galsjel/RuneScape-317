@@ -102,12 +102,13 @@ public class Connection implements Runnable {
 			}
 			if (!aBoolean427) {
 				aBoolean427 = true;
-				anShell_423.method12(this, 3);
+				anShell_423.startThread(this, 3);
 			}
 			notify();
 		}
 	}
 
+	@Override
 	public void run() {
 		while (aBoolean427) {
 			int i;

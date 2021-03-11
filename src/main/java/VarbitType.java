@@ -17,7 +17,7 @@ public class VarbitType {
 	public VarbitType() {
 	}
 
-	public static void method533(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("varbit.dat", null));
 		anInt645 = packet.get2U();
 		if (aVarbitArray646 == null) {

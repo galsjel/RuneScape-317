@@ -25,7 +25,7 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public static void method257(FileArchive archive) {
+	public static void load(FileArchive archive) {
 		Packet packet = new Packet(archive.read("seq.dat", null));
 		anInt350 = packet.get2U();
 		if (aTypeArray351 == null) {

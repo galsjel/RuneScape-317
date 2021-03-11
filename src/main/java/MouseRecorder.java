@@ -15,6 +15,7 @@ public class MouseRecorder implements Runnable {
 		aGame805 = game1;
 	}
 
+	@Override
 	public void run() {
 		while (aBoolean808) {
 			synchronized (lock) {
