@@ -225,7 +225,7 @@ public class Packet extends DoublyLinkedListNode {
 		if (i < 0x80) {
 			return get1U();
 		} else {
-			return get2U() - 0x7fff;
+			return get2U() - 0x8000;
 		}
 	}
 
