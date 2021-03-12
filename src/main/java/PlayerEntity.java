@@ -71,7 +71,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if ((Game.loopCycle >= anInt1707) && (Game.loopCycle < anInt1708)) {
 				Model model_1 = aModel_1714;
-				model_1.translate(anInt1711 - super.anInt1550, anInt1712 - anInt1709, anInt1713 - super.anInt1551);
+				model_1.translate(anInt1711 - super.x, anInt1712 - anInt1709, anInt1713 - super.z);
 				if (super.anInt1510 == 512) {
 					model_1.rotateY90();
 					model_1.rotateY90();
@@ -94,29 +94,29 @@ public class PlayerEntity extends PathingEntity {
 					model_1.rotateY90();
 					model_1.rotateY90();
 				}
-				model_1.translate(super.anInt1550 - anInt1711, anInt1709 - anInt1712, super.anInt1551 - anInt1713);
+				model_1.translate(super.x - anInt1711, anInt1709 - anInt1712, super.z - anInt1713);
 			}
 		}
 		model.pickBounds = true;
 		return model;
 	}
 
-	public void method451(Packet packet) {
-		packet.position = 0;
-		anInt1702 = packet.get1U();
-		anInt1706 = packet.get1U();
+	public void method451(Buffer buffer) {
+		buffer.position = 0;
+		anInt1702 = buffer.get1U();
+		anInt1706 = buffer.get1U();
 		aType_1698 = null;
 		anInt1701 = 0;
 		for (int j = 0; j < 12; j++) {
-			int k = packet.get1U();
+			int k = buffer.get1U();
 			if (k == 0) {
 				anIntArray1717[j] = 0;
 				continue;
 			}
-			int i1 = packet.get1U();
+			int i1 = buffer.get1U();
 			anIntArray1717[j] = (k << 8) + i1;
 			if ((j == 0) && (anIntArray1717[0] == 65535)) {
-				aType_1698 = NPCType.method159(packet.get2U());
+				aType_1698 = NPCType.method159(buffer.get2U());
 				break;
 			}
 			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
@@ -127,43 +127,43 @@ public class PlayerEntity extends PathingEntity {
 			}
 		}
 		for (int l = 0; l < 5; l++) {
-			int j1 = packet.get1U();
+			int j1 = buffer.get1U();
 			if ((j1 < 0) || (j1 >= Game.anIntArrayArray1003[l].length)) {
 				j1 = 0;
 			}
 			anIntArray1700[l] = j1;
 		}
-		super.anInt1511 = packet.get2U();
+		super.anInt1511 = buffer.get2U();
 		if (super.anInt1511 == 65535) {
 			super.anInt1511 = -1;
 		}
-		super.anInt1512 = packet.get2U();
+		super.anInt1512 = buffer.get2U();
 		if (super.anInt1512 == 65535) {
 			super.anInt1512 = -1;
 		}
-		super.anInt1554 = packet.get2U();
+		super.anInt1554 = buffer.get2U();
 		if (super.anInt1554 == 65535) {
 			super.anInt1554 = -1;
 		}
-		super.anInt1555 = packet.get2U();
+		super.anInt1555 = buffer.get2U();
 		if (super.anInt1555 == 65535) {
 			super.anInt1555 = -1;
 		}
-		super.anInt1556 = packet.get2U();
+		super.anInt1556 = buffer.get2U();
 		if (super.anInt1556 == 65535) {
 			super.anInt1556 = -1;
 		}
-		super.anInt1557 = packet.get2U();
+		super.anInt1557 = buffer.get2U();
 		if (super.anInt1557 == 65535) {
 			super.anInt1557 = -1;
 		}
-		super.anInt1505 = packet.get2U();
+		super.anInt1505 = buffer.get2U();
 		if (super.anInt1505 == 65535) {
 			super.anInt1505 = -1;
 		}
-		aString1703 = StringUtil.formatName(StringUtil.fromBase37(packet.get8()));
-		anInt1705 = packet.get1U();
-		anInt1723 = packet.get2U();
+		aString1703 = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
+		anInt1705 = buffer.get1U();
+		anInt1723 = buffer.get2U();
 		aBoolean1710 = true;
 		aLong1718 = 0L;
 		for (int k1 = 0; k1 < 12; k1++) {

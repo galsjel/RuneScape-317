@@ -79,29 +79,29 @@ public class SoundFilter {
 		return pairs[direction] * 2;
 	}
 
-	public void read(Packet packet, SoundEnvelope envelope) {
-		int count = packet.get1U();
+	public void read(Buffer buffer, SoundEnvelope envelope) {
+		int count = buffer.get1U();
 		pairs[0] = count >> 4;
 		pairs[1] = count & 0xf;
 
 		if (count != 0) {
-			unities[0] = packet.get2U();
-			unities[1] = packet.get2U();
+			unities[0] = buffer.get2U();
+			unities[1] = buffer.get2U();
 
-			int migration = packet.get1U();
+			int migration = buffer.get1U();
 
 			for (int direction = 0; direction < 2; direction++) {
 				for (int pair = 0; pair < pairs[direction]; pair++) {
-					frequencies[direction][0][pair] = packet.get2U();
-					ranges[direction][0][pair] = packet.get2U();
+					frequencies[direction][0][pair] = buffer.get2U();
+					ranges[direction][0][pair] = buffer.get2U();
 				}
 			}
 
 			for (int direction = 0; direction < 2; direction++) {
 				for (int pair = 0; pair < pairs[direction]; pair++) {
 					if ((migration & (1 << (direction * 4) << pair)) != 0) {
-						frequencies[direction][1][pair] = packet.get2U();
-						ranges[direction][1][pair] = packet.get2U();
+						frequencies[direction][1][pair] = buffer.get2U();
+						ranges[direction][1][pair] = buffer.get2U();
 					} else {
 						frequencies[direction][1][pair] = frequencies[direction][0][pair];
 						ranges[direction][1][pair] = ranges[direction][0][pair];
@@ -110,7 +110,7 @@ public class SoundFilter {
 			}
 
 			if ((migration != 0) || (unities[1] != unities[0])) {
-				envelope.readShape(packet);
+				envelope.readShape(buffer);
 			}
 		} else {
 			unities[0] = unities[1] = 0;

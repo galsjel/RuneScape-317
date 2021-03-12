@@ -12,7 +12,7 @@ public class Connection implements Runnable {
 	public InputStream anInputStream419;
 	public OutputStream anOutputStream420;
 	public final Socket aSocket421;
-	public boolean aBoolean422 = false;
+	public boolean closed = false;
 	public final GameShell anShell_423;
 	public byte[] aByteArray424;
 	public int anInt425;
@@ -30,7 +30,7 @@ public class Connection implements Runnable {
 	}
 
 	public void method267() {
-		aBoolean422 = true;
+		closed = true;
 		try {
 			if (anInputStream419 != null) {
 				anInputStream419.close();
@@ -52,15 +52,15 @@ public class Connection implements Runnable {
 	}
 
 	public int method268() throws IOException {
-		if (aBoolean422) {
+		if (closed) {
 			return 0;
 		} else {
 			return anInputStream419.read();
 		}
 	}
 
-	public int method269() throws IOException {
-		if (aBoolean422) {
+	public int available() throws IOException {
+		if (closed) {
 			return 0;
 		} else {
 			return anInputStream419.available();
@@ -68,7 +68,7 @@ public class Connection implements Runnable {
 	}
 
 	public void method270(byte[] abyte0, int i, int j) throws IOException {
-		if (aBoolean422) {
+		if (closed) {
 			return;
 		}
 		int k;
@@ -82,7 +82,7 @@ public class Connection implements Runnable {
 	}
 
 	public void method271(int i, byte[] abyte0, int k) throws IOException {
-		if (aBoolean422) {
+		if (closed) {
 			return;
 		}
 		if (aBoolean428) {
@@ -149,13 +149,13 @@ public class Connection implements Runnable {
 	}
 
 	public void method272() {
-		System.out.println("closed:" + aBoolean422);
+		System.out.println("closed:" + closed);
 		System.out.println("tcycl:" + anInt425);
 		System.out.println("tnum:" + anInt426);
 		System.out.println("writer:" + aBoolean427);
 		System.out.println("ioerror:" + aBoolean428);
 		try {
-			System.out.println("available:" + method269());
+			System.out.println("available:" + available());
 		} catch (IOException ignored) {
 		}
 	}

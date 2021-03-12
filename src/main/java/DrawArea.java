@@ -7,55 +7,55 @@ import java.awt.image.*;
 
 public class DrawArea implements ImageProducer, ImageObserver {
 
-	public final int[] anIntArray315;
-	public final int anInt316;
-	public final int anInt317;
+	public final int[] pixels;
+	public final int width;
+	public final int height;
 	public final ColorModel aColorModel318;
-	public final Image anImage320;
-	public ImageConsumer anImageConsumer319;
+	public final Image image;
+	public ImageConsumer consumer;
 
-	public DrawArea(int i, int j, java.awt.Component component) {
-		anInt316 = i;
-		anInt317 = j;
-		anIntArray315 = new int[i * j];
+	public DrawArea(int width, int height, java.awt.Component component) {
+		this.width = width;
+		this.height = height;
+		pixels = new int[width * height];
 		aColorModel318 = new DirectColorModel(32, 0xff0000, 65280, 255);
-		anImage320 = component.createImage(this);
+		image = component.createImage(this);
 		method239();
-		component.prepareImage(anImage320, this);
+		component.prepareImage(image, this);
 		method239();
-		component.prepareImage(anImage320, this);
+		component.prepareImage(image, this);
 		method239();
-		component.prepareImage(anImage320, this);
-		method237();
+		component.prepareImage(image, this);
+		bind();
 	}
 
-	public void method237() {
-		Draw2D.bind(anIntArray315, anInt316, anInt317);
+	public void bind() {
+		Draw2D.bind(pixels, width, height);
 	}
 
-	public void method238(int i, Graphics g, int k) {
+	public void draw(Graphics g, int x, int y) {
 		method239();
-		g.drawImage(anImage320, k, i, this);
+		g.drawImage(image, x, y, this);
 	}
 
 	@Override
-	public synchronized void addConsumer(ImageConsumer imageconsumer) {
-		anImageConsumer319 = imageconsumer;
-		imageconsumer.setDimensions(anInt316, anInt317);
-		imageconsumer.setProperties(null);
-		imageconsumer.setColorModel(aColorModel318);
-		imageconsumer.setHints(14);
+	public synchronized void addConsumer(ImageConsumer consumer) {
+		this.consumer = consumer;
+		consumer.setDimensions(width, height);
+		consumer.setProperties(null);
+		consumer.setColorModel(aColorModel318);
+		consumer.setHints(14);
 	}
 
 	@Override
 	public synchronized boolean isConsumer(ImageConsumer imageconsumer) {
-		return anImageConsumer319 == imageconsumer;
+		return consumer == imageconsumer;
 	}
 
 	@Override
 	public synchronized void removeConsumer(ImageConsumer imageconsumer) {
-		if (anImageConsumer319 == imageconsumer) {
-			anImageConsumer319 = null;
+		if (consumer == imageconsumer) {
+			consumer = null;
 		}
 	}
 
@@ -70,9 +70,9 @@ public class DrawArea implements ImageProducer, ImageObserver {
 	}
 
 	public synchronized void method239() {
-		if (anImageConsumer319 != null) {
-			anImageConsumer319.setPixels(0, 0, anInt316, anInt317, aColorModel318, anIntArray315, 0, anInt316);
-			anImageConsumer319.imageComplete(2);
+		if (consumer != null) {
+			consumer.setPixels(0, 0, width, height, aColorModel318, pixels, 0, width);
+			consumer.imageComplete(2);
 		}
 	}
 

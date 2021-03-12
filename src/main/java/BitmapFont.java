@@ -13,8 +13,8 @@ public class BitmapFont {
 	public boolean strikethrough = false;
 
 	public BitmapFont(FileArchive archive, String name, boolean quill) {
-		Packet dat = new Packet(archive.read(name + ".dat", null));
-		Packet idx = new Packet(archive.read("index.dat", null));
+		Buffer dat = new Buffer(archive.read(name + ".dat", null));
+		Buffer idx = new Buffer(archive.read("index.dat", null));
 		idx.position = dat.get2U() + 4;
 
 		int k = idx.get1U();

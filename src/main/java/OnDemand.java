@@ -13,15 +13,15 @@ import java.util.zip.GZIPInputStream;
 public class OnDemand implements Runnable {
 
 	public final LinkedList aList_1331 = new LinkedList();
-	public final CRC32 aCRC32_1338 = new CRC32();
+	public final CRC32 crc32 = new CRC32();
 	public final byte[] aByteArray1339 = new byte[500];
-	public final byte[][] archiveFilePriority = new byte[4][];
+	public final byte[][] storeFilePriority = new byte[4][];
 	public final LinkedList aList_1344 = new LinkedList();
 	public final LinkedList aList_1358 = new LinkedList();
 	public final byte[] aByteArray1359 = new byte[65000];
 	public final DoublyLinkedList aDoublyLinkedList_1361 = new DoublyLinkedList();
-	public final int[][] archiveFileVersions = new int[4][];
-	public final int[][] archiveFileChecksums = new int[4][];
+	public final int[][] storeFileVersions = new int[4][];
+	public final int[][] storeFileChecksums = new int[4][];
 	public final LinkedList aList_1368 = new LinkedList();
 	public final LinkedList aList_1370 = new LinkedList();
 	public int anInt1330;
@@ -29,18 +29,18 @@ public class OnDemand implements Runnable {
 	public String aString1333 = "";
 	public int anInt1334;
 	public long aLong1335;
-	public int[] anIntArray1337;
+	public int[] mapLocFile;
 	public int cycle;
 	public Game game;
 	public int anInt1346;
 	public int anInt1347;
 	public int[] midiIndex;
 	public int anInt1349;
-	public int[] anIntArray1350;
+	public int[] mapLandFile;
 	public int anInt1351;
 	public boolean running = true;
 	public OutputStream anOutputStream1354;
-	public int[] anIntArray1356;
+	public int[] mapPrefetched;
 	public boolean aBoolean1357 = false;
 	public int[] animIndex;
 	public InputStream anInputStream1362;
@@ -48,7 +48,7 @@ public class OnDemand implements Runnable {
 	public int anInt1366;
 	public int anInt1367;
 	public OnDemandRequest aRequest_1369;
-	public int[] anIntArray1371;
+	public int[] mapIndex;
 	public byte[] modelIndex;
 	public int anInt1373;
 
@@ -61,9 +61,9 @@ public class OnDemand implements Runnable {
 		}
 		int k = abyte0.length - 2;
 		int l = ((abyte0[k] & 0xff) << 8) + (abyte0[k + 1] & 0xff);
-		aCRC32_1338.reset();
-		aCRC32_1338.update(abyte0, 0, k);
-		int i1 = (int) aCRC32_1338.getValue();
+		crc32.reset();
+		crc32.update(abyte0, 0, k);
+		int i1 = (int) crc32.getValue();
 		if (l != i) {
 			return false;
 		}
@@ -83,7 +83,7 @@ public class OnDemand implements Runnable {
 				int i2 = aByteArray1339[5] & 0xff;
 				aRequest_1369 = null;
 				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
-					if ((request.anInt1419 == l) && (request.anInt1421 == j1)) {
+					if ((request.store == l) && (request.file == j1)) {
 						aRequest_1369 = request;
 					}
 					if (aRequest_1369 != null) {
@@ -94,7 +94,7 @@ public class OnDemand implements Runnable {
 					anInt1373 = 0;
 					if (l1 == 0) {
 						Signlink.reporterror("Rej: " + l + "," + j1);
-						aRequest_1369.aByteArray1420 = null;
+						aRequest_1369.data = null;
 						if (aRequest_1369.aBoolean1422) {
 							synchronized (aList_1358) {
 								aList_1358.method249(aRequest_1369);
@@ -104,10 +104,10 @@ public class OnDemand implements Runnable {
 						}
 						aRequest_1369 = null;
 					} else {
-						if ((aRequest_1369.aByteArray1420 == null) && (i2 == 0)) {
-							aRequest_1369.aByteArray1420 = new byte[l1];
+						if ((aRequest_1369.data == null) && (i2 == 0)) {
+							aRequest_1369.data = new byte[l1];
 						}
-						if ((aRequest_1369.aByteArray1420 == null) && (i2 != 0)) {
+						if ((aRequest_1369.data == null) && (i2 != 0)) {
 							throw new IOException("missing start of file");
 						}
 					}
@@ -123,18 +123,18 @@ public class OnDemand implements Runnable {
 				byte[] abyte0 = aByteArray1339;
 				int i1 = 0;
 				if (aRequest_1369 != null) {
-					abyte0 = aRequest_1369.aByteArray1420;
+					abyte0 = aRequest_1369.data;
 					i1 = anInt1346;
 				}
 				for (int k1 = 0; k1 < anInt1347; k1 += anInputStream1362.read(abyte0, k1 + i1, anInt1347 - k1)) {
 				}
 				if (((anInt1347 + anInt1346) >= abyte0.length) && (aRequest_1369 != null)) {
 					if (game.filestores[0] != null) {
-						game.filestores[aRequest_1369.anInt1419 + 1].write(abyte0, aRequest_1369.anInt1421, abyte0.length);
+						game.filestores[aRequest_1369.store + 1].write(abyte0, aRequest_1369.file, abyte0.length);
 					}
-					if (!aRequest_1369.aBoolean1422 && (aRequest_1369.anInt1419 == 3)) {
+					if (!aRequest_1369.aBoolean1422 && (aRequest_1369.store == 3)) {
 						aRequest_1369.aBoolean1422 = true;
-						aRequest_1369.anInt1419 = 93;
+						aRequest_1369.store = 93;
 					}
 					if (aRequest_1369.aBoolean1422) {
 						synchronized (aList_1358) {
@@ -165,13 +165,13 @@ public class OnDemand implements Runnable {
 			byte[] data = versionlist.read(versionFilenames[i], null);
 			int count = data.length / 2;
 
-			Packet packet = new Packet(data);
+			Buffer buffer = new Buffer(data);
 
-			archiveFileVersions[i] = new int[count];
-			archiveFilePriority[i] = new byte[count];
+			storeFileVersions[i] = new int[count];
+			storeFilePriority[i] = new byte[count];
 
 			for (int l = 0; l < count; l++) {
-				archiveFileVersions[i][l] = packet.get2U();
+				storeFileVersions[i][l] = buffer.get2U();
 			}
 		}
 
@@ -180,15 +180,15 @@ public class OnDemand implements Runnable {
 		for (int i = 0; i < 4; i++) {
 			byte[] data = versionlist.read(crcFilenames[i], null);
 			int count = data.length / 4;
-			Packet packet = new Packet(data);
-			archiveFileChecksums[i] = new int[count];
+			Buffer buffer = new Buffer(data);
+			storeFileChecksums[i] = new int[count];
 			for (int l1 = 0; l1 < count; l1++) {
-				archiveFileChecksums[i][l1] = packet.get4();
+				storeFileChecksums[i][l1] = buffer.get4();
 			}
 		}
 
 		byte[] data = versionlist.read("model_index", null);
-		int count = archiveFileVersions[0].length;
+		int count = storeFileVersions[0].length;
 
 		modelIndex = new byte[count];
 
@@ -201,37 +201,37 @@ public class OnDemand implements Runnable {
 		}
 
 		data = versionlist.read("map_index", null);
-		Packet packet = new Packet(data);
+		Buffer buffer = new Buffer(data);
 		count = data.length / 7;
 
-		anIntArray1371 = new int[count];
-		anIntArray1350 = new int[count];
-		anIntArray1337 = new int[count];
-		anIntArray1356 = new int[count];
+		mapIndex = new int[count];
+		mapLandFile = new int[count];
+		mapLocFile = new int[count];
+		mapPrefetched = new int[count];
 
 		for (int i2 = 0; i2 < count; i2++) {
-			anIntArray1371[i2] = packet.get2U();
-			anIntArray1350[i2] = packet.get2U();
-			anIntArray1337[i2] = packet.get2U();
-			anIntArray1356[i2] = packet.get1U();
+			mapIndex[i2] = buffer.get2U();
+			mapLandFile[i2] = buffer.get2U();
+			mapLocFile[i2] = buffer.get2U();
+			mapPrefetched[i2] = buffer.get1U();
 		}
 
 		data = versionlist.read("anim_index", null);
-		packet = new Packet(data);
+		buffer = new Buffer(data);
 		count = data.length / 2;
 		animIndex = new int[count];
 
 		for (int j2 = 0; j2 < count; j2++) {
-			animIndex[j2] = packet.get2U();
+			animIndex[j2] = buffer.get2U();
 		}
 
 		data = versionlist.read("midi_index", null);
-		packet = new Packet(data);
+		buffer = new Buffer(data);
 		count = data.length;
 		midiIndex = new int[count];
 
 		for (int k2 = 0; k2 < count; k2++) {
-			midiIndex[k2] = packet.get1U();
+			midiIndex[k2] = buffer.get1U();
 		}
 
 		this.game = game;
@@ -239,7 +239,7 @@ public class OnDemand implements Runnable {
 		this.game.startThread(this, 2);
 	}
 
-	public int method552() {
+	public int remaining() {
 		synchronized (aDoublyLinkedList_1361) {
 			return aDoublyLinkedList_1361.method154();
 		}
@@ -250,17 +250,17 @@ public class OnDemand implements Runnable {
 	}
 
 	public void prefetchMaps(boolean members) {
-		int count = anIntArray1371.length;
+		int count = mapIndex.length;
 		for (int i = 0; i < count; i++) {
-			if (members || (anIntArray1356[i] != 0)) {
-				method563((byte) 2, 3, anIntArray1337[i]);
-				method563((byte) 2, 3, anIntArray1350[i]);
+			if (members || (mapPrefetched[i] != 0)) {
+				method563((byte) 2, 3, mapLocFile[i]);
+				method563((byte) 2, 3, mapLandFile[i]);
 			}
 		}
 	}
 
-	public int method555(int j) {
-		return archiveFileVersions[j].length;
+	public int getFileCount(int store) {
+		return storeFileVersions[store].length;
 	}
 
 	public void method556(OnDemandRequest request) {
@@ -271,7 +271,7 @@ public class OnDemand implements Runnable {
 					return;
 				}
 				aLong1335 = l;
-				aSocket1363 = game.method19(43594 + Game.anInt958);
+				aSocket1363 = game.method19(43594 + Game.portOffset);
 				anInputStream1362 = aSocket1363.getInputStream();
 				anOutputStream1354 = aSocket1363.getOutputStream();
 				anOutputStream1354.write(15);
@@ -280,9 +280,9 @@ public class OnDemand implements Runnable {
 				}
 				anInt1373 = 0;
 			}
-			aByteArray1339[0] = (byte) request.anInt1419;
-			aByteArray1339[1] = (byte) (request.anInt1421 >> 8);
-			aByteArray1339[2] = (byte) request.anInt1421;
+			aByteArray1339[0] = (byte) request.store;
+			aByteArray1339[1] = (byte) (request.file >> 8);
+			aByteArray1339[2] = (byte) request.file;
 			if (request.aBoolean1422) {
 				aByteArray1339[3] = 2;
 			} else if (!game.aBoolean1157) {
@@ -311,32 +311,32 @@ public class OnDemand implements Runnable {
 		return animIndex.length;
 	}
 
-	public void method558(int i, int j) {
-		if ((i < 0) || (i > archiveFileVersions.length) || (j < 0) || (j > archiveFileVersions[i].length)) {
+	public void request(int archive, int file) {
+		if ((archive < 0) || (archive > storeFileVersions.length) || (file < 0) || (file > storeFileVersions[archive].length)) {
 			return;
 		}
-		if (archiveFileVersions[i][j] == 0) {
+		if (storeFileVersions[archive][file] == 0) {
 			return;
 		}
 		synchronized (aDoublyLinkedList_1361) {
 			for (OnDemandRequest request = (OnDemandRequest) aDoublyLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aDoublyLinkedList_1361.method153()) {
-				if ((request.anInt1419 == i) && (request.anInt1421 == j)) {
+				if ((request.store == archive) && (request.file == file)) {
 					return;
 				}
 			}
-			OnDemandRequest request_1 = new OnDemandRequest();
-			request_1.anInt1419 = i;
-			request_1.anInt1421 = j;
-			request_1.aBoolean1422 = true;
+			OnDemandRequest request = new OnDemandRequest();
+			request.store = archive;
+			request.file = file;
+			request.aBoolean1422 = true;
 			synchronized (aList_1370) {
-				aList_1370.method249(request_1);
+				aList_1370.method249(request);
 			}
-			aDoublyLinkedList_1361.method150(request_1);
+			aDoublyLinkedList_1361.method150(request);
 		}
 	}
 
-	public int method559(int i) {
-		return modelIndex[i] & 0xff;
+	public int getModelIndex(int id) {
+		return modelIndex[id] & 0xff;
 	}
 
 	@Override
@@ -430,25 +430,25 @@ public class OnDemand implements Runnable {
 		if (game.filestores[0] == null) {
 			return;
 		}
-		if (archiveFileVersions[j][i] == 0) {
+		if (storeFileVersions[j][i] == 0) {
 			return;
 		}
-		if (archiveFilePriority[j][i] == 0) {
+		if (storeFilePriority[j][i] == 0) {
 			return;
 		}
 		if (topPriority == 0) {
 			return;
 		}
 		OnDemandRequest request = new OnDemandRequest();
-		request.anInt1419 = j;
-		request.anInt1421 = i;
+		request.store = j;
+		request.file = i;
 		request.aBoolean1422 = false;
 		synchronized (aList_1344) {
 			aList_1344.method249(request);
 		}
 	}
 
-	public OnDemandRequest method561() {
+	public OnDemandRequest poll() {
 		OnDemandRequest request;
 		synchronized (aList_1358) {
 			request = (OnDemandRequest) aList_1358.method251();
@@ -459,12 +459,12 @@ public class OnDemand implements Runnable {
 		synchronized (aDoublyLinkedList_1361) {
 			request.method330();
 		}
-		if (request.aByteArray1420 == null) {
+		if (request.data == null) {
 			return request;
 		}
 		int i = 0;
 		try {
-			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(request.aByteArray1420));
+			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(request.data));
 			do {
 				if (i == aByteArray1359.length) {
 					throw new RuntimeException("buffer overflow!");
@@ -478,21 +478,21 @@ public class OnDemand implements Runnable {
 		} catch (IOException _ex) {
 			throw new RuntimeException("error unzipping");
 		}
-		request.aByteArray1420 = new byte[i];
+		request.data = new byte[i];
 		for (int j = 0; j < i; j++) {
-			request.aByteArray1420[j] = aByteArray1359[j];
+			request.data[j] = aByteArray1359[j];
 		}
 		return request;
 	}
 
-	public int method562(int i, int k, int l) {
-		int i1 = (l << 8) + k;
-		for (int j1 = 0; j1 < anIntArray1371.length; j1++) {
-			if (anIntArray1371[j1] == i1) {
-				if (i == 0) {
-					return anIntArray1350[j1];
+	public int getMapFile(int type, int x, int z) {
+		int index = (x << 8) + z;
+		for (int i = 0; i < mapIndex.length; i++) {
+			if (mapIndex[i] == index) {
+				if (type == 0) {
+					return mapLandFile[i];
 				} else {
-					return anIntArray1337[j1];
+					return mapLocFile[i];
 				}
 			}
 		}
@@ -500,24 +500,24 @@ public class OnDemand implements Runnable {
 	}
 
 	public void method548(int i) {
-		method558(0, i);
+		request(0, i);
 	}
 
 	public void method563(byte priority, int archive, int file) {
 		if (game.filestores[0] == null) {
 			return;
 		}
-		if (archiveFileVersions[archive][file] == 0) {
+		if (storeFileVersions[archive][file] == 0) {
 			return;
 		}
 
 		byte[] data = game.filestores[archive + 1].read(file);
 
-		if (method549(archiveFileVersions[archive][file], archiveFileChecksums[archive][file], data)) {
+		if (method549(storeFileVersions[archive][file], storeFileChecksums[archive][file], data)) {
 			return;
 		}
 
-		archiveFilePriority[archive][file] = priority;
+		storeFilePriority[archive][file] = priority;
 
 		if (priority > topPriority) {
 			topPriority = priority;
@@ -527,8 +527,8 @@ public class OnDemand implements Runnable {
 	}
 
 	public boolean method564(int i) {
-		for (int k = 0; k < anIntArray1371.length; k++) {
-			if (anIntArray1337[k] == i) {
+		for (int k = 0; k < mapIndex.length; k++) {
+			if (mapLocFile[k] == i) {
 				return true;
 			}
 		}
@@ -550,10 +550,10 @@ public class OnDemand implements Runnable {
 			if (request_1 == null) {
 				break;
 			}
-			if (archiveFilePriority[request_1.anInt1419][request_1.anInt1421] != 0) {
+			if (storeFilePriority[request_1.store][request_1.file] != 0) {
 				anInt1351++;
 			}
-			archiveFilePriority[request_1.anInt1419][request_1.anInt1421] = 0;
+			storeFilePriority[request_1.store][request_1.file] = 0;
 			aList_1331.method249(request_1);
 			anInt1366++;
 			method556(request_1);
@@ -576,16 +576,16 @@ public class OnDemand implements Runnable {
 			aBoolean1357 = true;
 			byte[] abyte0 = null;
 			if (game.filestores[0] != null) {
-				abyte0 = game.filestores[request.anInt1419 + 1].read(request.anInt1421);
+				abyte0 = game.filestores[request.store + 1].read(request.file);
 			}
-			if (!method549(archiveFileVersions[request.anInt1419][request.anInt1421], archiveFileChecksums[request.anInt1419][request.anInt1421], abyte0)) {
+			if (!method549(storeFileVersions[request.store][request.file], storeFileChecksums[request.store][request.file], abyte0)) {
 				abyte0 = null;
 			}
 			synchronized (aList_1370) {
 				if (abyte0 == null) {
 					aList_1368.method249(request);
 				} else {
-					request.aByteArray1420 = abyte0;
+					request.data = abyte0;
 					synchronized (aList_1358) {
 						aList_1358.method249(request);
 					}
@@ -605,8 +605,8 @@ public class OnDemand implements Runnable {
 				request = (OnDemandRequest) aList_1344.method251();
 			}
 			while (request != null) {
-				if (archiveFilePriority[request.anInt1419][request.anInt1421] != 0) {
-					archiveFilePriority[request.anInt1419][request.anInt1421] = 0;
+				if (storeFilePriority[request.store][request.file] != 0) {
+					storeFilePriority[request.store][request.file] = 0;
 					aList_1331.method249(request);
 					method556(request);
 					aBoolean1357 = true;
@@ -624,14 +624,14 @@ public class OnDemand implements Runnable {
 				}
 			}
 			for (int j = 0; j < 4; j++) {
-				byte[] abyte0 = archiveFilePriority[j];
+				byte[] abyte0 = storeFilePriority[j];
 				int k = abyte0.length;
 				for (int l = 0; l < k; l++) {
 					if (abyte0[l] == topPriority) {
 						abyte0[l] = 0;
 						OnDemandRequest request_1 = new OnDemandRequest();
-						request_1.anInt1419 = j;
-						request_1.anInt1421 = l;
+						request_1.store = j;
+						request_1.file = l;
 						request_1.aBoolean1422 = false;
 						aList_1331.method249(request_1);
 						method556(request_1);

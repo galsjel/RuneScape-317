@@ -10,8 +10,8 @@ public class SceneLocTemporary extends LinkedListNode {
 	public int anInt1294;
 	public int anInt1295;
 	public int anInt1296;
-	public int anInt1297;
-	public int anInt1298;
+	public int sceneTileX;
+	public int sceneTileZ;
 	public int anInt1299;
 	public int anInt1300;
 	public int anInt1301;

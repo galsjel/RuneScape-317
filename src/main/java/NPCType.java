@@ -5,7 +5,7 @@
 public class NPCType {
 
 	public static int anInt56;
-	public static Packet aPacket_60;
+	public static Buffer aBuffer_60;
 	public static int anInt62;
 	public static int[] anIntArray72;
 	public static NPCType[] aTypeArray80;
@@ -24,21 +24,21 @@ public class NPCType {
 		}
 		anInt56 = (anInt56 + 1) % 20;
 		NPCType type = aTypeArray80[anInt56] = new NPCType();
-		aPacket_60.position = anIntArray72[i];
+		aBuffer_60.position = anIntArray72[i];
 		type.aLong78 = i;
-		type.method165(aPacket_60);
+		type.method165(aBuffer_60);
 		return type;
 	}
 
 	public static void unpack(FileArchive archive) {
-		aPacket_60 = new Packet(archive.read("npc.dat", null));
-		Packet packet = new Packet(archive.read("npc.idx", null));
-		anInt62 = packet.get2U();
+		aBuffer_60 = new Buffer(archive.read("npc.dat", null));
+		Buffer buffer = new Buffer(archive.read("npc.idx", null));
+		anInt62 = buffer.get2U();
 		anIntArray72 = new int[anInt62];
 		int i = 2;
 		for (int j = 0; j < anInt62; j++) {
 			anIntArray72[j] = i;
-			i += packet.get2U();
+			i += buffer.get2U();
 		}
 		aTypeArray80 = new NPCType[20];
 		for (int k = 0; k < 20; k++) {
@@ -50,7 +50,7 @@ public class NPCType {
 		aCache_95 = null;
 		anIntArray72 = null;
 		aTypeArray80 = null;
-		aPacket_60 = null;
+		aBuffer_60 = null;
 	}
 	public int anInt55 = -1;
 	public int anInt57 = -1;
@@ -201,92 +201,92 @@ public class NPCType {
 		return model_1;
 	}
 
-	public void method165(Packet packet) {
+	public void method165(Buffer buffer) {
 		do {
-			int i = packet.get1U();
+			int i = buffer.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				int j = packet.get1U();
+				int j = buffer.get1U();
 				anIntArray94 = new int[j];
 				for (int j1 = 0; j1 < j; j1++) {
-					anIntArray94[j1] = packet.get2U();
+					anIntArray94[j1] = buffer.get2U();
 				}
 			} else if (i == 2) {
-				aString65 = packet.getString();
+				aString65 = buffer.getString();
 			} else if (i == 3) {
-				aByteArray89 = packet.getStringRaw();
+				aByteArray89 = buffer.getStringRaw();
 			} else if (i == 12) {
-				aByte68 = packet.get1();
+				aByte68 = buffer.get1();
 			} else if (i == 13) {
-				anInt77 = packet.get2U();
+				anInt77 = buffer.get2U();
 			} else if (i == 14) {
-				anInt67 = packet.get2U();
+				anInt67 = buffer.get2U();
 			} else if (i == 17) {
-				anInt67 = packet.get2U();
-				anInt58 = packet.get2U();
-				anInt83 = packet.get2U();
-				anInt55 = packet.get2U();
+				anInt67 = buffer.get2U();
+				anInt58 = buffer.get2U();
+				anInt83 = buffer.get2U();
+				anInt55 = buffer.get2U();
 			} else if ((i >= 30) && (i < 40)) {
 				if (aStringArray66 == null) {
 					aStringArray66 = new String[5];
 				}
-				aStringArray66[i - 30] = packet.getString();
+				aStringArray66[i - 30] = buffer.getString();
 				if (aStringArray66[i - 30].equalsIgnoreCase("hidden")) {
 					aStringArray66[i - 30] = null;
 				}
 			} else if (i == 40) {
-				int k = packet.get1U();
+				int k = buffer.get1U();
 				anIntArray76 = new int[k];
 				anIntArray70 = new int[k];
 				for (int k1 = 0; k1 < k; k1++) {
-					anIntArray76[k1] = packet.get2U();
-					anIntArray70[k1] = packet.get2U();
+					anIntArray76[k1] = buffer.get2U();
+					anIntArray70[k1] = buffer.get2U();
 				}
 			} else if (i == 60) {
-				int l = packet.get1U();
+				int l = buffer.get1U();
 				anIntArray73 = new int[l];
 				for (int l1 = 0; l1 < l; l1++) {
-					anIntArray73[l1] = packet.get2U();
+					anIntArray73[l1] = buffer.get2U();
 				}
 			} else if (i == 90) {
-				unusedInt2 = packet.get2U();
+				unusedInt2 = buffer.get2U();
 			} else if (i == 91) {
-				unusedInt0 = packet.get2U();
+				unusedInt0 = buffer.get2U();
 			} else if (i == 92) {
-				unusedInt1 = packet.get2U();
+				unusedInt1 = buffer.get2U();
 			} else if (i == 93) {
 				aBoolean87 = false;
 			} else if (i == 95) {
-				anInt61 = packet.get2U();
+				anInt61 = buffer.get2U();
 			} else if (i == 97) {
-				anInt91 = packet.get2U();
+				anInt91 = buffer.get2U();
 			} else if (i == 98) {
-				anInt86 = packet.get2U();
+				anInt86 = buffer.get2U();
 			} else if (i == 99) {
 				aBoolean93 = true;
 			} else if (i == 100) {
-				anInt85 = packet.get1();
+				anInt85 = buffer.get1();
 			} else if (i == 101) {
-				anInt92 = packet.get1() * 5;
+				anInt92 = buffer.get1() * 5;
 			} else if (i == 102) {
-				anInt75 = packet.get2U();
+				anInt75 = buffer.get2U();
 			} else if (i == 103) {
-				anInt79 = packet.get2U();
+				anInt79 = buffer.get2U();
 			} else if (i == 106) {
-				anInt57 = packet.get2U();
+				anInt57 = buffer.get2U();
 				if (anInt57 == 65535) {
 					anInt57 = -1;
 				}
-				anInt59 = packet.get2U();
+				anInt59 = buffer.get2U();
 				if (anInt59 == 65535) {
 					anInt59 = -1;
 				}
-				int i1 = packet.get1U();
+				int i1 = buffer.get1U();
 				anIntArray88 = new int[i1 + 1];
 				for (int i2 = 0; i2 <= i1; i2++) {
-					anIntArray88[i2] = packet.get2U();
+					anIntArray88[i2] = buffer.get2U();
 					if (anIntArray88[i2] == 65535) {
 						anIntArray88[i2] = -1;
 					}

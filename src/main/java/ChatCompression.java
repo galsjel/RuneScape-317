@@ -1,7 +1,7 @@
 public class ChatCompression {
 
 	private static final char[] cbuf = new char[100];
-	private static final Packet buf = new Packet(new byte[100]);
+	private static final Buffer buf = new Buffer(new byte[100]);
 
 	private static final char[] TABLE = { //
 			// only this first row is actually combined with anything else
@@ -14,12 +14,12 @@ public class ChatCompression {
 
 	private static final int RANGE = ' ' + '£'; // least significant char + most significant char (in terms of value)
 
-	public static String unpack(int expectedLength, Packet packet) {
+	public static String unpack(int expectedLength, Buffer buffer) {
 		int length = 0;
 		int carry = -1;
 
 		for (int i = 0; i < expectedLength; i++) {
-			int value = packet.get1U();
+			int value = buffer.get1U();
 			int nibble = (value >> 4) & 0xf;
 
 			if (carry == -1) {
@@ -65,7 +65,7 @@ public class ChatCompression {
 		return new String(cbuf, 0, length);
 	}
 
-	public static void pack(String s, Packet dst) {
+	public static void pack(String s, Buffer dst) {
 		if (s.length() > 80) {
 			s = s.substring(0, 80);
 		}

@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ChunkUtil {
+public class ZoneUtil {
 
 	public static int method155(int i, int j, int k) {
 		i &= 3;

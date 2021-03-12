@@ -31,7 +31,7 @@ public class SeqSkeleton {
 	 *
 	 * @param in the input
 	 */
-	public SeqSkeleton(Packet in) {
+	public SeqSkeleton(Buffer in) {
 		final int length = in.get1U();
 		baseTypes = new int[length];
 		baseLabels = new int[length][];

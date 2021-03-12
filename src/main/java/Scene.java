@@ -18,7 +18,7 @@ public class Scene {
 	public static final int[] anIntArray483 = {0, 4, 4, 8, 0, 0, 8, 0, 0};
 	public static final int[] anIntArray484 = {1, 1, 0, 0, 0, 8, 0, 0, 8};
 	public static final int[] anIntArray485 = {41, 39248, 41, 4643, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 43086, 41, 41, 41, 41, 41, 41, 41, 8602, 41, 28992, 41, 41, 41, 41, 41, 5056, 41, 41, 41, 7079, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 3131, 41, 41, 41};
-	public static boolean aBoolean436 = true;
+	public static boolean lowmem = true;
 	public static int anInt446;
 	public static int anInt447;
 	public static int anInt448;
@@ -1545,7 +1545,7 @@ public class Scene {
 				if (underlay.anInt718 != 0xbc614e) {
 					Draw3D.fillGouraudTriangle(j6, l6, l5, i6, k6, k5, underlay.anInt718, underlay.anInt719, underlay.anInt717);
 				}
-			} else if (!aBoolean436) {
+			} else if (!lowmem) {
 				if (underlay.aBoolean721) {
 					Draw3D.fillTexturedTriangle(j6, l6, l5, i6, k6, k5, underlay.anInt718, underlay.anInt719, underlay.anInt717, i2, i3, l1, l3, i4, k4, k2, j2, j3, underlay.anInt720);
 				} else {
@@ -1567,7 +1567,7 @@ public class Scene {
 					Draw3D.fillGouraudTriangle(j5, l5, l6, i5, k5, k6, underlay.anInt716, underlay.anInt717, underlay.anInt719);
 				}
 			} else {
-				if (!aBoolean436) {
+				if (!lowmem) {
 					Draw3D.fillTexturedTriangle(j5, l5, l6, i5, k5, k6, underlay.anInt716, underlay.anInt717, underlay.anInt719, i2, i3, l1, l3, i4, k4, k2, j2, j3, underlay.anInt720);
 					return;
 				}
@@ -1622,7 +1622,7 @@ public class Scene {
 					if (overlay.anIntArray676[j2] != 0xbc614e) {
 						Draw3D.fillGouraudTriangle(l4, i5, j5, i4, j4, k4, overlay.anIntArray676[j2], overlay.anIntArray677[j2], overlay.anIntArray678[j2]);
 					}
-				} else if (!aBoolean436) {
+				} else if (!lowmem) {
 					if (overlay.aBoolean683) {
 						Draw3D.fillTexturedTriangle(l4, i5, j5, i4, j4, k4, overlay.anIntArray676[j2], overlay.anIntArray677[j2], overlay.anIntArray678[j2], SceneTileOverlay.anIntArray690[0], SceneTileOverlay.anIntArray690[1], SceneTileOverlay.anIntArray690[3], SceneTileOverlay.anIntArray691[0], SceneTileOverlay.anIntArray691[1], SceneTileOverlay.anIntArray691[3], SceneTileOverlay.anIntArray692[0], SceneTileOverlay.anIntArray692[1], SceneTileOverlay.anIntArray692[3], overlay.anIntArray682[j2]);
 					} else {

@@ -2,7 +2,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A {@link Packet} encapsulates a finite amount of data and provides methods for reading and writing to that data.
+ * A {@link Buffer} encapsulates a finite amount of data and provides methods for reading and writing to that data.
  * The <code>put()</code> and <code>get()</code> methods describe the type of data they use by attributes in their
  * suffix. The naming convention is <code>put[type][U:unsigned][endianness][modifier]</code>.
  * <p>
@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  * C — put(-v) — get returns (-v)<br/>
  * S — put(128 - v) — get returns (128 - v)<br/>
  */
-public class Packet extends DoublyLinkedListNode {
+public class Buffer extends DoublyLinkedListNode {
 
 	public static final LinkedList pool0 = new LinkedList();
 	public static final LinkedList pool1 = new LinkedList();
@@ -34,39 +34,39 @@ public class Packet extends DoublyLinkedListNode {
 	public static int poolSize1;
 	public static int poolSize2;
 
-	public static Packet create(int sizeType) {
+	public static Buffer create(int sizeType) {
 		synchronized (pool1) {
-			Packet packet = null;
+			Buffer buffer = null;
 
 			if ((sizeType == 0) && (poolSize0 > 0)) {
 				poolSize0--;
-				packet = (Packet) pool0.method251();
+				buffer = (Buffer) pool0.method251();
 			} else if ((sizeType == 1) && (poolSize1 > 0)) {
 				poolSize1--;
-				packet = (Packet) pool1.method251();
+				buffer = (Buffer) pool1.method251();
 			} else if ((sizeType == 2) && (poolSize2 > 0)) {
 				poolSize2--;
-				packet = (Packet) pool2.method251();
+				buffer = (Buffer) pool2.method251();
 			}
 
-			if (packet != null) {
-				packet.position = 0;
-				return packet;
+			if (buffer != null) {
+				buffer.position = 0;
+				return buffer;
 			}
 		}
 
-		Packet packet = new Packet();
-		packet.position = 0;
+		Buffer buffer = new Buffer();
+		buffer.position = 0;
 
 		if (sizeType == 0) {
-			packet.data = new byte[100];
+			buffer.data = new byte[100];
 		} else if (sizeType == 1) {
-			packet.data = new byte[5000];
+			buffer.data = new byte[5000];
 		} else {
-			packet.data = new byte[30000];
+			buffer.data = new byte[30000];
 		}
 
-		return packet;
+		return buffer;
 	}
 
 	public byte[] data;
@@ -74,10 +74,10 @@ public class Packet extends DoublyLinkedListNode {
 	public int bitPosition;
 	public ISAACCipher cipher;
 
-	public Packet() {
+	public Buffer() {
 	}
 
-	public Packet(byte[] src) {
+	public Buffer(byte[] src) {
 		data = src;
 		position = 0;
 	}

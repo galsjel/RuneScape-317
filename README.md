@@ -18,11 +18,11 @@ Since there are a lot of different types of coordinates used, I'll be standardiz
 
 ```glsl
 int x, y, z;    // Context specific.    see note 1
-int rx, ry;     // A region.            (50, 50)            [0...65536]
+int mx, my;     // A map square.        (50, 50)            [0...65536]
 int tx, ty;     // A tile.              (3222, 3222)        [0...65536]
-int cx, cy, cz; // A chunk.             (402, 0, 402)       [0...65536]
-int ctx, ctz;   // A chunk tile.        (3, 3)              [0...7]
-int stx, sty;   // A scene tile.        (50, 50)            [0...103]
+int zx, zy, zz; // A zone.              (402, 0, 402)       [0...65536]
+int ztx, ztz;   // A zone tile.         (3, 3)              [0...7]
+int stx, stz;   // A scene tile.        (50, 50)            [0...103]
 int sx, sy, sz; // A scene coordinate.  (6400, -104, 6400)  [0...13312] see note 2
 ```
 <sub><sup><sup>1</sup>Description should be inferred by method name or be in comments.</sup></sub><br/>

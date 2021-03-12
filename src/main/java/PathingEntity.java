@@ -4,8 +4,8 @@
 
 public class PathingEntity extends Entity {
 
-	public final int[] anIntArray1500 = new int[10];
-	public final int[] anIntArray1501 = new int[10];
+	public final int[] moveQueueTileX = new int[10];
+	public final int[] moveQueueTileZ = new int[10];
 	public int anInt1502 = -1;
 	public int anInt1503;
 	public int anInt1504 = 32;
@@ -51,8 +51,8 @@ public class PathingEntity extends Entity {
 	public int anInt1547;
 	public int anInt1548;
 	public int anInt1549;
-	public int anInt1550;
-	public int anInt1551;
+	public int x;
+	public int z;
 	public int anInt1552;
 	public final boolean[] aBooleanArray1553 = new boolean[10];
 	public int anInt1554 = -1;
@@ -68,19 +68,19 @@ public class PathingEntity extends Entity {
 			anInt1526 = -1;
 		}
 		if (!flag) {
-			int k = i - anIntArray1500[0];
-			int l = j - anIntArray1501[0];
+			int k = i - moveQueueTileX[0];
+			int l = j - moveQueueTileZ[0];
 			if ((k >= -8) && (k <= 8) && (l >= -8) && (l <= 8)) {
 				if (anInt1525 < 9) {
 					anInt1525++;
 				}
 				for (int i1 = anInt1525; i1 > 0; i1--) {
-					anIntArray1500[i1] = anIntArray1500[i1 - 1];
-					anIntArray1501[i1] = anIntArray1501[i1 - 1];
+					moveQueueTileX[i1] = moveQueueTileX[i1 - 1];
+					moveQueueTileZ[i1] = moveQueueTileZ[i1 - 1];
 					aBooleanArray1553[i1] = aBooleanArray1553[i1 - 1];
 				}
-				anIntArray1500[0] = i;
-				anIntArray1501[0] = j;
+				moveQueueTileX[0] = i;
+				moveQueueTileZ[0] = j;
 				aBooleanArray1553[0] = false;
 				return;
 			}
@@ -88,10 +88,10 @@ public class PathingEntity extends Entity {
 		anInt1525 = 0;
 		anInt1542 = 0;
 		anInt1503 = 0;
-		anIntArray1500[0] = i;
-		anIntArray1501[0] = j;
-		anInt1550 = (anIntArray1500[0] * 128) + (anInt1540 * 64);
-		anInt1551 = (anIntArray1501[0] * 128) + (anInt1540 * 64);
+		moveQueueTileX[0] = i;
+		moveQueueTileZ[0] = j;
+		x = (moveQueueTileX[0] * 128) + (anInt1540 * 64);
+		z = (moveQueueTileZ[0] * 128) + (anInt1540 * 64);
 	}
 
 	public void method446() {
@@ -111,8 +111,8 @@ public class PathingEntity extends Entity {
 	}
 
 	public void method448(boolean flag, int i) {
-		int j = anIntArray1500[0];
-		int k = anIntArray1501[0];
+		int j = moveQueueTileX[0];
+		int k = moveQueueTileZ[0];
 		if (i == 0) {
 			j--;
 			k++;
@@ -148,12 +148,12 @@ public class PathingEntity extends Entity {
 			anInt1525++;
 		}
 		for (int l = anInt1525; l > 0; l--) {
-			anIntArray1500[l] = anIntArray1500[l - 1];
-			anIntArray1501[l] = anIntArray1501[l - 1];
+			moveQueueTileX[l] = moveQueueTileX[l - 1];
+			moveQueueTileZ[l] = moveQueueTileZ[l - 1];
 			aBooleanArray1553[l] = aBooleanArray1553[l - 1];
 		}
-		anIntArray1500[0] = j;
-		anIntArray1501[0] = k;
+		moveQueueTileX[0] = j;
+		moveQueueTileZ[0] = k;
 		aBooleanArray1553[0] = flag;
 	}
 

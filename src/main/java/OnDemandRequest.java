@@ -4,9 +4,9 @@
 
 public class OnDemandRequest extends DoublyLinkedListNode {
 
-	public int anInt1419;
-	public byte[] aByteArray1420;
-	public int anInt1421;
+	public int store;
+	public byte[] data;
+	public int file;
 	public boolean aBoolean1422;
 	public int anInt1423;
 

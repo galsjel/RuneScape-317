@@ -174,19 +174,19 @@ public class Model extends Entity {
 
 		faceColor = new int[faceCount];
 
-		Packet buf0 = new Packet(header.data);
+		Buffer buf0 = new Buffer(header.data);
 		buf0.position = header.obPoint1Position;
 
-		Packet buf1 = new Packet(header.data);
+		Buffer buf1 = new Buffer(header.data);
 		buf1.position = header.obPoint2Position;
 
-		Packet buf2 = new Packet(header.data);
+		Buffer buf2 = new Buffer(header.data);
 		buf2.position = header.obPoint3Position;
 
-		Packet buf3 = new Packet(header.data);
+		Buffer buf3 = new Buffer(header.data);
 		buf3.position = header.obPoint4Position;
 
-		Packet buf4 = new Packet(header.data);
+		Buffer buf4 = new Buffer(header.data);
 		buf4.position = header.obPoint5Position;
 
 		int x = 0;
@@ -812,23 +812,23 @@ public class Model extends Entity {
 			header.texturedFaceCount = 0;
 			return;
 		}
-		Packet packet = new Packet(src);
-		packet.position = src.length - 18;
+		Buffer buffer = new Buffer(src);
+		buffer.position = src.length - 18;
 		ModelHeader header = headers[id] = new ModelHeader();
 		header.data = src;
-		header.vertexCount = packet.get2U();
-		header.faceCount = packet.get2U();
-		header.texturedFaceCount = packet.get1U();
-		int k = packet.get1U();
-		int l = packet.get1U();
-		int i1 = packet.get1U();
-		int j1 = packet.get1U();
-		int k1 = packet.get1U();
-		int l1 = packet.get2U();
-		int i2 = packet.get2U();
+		header.vertexCount = buffer.get2U();
+		header.faceCount = buffer.get2U();
+		header.texturedFaceCount = buffer.get1U();
+		int k = buffer.get1U();
+		int l = buffer.get1U();
+		int i1 = buffer.get1U();
+		int j1 = buffer.get1U();
+		int k1 = buffer.get1U();
+		int l1 = buffer.get2U();
+		int i2 = buffer.get2U();
 		//noinspection unused
-		int j2 = packet.get2U();
-		int k2 = packet.get2U();
+		int j2 = buffer.get2U();
+		int k2 = buffer.get2U();
 		int offset = 0;
 		header.obPoint1Position = offset;
 		offset += header.vertexCount;

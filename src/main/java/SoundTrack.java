@@ -3,12 +3,12 @@ public class SoundTrack {
 	public static final SoundTrack[] tracks = new SoundTrack[5000];
 	public static final int[] delays = new int[5000];
 	public static byte[] buffer;
-	public static Packet packet;
+	public static Buffer buffer;
 
-	public static void method240(Packet src) {
+	public static void method240(Buffer src) {
 		buffer = new byte[441000];
 
-		SoundTrack.packet = new Packet(buffer);
+		SoundTrack.buffer = new Buffer(buffer);
 		SoundTone.init();
 
 		do {
@@ -22,7 +22,7 @@ public class SoundTrack {
 		} while (true);
 	}
 
-	public static Packet generate(int loopCount, int id) {
+	public static Buffer generate(int loopCount, int id) {
 		if (tracks[id] != null) {
 			SoundTrack track = tracks[id];
 			return track.getWaveform(loopCount);
@@ -38,16 +38,16 @@ public class SoundTrack {
 	public SoundTrack() {
 	}
 
-	public void read(Packet packet) {
+	public void read(Buffer buffer) {
 		for (int tone = 0; tone < 10; tone++) {
-			if (packet.get1U() != 0) {
-				packet.position--;
+			if (buffer.get1U() != 0) {
+				buffer.position--;
 				tones[tone] = new SoundTone();
-				tones[tone].read(packet);
+				tones[tone].read(buffer);
 			}
 		}
-		loopBegin = packet.get2U();
-		loopEnd = packet.get2U();
+		loopBegin = buffer.get2U();
+		loopEnd = buffer.get2U();
 	}
 
 	public int trim() {
@@ -82,26 +82,26 @@ public class SoundTrack {
 	 * <a href="http://soundfile.sapp.org/doc/WaveFormat/">WaveFormat</a>
 	 *
 	 * @param loopCount the loop count.
-	 * @return the {@link Packet} containing the waveform data.
+	 * @return the {@link Buffer} containing the waveform data.
 	 */
-	public Packet getWaveform(int loopCount) {
+	public Buffer getWaveform(int loopCount) {
 		int length = generate(loopCount);
-		packet.position = 0;
-		packet.put4(0x52494646); // "RIFF" ChunkID
-		packet.put4LE(36 + length); // ChunkSize
-		packet.put4(0x57415645); // "WAVE" format
-		packet.put4(0x666d7420); // "fmt " chunk id
-		packet.put4LE(16); // chunk size
-		packet.put2LE(1); // audio format
-		packet.put2LE(1);  // num channels
-		packet.put4LE(22050); // sample rate
-		packet.put4LE(22050); // byte rate
-		packet.put2LE(1); // block align
-		packet.put2LE(8); // bits per sample
-		packet.put4(0x64617461); // "data"
-		packet.put4LE(length);
-		packet.position += length;
-		return packet;
+		buffer.position = 0;
+		buffer.put4(0x52494646); // "RIFF" ChunkID
+		buffer.put4LE(36 + length); // ChunkSize
+		buffer.put4(0x57415645); // "WAVE" format
+		buffer.put4(0x666d7420); // "fmt " chunk id
+		buffer.put4LE(16); // chunk size
+		buffer.put2LE(1); // audio format
+		buffer.put2LE(1);  // num channels
+		buffer.put4LE(22050); // sample rate
+		buffer.put4LE(22050); // byte rate
+		buffer.put2LE(1); // block align
+		buffer.put2LE(8); // bits per sample
+		buffer.put4(0x64617461); // "data"
+		buffer.put4LE(length);
+		buffer.position += length;
+		return buffer;
 	}
 
 	public int generate(int loopCount) {

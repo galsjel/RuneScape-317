@@ -271,57 +271,57 @@ public class SoundTone {
 		}
 	}
 
-	public void read(Packet packet) {
+	public void read(Buffer buffer) {
 		frequencyBase = new SoundEnvelope();
-		frequencyBase.read(packet);
+		frequencyBase.read(buffer);
 		amplitudeBase = new SoundEnvelope();
-		amplitudeBase.read(packet);
+		amplitudeBase.read(buffer);
 
-		if (packet.get1U() != 0) {
-			packet.position--;
+		if (buffer.get1U() != 0) {
+			buffer.position--;
 			frequencyModRate = new SoundEnvelope();
-			frequencyModRate.read(packet);
+			frequencyModRate.read(buffer);
 			frequencyModRange = new SoundEnvelope();
-			frequencyModRange.read(packet);
+			frequencyModRange.read(buffer);
 		}
 
-		if (packet.get1U() != 0) {
-			packet.position--;
+		if (buffer.get1U() != 0) {
+			buffer.position--;
 			amplitudeModRate = new SoundEnvelope();
-			amplitudeModRate.read(packet);
+			amplitudeModRate.read(buffer);
 			amplitudeModRange = new SoundEnvelope();
-			amplitudeModRange.read(packet);
+			amplitudeModRange.read(buffer);
 		}
 
-		if (packet.get1U() != 0) {
-			packet.position--;
+		if (buffer.get1U() != 0) {
+			buffer.position--;
 			release = new SoundEnvelope();
-			release.read(packet);
+			release.read(buffer);
 			attack = new SoundEnvelope();
-			attack.read(packet);
+			attack.read(buffer);
 		}
 
 		for (int i = 0; i < 10; i++) {
-			int volume = packet.getSmartU();
+			int volume = buffer.getSmartU();
 
 			if (volume == 0) {
 				break;
 			}
 
 			harmonicVolume[i] = volume;
-			harmonicSemitone[i] = packet.getSmart();
-			harmonicDelay[i] = packet.getSmartU();
+			harmonicSemitone[i] = buffer.getSmart();
+			harmonicDelay[i] = buffer.getSmartU();
 		}
 
-		reverbDelay = packet.getSmartU();
-		reverbVolume = packet.getSmartU();
+		reverbDelay = buffer.getSmartU();
+		reverbVolume = buffer.getSmartU();
 
-		length = packet.get2U();
-		start = packet.get2U();
+		length = buffer.get2U();
+		start = buffer.get2U();
 
 		filter = new SoundFilter();
 		filterRange = new SoundEnvelope();
-		filter.read(packet, filterRange);
+		filter.read(buffer, filterRange);
 	}
 
 }

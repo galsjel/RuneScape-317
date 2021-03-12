@@ -13,65 +13,65 @@ public class Censor {
 	public static int[] anIntArray625;
 
 	public static void method487(FileArchive archive) {
-		Packet packet = new Packet(archive.read("fragmentsenc.txt", null));
-		Packet packet_1 = new Packet(archive.read("badenc.txt", null));
-		Packet class30_sub2_sub2_2 = new Packet(archive.read("domainenc.txt", null));
-		Packet packet_3 = new Packet(archive.read("tldlist.txt", null));
-		method488(packet, packet_1, class30_sub2_sub2_2, packet_3);
+		Buffer buffer = new Buffer(archive.read("fragmentsenc.txt", null));
+		Buffer buffer_1 = new Buffer(archive.read("badenc.txt", null));
+		Buffer class30_sub2_sub2_2 = new Buffer(archive.read("domainenc.txt", null));
+		Buffer buffer_3 = new Buffer(archive.read("tldlist.txt", null));
+		method488(buffer, buffer_1, class30_sub2_sub2_2, buffer_3);
 	}
 
-	public static void method488(Packet packet, Packet packet_1, Packet class30_sub2_sub2_2, Packet packet_3) {
-		method490(packet_1);
+	public static void method488(Buffer buffer, Buffer buffer_1, Buffer class30_sub2_sub2_2, Buffer buffer_3) {
+		method490(buffer_1);
 		method491(class30_sub2_sub2_2);
-		method492(packet);
-		method489(packet_3);
+		method492(buffer);
+		method489(buffer_3);
 	}
 
-	public static void method489(Packet packet) {
-		int i = packet.get4();
+	public static void method489(Buffer buffer) {
+		int i = buffer.get4();
 		aCharArrayArray624 = new char[i][];
 		anIntArray625 = new int[i];
 		for (int j = 0; j < i; j++) {
-			anIntArray625[j] = packet.get1U();
-			char[] ac = new char[packet.get1U()];
+			anIntArray625[j] = buffer.get1U();
+			char[] ac = new char[buffer.get1U()];
 			for (int k = 0; k < ac.length; k++) {
-				ac[k] = (char) packet.get1U();
+				ac[k] = (char) buffer.get1U();
 			}
 			aCharArrayArray624[j] = ac;
 		}
 	}
 
-	public static void method490(Packet packet) {
-		int j = packet.get4();
+	public static void method490(Buffer buffer) {
+		int j = buffer.get4();
 		aCharArrayArray621 = new char[j][];
 		aByteArrayArrayArray622 = new byte[j][][];
-		method493(packet, aCharArrayArray621, aByteArrayArrayArray622);
+		method493(buffer, aCharArrayArray621, aByteArrayArrayArray622);
 	}
 
-	public static void method491(Packet packet) {
-		int i = packet.get4();
+	public static void method491(Buffer buffer) {
+		int i = buffer.get4();
 		aCharArrayArray623 = new char[i][];
-		method494(aCharArrayArray623, packet, -490);
+		method494(aCharArrayArray623, buffer, -490);
 	}
 
-	public static void method492(Packet packet) {
-		anIntArray620 = new int[packet.get4()];
+	public static void method492(Buffer buffer) {
+		anIntArray620 = new int[buffer.get4()];
 		for (int i = 0; i < anIntArray620.length; i++) {
-			anIntArray620[i] = packet.get2U();
+			anIntArray620[i] = buffer.get2U();
 		}
 	}
 
-	public static void method493(Packet packet, char[][] ac, byte[][][] abyte0) {
+	public static void method493(Buffer buffer, char[][] ac, byte[][][] abyte0) {
 		for (int j = 0; j < ac.length; j++) {
-			char[] ac1 = new char[packet.get1U()];
+			char[] ac1 = new char[buffer.get1U()];
 			for (int k = 0; k < ac1.length; k++) {
-				ac1[k] = (char) packet.get1U();
+				ac1[k] = (char) buffer.get1U();
 			}
 			ac[j] = ac1;
-			byte[][] abyte1 = new byte[packet.get1U()][2];
+			byte[][] abyte1 = new byte[buffer.get1U()][2];
 			for (int l = 0; l < abyte1.length; l++) {
-				abyte1[l][0] = (byte) packet.get1U();
-				abyte1[l][1] = (byte) packet.get1U();
+				abyte1[l][0] = (byte) buffer.get1U();
+				abyte1[l][1] = (byte) buffer.get1U();
 			}
 			if (abyte1.length > 0) {
 				abyte0[j] = abyte1;
@@ -79,14 +79,14 @@ public class Censor {
 		}
 	}
 
-	public static void method494(char[][] ac, Packet packet, int i) {
+	public static void method494(char[][] ac, Buffer buffer, int i) {
 		if (i >= 0) {
 			return;
 		}
 		for (int j = 0; j < ac.length; j++) {
-			char[] ac1 = new char[packet.get1U()];
+			char[] ac1 = new char[buffer.get1U()];
 			for (int k = 0; k < ac1.length; k++) {
-				ac1[k] = (char) packet.get1U();
+				ac1[k] = (char) buffer.get1U();
 			}
 			ac[j] = ac1;
 		}

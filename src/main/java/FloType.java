@@ -22,8 +22,8 @@ public class FloType {
 	}
 
 	public static void unpack(FileArchive archive) {
-		Packet packet = new Packet(archive.read("flo.dat", null));
-		anInt387 = packet.get2U();
+		Buffer buffer = new Buffer(archive.read("flo.dat", null));
+		anInt387 = buffer.get2U();
 		if (instances == null) {
 			instances = new FloType[anInt387];
 		}
@@ -31,33 +31,33 @@ public class FloType {
 			if (instances[j] == null) {
 				instances[j] = new FloType();
 			}
-			instances[j].method261(packet);
+			instances[j].method261(buffer);
 		}
 	}
 
-	public void method261(Packet packet) {
+	public void method261(Buffer buffer) {
 		do {
-			int i = packet.get1U();
+			int i = buffer.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt390 = packet.get3();
+				anInt390 = buffer.get3();
 				method262(anInt390);
 			} else if (i == 2) {
-				anInt391 = packet.get1U();
+				anInt391 = buffer.get1U();
 			} else if (i == 3) {
 				unusedBool = true;
 			} else if (i == 5) {
 				aBoolean393 = false;
 			} else if (i == 6) {
-				unusedString = packet.getString();
+				unusedString = buffer.getString();
 			} else if (i == 7) {
 				int j = anInt394;
 				int k = anInt395;
 				int l = anInt396;
 				int i1 = anInt397;
-				int j1 = packet.get3();
+				int j1 = buffer.get3();
 				method262(j1);
 				anInt394 = j;
 				anInt395 = k;

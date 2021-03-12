@@ -79,27 +79,27 @@ public class SeqFrame {
 	 * @see #get(int)
 	 */
 	public static void unpack(byte[] src) {
-		Packet offsets = new Packet(src);
+		Buffer offsets = new Buffer(src);
 		offsets.position = src.length - 8;
 
 		int offset = 0;
-		Packet header = new Packet(src);
+		Buffer header = new Buffer(src);
 		header.position = offset;
 		offset += offsets.get2U() + 2;
 
-		Packet tran1 = new Packet(src);
+		Buffer tran1 = new Buffer(src);
 		tran1.position = offset;
 		offset += offsets.get2U();
 
-		Packet tran2 = new Packet(src);
+		Buffer tran2 = new Buffer(src);
 		tran2.position = offset;
 		offset += offsets.get2U();
 
-		Packet del = new Packet(src);
+		Buffer del = new Buffer(src);
 		del.position = offset;
 		offset += offsets.get2U();
 
-		Packet skel = new Packet(src);
+		Buffer skel = new Buffer(src);
 		skel.position = offset;
 
 		SeqSkeleton skeleton = new SeqSkeleton(skel);

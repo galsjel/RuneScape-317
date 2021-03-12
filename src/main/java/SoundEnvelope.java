@@ -21,20 +21,20 @@ public class SoundEnvelope {
 	public SoundEnvelope() {
 	}
 
-	public void read(Packet packet) {
-		form = packet.get1U();
-		start = packet.get4();
-		end = packet.get4();
-		readShape(packet);
+	public void read(Buffer buffer) {
+		form = buffer.get1U();
+		start = buffer.get4();
+		end = buffer.get4();
+		readShape(buffer);
 	}
 
-	public void readShape(Packet packet) {
-		length = packet.get1U();
+	public void readShape(Buffer buffer) {
+		length = buffer.get1U();
 		durations = new int[length];
 		peaks = new int[length];
 		for (int i = 0; i < length; i++) {
-			durations[i] = packet.get2U();
-			peaks[i] = packet.get2U();
+			durations[i] = buffer.get2U();
+			peaks[i] = buffer.get2U();
 		}
 	}
 

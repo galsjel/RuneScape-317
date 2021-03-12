@@ -23,8 +23,8 @@ public class SpotAnimType {
 	}
 
 	public static void unpack(FileArchive archive) {
-		Packet packet = new Packet(archive.read("spotanim.dat", null));
-		anInt402 = packet.get2U();
+		Buffer buffer = new Buffer(archive.read("spotanim.dat", null));
+		anInt402 = buffer.get2U();
 		if (instances == null) {
 			instances = new SpotAnimType[anInt402];
 		}
@@ -33,37 +33,37 @@ public class SpotAnimType {
 				instances[j] = new SpotAnimType();
 			}
 			instances[j].anInt404 = j;
-			instances[j].method265(packet);
+			instances[j].method265(buffer);
 		}
 	}
 
-	public void method265(Packet packet) {
+	public void method265(Buffer buffer) {
 		do {
-			int i = packet.get1U();
+			int i = buffer.get1U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				anInt405 = packet.get2U();
+				anInt405 = buffer.get2U();
 			} else if (i == 2) {
-				anInt406 = packet.get2U();
+				anInt406 = buffer.get2U();
 				if (SeqType.instances != null) {
 					aType_407 = SeqType.instances[anInt406];
 				}
 			} else if (i == 4) {
-				anInt410 = packet.get2U();
+				anInt410 = buffer.get2U();
 			} else if (i == 5) {
-				anInt411 = packet.get2U();
+				anInt411 = buffer.get2U();
 			} else if (i == 6) {
-				anInt412 = packet.get2U();
+				anInt412 = buffer.get2U();
 			} else if (i == 7) {
-				anInt413 = packet.get1U();
+				anInt413 = buffer.get1U();
 			} else if (i == 8) {
-				anInt414 = packet.get1U();
+				anInt414 = buffer.get1U();
 			} else if ((i >= 40) && (i < 50)) {
-				anIntArray408[i - 40] = packet.get2U();
+				anIntArray408[i - 40] = buffer.get2U();
 			} else if ((i >= 50) && (i < 60)) {
-				anIntArray409[i - 50] = packet.get2U();
+				anIntArray409[i - 50] = buffer.get2U();
 			} else {
 				System.out.println("Error unrecognised spotanim config code: " + i);
 			}

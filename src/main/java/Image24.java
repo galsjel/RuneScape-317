@@ -43,41 +43,41 @@ public class Image24 extends Draw2D {
 	}
 
 	public Image24(FileArchive archive, String s, int i) {
-		Packet packet = new Packet(archive.read(s + ".dat", null));
-		Packet packet_1 = new Packet(archive.read("index.dat", null));
-		packet_1.position = packet.get2U();
-		anInt1444 = packet_1.get2U();
-		anInt1445 = packet_1.get2U();
-		int j = packet_1.get1U();
+		Buffer buffer = new Buffer(archive.read(s + ".dat", null));
+		Buffer buffer_1 = new Buffer(archive.read("index.dat", null));
+		buffer_1.position = buffer.get2U();
+		anInt1444 = buffer_1.get2U();
+		anInt1445 = buffer_1.get2U();
+		int j = buffer_1.get1U();
 		int[] ai = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
-			ai[k + 1] = packet_1.get3();
+			ai[k + 1] = buffer_1.get3();
 			if (ai[k + 1] == 0) {
 				ai[k + 1] = 1;
 			}
 		}
 		for (int l = 0; l < i; l++) {
-			packet_1.position += 2;
-			packet.position += packet_1.get2U() * packet_1.get2U();
-			packet_1.position++;
+			buffer_1.position += 2;
+			buffer.position += buffer_1.get2U() * buffer_1.get2U();
+			buffer_1.position++;
 		}
-		anInt1442 = packet_1.get1U();
-		anInt1443 = packet_1.get1U();
-		anInt1440 = packet_1.get2U();
-		anInt1441 = packet_1.get2U();
-		int i1 = packet_1.get1U();
+		anInt1442 = buffer_1.get1U();
+		anInt1443 = buffer_1.get1U();
+		anInt1440 = buffer_1.get2U();
+		anInt1441 = buffer_1.get2U();
+		int i1 = buffer_1.get1U();
 		int j1 = anInt1440 * anInt1441;
 		anIntArray1439 = new int[j1];
 		if (i1 == 0) {
 			for (int k1 = 0; k1 < j1; k1++) {
-				anIntArray1439[k1] = ai[packet.get1U()];
+				anIntArray1439[k1] = ai[buffer.get1U()];
 			}
 			return;
 		}
 		if (i1 == 1) {
 			for (int l1 = 0; l1 < anInt1440; l1++) {
 				for (int i2 = 0; i2 < anInt1441; i2++) {
-					anIntArray1439[l1 + (i2 * anInt1440)] = ai[packet.get1U()];
+					anIntArray1439[l1 + (i2 * anInt1440)] = ai[buffer.get1U()];
 				}
 			}
 		}
