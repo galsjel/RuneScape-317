@@ -5,7 +5,7 @@
 public class FloType {
 
 	public static int anInt387;
-	public static FloType[] aTypeArray388;
+	public static FloType[] instances;
 	public String unusedString;
 	public int anInt390;
 	public int anInt391 = -1;
@@ -21,17 +21,17 @@ public class FloType {
 	public FloType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("flo.dat", null));
 		anInt387 = packet.get2U();
-		if (aTypeArray388 == null) {
-			aTypeArray388 = new FloType[anInt387];
+		if (instances == null) {
+			instances = new FloType[anInt387];
 		}
 		for (int j = 0; j < anInt387; j++) {
-			if (aTypeArray388[j] == null) {
-				aTypeArray388[j] = new FloType();
+			if (instances[j] == null) {
+				instances[j] = new FloType();
 			}
-			aTypeArray388[j].method261(packet);
+			instances[j].method261(packet);
 		}
 	}
 

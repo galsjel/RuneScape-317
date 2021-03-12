@@ -28,7 +28,7 @@ public class LocEntity extends Entity {
 		anInt1605 = i1;
 		anInt1606 = k1;
 		if (l1 != -1) {
-			aType_1607 = SeqType.aTypeArray351[l1];
+			aType_1607 = SeqType.instances[l1];
 			anInt1599 = 0;
 			anInt1608 = Game.loopCycle;
 			if (flag && (aType_1607.anInt356 != -1)) {

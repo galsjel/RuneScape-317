@@ -17,7 +17,7 @@ public class VarbitType {
 	public VarbitType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("varbit.dat", null));
 		anInt645 = packet.get2U();
 		if (aVarbitArray646 == null) {
@@ -29,7 +29,7 @@ public class VarbitType {
 			}
 			aVarbitArray646[j].method534(packet);
 			if (aVarbitArray646[j].aBoolean651) {
-				VarpType.aVarpArray701[aVarbitArray646[j].anInt648].unusedBool3 = true;
+				VarpType.instances[aVarbitArray646[j].anInt648].unusedBool3 = true;
 			}
 		}
 		if (packet.position != packet.data.length) {

@@ -30,7 +30,7 @@ public class ProjectileEntity extends Entity {
 	public final int anInt1597;
 
 	public ProjectileEntity(int i, int j, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2) {
-		aType_1592 = SpotAnimType.aTypeArray403[l2];
+		aType_1592 = SpotAnimType.instances[l2];
 		anInt1597 = k1;
 		anInt1580 = j2;
 		anInt1581 = i2;

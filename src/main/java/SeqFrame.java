@@ -51,7 +51,7 @@ public class SeqFrame {
 	/**
 	 * Nullifies the array of instances.
 	 */
-	public static void clear() {
+	public static void unload() {
 		instances = null;
 	}
 
@@ -78,7 +78,7 @@ public class SeqFrame {
 	 * @param src the animation data.
 	 * @see #get(int)
 	 */
-	public static void readAnimation(byte[] src) {
+	public static void unpack(byte[] src) {
 		Packet offsets = new Packet(src);
 		offsets.position = src.length - 8;
 

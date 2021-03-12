@@ -4,27 +4,64 @@
 
 public class Draw3D {
 
+	/**
+	 * A lookup table for 1 / n in 16.16 fixed integer form for values [0...2048]. See below for usages.
+	 *
+	 * @see Model#drawNearClippedFace(int)
+	 */
 	public static final int[] reciprical16 = new int[2048];
-	public static boolean aBoolean1461 = true;
+	/**
+	 * A lookup table for (1 / n) in 17.15 fixed integer form for values [0...512]. See below for usages.
+	 *
+	 * @see #drawGouraudScanline(int[], int, int, int, int, int)
+	 * @see #drawTexturedScanline(int[], int[], int, int, int, int, int, int, int, int, int, int, int, int, int)
+	 */
+	public static final int[] reciprical15 = new int[512];
+	public static boolean lowmem = true;
+	/**
+	 * Setting this to <code>true</code> enables horizontal clipping for scanlines.
+	 */
 	public static boolean clipX;
+
+	/**
+	 * Used with {@link #fillTexturedTriangle(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int)} to
+	 * avoid branching.
+	 */
 	public static boolean opaque;
+	/**
+	 * Unrolls the loops for drawing gouraud triangles to produce a jagged look.
+	 *
+	 * @see #drawGouraudScanline(int[], int, int, int, int, int)
+	 */
 	public static boolean jagged = true;
 	public static int alpha;
 	public static int centerX;
 	public static int centerY;
-	public static int[] recipreical15 = new int[512];
+	/**
+	 * A lookup table for the sine function using 16.16 fixed integers. The unit of measurement for angles using this
+	 * table are [0...2047], 1024 being pi.
+	 */
 	public static int[] sin = new int[2048];
+	/**
+	 * @see #sin
+	 */
 	public static int[] cos = new int[2048];
-	public static int[] anIntArray1472;
-	public static int anInt1473;
-	public static Image8[] aImageArray1474 = new Image8[50];
+	/**
+	 * A lookup table for (y * width).
+	 */
+	public static int[] lineOffset;
+
+	public static int textureCount;
+	public static Image8[] textures = new Image8[50];
 	public static boolean[] textureTranslucent = new boolean[50];
-	public static int[] anIntArray1476 = new int[50];
-	public static int anInt1477;
-	public static int[][] anIntArrayArray1478;
-	public static int[][] anIntArrayArray1479 = new int[50][];
-	public static int[] anIntArray1480 = new int[50];
-	public static int anInt1481;
+	public static int[] averageTextureRGB = new int[50];
+
+	public static int poolSize;
+	public static int[][] texelPool;
+	public static int[][] activeTexels = new int[50][];
+	public static int[] textureCycle = new int[50];
+	public static int cycle;
+
 	/**
 	 * A lookup table for HSL->RGB. A one dimensional representation of a 128x512 image. The structure of the HSL
 	 * colors is as follows:
@@ -37,14 +74,14 @@ public class Draw3D {
 	 * @see #drawGouraudScanline(int[], int, int, int, int, int)
 	 */
 	public static int[] palette = new int[0x10000];
-	public static int[][] anIntArrayArray1483 = new int[50][];
+	public static int[][] texturePalette = new int[50][];
 
 	static {
 		for (int i = 1; i < 512; i++) {
-			recipreical15[i] = 32768 / i;
+			reciprical15[i] = (1 << 15) / i;
 		}
 		for (int j = 1; j < 2048; j++) {
-			reciprical16[j] = 0x10000 / j;
+			reciprical16[j] = (1 << 16) / j;
 		}
 		for (int k = 0; k < 2048; k++) {
 			sin[k] = (int) (65536D * Math.sin((double) k * 0.0030679614999999999D));
@@ -52,263 +89,336 @@ public class Draw3D {
 		}
 	}
 
-	public static void method363() {
-		recipreical15 = null;
-		recipreical15 = null;
+	public static void unload() {
 		sin = null;
 		cos = null;
-		anIntArray1472 = null;
-		aImageArray1474 = null;
+		lineOffset = null;
+		textures = null;
 		textureTranslucent = null;
-		anIntArray1476 = null;
-		anIntArrayArray1478 = null;
-		anIntArrayArray1479 = null;
-		anIntArray1480 = null;
+		averageTextureRGB = null;
+		texelPool = null;
+		activeTexels = null;
+		textureCycle = null;
 		palette = null;
-		anIntArrayArray1483 = null;
+		texturePalette = null;
 	}
 
-	public static void method364() {
-		anIntArray1472 = new int[Draw2D.height];
-		for (int j = 0; j < Draw2D.height; j++) {
-			anIntArray1472[j] = Draw2D.width * j;
+	/**
+	 * Instantiates {@link #lineOffset} and sets {@link #centerX} and {@link #centerY} using the width and height values
+	 * stored in {@link Draw2D}.
+	 */
+	public static void init2D() {
+		lineOffset = new int[Draw2D.height];
+		for (int y = 0; y < Draw2D.height; y++) {
+			lineOffset[y] = Draw2D.width * y;
 		}
 		centerX = Draw2D.width / 2;
 		centerY = Draw2D.height / 2;
 	}
 
-	public static void method365(int j, int k) {
-		anIntArray1472 = new int[k];
-		for (int l = 0; l < k; l++) {
-			anIntArray1472[l] = j * l;
+	/**
+	 * Instantiates {@link #lineOffset} and sets {@link #centerX} and {@link #centerY} using the width and height values
+	 * provided.
+	 *
+	 * @param width  the width.
+	 * @param height the height.
+	 */
+	public static void init3D(int width, int height) {
+		lineOffset = new int[height];
+		for (int y = 0; y < height; y++) {
+			lineOffset[y] = width * y;
 		}
-		centerX = j / 2;
-		centerY = k / 2;
+		centerX = width / 2;
+		centerY = height / 2;
 	}
 
-	public static void method366() {
-		anIntArrayArray1478 = null;
+	/**
+	 * Nullifies the texel pool. {@link #initPool(int)} must be called again if textured triangles are drawn.
+	 */
+	public static void disposePool() {
+		texelPool = null;
 		for (int j = 0; j < 50; j++) {
-			anIntArrayArray1479[j] = null;
+			activeTexels[j] = null;
 		}
 	}
 
-	public static void method367(int i) {
-		if (anIntArrayArray1478 == null) {
-			anInt1477 = i;
-			if (aBoolean1461) {
-				anIntArrayArray1478 = new int[anInt1477][16384];
+	/**
+	 * Initializes the texel pool.
+	 *
+	 * @param poolSize the initial pool size.
+	 */
+	public static void initPool(int poolSize) {
+		if (texelPool == null) {
+			Draw3D.poolSize = poolSize;
+			if (lowmem) {
+				texelPool = new int[Draw3D.poolSize][64 * 64 * 4];
 			} else {
-				anIntArrayArray1478 = new int[anInt1477][0x10000];
+				texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
 			}
 			for (int k = 0; k < 50; k++) {
-				anIntArrayArray1479[k] = null;
+				activeTexels[k] = null;
 			}
 		}
 	}
 
-	public static void method368(FileArchive archive) {
-		anInt1473 = 0;
-		for (int j = 0; j < 50; j++) {
+	public static void unpackTextures(FileArchive archive) {
+		textureCount = 0;
+
+		for (int textureId = 0; textureId < 50; textureId++) {
 			try {
-				aImageArray1474[j] = new Image8(archive, String.valueOf(j), 0);
-				if (aBoolean1461 && (aImageArray1474[j].anInt1456 == 128)) {
-					aImageArray1474[j].method356();
+				textures[textureId] = new Image8(archive, String.valueOf(textureId), 0);
+
+				if (lowmem && (textures[textureId].anInt1456 == 128)) {
+					textures[textureId].method356();
 				} else {
-					aImageArray1474[j].method357();
+					textures[textureId].method357();
 				}
-				anInt1473++;
+				textureCount++;
 			} catch (Exception ignored) {
 			}
 		}
 	}
 
-	public static int method369(int i) {
-		if (anIntArray1476[i] != 0) {
-			return anIntArray1476[i];
+	public static int getAverageTextureRGB(int textureId) {
+		if (averageTextureRGB[textureId] != 0) {
+			return averageTextureRGB[textureId];
 		}
-		int k = 0;
-		int l = 0;
-		int i1 = 0;
-		int j1 = anIntArrayArray1483[i].length;
-		for (int k1 = 0; k1 < j1; k1++) {
-			k += (anIntArrayArray1483[i][k1] >> 16) & 0xff;
-			l += (anIntArrayArray1483[i][k1] >> 8) & 0xff;
-			i1 += anIntArrayArray1483[i][k1] & 0xff;
+		int r = 0;
+		int g = 0;
+		int b = 0;
+		int length = texturePalette[textureId].length;
+		for (int i = 0; i < length; i++) {
+			r += (texturePalette[textureId][i] >> 16) & 0xff;
+			g += (texturePalette[textureId][i] >> 8) & 0xff;
+			b += texturePalette[textureId][i] & 0xff;
 		}
-		int l1 = ((k / j1) << 16) + ((l / j1) << 8) + (i1 / j1);
-		l1 = method373(l1, 1.3999999999999999D);
-		if (l1 == 0) {
-			l1 = 1;
+		int rgb = ((r / length) << 16) + ((g / length) << 8) + (b / length);
+		rgb = powRGB(rgb, 1.3999999999999999D);
+		if (rgb == 0) {
+			rgb = 1;
 		}
-		anIntArray1476[i] = l1;
-		return l1;
+		averageTextureRGB[textureId] = rgb;
+		return rgb;
 	}
 
-	public static void method370(int i) {
-		if (anIntArrayArray1479[i] == null) {
+	/**
+	 * Pushes the texels of the provided texture id back into the pool.
+	 *
+	 * @param textureId the texture id.
+	 */
+	public static void unloadTexture(int textureId) {
+		if (activeTexels[textureId] == null) {
 			return;
 		}
-		anIntArrayArray1478[anInt1477++] = anIntArrayArray1479[i];
-		anIntArrayArray1479[i] = null;
+		texelPool[poolSize++] = activeTexels[textureId];
+		activeTexels[textureId] = null;
 	}
 
-	public static int[] getTexels(int i) {
-		anIntArray1480[i] = anInt1481++;
-		if (anIntArrayArray1479[i] != null) {
-			return anIntArrayArray1479[i];
+	public static int[] getTexels(int textureId) {
+		textureCycle[textureId] = cycle++;
+
+		if (activeTexels[textureId] != null) {
+			return activeTexels[textureId];
 		}
-		int[] ai;
-		if (anInt1477 > 0) {
-			ai = anIntArrayArray1478[--anInt1477];
-			anIntArrayArray1478[anInt1477] = null;
+
+		int[] texels;
+
+		if (poolSize > 0) {
+			texels = texelPool[--poolSize];
+			texelPool[poolSize] = null;
 		} else {
-			int j = 0;
-			int k = -1;
-			for (int l = 0; l < anInt1473; l++) {
-				if ((anIntArrayArray1479[l] != null) && ((anIntArray1480[l] < j) || (k == -1))) {
-					j = anIntArray1480[l];
-					k = l;
+			int cycle = 0;
+			int selected = -1;
+
+			for (int t = 0; t < textureCount; t++) {
+				if ((activeTexels[t] != null) && ((textureCycle[t] < cycle) || (selected == -1))) {
+					cycle = textureCycle[t];
+					selected = t;
 				}
 			}
-			ai = anIntArrayArray1479[k];
-			anIntArrayArray1479[k] = null;
+
+			texels = activeTexels[selected];
+			activeTexels[selected] = null;
 		}
-		anIntArrayArray1479[i] = ai;
-		Image8 image = aImageArray1474[i];
-		int[] ai1 = anIntArrayArray1483[i];
-		if (aBoolean1461) {
-			textureTranslucent[i] = false;
-			for (int i1 = 0; i1 < 4096; i1++) {
-				int i2 = ai[i1] = ai1[image.aByteArray1450[i1]] & 0xf8f8ff;
-				if (i2 == 0) {
-					textureTranslucent[i] = true;
+
+		activeTexels[textureId] = texels;
+		Image8 texture = textures[textureId];
+		int[] palette = texturePalette[textureId];
+
+		if (lowmem) {
+			textureTranslucent[textureId] = false;
+
+			for (int i = 0; i < 4096; i++) {
+				int rgb = texels[i] = palette[texture.pixels[i]] & 0xf8f8ff;
+
+				if (rgb == 0) {
+					textureTranslucent[textureId] = true;
 				}
-				ai[4096 + i1] = (i2 - (i2 >>> 3)) & 0xf8f8ff;
-				ai[8192 + i1] = (i2 - (i2 >>> 2)) & 0xf8f8ff;
-				ai[12288 + i1] = (i2 - (i2 >>> 2) - (i2 >>> 3)) & 0xf8f8ff;
+
+				texels[4096 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
+				texels[8192 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
+				texels[12288 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
 			}
 		} else {
-			if (image.anInt1452 == 64) {
-				for (int j1 = 0; j1 < 128; j1++) {
-					for (int j2 = 0; j2 < 128; j2++) {
-						ai[j2 + (j1 << 7)] = ai1[image.aByteArray1450[(j2 >> 1) + ((j1 >> 1) << 6)]];
+			// scale 64x64 textures up to 128x128
+			if (texture.anInt1452 == 64) {
+				for (int y = 0; y < 128; y++) {
+					for (int x = 0; x < 128; x++) {
+						texels[x + (y << 7)] = palette[texture.pixels[(x >> 1) + ((y >> 1) << 6)]];
 					}
 				}
 			} else {
-				for (int k1 = 0; k1 < 16384; k1++) {
-					ai[k1] = ai1[image.aByteArray1450[k1]];
+				for (int i = 0; i < 16384; i++) {
+					texels[i] = palette[texture.pixels[i]];
 				}
 			}
-			textureTranslucent[i] = false;
-			for (int l1 = 0; l1 < 16384; l1++) {
-				ai[l1] &= 0xf8f8ff;
-				int k2 = ai[l1];
-				if (k2 == 0) {
-					textureTranslucent[i] = true;
+
+			textureTranslucent[textureId] = false;
+
+			for (int i = 0; i < 16384; i++) {
+				texels[i] &= 0xf8f8ff;
+
+				int rgb = texels[i];
+
+				if (rgb == 0) {
+					textureTranslucent[textureId] = true;
 				}
-				ai[16384 + l1] = (k2 - (k2 >>> 3)) & 0xf8f8ff;
-				ai[32768 + l1] = (k2 - (k2 >>> 2)) & 0xf8f8ff;
-				ai[49152 + l1] = (k2 - (k2 >>> 2) - (k2 >>> 3)) & 0xf8f8ff;
+
+				texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
+				texels[32768 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
+				texels[49152 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
 			}
 		}
-		return ai;
+		return texels;
 	}
 
-	public static void method372(double d) {
-		d += (Math.random() * 0.029999999999999999D) - 0.014999999999999999D;
-		int j = 0;
-		for (int k = 0; k < 512; k++) {
-			double d1 = ((double) (k / 8) / 64D) + 0.0078125D;
-			double d2 = ((double) (k & 7) / 8D) + 0.0625D;
-			for (int k1 = 0; k1 < 128; k1++) {
-				double d3 = (double) k1 / 128D;
-				double d4 = d3;
-				double d5 = d3;
-				double d6 = d3;
-				if (d2 != 0.0D) {
-					double d7;
-					if (d3 < 0.5D) {
-						d7 = d3 * (1.0D + d2);
+	/**
+	 * Sets the brightness.
+	 *
+	 * @param brightness the brightness.
+	 */
+	public static void setBrightness(double brightness) {
+		brightness += (Math.random() * 0.03) - 0.015;
+
+		int offset = 0;
+		for (int y = 0; y < 512; y++) {
+			double hue = ((double) (y / 8) / 64D) + 0.0078125D;
+			double saturation = ((double) (y & 7) / 8D) + 0.0625D;
+
+			for (int x = 0; x < 128; x++) {
+				double lightness = (double) x / 128D;
+				double r = lightness;
+				double g = lightness;
+				double b = lightness;
+
+				if (saturation != 0.0D) {
+					double q;
+
+					if (lightness < 0.5D) {
+						q = lightness * (1.0D + saturation);
 					} else {
-						d7 = (d3 + d2) - (d3 * d2);
+						q = (lightness + saturation) - (lightness * saturation);
 					}
-					double d8 = (2D * d3) - d7;
-					double d9 = d1 + 0.33333333333333331D;
-					if (d9 > 1.0D) {
-						d9--;
+
+					double p = (2D * lightness) - q;
+					double t = hue + (1.0 / 3.0);
+
+					if (t > 1.0D) {
+						t--;
 					}
-					double d11 = d1 - 0.33333333333333331D;
+
+					double d11 = hue - (1.0 / 3.0);
+
 					if (d11 < 0.0D) {
 						d11++;
 					}
-					if ((6D * d9) < 1.0D) {
-						d4 = d8 + ((d7 - d8) * 6D * d9);
-					} else if ((2D * d9) < 1.0D) {
-						d4 = d7;
-					} else if ((3D * d9) < 2D) {
-						d4 = d8 + ((d7 - d8) * (0.66666666666666663D - d9) * 6D);
+
+					if ((6D * t) < 1.0D) {
+						r = p + ((q - p) * 6D * t);
+					} else if ((2D * t) < 1.0D) {
+						r = q;
+					} else if ((3D * t) < 2D) {
+						r = p + ((q - p) * ((2.0 / 3.0) - t) * 6D);
 					} else {
-						d4 = d8;
+						r = p;
 					}
-					if ((6D * d1) < 1.0D) {
-						d5 = d8 + ((d7 - d8) * 6D * d1);
-					} else if ((2D * d1) < 1.0D) {
-						d5 = d7;
-					} else if ((3D * d1) < 2D) {
-						d5 = d8 + ((d7 - d8) * (0.66666666666666663D - d1) * 6D);
+
+					if ((6D * hue) < 1.0D) {
+						g = p + ((q - p) * 6D * hue);
+					} else if ((2D * hue) < 1.0D) {
+						g = q;
+					} else if ((3D * hue) < 2D) {
+						g = p + ((q - p) * ((2.0 / 3.0) - hue) * 6D);
 					} else {
-						d5 = d8;
+						g = p;
 					}
+
 					if ((6D * d11) < 1.0D) {
-						d6 = d8 + ((d7 - d8) * 6D * d11);
+						b = p + ((q - p) * 6D * d11);
 					} else if ((2D * d11) < 1.0D) {
-						d6 = d7;
+						b = q;
 					} else if ((3D * d11) < 2D) {
-						d6 = d8 + ((d7 - d8) * (0.66666666666666663D - d11) * 6D);
+						b = p + ((q - p) * ((2.0 / 3.0) - d11) * 6D);
 					} else {
-						d6 = d8;
+						b = p;
 					}
 				}
-				int l1 = (int) (d4 * 256D);
-				int i2 = (int) (d5 * 256D);
-				int j2 = (int) (d6 * 256D);
-				int k2 = (l1 << 16) + (i2 << 8) + j2;
-				k2 = method373(k2, d);
-				if (k2 == 0) {
-					k2 = 1;
+
+				int intR = (int) (r * 256D);
+				int intG = (int) (g * 256D);
+				int intB = (int) (b * 256D);
+				int rgb = (intR << 16) + (intG << 8) + intB;
+
+				rgb = powRGB(rgb, brightness);
+
+				if (rgb == 0) {
+					rgb = 1;
 				}
-				palette[j++] = k2;
+
+				palette[offset++] = rgb;
 			}
 		}
-		for (int l = 0; l < 50; l++) {
-			if (aImageArray1474[l] != null) {
-				int[] ai = aImageArray1474[l].anIntArray1451;
-				anIntArrayArray1483[l] = new int[ai.length];
-				for (int j1 = 0; j1 < ai.length; j1++) {
-					anIntArrayArray1483[l][j1] = method373(ai[j1], d);
-					if (((anIntArrayArray1483[l][j1] & 0xf8f8ff) == 0) && (j1 != 0)) {
-						anIntArrayArray1483[l][j1] = 1;
-					}
+
+		for (int textureId = 0; textureId < 50; textureId++) {
+			if (textures[textureId] == null) {
+				continue;
+			}
+
+			int[] palette = textures[textureId].palette;
+			texturePalette[textureId] = new int[palette.length];
+
+			for (int i = 0; i < palette.length; i++) {
+				texturePalette[textureId][i] = powRGB(palette[i], brightness);
+
+				if (((texturePalette[textureId][i] & 0xf8f8ff) == 0) && (i != 0)) {
+					texturePalette[textureId][i] = 1;
 				}
 			}
 		}
-		for (int i1 = 0; i1 < 50; i1++) {
-			method370(i1);
+
+		for (int textureId = 0; textureId < 50; textureId++) {
+			unloadTexture(textureId);
 		}
 	}
 
-	public static int method373(int i, double d) {
-		double d1 = (double) (i >> 16) / 256D;
-		double d2 = (double) ((i >> 8) & 0xff) / 256D;
-		double d3 = (double) (i & 0xff) / 256D;
-		d1 = Math.pow(d1, d);
-		d2 = Math.pow(d2, d);
-		d3 = Math.pow(d3, d);
-		int j = (int) (d1 * 256D);
-		int k = (int) (d2 * 256D);
-		int l = (int) (d3 * 256D);
-		return (j << 16) + (k << 8) + l;
+	/**
+	 * Returns the <code>rgb</code> with each component raised to the power of <code>brightness</code>
+	 *
+	 * @param rgb        the input rgb.
+	 * @param brightness the brightness.
+	 * @return the result.
+	 */
+	private static int powRGB(int rgb, double brightness) {
+		double r = (double) (rgb >> 16) / 256D;
+		double g = (double) ((rgb >> 8) & 0xff) / 256D;
+		double b = (double) (rgb & 0xff) / 256D;
+		r = Math.pow(r, brightness);
+		g = Math.pow(g, brightness);
+		b = Math.pow(b, brightness);
+		int intR = (int) (r * 256D);
+		int intG = (int) (g * 256D);
+		int intB = (int) (b * 256D);
+		return (intR << 16) + (intG << 8) + intB;
 	}
 
 	/**
@@ -378,7 +488,7 @@ public class Draw3D {
 				if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
 					yC -= yB;
 					yB -= yA;
-					for (yA = anIntArray1472[yA]; --yB >= 0; yA += Draw2D.width) {
+					for (yA = lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
 						drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
 						xC += xStepAC;
 						xA += xStepAB;
@@ -397,7 +507,7 @@ public class Draw3D {
 				}
 				yC -= yB;
 				yB -= yA;
-				for (yA = anIntArray1472[yA]; --yB >= 0; yA += Draw2D.width) {
+				for (yA = lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
 					drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
 					xC += xStepAC;
 					xA += xStepAB;
@@ -433,7 +543,7 @@ public class Draw3D {
 			if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
 				yB -= yC;
 				yC -= yA;
-				for (yA = anIntArray1472[yA]; --yC >= 0; yA += Draw2D.width) {
+				for (yA = lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
 					drawGouraudScanline(Draw2D.pixels, yA, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
 					xB += xStepAC;
 					xA += xStepAB;
@@ -452,7 +562,7 @@ public class Draw3D {
 			}
 			yB -= yC;
 			yC -= yA;
-			for (yA = anIntArray1472[yA]; --yC >= 0; yA += Draw2D.width) {
+			for (yA = lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
 				drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
 				xB += xStepAC;
 				xA += xStepAB;
@@ -499,7 +609,7 @@ public class Draw3D {
 				if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
 					yA -= yC;
 					yC -= yB;
-					for (yB = anIntArray1472[yB]; --yC >= 0; yB += Draw2D.width) {
+					for (yB = lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
 						drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
 						xA += xStepAB;
 						xB += xStepBC;
@@ -518,7 +628,7 @@ public class Draw3D {
 				}
 				yA -= yC;
 				yC -= yB;
-				for (yB = anIntArray1472[yB]; --yC >= 0; yB += Draw2D.width) {
+				for (yB = lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
 					drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
 					xA += xStepAB;
 					xB += xStepBC;
@@ -554,7 +664,7 @@ public class Draw3D {
 			if (xStepAB < xStepBC) {
 				yC -= yA;
 				yA -= yB;
-				for (yB = anIntArray1472[yB]; --yA >= 0; yB += Draw2D.width) {
+				for (yB = lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
 					drawGouraudScanline(Draw2D.pixels, yB, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
 					xC += xStepAB;
 					xB += xStepBC;
@@ -573,7 +683,7 @@ public class Draw3D {
 			}
 			yC -= yA;
 			yA -= yB;
-			for (yB = anIntArray1472[yB]; --yA >= 0; yB += Draw2D.width) {
+			for (yB = lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
 				drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
 				xC += xStepAB;
 				xB += xStepBC;
@@ -619,7 +729,7 @@ public class Draw3D {
 			if (xStepBC < xStepAC) {
 				yB -= yA;
 				yA -= yC;
-				for (yC = anIntArray1472[yC]; --yA >= 0; yC += Draw2D.width) {
+				for (yC = lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
 					drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
 					xB += xStepBC;
 					xC += xStepAC;
@@ -638,7 +748,7 @@ public class Draw3D {
 			}
 			yB -= yA;
 			yA -= yC;
-			for (yC = anIntArray1472[yC]; --yA >= 0; yC += Draw2D.width) {
+			for (yC = lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
 				drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
 				xB += xStepBC;
 				xC += xStepAC;
@@ -674,7 +784,7 @@ public class Draw3D {
 		if (xStepBC < xStepAC) {
 			yA -= yB;
 			yB -= yC;
-			for (yC = anIntArray1472[yC]; --yB >= 0; yC += Draw2D.width) {
+			for (yC = lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
 				drawGouraudScanline(Draw2D.pixels, yC, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
 				xA += xStepBC;
 				xC += xStepAC;
@@ -693,7 +803,7 @@ public class Draw3D {
 		}
 		yA -= yB;
 		yB -= yC;
-		for (yC = anIntArray1472[yC]; --yB >= 0; yC += Draw2D.width) {
+		for (yC = lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
 			drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
 			xA += xStepBC;
 			xC += xStepAC;
@@ -760,7 +870,7 @@ public class Draw3D {
 				length = (rightX - leftX) >> 2;
 
 				if (length > 0) {
-					colorStep = ((rightColor - leftColor) * recipreical15[length]) >> 15;
+					colorStep = ((rightColor - leftColor) * reciprical15[length]) >> 15;
 				} else {
 					colorStep = 0;
 				}
@@ -891,7 +1001,7 @@ public class Draw3D {
 				if (((i != j) && (j2 < l1)) || ((i == j) && (j2 > i2))) {
 					k -= j;
 					j -= i;
-					for (i = anIntArray1472[i]; --j >= 0; i += Draw2D.width) {
+					for (i = lineOffset[i]; --j >= 0; i += Draw2D.width) {
 						method377(Draw2D.pixels, i, k1, j1 >> 16, l >> 16);
 						j1 += j2;
 						l += l1;
@@ -906,7 +1016,7 @@ public class Draw3D {
 				}
 				k -= j;
 				j -= i;
-				for (i = anIntArray1472[i]; --j >= 0; i += Draw2D.width) {
+				for (i = lineOffset[i]; --j >= 0; i += Draw2D.width) {
 					method377(Draw2D.pixels, i, k1, l >> 16, j1 >> 16);
 					j1 += j2;
 					l += l1;
@@ -933,7 +1043,7 @@ public class Draw3D {
 			if (((i != k) && (j2 < l1)) || ((i == k) && (i2 > l1))) {
 				j -= k;
 				k -= i;
-				for (i = anIntArray1472[i]; --k >= 0; i += Draw2D.width) {
+				for (i = lineOffset[i]; --k >= 0; i += Draw2D.width) {
 					method377(Draw2D.pixels, i, k1, i1 >> 16, l >> 16);
 					i1 += j2;
 					l += l1;
@@ -948,7 +1058,7 @@ public class Draw3D {
 			}
 			j -= k;
 			k -= i;
-			for (i = anIntArray1472[i]; --k >= 0; i += Draw2D.width) {
+			for (i = lineOffset[i]; --k >= 0; i += Draw2D.width) {
 				method377(Draw2D.pixels, i, k1, l >> 16, i1 >> 16);
 				i1 += j2;
 				l += l1;
@@ -986,7 +1096,7 @@ public class Draw3D {
 				if (((j != k) && (l1 < i2)) || ((j == k) && (l1 > j2))) {
 					i -= k;
 					k -= j;
-					for (j = anIntArray1472[j]; --k >= 0; j += Draw2D.width) {
+					for (j = lineOffset[j]; --k >= 0; j += Draw2D.width) {
 						method377(Draw2D.pixels, j, k1, l >> 16, i1 >> 16);
 						l += l1;
 						i1 += i2;
@@ -1001,7 +1111,7 @@ public class Draw3D {
 				}
 				i -= k;
 				k -= j;
-				for (j = anIntArray1472[j]; --k >= 0; j += Draw2D.width) {
+				for (j = lineOffset[j]; --k >= 0; j += Draw2D.width) {
 					method377(Draw2D.pixels, j, k1, i1 >> 16, l >> 16);
 					l += l1;
 					i1 += i2;
@@ -1028,7 +1138,7 @@ public class Draw3D {
 			if (l1 < i2) {
 				k -= i;
 				i -= j;
-				for (j = anIntArray1472[j]; --i >= 0; j += Draw2D.width) {
+				for (j = lineOffset[j]; --i >= 0; j += Draw2D.width) {
 					method377(Draw2D.pixels, j, k1, j1 >> 16, i1 >> 16);
 					j1 += l1;
 					i1 += i2;
@@ -1043,7 +1153,7 @@ public class Draw3D {
 			}
 			k -= i;
 			i -= j;
-			for (j = anIntArray1472[j]; --i >= 0; j += Draw2D.width) {
+			for (j = lineOffset[j]; --i >= 0; j += Draw2D.width) {
 				method377(Draw2D.pixels, j, k1, i1 >> 16, j1 >> 16);
 				j1 += l1;
 				i1 += i2;
@@ -1080,7 +1190,7 @@ public class Draw3D {
 			if (i2 < j2) {
 				j -= i;
 				i -= k;
-				for (k = anIntArray1472[k]; --i >= 0; k += Draw2D.width) {
+				for (k = lineOffset[k]; --i >= 0; k += Draw2D.width) {
 					method377(Draw2D.pixels, k, k1, i1 >> 16, j1 >> 16);
 					i1 += i2;
 					j1 += j2;
@@ -1095,7 +1205,7 @@ public class Draw3D {
 			}
 			j -= i;
 			i -= k;
-			for (k = anIntArray1472[k]; --i >= 0; k += Draw2D.width) {
+			for (k = lineOffset[k]; --i >= 0; k += Draw2D.width) {
 				method377(Draw2D.pixels, k, k1, j1 >> 16, i1 >> 16);
 				i1 += i2;
 				j1 += j2;
@@ -1122,7 +1232,7 @@ public class Draw3D {
 		if (i2 < j2) {
 			i -= j;
 			j -= k;
-			for (k = anIntArray1472[k]; --j >= 0; k += Draw2D.width) {
+			for (k = lineOffset[k]; --j >= 0; k += Draw2D.width) {
 				method377(Draw2D.pixels, k, k1, l >> 16, j1 >> 16);
 				l += i2;
 				j1 += j2;
@@ -1137,7 +1247,7 @@ public class Draw3D {
 		}
 		i -= j;
 		j -= k;
-		for (k = anIntArray1472[k]; --j >= 0; k += Draw2D.width) {
+		for (k = lineOffset[k]; --j >= 0; k += Draw2D.width) {
 			method377(Draw2D.pixels, k, k1, j1 >> 16, l >> 16);
 			l += i2;
 			j1 += j2;
@@ -1278,9 +1388,9 @@ public class Draw3D {
 				if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
 					yC -= yB;
 					yB -= yA;
-					yA = anIntArray1472[yA];
+					yA = lineOffset[yA];
 					while (--yB >= 0) {
-						method379(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+						drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 						xC += xStepAC;
 						xA += xStepAB;
 						lightnessC += lightnessStepAC;
@@ -1291,7 +1401,7 @@ public class Draw3D {
 						j6 += l6;
 					}
 					while (--yC >= 0) {
-						method379(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+						drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 						xC += xStepAC;
 						xB += xStepBC;
 						lightnessC += lightnessStepAC;
@@ -1305,9 +1415,9 @@ public class Draw3D {
 				}
 				yC -= yB;
 				yB -= yA;
-				yA = anIntArray1472[yA];
+				yA = lineOffset[yA];
 				while (--yB >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 					xC += xStepAC;
 					xA += xStepAB;
 					lightnessC += lightnessStepAC;
@@ -1318,7 +1428,7 @@ public class Draw3D {
 					j6 += l6;
 				}
 				while (--yC >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 					xC += xStepAC;
 					xB += xStepBC;
 					lightnessC += lightnessStepAC;
@@ -1353,9 +1463,9 @@ public class Draw3D {
 			if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
 				yB -= yC;
 				yC -= yA;
-				yA = anIntArray1472[yA];
+				yA = lineOffset[yA];
 				while (--yC >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 					xB += xStepAC;
 					xA += xStepAB;
 					lightnessB += lightnessStepAC;
@@ -1366,7 +1476,7 @@ public class Draw3D {
 					j6 += l6;
 				}
 				while (--yB >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 					xC += xStepBC;
 					xA += xStepAB;
 					lightnessC += lightnessStepBC;
@@ -1380,9 +1490,9 @@ public class Draw3D {
 			}
 			yB -= yC;
 			yC -= yA;
-			yA = anIntArray1472[yA];
+			yA = lineOffset[yA];
 			while (--yC >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 				xB += xStepAC;
 				xA += xStepAB;
 				lightnessB += lightnessStepAC;
@@ -1393,7 +1503,7 @@ public class Draw3D {
 				j6 += l6;
 			}
 			while (--yB >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 				xC += xStepBC;
 				xA += xStepAB;
 				lightnessC += lightnessStepBC;
@@ -1439,9 +1549,9 @@ public class Draw3D {
 				if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
 					yA -= yC;
 					yC -= yB;
-					yB = anIntArray1472[yB];
+					yB = lineOffset[yB];
 					while (--yC >= 0) {
-						method379(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+						drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 						xA += xStepAB;
 						xB += xStepBC;
 						lightnessA += lightnessStepAB;
@@ -1452,7 +1562,7 @@ public class Draw3D {
 						j6 += l6;
 					}
 					while (--yA >= 0) {
-						method379(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+						drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 						xA += xStepAB;
 						xC += xStepAC;
 						lightnessA += lightnessStepAB;
@@ -1466,9 +1576,9 @@ public class Draw3D {
 				}
 				yA -= yC;
 				yC -= yB;
-				yB = anIntArray1472[yB];
+				yB = lineOffset[yB];
 				while (--yC >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 					xA += xStepAB;
 					xB += xStepBC;
 					lightnessA += lightnessStepAB;
@@ -1479,7 +1589,7 @@ public class Draw3D {
 					j6 += l6;
 				}
 				while (--yA >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 					xA += xStepAB;
 					xC += xStepAC;
 					lightnessA += lightnessStepAB;
@@ -1514,9 +1624,9 @@ public class Draw3D {
 			if (xStepAB < xStepBC) {
 				yC -= yA;
 				yA -= yB;
-				yB = anIntArray1472[yB];
+				yB = lineOffset[yB];
 				while (--yA >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 					xC += xStepAB;
 					xB += xStepBC;
 					lightnessC += lightnessStepAB;
@@ -1527,7 +1637,7 @@ public class Draw3D {
 					j6 += l6;
 				}
 				while (--yC >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 					xA += xStepAC;
 					xB += xStepBC;
 					lightnessA += lightnessStepAC;
@@ -1541,9 +1651,9 @@ public class Draw3D {
 			}
 			yC -= yA;
 			yA -= yB;
-			yB = anIntArray1472[yB];
+			yB = lineOffset[yB];
 			while (--yA >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 				xC += xStepAB;
 				xB += xStepBC;
 				lightnessC += lightnessStepAB;
@@ -1554,7 +1664,7 @@ public class Draw3D {
 				j6 += l6;
 			}
 			while (--yC >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 				xA += xStepAC;
 				xB += xStepBC;
 				lightnessA += lightnessStepAC;
@@ -1599,9 +1709,9 @@ public class Draw3D {
 			if (xStepBC < xStepAC) {
 				yB -= yA;
 				yA -= yC;
-				yC = anIntArray1472[yC];
+				yC = lineOffset[yC];
 				while (--yA >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 					xB += xStepBC;
 					xC += xStepAC;
 					lightnessB += lightnessStepBC;
@@ -1612,7 +1722,7 @@ public class Draw3D {
 					j6 += l6;
 				}
 				while (--yB >= 0) {
-					method379(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+					drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xA >> 16, lightnessB >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 					xB += xStepBC;
 					xA += xStepAB;
 					lightnessB += lightnessStepBC;
@@ -1626,9 +1736,9 @@ public class Draw3D {
 			}
 			yB -= yA;
 			yA -= yC;
-			yC = anIntArray1472[yC];
+			yC = lineOffset[yC];
 			while (--yA >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 				xB += xStepBC;
 				xC += xStepAC;
 				lightnessB += lightnessStepBC;
@@ -1639,7 +1749,7 @@ public class Draw3D {
 				j6 += l6;
 			}
 			while (--yB >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xB >> 16, lightnessA >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 				xB += xStepBC;
 				xA += xStepAB;
 				lightnessB += lightnessStepBC;
@@ -1674,9 +1784,9 @@ public class Draw3D {
 		if (xStepBC < xStepAC) {
 			yA -= yB;
 			yB -= yC;
-			yC = anIntArray1472[yC];
+			yC = lineOffset[yC];
 			while (--yB >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xC >> 16, lightnessA >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 				xA += xStepBC;
 				xC += xStepAC;
 				lightnessA += lightnessStepBC;
@@ -1687,7 +1797,7 @@ public class Draw3D {
 				j6 += l6;
 			}
 			while (--yA >= 0) {
-				method379(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
+				drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, lightnessB >> 8, lightnessC >> 8, l4, k5, j6, i5, l5, k6);
 				xB += xStepAB;
 				xC += xStepAC;
 				lightnessB += lightnessStepAB;
@@ -1701,9 +1811,9 @@ public class Draw3D {
 		}
 		yA -= yB;
 		yB -= yC;
-		yC = anIntArray1472[yC];
+		yC = lineOffset[yC];
 		while (--yB >= 0) {
-			method379(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
+			drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xA >> 16, lightnessC >> 8, lightnessA >> 8, l4, k5, j6, i5, l5, k6);
 			xA += xStepBC;
 			xC += xStepAC;
 			lightnessA += lightnessStepBC;
@@ -1714,7 +1824,7 @@ public class Draw3D {
 			j6 += l6;
 		}
 		while (--yA >= 0) {
-			method379(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
+			drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, lightnessC >> 8, lightnessB >> 8, l4, k5, j6, i5, l5, k6);
 			xB += xStepAB;
 			xC += xStepAC;
 			lightnessB += lightnessStepAB;
@@ -1726,7 +1836,7 @@ public class Draw3D {
 		}
 	}
 
-	public static void method379(int[] ai, int[] ai1, int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3) {
+	public static void drawTexturedScanline(int[] ai, int[] ai1, int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3) {
 		if (l >= i1) {
 			return;
 		}
@@ -1749,7 +1859,7 @@ public class Draw3D {
 		} else {
 			if ((i1 - l) > 7) {
 				k3 = (i1 - l) >> 3;
-				j3 = ((k1 - j1) * recipreical15[k3]) >> 6;
+				j3 = ((k1 - j1) * reciprical15[k3]) >> 6;
 			} else {
 				k3 = 0;
 				j3 = 0;
@@ -1757,7 +1867,7 @@ public class Draw3D {
 		}
 		j1 <<= 9;
 		k += l;
-		if (aBoolean1461) {
+		if (lowmem) {
 			int i4 = 0;
 			int k4 = 0;
 			int k6 = l - centerX;

@@ -7,189 +7,182 @@ import java.io.RandomAccessFile;
 
 public class FileStore {
 
-	public static final byte[] aByteArray308 = new byte[520];
-	public final RandomAccessFile aRandomAccessFile309;
-	public final RandomAccessFile aRandomAccessFile310;
-	public final int anInt311;
-	public int anInt312;
+	public static final byte[] buf = new byte[520];
+	public final RandomAccessFile dat;
+	public final RandomAccessFile idx;
+	public final int store;
+	public int maxFileSize;
 
-	public FileStore(int i, RandomAccessFile randomaccessfile, RandomAccessFile randomaccessfile1, int j) {
-		anInt312 = 65000;
-		anInt311 = j;
-		aRandomAccessFile309 = randomaccessfile;
-		aRandomAccessFile310 = randomaccessfile1;
-		anInt312 = i;
+	public FileStore(int maxFileSize, RandomAccessFile dat, RandomAccessFile idx, int store) {
+		this.maxFileSize = 65000;
+		this.store = store;
+		this.dat = dat;
+		this.idx = idx;
+		this.maxFileSize = maxFileSize;
 	}
 
-	public synchronized byte[] method233(int i) {
+	public synchronized byte[] read(int file) {
 		try {
-			method236(aRandomAccessFile310, i * 6);
-			int l;
-			for (int j = 0; j < 6; j += l) {
-				l = aRandomAccessFile310.read(aByteArray308, j, 6 - j);
-				if (l == -1) {
-					return null;
-				}
-			}
-			int i1 = ((aByteArray308[0] & 0xff) << 16) + ((aByteArray308[1] & 0xff) << 8) + (aByteArray308[2] & 0xff);
-			int j1 = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
-			if ((i1 < 0) || (i1 > anInt312)) {
+			idx.seek(file * 6L);
+
+			idx.read(buf, 0, 6);
+
+			int size = ((buf[0] & 0xff) << 16) + ((buf[1] & 0xff) << 8) + (buf[2] & 0xff);
+			int sector = ((buf[3] & 0xff) << 16) + ((buf[4] & 0xff) << 8) + (buf[5] & 0xff);
+
+			if ((size < 0) || (size > maxFileSize)) {
 				return null;
 			}
-			if ((j1 <= 0) || ((long) j1 > (aRandomAccessFile309.length() / 520L))) {
+
+			if ((sector <= 0) || ((long) sector > (dat.length() / 520L))) {
 				return null;
 			}
-			byte[] abyte0 = new byte[i1];
-			int k1 = 0;
-			for (int l1 = 0; k1 < i1; l1++) {
-				if (j1 == 0) {
+
+			byte[] data = new byte[size];
+			int position = 0;
+
+			for (int part = 0; position < size; part++) {
+				if (sector == 0) {
 					return null;
 				}
-				method236(aRandomAccessFile309, j1 * 520);
-				int k = 0;
-				int i2 = i1 - k1;
-				if (i2 > 512) {
-					i2 = 512;
+
+				dat.seek(sector * 520L);
+
+				int available = size - position;
+
+				if (available > 512) {
+					available = 512;
 				}
-				int j2;
-				for (; k < (i2 + 8); k += j2) {
-					j2 = aRandomAccessFile309.read(aByteArray308, k, (i2 + 8) - k);
-					if (j2 == -1) {
-						return null;
-					}
-				}
-				int k2 = ((aByteArray308[0] & 0xff) << 8) + (aByteArray308[1] & 0xff);
-				int l2 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
-				int i3 = ((aByteArray308[4] & 0xff) << 16) + ((aByteArray308[5] & 0xff) << 8) + (aByteArray308[6] & 0xff);
-				int j3 = aByteArray308[7] & 0xff;
-				if ((k2 != i) || (l2 != l1) || (j3 != anInt311)) {
+
+				dat.read(buf, 0, available + 8);
+
+				int sectorFile = ((buf[0] & 0xff) << 8) + (buf[1] & 0xff);
+				int sectorPart = ((buf[2] & 0xff) << 8) + (buf[3] & 0xff);
+				int nextSector = ((buf[4] & 0xff) << 16) + ((buf[5] & 0xff) << 8) + (buf[6] & 0xff);
+				int sectorStore = buf[7] & 0xff;
+
+				if ((sectorFile != file) || (sectorPart != part) || (sectorStore != store)) {
 					return null;
 				}
-				if ((i3 < 0) || ((long) i3 > (aRandomAccessFile309.length() / 520L))) {
+
+				if ((nextSector < 0) || ((long) nextSector > (dat.length() / 520L))) {
 					return null;
 				}
-				for (int k3 = 0; k3 < i2; k3++) {
-					abyte0[k1++] = aByteArray308[k3 + 8];
+
+				for (int i = 0; i < available; i++) {
+					data[position++] = buf[i + 8];
 				}
-				j1 = i3;
+
+				sector = nextSector;
 			}
-			return abyte0;
-		} catch (IOException _ex) {
+			return data;
+		} catch (IOException e) {
 			return null;
 		}
 	}
 
-	public synchronized boolean method234(int i, byte[] abyte0, int j) {
-		boolean flag = method235(true, j, i, abyte0);
-		if (!flag) {
-			flag = method235(false, j, i, abyte0);
+	public synchronized void write(byte[] src, int file, int size) {
+		boolean written = write(src, file, size, true);
+		if (!written) {
+			write(src, file, size, false);
 		}
-		return flag;
 	}
 
-	public synchronized boolean method235(boolean flag, int j, int k, byte[] abyte0) {
+	public synchronized boolean write(byte[] data, int file, int size, boolean overwrite) {
 		try {
-			int l;
-			if (flag) {
-				method236(aRandomAccessFile310, j * 6);
-				int k1;
-				for (int i1 = 0; i1 < 6; i1 += k1) {
-					k1 = aRandomAccessFile310.read(aByteArray308, i1, 6 - i1);
-					if (k1 == -1) {
-						return false;
-					}
-				}
-				l = ((aByteArray308[3] & 0xff) << 16) + ((aByteArray308[4] & 0xff) << 8) + (aByteArray308[5] & 0xff);
-				if ((l <= 0) || ((long) l > (aRandomAccessFile309.length() / 520L))) {
+			int sector;
+
+			if (overwrite) {
+				idx.seek(file * 6L);
+				idx.read(buf, 0, 6);
+
+				sector = ((buf[3] & 0xff) << 16) + ((buf[4] & 0xff) << 8) + (buf[5] & 0xff);
+
+				if ((sector <= 0) || ((long) sector > (dat.length() / 520L))) {
 					return false;
 				}
 			} else {
-				l = (int) ((aRandomAccessFile309.length() + 519L) / 520L);
-				if (l == 0) {
-					l = 1;
+				sector = (int) ((dat.length() + 519L) / 520L);
+
+				if (sector == 0) {
+					sector = 1;
 				}
 			}
-			aByteArray308[0] = (byte) (k >> 16);
-			aByteArray308[1] = (byte) (k >> 8);
-			aByteArray308[2] = (byte) k;
-			aByteArray308[3] = (byte) (l >> 16);
-			aByteArray308[4] = (byte) (l >> 8);
-			aByteArray308[5] = (byte) l;
-			method236(aRandomAccessFile310, j * 6);
-			aRandomAccessFile310.write(aByteArray308, 0, 6);
-			int j1 = 0;
-			for (int l1 = 0; j1 < k; l1++) {
-				int i2 = 0;
-				if (flag) {
-					method236(aRandomAccessFile309, l * 520);
-					int j2;
-					int l2;
-					for (j2 = 0; j2 < 8; j2 += l2) {
-						l2 = aRandomAccessFile309.read(aByteArray308, j2, 8 - j2);
-						if (l2 == -1) {
-							break;
-						}
-					}
-					if (j2 == 8) {
-						int i3 = ((aByteArray308[0] & 0xff) << 8) + (aByteArray308[1] & 0xff);
-						int j3 = ((aByteArray308[2] & 0xff) << 8) + (aByteArray308[3] & 0xff);
-						i2 = ((aByteArray308[4] & 0xff) << 16) + ((aByteArray308[5] & 0xff) << 8) + (aByteArray308[6] & 0xff);
-						int k3 = aByteArray308[7] & 0xff;
-						if ((i3 != j) || (j3 != l1) || (k3 != anInt311)) {
+
+			buf[0] = (byte) (size >> 16);
+			buf[1] = (byte) (size >> 8);
+			buf[2] = (byte) size;
+			buf[3] = (byte) (sector >> 16);
+			buf[4] = (byte) (sector >> 8);
+			buf[5] = (byte) sector;
+
+			idx.seek(file * 6L);
+			idx.write(buf, 0, 6);
+
+			int written = 0;
+			for (int part = 0; written < size; part++) {
+				int nextSector = 0;
+
+				if (overwrite) {
+					dat.seek(sector * 520L);
+
+					if (dat.read(buf, 0, 8) == 8) {
+						int sectorFile = ((buf[0] & 0xff) << 8) + (buf[1] & 0xff);
+						int sectorPart = ((buf[2] & 0xff) << 8) + (buf[3] & 0xff);
+						nextSector = ((buf[4] & 0xff) << 16) + ((buf[5] & 0xff) << 8) + (buf[6] & 0xff);
+						int sectorStore = buf[7] & 0xff;
+						if ((sectorFile != file) || (sectorPart != part) || (sectorStore != store)) {
 							return false;
 						}
-						if ((i2 < 0) || ((long) i2 > (aRandomAccessFile309.length() / 520L))) {
+						if ((nextSector < 0) || ((long) nextSector > (dat.length() / 520L))) {
 							return false;
 						}
 					}
 				}
-				if (i2 == 0) {
-					flag = false;
-					i2 = (int) ((aRandomAccessFile309.length() + 519L) / 520L);
-					if (i2 == 0) {
-						i2++;
+
+				if (nextSector == 0) {
+					overwrite = false;
+					nextSector = (int) ((dat.length() + 519L) / 520L);
+
+					if (nextSector == 0) {
+						nextSector++;
 					}
-					if (i2 == l) {
-						i2++;
+
+					if (nextSector == sector) {
+						nextSector++;
 					}
 				}
-				if ((k - j1) <= 512) {
-					i2 = 0;
+
+				if ((size - written) <= 512) {
+					nextSector = 0;
 				}
-				aByteArray308[0] = (byte) (j >> 8);
-				aByteArray308[1] = (byte) j;
-				aByteArray308[2] = (byte) (l1 >> 8);
-				aByteArray308[3] = (byte) l1;
-				aByteArray308[4] = (byte) (i2 >> 16);
-				aByteArray308[5] = (byte) (i2 >> 8);
-				aByteArray308[6] = (byte) i2;
-				aByteArray308[7] = (byte) anInt311;
-				method236(aRandomAccessFile309, l * 520);
-				aRandomAccessFile309.write(aByteArray308, 0, 8);
-				int k2 = k - j1;
-				if (k2 > 512) {
-					k2 = 512;
+
+				buf[0] = (byte) (file >> 8);
+				buf[1] = (byte) file;
+				buf[2] = (byte) (part >> 8);
+				buf[3] = (byte) part;
+				buf[4] = (byte) (nextSector >> 16);
+				buf[5] = (byte) (nextSector >> 8);
+				buf[6] = (byte) nextSector;
+				buf[7] = (byte) store;
+
+				dat.seek(sector * 520L);
+				dat.write(buf, 0, 8);
+
+				int available = size - written;
+
+				if (available > 512) {
+					available = 512;
 				}
-				aRandomAccessFile309.write(abyte0, j1, k2);
-				j1 += k2;
-				l = i2;
+
+				dat.write(data, written, available);
+				written += available;
+				sector = nextSector;
 			}
 			return true;
-		} catch (IOException _ex) {
+		} catch (IOException e) {
 			return false;
 		}
-	}
-
-	public synchronized void method236(RandomAccessFile randomaccessfile, int j) throws IOException {
-		if ((j < 0) || (j > 0x3c00000)) {
-			System.out.println("Badseek - pos:" + j + " len:" + randomaccessfile.length());
-			j = 0x3c00000;
-			try {
-				Thread.sleep(1000L);
-			} catch (Exception ignored) {
-			}
-		}
-		randomaccessfile.seek(j);
 	}
 
 }

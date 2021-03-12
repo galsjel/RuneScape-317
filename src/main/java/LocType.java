@@ -71,7 +71,7 @@ public class LocType {
 		return type;
 	}
 
-	public static void method575() {
+	public static void unload() {
 		aCache_785 = null;
 		aCache_780 = null;
 		anIntArray755 = null;
@@ -79,7 +79,7 @@ public class LocType {
 		aPacket_753 = null;
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		aPacket_753 = new Packet(archive.read("loc.dat", null));
 		Packet packet = new Packet(archive.read("loc.idx", null));
 		anInt756 = packet.get2U();
@@ -225,7 +225,7 @@ public class LocType {
 			if (j != 10) {
 				return null;
 			}
-			l1 = (long) ((anInt754 << 6) + l) + ((long) (k + 1) << 32);
+			l1 = (long) (((long) anInt754 << 6) + l) + ((long) (k + 1) << 32);
 			Model model_1 = (Model) aCache_780.method222(l1);
 			if (model_1 != null) {
 				return model_1;
@@ -270,7 +270,7 @@ public class LocType {
 			if (i1 == -1) {
 				return null;
 			}
-			l1 = (long) ((anInt754 << 6) + (i1 << 3) + l) + ((long) (k + 1) << 32);
+			l1 = (long) (((long) anInt754 << 6) + ((long) i1 << 3) + l) + ((long) (k + 1) << 32);
 			Model class30_sub2_sub4_sub6_2 = (Model) aCache_780.method222(l1);
 			if (class30_sub2_sub4_sub6_2 != null) {
 				return class30_sub2_sub4_sub6_2;

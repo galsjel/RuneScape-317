@@ -72,7 +72,7 @@ public class Component {
 	public Component() {
 	}
 
-	public static void load(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
+	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
 		aCache_238 = new LRUCache(50000);
 		Packet packet = new Packet(archive.read("data", null));
 		int i = -1;
@@ -295,7 +295,7 @@ public class Component {
 	public static void method208(int i, int j, Model model) {
 		A_CACHE___264.method224();
 		if ((model != null) && (j != 4)) {
-			A_CACHE___264.method223(model, (j << 16) + i);
+			A_CACHE___264.method223(model, ((long) j << 16) + i);
 		}
 	}
 
@@ -309,7 +309,7 @@ public class Component {
 	}
 
 	public Model method206(int i, int j) {
-		Model model = (Model) A_CACHE___264.method222((i << 16) + j);
+		Model model = (Model) A_CACHE___264.method222(((long) i << 16) + j);
 		if (model != null) {
 			return model;
 		}

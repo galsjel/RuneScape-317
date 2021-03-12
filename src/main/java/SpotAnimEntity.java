@@ -15,7 +15,7 @@ public class SpotAnimEntity extends Entity {
 	public int anInt1570;
 
 	public SpotAnimEntity(int i, int j, int l, int i1, int j1, int k1, int l1) {
-		aType_1568 = SpotAnimType.aTypeArray403[i1];
+		aType_1568 = SpotAnimType.instances[i1];
 		anInt1560 = i;
 		anInt1561 = l1;
 		anInt1562 = k1;

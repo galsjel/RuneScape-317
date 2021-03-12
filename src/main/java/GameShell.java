@@ -97,7 +97,7 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 				ratio = lastRatio;
 				delta = lastDelta;
 			} else if (ntime > otim[opos]) {
-				ratio = (int) ((long) (2560 * deltime) / (ntime - otim[opos]));
+				ratio = (int) ((long) (2560L * deltime) / (ntime - otim[opos]));
 			}
 
 			if (ratio < 25) {

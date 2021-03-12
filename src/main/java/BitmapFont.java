@@ -1,422 +1,531 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 import java.util.Random;
 
-public class BitmapFont extends Draw2D {
+public class BitmapFont {
 
-	public final byte[][] aByteArrayArray1491 = new byte[256][];
-	public final int[] anIntArray1492 = new int[256];
-	public final int[] anIntArray1493 = new int[256];
-	public final int[] anIntArray1494 = new int[256];
-	public final int[] anIntArray1495 = new int[256];
-	public final int[] anIntArray1496 = new int[256];
-	public int anInt1497;
-	public final Random aRandom1498 = new Random();
-	public boolean aBoolean1499 = false;
+	public final byte[][] charMask = new byte[256][];
+	public final int[] charMaskWidth = new int[256];
+	public final int[] charMaskHeight = new int[256];
+	public final int[] charOffsetX = new int[256];
+	public final int[] charOffsetY = new int[256];
+	public final int[] charAdvance = new int[256];
+	public final Random random = new Random();
+	public int height;
+	public boolean strikethrough = false;
 
-	public BitmapFont(boolean flag, String s, FileArchive archive) {
-		Packet packet = new Packet(archive.read(s + ".dat", null));
-		Packet packet_1 = new Packet(archive.read("index.dat", null));
-		packet_1.position = packet.get2U() + 4;
-		int k = packet_1.get1U();
+	public BitmapFont(FileArchive archive, String name, boolean quill) {
+		Packet dat = new Packet(archive.read(name + ".dat", null));
+		Packet idx = new Packet(archive.read("index.dat", null));
+		idx.position = dat.get2U() + 4;
+
+		int k = idx.get1U();
+
 		if (k > 0) {
-			packet_1.position += 3 * (k - 1);
+			idx.position += 3 * (k - 1);
 		}
-		for (int l = 0; l < 256; l++) {
-			anIntArray1494[l] = packet_1.get1U();
-			anIntArray1495[l] = packet_1.get1U();
-			int i1 = anIntArray1492[l] = packet_1.get2U();
-			int j1 = anIntArray1493[l] = packet_1.get2U();
-			int k1 = packet_1.get1U();
-			int l1 = i1 * j1;
-			aByteArrayArray1491[l] = new byte[l1];
-			if (k1 == 0) {
-				for (int i2 = 0; i2 < l1; i2++) {
-					aByteArrayArray1491[l][i2] = packet.get1();
+
+		for (int c = 0; c < 256; c++) {
+			charOffsetX[c] = idx.get1U();
+			charOffsetY[c] = idx.get1U();
+
+			int w = charMaskWidth[c] = idx.get2U();
+			int h = charMaskHeight[c] = idx.get2U();
+			int storeOrder = idx.get1U();
+
+			int len = w * h;
+			charMask[c] = new byte[len];
+
+			if (storeOrder == 0) {
+				for (int i = 0; i < len; i++) {
+					charMask[c][i] = dat.get1();
 				}
-			} else if (k1 == 1) {
-				for (int j2 = 0; j2 < i1; j2++) {
-					for (int l2 = 0; l2 < j1; l2++) {
-						aByteArrayArray1491[l][j2 + (l2 * i1)] = packet.get1();
+			} else if (storeOrder == 1) {
+				for (int x = 0; x < w; x++) {
+					for (int y = 0; y < h; y++) {
+						charMask[c][x + (y * w)] = dat.get1();
 					}
 				}
 			}
-			if ((j1 > anInt1497) && (l < 128)) {
-				anInt1497 = j1;
+
+			if ((h > height) && (c < 128)) {
+				height = h;
 			}
-			anIntArray1494[l] = 1;
-			anIntArray1496[l] = i1 + 2;
-			int k2 = 0;
-			for (int i3 = j1 / 7; i3 < j1; i3++) {
-				k2 += aByteArrayArray1491[l][i3 * i1];
+
+			// some simple kerning
+			// https://en.wikipedia.org/wiki/Kerning
+
+			charOffsetX[c] = 1;
+			charAdvance[c] = w + 2;
+
+			int acc = 0;
+
+			for (int y = h / 7; y < h; y++) {
+				acc += charMask[c][y * w];
 			}
-			if (k2 <= (j1 / 7)) {
-				anIntArray1496[l]--;
-				anIntArray1494[l] = 0;
+
+			if (acc <= (h / 7)) {
+				charAdvance[c]--;
+				charOffsetX[c] = 0;
 			}
-			k2 = 0;
-			for (int j3 = j1 / 7; j3 < j1; j3++) {
-				k2 += aByteArrayArray1491[l][(i1 - 1) + (j3 * i1)];
+
+			acc = 0;
+
+			for (int y = h / 7; y < h; y++) {
+				acc += charMask[c][(w - 1) + (y * w)];
 			}
-			if (k2 <= (j1 / 7)) {
-				anIntArray1496[l]--;
+
+			if (acc <= (h / 7)) {
+				charAdvance[c]--;
 			}
 		}
-		if (flag) {
-			anIntArray1496[32] = anIntArray1496[73];
+
+		// only q8_full uses this flag.
+		if (quill) {
+			charAdvance[' '] = charAdvance['I'];
 		} else {
-			anIntArray1496[32] = anIntArray1496[105];
+			charAdvance[' '] = charAdvance['i'];
 		}
 	}
 
-	public void method380(String s, int i, int j, int k) {
-		method385(j, s, k, i - method384(s));
+	/**
+	 * Draws a right aligned string. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s   the string.
+	 * @param x   the x.
+	 * @param y   the y.
+	 * @param rgb the rgb.
+	 */
+	public void drawStringRight(String s, int x, int y, int rgb) {
+		drawString(s, x - stringWidth(s), y, rgb);
 	}
 
-	public void method381(int i, String s, int k, int l) {
-		method385(i, s, k, l - (method384(s) / 2));
+	/**
+	 * Draws a centered string. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s   the string.
+	 * @param x   the x.
+	 * @param y   the y.
+	 * @param rgb the rgb.
+	 */
+	public void drawStringCenter(String s, int x, int y, int rgb) {
+		drawString(s, x - (stringWidth(s) / 2), y, rgb);
 	}
 
-	public void method382(int i, int j, String s, int l, boolean flag) {
-		method389(flag, j - (method383(s) / 2), i, s, l);
+	/**
+	 * Draws a centered and taggable string.
+	 *
+	 * @param s      the string.
+	 * @param x      the center x.
+	 * @param y      the y.
+	 * @param rgb    the rgb.
+	 * @param shadow <code>true</code> to draw with a shadow.
+	 */
+	public void drawStringTaggableCenter(String s, int x, int y, int rgb, boolean shadow) {
+		drawStringTaggable(s, x - (stringWidthTaggable(s) / 2), y, rgb, shadow);
 	}
 
-	public int method383(String s) {
+	/**
+	 * Calculates the string width.
+	 *
+	 * @param s the string.
+	 * @return the string width.
+	 */
+	public int stringWidthTaggable(String s) {
 		if (s == null) {
 			return 0;
 		}
-		int j = 0;
+		int w = 0;
 		for (int k = 0; k < s.length(); k++) {
 			if ((s.charAt(k) == '@') && ((k + 4) < s.length()) && (s.charAt(k + 4) == '@')) {
 				k += 4;
 			} else {
-				j += anIntArray1496[s.charAt(k)];
+				w += charAdvance[s.charAt(k)];
 			}
 		}
-		return j;
+		return w;
 	}
 
-	public int method384(String s) {
+	/**
+	 * Calculates the string width. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s the string.
+	 * @return the string width.
+	 */
+	public int stringWidth(String s) {
 		if (s == null) {
 			return 0;
 		}
-		int j = 0;
+		int w = 0;
 		for (int k = 0; k < s.length(); k++) {
-			j += anIntArray1496[s.charAt(k)];
+			w += charAdvance[s.charAt(k)];
 		}
-		return j;
+		return w;
 	}
 
-	public void method385(int i, String s, int j, int l) {
+	/**
+	 * Standard draw string method. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s   the s.
+	 * @param x   the x.
+	 * @param y   the y.
+	 * @param rgb the rgb.
+	 */
+	public void drawString(String s, int x, int y, int rgb) {
 		if (s == null) {
 			return;
 		}
-		j -= anInt1497;
-		for (int i1 = 0; i1 < s.length(); i1++) {
-			char c = s.charAt(i1);
+		y -= height;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], l + anIntArray1494[c], j + anIntArray1495[c], anIntArray1492[c], anIntArray1493[c], i);
+				fillMaskedRect(charMask[c], x + charOffsetX[c], y + charOffsetY[c], charMaskWidth[c], charMaskHeight[c], rgb);
 			}
-			l += anIntArray1496[c];
+			x += charAdvance[c];
 		}
 	}
 
-	public void method386(int i, String s, int j, int k, int l) {
+	/**
+	 * Draws a string with the wave effect. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s     the string.
+	 * @param x     the x.
+	 * @param y     the y.
+	 * @param rgb   the rgb.
+	 * @param cycle the cycle.
+	 */
+	public void drawStringWave(String s, int x, int y, int rgb, int cycle) {
 		if (s == null) {
 			return;
 		}
-		j -= method384(s) / 2;
-		l -= anInt1497;
-		for (int i1 = 0; i1 < s.length(); i1++) {
-			char c = s.charAt(i1);
+		x -= stringWidth(s) / 2;
+		y -= height;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], j + anIntArray1494[c], l + anIntArray1495[c] + (int) (Math.sin(((double) i1 / 2D) + ((double) k / 5D)) * 5D), anIntArray1492[c], anIntArray1493[c], i);
+				fillMaskedRect(charMask[c], x + charOffsetX[c], y + charOffsetY[c] + (int) (Math.sin(((double) i / 2D) + ((double) cycle / 5D)) * 5D), charMaskWidth[c], charMaskHeight[c], rgb);
 			}
-			j += anIntArray1496[c];
+			x += charAdvance[c];
 		}
 	}
 
-	public void method387(int i, String s, int j, int k, int l) {
+	/**
+	 * Draws a string with the wave2 effect. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s     the string.
+	 * @param x     the x.
+	 * @param y     the y.
+	 * @param rgb   the rgb.
+	 * @param cycle the wave cycle.
+	 */
+	public void drawStringWave2(String s, int x, int y, int rgb, int cycle) {
 		if (s == null) {
 			return;
 		}
-		i -= method384(s) / 2;
-		k -= anInt1497;
-		for (int i1 = 0; i1 < s.length(); i1++) {
-			char c = s.charAt(i1);
+		x -= stringWidth(s) / 2;
+		y -= height;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], i + anIntArray1494[c] + (int) (Math.sin(((double) i1 / 5D) + ((double) j / 5D)) * 5D), k + anIntArray1495[c] + (int) (Math.sin(((double) i1 / 3D) + ((double) j / 5D)) * 5D), anIntArray1492[c], anIntArray1493[c], l);
+				fillMaskedRect(charMask[c], x + charOffsetX[c] + (int) (Math.sin(((double) i / 5D) + ((double) cycle / 5D)) * 5D), y + charOffsetY[c] + (int) (Math.sin(((double) i / 3D) + ((double) cycle / 5D)) * 5D), charMaskWidth[c], charMaskHeight[c], rgb);
 			}
-			i += anIntArray1496[c];
+			x += charAdvance[c];
 		}
 	}
 
-	public void method388(int i, String s, int j, int k, int l, int i1) {
+	/**
+	 * Draws a string with the shake effect. <b>Note:</b> This method is not taggable.
+	 *
+	 * @param s     the string.
+	 * @param x     the x.
+	 * @param y     the y.
+	 * @param rgb   the rgb.
+	 * @param cycle the shake cycle.
+	 * @param phase the shake phase.
+	 */
+	public void drawStringShake(String s, int x, int y, int rgb, int cycle, int phase) {
 		if (s == null) {
 			return;
 		}
-		double d = 7D - ((double) i / 8D);
-		if (d < 0.0D) {
-			d = 0.0D;
+
+		double amplitude = 7D - ((double) phase / 8D);
+
+		if (amplitude < 0.0D) {
+			amplitude = 0.0D;
 		}
-		l -= method384(s) / 2;
-		k -= anInt1497;
-		for (int k1 = 0; k1 < s.length(); k1++) {
-			char c = s.charAt(k1);
+
+		x -= stringWidth(s) / 2;
+		y -= height;
+
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+
 			if (c != ' ') {
-				method392(aByteArrayArray1491[c], l + anIntArray1494[c], k + anIntArray1495[c] + (int) (Math.sin(((double) k1 / 1.5D) + (double) j) * d), anIntArray1492[c], anIntArray1493[c], i1);
+				fillMaskedRect(charMask[c], x + charOffsetX[c], y + charOffsetY[c] + (int) (Math.sin(((double) i / 1.5D) + (double) cycle) * amplitude), charMaskWidth[c], charMaskHeight[c], rgb);
 			}
-			l += anIntArray1496[c];
+
+			x += charAdvance[c];
 		}
 	}
 
-	public void method389(boolean flag1, int i, int j, String s, int k) {
-		aBoolean1499 = false;
-		int l = i;
+	/**
+	 * Draws a taggable string.
+	 *
+	 * @param s        the string.
+	 * @param x        the x.
+	 * @param y        the y.
+	 * @param rgb      the rgb.
+	 * @param shadowed <code>true</code> to draw with a shadow.
+	 * @see #evaluateTag(String)
+	 */
+	public void drawStringTaggable(String s, int x, int y, int rgb, boolean shadowed) {
+		strikethrough = false;
+
+		int leftX = x;
+
 		if (s == null) {
 			return;
 		}
-		k -= anInt1497;
-		for (int i1 = 0; i1 < s.length(); i1++) {
-			if ((s.charAt(i1) == '@') && ((i1 + 4) < s.length()) && (s.charAt(i1 + 4) == '@')) {
-				int j1 = method391(s.substring(i1 + 1, i1 + 4));
-				if (j1 != -1) {
-					j = j1;
+
+		y -= height;
+
+		for (int i = 0; i < s.length(); i++) {
+			if ((s.charAt(i) == '@') && ((i + 4) < s.length()) && (s.charAt(i + 4) == '@')) {
+				int value = evaluateTag(s.substring(i + 1, i + 4));
+
+				if (value != -1) {
+					rgb = value;
 				}
-				i1 += 4;
+
+				i += 4;
 			} else {
-				char c = s.charAt(i1);
+				char c = s.charAt(i);
+
 				if (c != ' ') {
-					if (flag1) {
-						method392(aByteArrayArray1491[c], i + anIntArray1494[c] + 1, k + anIntArray1495[c] + 1, anIntArray1492[c], anIntArray1493[c], 0);
+					if (shadowed) {
+						fillMaskedRect(charMask[c], x + charOffsetX[c] + 1, y + charOffsetY[c] + 1, charMaskWidth[c], charMaskHeight[c], 0);
 					}
-					method392(aByteArrayArray1491[c], i + anIntArray1494[c], k + anIntArray1495[c], anIntArray1492[c], anIntArray1493[c], j);
+					fillMaskedRect(charMask[c], x + charOffsetX[c], y + charOffsetY[c], charMaskWidth[c], charMaskHeight[c], rgb);
 				}
-				i += anIntArray1496[c];
+
+				x += charAdvance[c];
 			}
 		}
-		if (aBoolean1499) {
-			Draw2D.drawLineX(l, k + (int) ((double) anInt1497 * 0.69999999999999996D), i - l, 0x800000);
+
+		if (strikethrough) {
+			Draw2D.drawLineX(leftX, y + (int) ((double) height * 0.7), x - leftX, 0x800000);
 		}
 	}
 
-	public void method390(boolean flag, int i, int j, String s, int k, int i1) {
+	/**
+	 * Identical to {@link #drawStringTaggable(String, int, int, int, boolean)} with the exception of a random chance to
+	 * advance a character by an additional pixel to prevent macro clients from detecting tooltip text easily.
+	 *
+	 * @param s        the string.
+	 * @param x        the x.
+	 * @param y        the y.
+	 * @param rgb      the rgb.
+	 * @param shadowed <code>true</code> to draw with a shadow.
+	 * @param seed     the seed.
+	 * @see #evaluateTag(String)
+	 */
+	public void drawStringTooltip(String s, int x, int y, int rgb, boolean shadowed, int seed) {
 		if (s == null) {
 			return;
 		}
-		aRandom1498.setSeed(k);
-		int j1 = 192 + (aRandom1498.nextInt() & 0x1f);
-		i1 -= anInt1497;
-		for (int k1 = 0; k1 < s.length(); k1++) {
-			if ((s.charAt(k1) == '@') && ((k1 + 4) < s.length()) && (s.charAt(k1 + 4) == '@')) {
-				int l1 = method391(s.substring(k1 + 1, k1 + 4));
-				if (l1 != -1) {
-					j = l1;
+		random.setSeed(seed);
+		int alpha = 192 + (random.nextInt() & 0x1f);
+		y -= height;
+		for (int i = 0; i < s.length(); i++) {
+			if ((s.charAt(i) == '@') && ((i + 4) < s.length()) && (s.charAt(i + 4) == '@')) {
+				int value = evaluateTag(s.substring(i + 1, i + 4));
+				if (value != -1) {
+					rgb = value;
 				}
-				k1 += 4;
+				i += 4;
 			} else {
-				char c = s.charAt(k1);
+				char c = s.charAt(i);
 				if (c != ' ') {
-					if (flag) {
-						method394(192, i + anIntArray1494[c] + 1, aByteArrayArray1491[c], anIntArray1492[c], i1 + anIntArray1495[c] + 1, anIntArray1493[c], 0);
+					if (shadowed) {
+						fillMaskedRect(charMask[c], x + charOffsetX[c] + 1, y + charOffsetY[c] + 1, charMaskWidth[c], charMaskHeight[c], 0, 192);
 					}
-					method394(j1, i + anIntArray1494[c], aByteArrayArray1491[c], anIntArray1492[c], i1 + anIntArray1495[c], anIntArray1493[c], j);
+					fillMaskedRect(charMask[c], x + charOffsetX[c], y + charOffsetY[c], charMaskWidth[c], charMaskHeight[c], rgb, alpha);
 				}
-				i += anIntArray1496[c];
-				if ((aRandom1498.nextInt() & 3) == 0) {
-					i++;
+				x += charAdvance[c];
+				if ((random.nextInt() & 3) == 0) {
+					x++;
 				}
 			}
 		}
 	}
 
-	public int method391(String s) {
-		if (s.equals("red")) {
-			return 0xff0000;
-		}
-		if (s.equals("gre")) {
-			return 65280;
-		}
-		if (s.equals("blu")) {
-			return 255;
-		}
-		if (s.equals("yel")) {
-			return 0xffff00;
-		}
-		if (s.equals("cya")) {
-			return 65535;
-		}
-		if (s.equals("mag")) {
-			return 0xff00ff;
-		}
-		if (s.equals("whi")) {
-			return 0xffffff;
-		}
-		if (s.equals("bla")) {
-			return 0;
-		}
-		if (s.equals("lre")) {
-			return 0xff9040;
-		}
-		if (s.equals("dre")) {
-			return 0x800000;
-		}
-		if (s.equals("dbl")) {
-			return 128;
-		}
-		if (s.equals("or1")) {
-			return 0xffb000;
-		}
-		if (s.equals("or2")) {
-			return 0xff7000;
-		}
-		if (s.equals("or3")) {
-			return 0xff3000;
-		}
-		if (s.equals("gr1")) {
-			return 0xc0ff00;
-		}
-		if (s.equals("gr2")) {
-			return 0x80ff00;
-		}
-		if (s.equals("gr3")) {
-			return 0x40ff00;
-		}
-		if (s.equals("str")) {
-			aBoolean1499 = true;
-		}
-		if (s.equals("end")) {
-			aBoolean1499 = false;
+	public int evaluateTag(String s) {
+		switch (s) {
+			case "red":
+				return 0xff0000;
+			case "gre":
+				return 0xff00;
+			case "blu":
+				return 0xff;
+			case "yel":
+				return 0xffff00;
+			case "cya":
+				return 0xffff;
+			case "mag":
+				return 0xff00ff;
+			case "whi":
+				return 0xffffff;
+			case "bla":
+				return 0;
+			case "lre":
+				return 0xff9040;
+			case "dre":
+				return 0x800000;
+			case "dbl":
+				return 0x80;
+			case "or1":
+				return 0xffb000;
+			case "or2":
+				return 0xff7000;
+			case "or3":
+				return 0xff3000;
+			case "gr1":
+				return 0xc0ff00;
+			case "gr2":
+				return 0x80ff00;
+			case "gr3":
+				return 0x40ff00;
+			case "str":
+				strikethrough = true;
+				break;
+			case "end":
+				strikethrough = false;
+				break;
 		}
 		return -1;
 	}
 
-	public void method392(byte[] abyte0, int i, int j, int k, int l, int i1) {
-		int j1 = i + (j * Draw2D.width);
-		int k1 = Draw2D.width - k;
-		int l1 = 0;
-		int i2 = 0;
-		if (j < Draw2D.top) {
-			int j2 = Draw2D.top - j;
-			l -= j2;
-			j = Draw2D.top;
-			i2 += j2 * k;
-			j1 += j2 * Draw2D.width;
+	public void fillMaskedRect(byte[] mask, int x, int y, int w, int h, int rgb) {
+		int dstOff = x + (y * Draw2D.width);
+		int dstStep = Draw2D.width - w;
+		int maskStep = 0;
+		int maskOff = 0;
+		if (y < Draw2D.top) {
+			int trim = Draw2D.top - y;
+			h -= trim;
+			y = Draw2D.top;
+			maskOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
-		if ((j + l) >= Draw2D.bottom) {
-			l -= ((j + l) - Draw2D.bottom) + 1;
+		if ((y + h) >= Draw2D.bottom) {
+			h -= ((y + h) - Draw2D.bottom) + 1;
 		}
-		if (i < Draw2D.left) {
-			int k2 = Draw2D.left - i;
-			k -= k2;
-			i = Draw2D.left;
-			i2 += k2;
-			j1 += k2;
-			l1 += k2;
-			k1 += k2;
+		if (x < Draw2D.left) {
+			int trim = Draw2D.left - x;
+			w -= trim;
+			x = Draw2D.left;
+			maskOff += trim;
+			dstOff += trim;
+			maskStep += trim;
+			dstStep += trim;
 		}
-		if ((i + k) >= Draw2D.right) {
-			int l2 = ((i + k) - Draw2D.right) + 1;
-			k -= l2;
-			l1 += l2;
-			k1 += l2;
+		if ((x + w) >= Draw2D.right) {
+			int trim = ((x + w) - Draw2D.right) + 1;
+			w -= trim;
+			maskStep += trim;
+			dstStep += trim;
 		}
-		if ((k <= 0) || (l <= 0)) {
-		} else {
-			method393(Draw2D.pixels, abyte0, i1, i2, j1, k, l, k1, l1);
-		}
-	}
-
-	public void method393(int[] ai, byte[] abyte0, int i, int j, int k, int l, int i1, int j1, int k1) {
-		int l1 = -(l >> 2);
-		l = -(l & 3);
-		for (int i2 = -i1; i2 < 0; i2++) {
-			for (int j2 = l1; j2 < 0; j2++) {
-				if (abyte0[j++] != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				if (abyte0[j++] != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				if (abyte0[j++] != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				if (abyte0[j++] != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-			}
-			for (int k2 = l; k2 < 0; k2++) {
-				if (abyte0[j++] != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-			}
-			k += j1;
-			j += k1;
+		if ((w > 0) && (h > 0)) {
+			fillMaskedRect(mask, maskOff, maskStep, Draw2D.pixels, dstOff, dstStep, w, h, rgb);
 		}
 	}
 
-	public void method394(int i, int j, byte[] abyte0, int k, int l, int i1, int j1) {
-		int k1 = j + (l * Draw2D.width);
-		int l1 = Draw2D.width - k;
-		int i2 = 0;
-		int j2 = 0;
-		if (l < Draw2D.top) {
-			int k2 = Draw2D.top - l;
-			i1 -= k2;
-			l = Draw2D.top;
-			j2 += k2 * k;
-			k1 += k2 * Draw2D.width;
+	public void fillMaskedRect(byte[] mask, int x, int y, int w, int h, int rgb, int alpha) {
+		int dstOff = x + (y * Draw2D.width);
+		int dstStep = Draw2D.width - w;
+		int maskStep = 0;
+		int maskOff = 0;
+		if (y < Draw2D.top) {
+			int trim = Draw2D.top - y;
+			h -= trim;
+			y = Draw2D.top;
+			maskOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
-		if ((l + i1) >= Draw2D.bottom) {
-			i1 -= ((l + i1) - Draw2D.bottom) + 1;
+		if ((y + h) >= Draw2D.bottom) {
+			h -= ((y + h) - Draw2D.bottom) + 1;
 		}
-		if (j < Draw2D.left) {
-			int l2 = Draw2D.left - j;
-			k -= l2;
-			j = Draw2D.left;
-			j2 += l2;
-			k1 += l2;
-			i2 += l2;
-			l1 += l2;
+		if (x < Draw2D.left) {
+			int trim = Draw2D.left - x;
+			w -= trim;
+			x = Draw2D.left;
+			maskOff += trim;
+			dstOff += trim;
+			maskStep += trim;
+			dstStep += trim;
 		}
-		if ((j + k) >= Draw2D.right) {
-			int i3 = ((j + k) - Draw2D.right) + 1;
-			k -= i3;
-			i2 += i3;
-			l1 += i3;
+		if ((x + w) >= Draw2D.right) {
+			int trim = ((x + w) - Draw2D.right) + 1;
+			w -= trim;
+			maskStep += trim;
+			dstStep += trim;
 		}
-		if ((k <= 0) || (i1 <= 0)) {
+		if ((w <= 0) || (h <= 0)) {
 			return;
 		}
-		method395(abyte0, i1, k1, Draw2D.pixels, j2, k, i2, l1, j1, i);
+		fillMaskedRect(mask, maskOff, maskStep, Draw2D.pixels, dstOff, dstStep, w, h, rgb, alpha);
 	}
 
-	public void method395(byte[] abyte0, int i, int j, int[] ai, int l, int i1, int j1, int k1, int l1, int i2) {
-		l1 = ((((l1 & 0xff00ff) * i2) & 0xff00ff00) + (((l1 & 0xff00) * i2) & 0xff0000)) >> 8;
-		i2 = 256 - i2;
-		for (int j2 = -i; j2 < 0; j2++) {
-			for (int k2 = -i1; k2 < 0; k2++) {
-				if (abyte0[l++] != 0) {
-					int l2 = ai[j];
-					ai[j++] = (((((l2 & 0xff00ff) * i2) & 0xff00ff00) + (((l2 & 0xff00) * i2) & 0xff0000)) >> 8) + l1;
+	public void fillMaskedRect(byte[] mask, int maskOff, int maskStep, int[] dst, int dstOff, int dstStep, int w, int h, int rgb) {
+		int halfW = -(w >> 2);
+		w = -(w & 3);
+		for (int y = -h; y < 0; y++) {
+			for (int x = halfW; x < 0; x++) {
+				if (mask[maskOff++] != 0) {
+					dst[dstOff++] = rgb;
 				} else {
-					j++;
+					dstOff++;
+				}
+				if (mask[maskOff++] != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+				if (mask[maskOff++] != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+				if (mask[maskOff++] != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
 				}
 			}
-			j += k1;
-			l += j1;
+			for (int x = w; x < 0; x++) {
+				if (mask[maskOff++] != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+			}
+			dstOff += dstStep;
+			maskOff += maskStep;
+		}
+	}
+
+	public void fillMaskedRect(byte[] mask, int maskOff, int maskStep, int[] dst, int dstOff, int dstStep, int w, int h, int rgb, int alpha) {
+		rgb = ((((rgb & 0xff00ff) * alpha) & 0xff00ff00) + (((rgb & 0xff00) * alpha) & 0xff0000)) >> 8;
+		alpha = 256 - alpha;
+		for (int y = -h; y < 0; y++) {
+			for (int x = -w; x < 0; x++) {
+				if (mask[maskOff++] != 0) {
+					int dstRGB = dst[dstOff];
+					dst[dstOff++] = (((((dstRGB & 0xff00ff) * alpha) & 0xff00ff00) + (((dstRGB & 0xff00) * alpha) & 0xff0000)) >> 8) + rgb;
+				} else {
+					dstOff++;
+				}
+			}
+			dstOff += dstStep;
+			maskOff += maskStep;
 		}
 	}
 

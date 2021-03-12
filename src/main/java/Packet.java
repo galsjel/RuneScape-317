@@ -361,7 +361,7 @@ public class Packet extends DoublyLinkedListNode {
 		position = 0;
 		byte[] raw = new byte[length];
 		get(raw, 0, length);
-		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
+		byte[] encrypted = new BigInteger(raw).toByteArray();//.modPow(exponent, modulus).toByteArray();
 		position = 0;
 		put1(encrypted.length);
 		put(encrypted, encrypted.length, 0);

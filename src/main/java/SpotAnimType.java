@@ -5,8 +5,8 @@
 public class SpotAnimType {
 
 	public static int anInt402;
-	public static SpotAnimType[] aTypeArray403;
-	public static LRUCache aCache_415 = new LRUCache(30);
+	public static SpotAnimType[] instances;
+	public static LRUCache modelCache = new LRUCache(30);
 	public int anInt404;
 	public int anInt405;
 	public int anInt406 = -1;
@@ -22,18 +22,18 @@ public class SpotAnimType {
 	public SpotAnimType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("spotanim.dat", null));
 		anInt402 = packet.get2U();
-		if (aTypeArray403 == null) {
-			aTypeArray403 = new SpotAnimType[anInt402];
+		if (instances == null) {
+			instances = new SpotAnimType[anInt402];
 		}
 		for (int j = 0; j < anInt402; j++) {
-			if (aTypeArray403[j] == null) {
-				aTypeArray403[j] = new SpotAnimType();
+			if (instances[j] == null) {
+				instances[j] = new SpotAnimType();
 			}
-			aTypeArray403[j].anInt404 = j;
-			aTypeArray403[j].method265(packet);
+			instances[j].anInt404 = j;
+			instances[j].method265(packet);
 		}
 	}
 
@@ -47,8 +47,8 @@ public class SpotAnimType {
 				anInt405 = packet.get2U();
 			} else if (i == 2) {
 				anInt406 = packet.get2U();
-				if (SeqType.aTypeArray351 != null) {
-					aType_407 = SeqType.aTypeArray351[anInt406];
+				if (SeqType.instances != null) {
+					aType_407 = SeqType.instances[anInt406];
 				}
 			} else if (i == 4) {
 				anInt410 = packet.get2U();
@@ -71,7 +71,7 @@ public class SpotAnimType {
 	}
 
 	public Model method266() {
-		Model model = (Model) aCache_415.method222(anInt404);
+		Model model = (Model) modelCache.method222(anInt404);
 		if (model != null) {
 			return model;
 		}
@@ -84,7 +84,7 @@ public class SpotAnimType {
 				model.replaceColor(anIntArray408[i], anIntArray409[i]);
 			}
 		}
-		aCache_415.method223(model, anInt404);
+		modelCache.method223(model, anInt404);
 		return model;
 	}
 

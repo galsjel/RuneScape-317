@@ -11,6 +11,47 @@ public class NPCType {
 	public static NPCType[] aTypeArray80;
 	public static Game aGame82;
 	public static LRUCache aCache_95 = new LRUCache(30);
+
+	public static NPCType method159(int i) {
+		if (i > aTypeArray80.length) {
+			i = 0;
+		}
+
+		for (int j = 0; j < 20; j++) {
+			if (aTypeArray80[j].aLong78 == (long) i) {
+				return aTypeArray80[j];
+			}
+		}
+		anInt56 = (anInt56 + 1) % 20;
+		NPCType type = aTypeArray80[anInt56] = new NPCType();
+		aPacket_60.position = anIntArray72[i];
+		type.aLong78 = i;
+		type.method165(aPacket_60);
+		return type;
+	}
+
+	public static void unpack(FileArchive archive) {
+		aPacket_60 = new Packet(archive.read("npc.dat", null));
+		Packet packet = new Packet(archive.read("npc.idx", null));
+		anInt62 = packet.get2U();
+		anIntArray72 = new int[anInt62];
+		int i = 2;
+		for (int j = 0; j < anInt62; j++) {
+			anIntArray72[j] = i;
+			i += packet.get2U();
+		}
+		aTypeArray80 = new NPCType[20];
+		for (int k = 0; k < 20; k++) {
+			aTypeArray80[k] = new NPCType();
+		}
+	}
+
+	public static void unload() {
+		aCache_95 = null;
+		anIntArray72 = null;
+		aTypeArray80 = null;
+		aPacket_60 = null;
+	}
 	public int anInt55 = -1;
 	public int anInt57 = -1;
 	public int anInt58 = -1;
@@ -43,43 +84,6 @@ public class NPCType {
 	public int unusedInt2 = -1;
 
 	public NPCType() {
-	}
-
-	public static NPCType method159(int i) {
-		for (int j = 0; j < 20; j++) {
-			if (aTypeArray80[j].aLong78 == (long) i) {
-				return aTypeArray80[j];
-			}
-		}
-		anInt56 = (anInt56 + 1) % 20;
-		NPCType type = aTypeArray80[anInt56] = new NPCType();
-		aPacket_60.position = anIntArray72[i];
-		type.aLong78 = i;
-		type.method165(aPacket_60);
-		return type;
-	}
-
-	public static void load(FileArchive archive) {
-		aPacket_60 = new Packet(archive.read("npc.dat", null));
-		Packet packet = new Packet(archive.read("npc.idx", null));
-		anInt62 = packet.get2U();
-		anIntArray72 = new int[anInt62];
-		int i = 2;
-		for (int j = 0; j < anInt62; j++) {
-			anIntArray72[j] = i;
-			i += packet.get2U();
-		}
-		aTypeArray80 = new NPCType[20];
-		for (int k = 0; k < 20; k++) {
-			aTypeArray80[k] = new NPCType();
-		}
-	}
-
-	public static void method163() {
-		aCache_95 = null;
-		anIntArray72 = null;
-		aTypeArray80 = null;
-		aPacket_60 = null;
 	}
 
 	public Model method160() {

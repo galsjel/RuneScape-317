@@ -5,7 +5,7 @@
 public class IDKType {
 
 	public static int anInt655;
-	public static IDKType[] aIDKTypeArray656;
+	public static IDKType[] instances;
 	public int anInt657 = -1;
 	public int[] anIntArray658;
 	public final int[] anIntArray659 = new int[6];
@@ -16,17 +16,17 @@ public class IDKType {
 	public IDKType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("idk.dat", null));
 		anInt655 = packet.get2U();
-		if (aIDKTypeArray656 == null) {
-			aIDKTypeArray656 = new IDKType[anInt655];
+		if (instances == null) {
+			instances = new IDKType[anInt655];
 		}
 		for (int j = 0; j < anInt655; j++) {
-			if (aIDKTypeArray656[j] == null) {
-				aIDKTypeArray656[j] = new IDKType();
+			if (instances[j] == null) {
+				instances[j] = new IDKType();
 			}
-			aIDKTypeArray656[j].method536(packet);
+			instances[j].method536(packet);
 		}
 	}
 

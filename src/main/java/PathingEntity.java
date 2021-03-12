@@ -64,7 +64,7 @@ public class PathingEntity extends Entity {
 	}
 
 	public void method445(int i, int j, boolean flag) {
-		if ((anInt1526 != -1) && (SeqType.aTypeArray351[anInt1526].anInt364 == 1)) {
+		if ((anInt1526 != -1) && (SeqType.instances[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
 		if (!flag) {
@@ -141,7 +141,7 @@ public class PathingEntity extends Entity {
 			j++;
 			k--;
 		}
-		if ((anInt1526 != -1) && (SeqType.aTypeArray351[anInt1526].anInt364 == 1)) {
+		if ((anInt1526 != -1) && (SeqType.instances[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
 		if (anInt1525 < 9) {

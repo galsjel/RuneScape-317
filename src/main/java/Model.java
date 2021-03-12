@@ -114,7 +114,7 @@ public class Model extends Entity {
 	public boolean pickBounds = false;
 
 	/**
-	 * A storage for the original vertex normals to give {@link SceneGraph#method308(Model, Model, int, int, int, boolean)}
+	 * A storage for the original vertex normals to give {@link Scene#method308(Model, Model, int, int, int, boolean)}
 	 * a reference.
 	 */
 	public VertexNormal[] vertexNormalOriginal;
@@ -128,7 +128,7 @@ public class Model extends Entity {
 	/**
 	 * Constructs a new model and loads it from its header.
 	 *
-	 * <b>Note:</b> This constructor only works if the model has already been loaded. {@link #load(byte[], int)} must
+	 * <b>Note:</b> This constructor only works if the model has already been loaded. {@link #unpack(byte[], int)} must
 	 * have already been called for the given <code>id</code>.
 	 *
 	 * @param id the model id.
@@ -776,7 +776,7 @@ public class Model extends Entity {
 		maxX = model.maxX;
 	}
 
-	public static void clear() {
+	public static void unload() {
 		headers = null;
 		faceClippedX = null;
 		faceNearClipped = null;
@@ -804,7 +804,7 @@ public class Model extends Entity {
 		Model.ondemand = ondemand;
 	}
 
-	public static void load(byte[] src, int id) {
+	public static void unpack(byte[] src, int id) {
 		if (src == null) {
 			ModelHeader header = headers[id] = new ModelHeader();
 			header.vertexCount = 0;

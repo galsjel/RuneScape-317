@@ -5,7 +5,7 @@
 public class SeqType {
 
 	public static int anInt350;
-	public static SeqType[] aTypeArray351;
+	public static SeqType[] instances;
 	public int anInt352;
 	public int[] anIntArray353;
 	public int[] anIntArray354;
@@ -25,17 +25,17 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("seq.dat", null));
 		anInt350 = packet.get2U();
-		if (aTypeArray351 == null) {
-			aTypeArray351 = new SeqType[anInt350];
+		if (instances == null) {
+			instances = new SeqType[anInt350];
 		}
 		for (int j = 0; j < anInt350; j++) {
-			if (aTypeArray351[j] == null) {
-				aTypeArray351[j] = new SeqType();
+			if (instances[j] == null) {
+				instances[j] = new SeqType();
 			}
-			aTypeArray351[j].method259(packet);
+			instances[j].method259(packet);
 		}
 	}
 

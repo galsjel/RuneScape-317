@@ -56,7 +56,7 @@ public class ObjType {
 	public ObjType() {
 	}
 
-	public static void method191() {
+	public static void unload() {
 		aCache_159 = null;
 		aCache_158 = null;
 		anIntArray195 = null;
@@ -64,7 +64,7 @@ public class ObjType {
 		aPacket_183 = null;
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		aPacket_183 = new Packet(archive.read("obj.dat", null));
 		Packet packet = new Packet(archive.read("obj.idx", null));
 		anInt203 = packet.get2U();
@@ -145,7 +145,7 @@ public class ObjType {
 		Image24 class30_sub2_sub1_sub1_1 = new Image24(32, 32);
 		int k1 = Draw3D.centerX;
 		int l1 = Draw3D.centerY;
-		int[] ai = Draw3D.anIntArray1472;
+		int[] ai = Draw3D.lineOffset;
 		int[] ai1 = Draw2D.pixels;
 		int i2 = Draw2D.width;
 		int j2 = Draw2D.height;
@@ -156,7 +156,7 @@ public class ObjType {
 		Draw3D.jagged = false;
 		Draw2D.bind(class30_sub2_sub1_sub1_1.anIntArray1439, 32, 32);
 		Draw2D.fillRect(0, 0, 32, 32, 0);
-		Draw3D.method364();
+		Draw3D.init2D();
 		int k3 = type.anInt181;
 		if (k == -1) {
 			k3 = (int) ((double) k3 * 1.5D);
@@ -223,7 +223,7 @@ public class ObjType {
 		Draw2D.setBounds(j3, k2, l2, i3);
 		Draw3D.centerX = k1;
 		Draw3D.centerY = l1;
-		Draw3D.anIntArray1472 = ai;
+		Draw3D.lineOffset = ai;
 		Draw3D.jagged = true;
 		if (type.aBoolean176) {
 			class30_sub2_sub1_sub1_1.anInt1444 = 33;

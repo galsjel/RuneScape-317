@@ -19,14 +19,14 @@ public class Game extends GameShell {
 
 	public static final int[][] anIntArrayArray1003 = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
 	public static final int[] anIntArray1204 = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-	public static final BigInteger aBigInteger856 = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
+	public static final BigInteger RSA_MODULUS = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
 	public static int anInt957 = 10;
 	public static int anInt958;
 	public static boolean aBoolean959 = true;
 	public static boolean aBoolean960;
-	public static boolean aBoolean993;
+	public static boolean started;
 	public static final int[] anIntArray1019;
-	public static final BigInteger aBigInteger1032 = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
+	public static final BigInteger RSA_PUBLIC_KEY = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
 	public static int drawCycle;
 	public static PlayerEntity aPlayer_1126;
 	public static boolean aBoolean1156;
@@ -156,7 +156,7 @@ public class Game extends GameShell {
 	public final String[] aStringArray943 = new String[100];
 	public final String[] aStringArray944 = new String[100];
 	public int anInt945;
-	public SceneGraph aGraph_946;
+	public Scene scene;
 	public Image8[] aImageArray947 = new Image8[13];
 	public int anInt948;
 	public int anInt949;
@@ -175,7 +175,7 @@ public class Game extends GameShell {
 	public Image8 aImage_967;
 	public final int[] anIntArray968 = new int[33];
 	public final int[] anIntArray969 = new int[256];
-	public final FileStore[] aFileStoreArray970 = new FileStore[5];
+	public final FileStore[] filestores = new FileStore[5];
 	public int[] anIntArray971 = new int[2000];
 	public boolean aBoolean972 = false;
 	public int anInt974;
@@ -243,7 +243,7 @@ public class Game extends GameShell {
 	public int anInt1048;
 	public String aString1049;
 	public final int[] anIntArray1052 = new int[151];
-	public FileArchive aArchive_1053;
+	public FileArchive archiveTitle;
 	public int anInt1054 = -1;
 	public int anInt1055;
 	public LinkedList aList_1056 = new LinkedList();
@@ -344,7 +344,7 @@ public class Game extends GameShell {
 	public long aLong1172;
 	public String aString1173 = "";
 	public String aString1174 = "";
-	public boolean aBoolean1176 = false;
+	public boolean errInvalidHost = false;
 	public int anInt1178 = -1;
 	public LinkedList aList_1179 = new LinkedList();
 	public int[] anIntArray1180;
@@ -386,7 +386,7 @@ public class Game extends GameShell {
 	public int anInt1227;
 	public boolean aBoolean1228 = true;
 	public final int[] anIntArray1229 = new int[151];
-	public SceneCollisionMap[] aCollisionMapArray1230 = new SceneCollisionMap[4];
+	public SceneCollisionMap[] collisions = new SceneCollisionMap[4];
 	public boolean aBoolean1233 = false;
 	public int[] anIntArray1234;
 	public int[] anIntArray1235;
@@ -405,7 +405,7 @@ public class Game extends GameShell {
 	public int anInt1249;
 	public final int[] anIntArray1250 = new int[50];
 	public int anInt1251;
-	public boolean aBoolean1252 = false;
+	public boolean errAlreadyStarted = false;
 	public int anInt1253;
 	public boolean aBoolean1255 = false;
 	public boolean aBoolean1256 = false;
@@ -414,17 +414,17 @@ public class Game extends GameShell {
 	public int anInt1259;
 	public int anInt1261;
 	public int anInt1262;
-	public Image24 aImage_1263;
+	public Image24 imageMinimap;
 	public int anInt1264;
 	public int anInt1265;
 	public String aString1266 = "";
 	public String aString1267 = "";
 	public int anInt1268;
 	public int anInt1269;
-	public BitmapFont aFont_1270;
-	public BitmapFont aFont_1271;
-	public BitmapFont aFont_1272;
-	public BitmapFont aFont_1273;
+	public BitmapFont fontPlain11;
+	public BitmapFont fontPlain12;
+	public BitmapFont fontBold12;
+	public BitmapFont fontQuill8;
 	public int anInt1275;
 	public int anInt1276 = -1;
 	public int anInt1278;
@@ -505,75 +505,91 @@ public class Game extends GameShell {
 			super.mindel = 5;
 		}
 
-		if (aBoolean993) {
-			aBoolean1252 = true;
+		if (started) {
+			errAlreadyStarted = true;
 			return;
 		}
 
-		aBoolean993 = true;
-		boolean flag = false;
-		String s = method80();
-		if (s.endsWith("jagex.com")) {
-			flag = true;
+		started = true;
+
+		boolean hostValid = false;
+		String host = getHost();
+
+		if (host.endsWith("jagex.com")) {
+			hostValid = true;
 		}
-		if (s.endsWith("runescape.com")) {
-			flag = true;
+		if (host.endsWith("runescape.com")) {
+			hostValid = true;
 		}
-		if (s.endsWith("192.168.1.2")) {
-			flag = true;
+		if (host.endsWith("192.168.1.2")) {
+			hostValid = true;
 		}
-		if (s.endsWith("192.168.1.229")) {
-			flag = true;
+		if (host.endsWith("192.168.1.229")) {
+			hostValid = true;
 		}
-		if (s.endsWith("192.168.1.228")) {
-			flag = true;
+		if (host.endsWith("192.168.1.228")) {
+			hostValid = true;
 		}
-		if (s.endsWith("192.168.1.227")) {
-			flag = true;
+		if (host.endsWith("192.168.1.227")) {
+			hostValid = true;
 		}
-		if (s.endsWith("192.168.1.226")) {
-			flag = true;
+		if (host.endsWith("192.168.1.226")) {
+			hostValid = true;
 		}
-		if (s.endsWith("127.0.0.1")) {
-			flag = true;
+		if (host.endsWith("127.0.0.1")) {
+			hostValid = true;
 		}
-		if (!flag) {
-			aBoolean1176 = true;
+
+		if (!hostValid) {
+			errInvalidHost = true;
 			return;
 		}
+
 		if (Signlink.cache_dat != null) {
 			for (int i = 0; i < 5; i++) {
-				aFileStoreArray970[i] = new FileStore(0x7a120, Signlink.cache_dat, Signlink.cache_idx[i], i + 1);
+				filestores[i] = new FileStore(500000, Signlink.cache_dat, Signlink.cache_idx[i], i + 1);
 			}
 		}
+
 		try {
-			method16();
-			aArchive_1053 = method67(1, "title screen", "title", anIntArray1090[1], 25);
-			aFont_1270 = new BitmapFont(false, "p11_full", aArchive_1053);
-			aFont_1271 = new BitmapFont(false, "p12_full", aArchive_1053);
-			aFont_1272 = new BitmapFont(false, "b12_full", aArchive_1053);
-			aFont_1273 = new BitmapFont(true, "q8_full", aArchive_1053);
+			//loadArchiveChecksums();
+
+			archiveTitle = method67(1, "title screen", "title", anIntArray1090[1], 25);
+			fontPlain11 = new BitmapFont(archiveTitle, "p11_full", false);
+			fontPlain12 = new BitmapFont(archiveTitle, "p12_full", false);
+			fontBold12 = new BitmapFont(archiveTitle, "b12_full", false);
+			fontQuill8 = new BitmapFont(archiveTitle, "q8_full", true);
+
 			method56();
 			method51();
-			FileArchive archive = method67(2, "config", "config", anIntArray1090[2], 30);
-			FileArchive archive_1 = method67(3, "interface", "interface", anIntArray1090[3], 35);
-			FileArchive archive_2 = method67(4, "2d graphics", "media", anIntArray1090[4], 40);
-			FileArchive archive_3 = method67(6, "textures", "textures", anIntArray1090[6], 45);
-			FileArchive archive_4 = method67(7, "chat system", "wordenc", anIntArray1090[7], 50);
-			FileArchive archive_5 = method67(8, "sound effects", "sounds", anIntArray1090[8], 55);
+
+			FileArchive archiveConfig = method67(2, "config", "config", anIntArray1090[2], 30);
+			FileArchive archiveInterface = method67(3, "interface", "interface", anIntArray1090[3], 35);
+			FileArchive archiveMedia = method67(4, "2d graphics", "media", anIntArray1090[4], 40);
+			FileArchive archiveTextures = method67(6, "textures", "textures", anIntArray1090[6], 45);
+			FileArchive archiveWordenc = method67(7, "chat system", "wordenc", anIntArray1090[7], 50);
+			FileArchive archiveSounds = method67(8, "sound effects", "sounds", anIntArray1090[8], 55);
+
 			aByteArrayArrayArray1258 = new byte[4][104][104];
 			anIntArrayArrayArray1214 = new int[4][105][105];
-			aGraph_946 = new SceneGraph(104, 104, anIntArrayArrayArray1214, 4);
+			scene = new Scene(104, 104, anIntArrayArrayArray1214, 4);
+
 			for (int j = 0; j < 4; j++) {
-				aCollisionMapArray1230[j] = new SceneCollisionMap(104, 104);
+				collisions[j] = new SceneCollisionMap(104, 104);
 			}
-			aImage_1263 = new Image24(512, 512);
-			FileArchive archive_6 = method67(5, "update list", "versionlist", anIntArray1090[5], 60);
+
+			imageMinimap = new Image24(512, 512);
+
+			FileArchive archiveVersionlist = method67(5, "update list", "versionlist", anIntArray1090[5], 60);
+
 			showProgress(60, "Connecting to update server");
+
 			ondemand = new OnDemand();
-			ondemand.method551(archive_6, this);
+			ondemand.load(archiveVersionlist, this);
+
 			SeqFrame.init(ondemand.method557());
 			Model.init(ondemand.method555(0), ondemand);
+
 			if (!aBoolean960) {
 				anInt1227 = 0;
 				try {
@@ -634,7 +650,7 @@ public class Game extends GameShell {
 				} catch (Exception ignored) {
 				}
 			}
-			if (aFileStoreArray970[0] != null) {
+			if (filestores[0] != null) {
 				showProgress(75, "Requesting maps");
 				ondemand.method558(3, ondemand.method562(0, 48, 47));
 				ondemand.method558(3, ondemand.method562(1, 48, 47));
@@ -687,7 +703,7 @@ public class Game extends GameShell {
 					ondemand.method563(byte0, 0, k2);
 				}
 			}
-			ondemand.method554(aBoolean959);
+			ondemand.prefetchMaps(aBoolean959);
 			if (!aBoolean960) {
 				int l = ondemand.method555(2);
 				for (int i3 = 1; i3 < l; i3++) {
@@ -697,101 +713,101 @@ public class Game extends GameShell {
 				}
 			}
 			showProgress(80, "Unpacking media");
-			aImage_1196 = new Image8(archive_2, "invback", 0);
-			aImage_1198 = new Image8(archive_2, "chatback", 0);
-			aImage_1197 = new Image8(archive_2, "mapback", 0);
-			aImage_1027 = new Image8(archive_2, "backbase1", 0);
-			aImage_1028 = new Image8(archive_2, "backbase2", 0);
-			aImage_1029 = new Image8(archive_2, "backhmid1", 0);
+			aImage_1196 = new Image8(archiveMedia, "invback", 0);
+			aImage_1198 = new Image8(archiveMedia, "chatback", 0);
+			aImage_1197 = new Image8(archiveMedia, "mapback", 0);
+			aImage_1027 = new Image8(archiveMedia, "backbase1", 0);
+			aImage_1028 = new Image8(archiveMedia, "backbase2", 0);
+			aImage_1029 = new Image8(archiveMedia, "backhmid1", 0);
 			for (int j3 = 0; j3 < 13; j3++) {
-				aImageArray947[j3] = new Image8(archive_2, "sideicons", j3);
+				aImageArray947[j3] = new Image8(archiveMedia, "sideicons", j3);
 			}
-			aImage_1122 = new Image24(archive_2, "compass", 0);
-			aImage_1001 = new Image24(archive_2, "mapedge", 0);
+			aImage_1122 = new Image24(archiveMedia, "compass", 0);
+			aImage_1001 = new Image24(archiveMedia, "mapedge", 0);
 			aImage_1001.method345();
 			try {
 				for (int k3 = 0; k3 < 100; k3++) {
-					aImageArray1060[k3] = new Image8(archive_2, "mapscene", k3);
+					aImageArray1060[k3] = new Image8(archiveMedia, "mapscene", k3);
 				}
 			} catch (Exception ignored) {
 			}
 			try {
 				for (int l3 = 0; l3 < 100; l3++) {
-					aImageArray1033[l3] = new Image24(archive_2, "mapfunction", l3);
+					aImageArray1033[l3] = new Image24(archiveMedia, "mapfunction", l3);
 				}
 			} catch (Exception ignored) {
 			}
 			try {
 				for (int i4 = 0; i4 < 20; i4++) {
-					aImageArray987[i4] = new Image24(archive_2, "hitmarks", i4);
+					aImageArray987[i4] = new Image24(archiveMedia, "hitmarks", i4);
 				}
 			} catch (Exception ignored) {
 			}
 			try {
 				for (int j4 = 0; j4 < 20; j4++) {
-					aImageArray1095[j4] = new Image24(archive_2, "headicons", j4);
+					aImageArray1095[j4] = new Image24(archiveMedia, "headicons", j4);
 				}
 			} catch (Exception ignored) {
 			}
-			aImage_870 = new Image24(archive_2, "mapmarker", 0);
-			aImage_871 = new Image24(archive_2, "mapmarker", 1);
+			aImage_870 = new Image24(archiveMedia, "mapmarker", 0);
+			aImage_871 = new Image24(archiveMedia, "mapmarker", 1);
 			for (int k4 = 0; k4 < 8; k4++) {
-				aImageArray1150[k4] = new Image24(archive_2, "cross", k4);
+				aImageArray1150[k4] = new Image24(archiveMedia, "cross", k4);
 			}
-			aImage_1074 = new Image24(archive_2, "mapdots", 0);
-			aImage_1075 = new Image24(archive_2, "mapdots", 1);
-			aImage_1076 = new Image24(archive_2, "mapdots", 2);
-			aImage_1077 = new Image24(archive_2, "mapdots", 3);
-			aImage_1078 = new Image24(archive_2, "mapdots", 4);
-			aImage_1024 = new Image8(archive_2, "scrollbar", 0);
-			aImage_1025 = new Image8(archive_2, "scrollbar", 1);
-			aImage_1143 = new Image8(archive_2, "redstone1", 0);
-			aImage_1144 = new Image8(archive_2, "redstone2", 0);
-			aImage_1145 = new Image8(archive_2, "redstone3", 0);
-			aImage_1146 = new Image8(archive_2, "redstone1", 0);
+			aImage_1074 = new Image24(archiveMedia, "mapdots", 0);
+			aImage_1075 = new Image24(archiveMedia, "mapdots", 1);
+			aImage_1076 = new Image24(archiveMedia, "mapdots", 2);
+			aImage_1077 = new Image24(archiveMedia, "mapdots", 3);
+			aImage_1078 = new Image24(archiveMedia, "mapdots", 4);
+			aImage_1024 = new Image8(archiveMedia, "scrollbar", 0);
+			aImage_1025 = new Image8(archiveMedia, "scrollbar", 1);
+			aImage_1143 = new Image8(archiveMedia, "redstone1", 0);
+			aImage_1144 = new Image8(archiveMedia, "redstone2", 0);
+			aImage_1145 = new Image8(archiveMedia, "redstone3", 0);
+			aImage_1146 = new Image8(archiveMedia, "redstone1", 0);
 			aImage_1146.method358();
-			aImage_1147 = new Image8(archive_2, "redstone2", 0);
+			aImage_1147 = new Image8(archiveMedia, "redstone2", 0);
 			aImage_1147.method358();
-			aImage_865 = new Image8(archive_2, "redstone1", 0);
+			aImage_865 = new Image8(archiveMedia, "redstone1", 0);
 			aImage_865.method359();
-			aImage_866 = new Image8(archive_2, "redstone2", 0);
+			aImage_866 = new Image8(archiveMedia, "redstone2", 0);
 			aImage_866.method359();
-			aImage_867 = new Image8(archive_2, "redstone3", 0);
+			aImage_867 = new Image8(archiveMedia, "redstone3", 0);
 			aImage_867.method359();
-			aImage_868 = new Image8(archive_2, "redstone1", 0);
+			aImage_868 = new Image8(archiveMedia, "redstone1", 0);
 			aImage_868.method358();
 			aImage_868.method359();
-			aImage_869 = new Image8(archive_2, "redstone2", 0);
+			aImage_869 = new Image8(archiveMedia, "redstone2", 0);
 			aImage_869.method358();
 			aImage_869.method359();
 			for (int l4 = 0; l4 < 2; l4++) {
-				aImageArray1219[l4] = new Image8(archive_2, "mod_icons", l4);
+				aImageArray1219[l4] = new Image8(archiveMedia, "mod_icons", l4);
 			}
-			Image24 image = new Image24(archive_2, "backleft1", 0);
+			Image24 image = new Image24(archiveMedia, "backleft1", 0);
 			aArea_903 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backleft2", 0);
+			image = new Image24(archiveMedia, "backleft2", 0);
 			aArea_904 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backright1", 0);
+			image = new Image24(archiveMedia, "backright1", 0);
 			aArea_905 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backright2", 0);
+			image = new Image24(archiveMedia, "backright2", 0);
 			aArea_906 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backtop1", 0);
+			image = new Image24(archiveMedia, "backtop1", 0);
 			aArea_907 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backvmid1", 0);
+			image = new Image24(archiveMedia, "backvmid1", 0);
 			aArea_908 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backvmid2", 0);
+			image = new Image24(archiveMedia, "backvmid2", 0);
 			aArea_909 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backvmid3", 0);
+			image = new Image24(archiveMedia, "backvmid3", 0);
 			aArea_910 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
-			image = new Image24(archive_2, "backhmid2", 0);
+			image = new Image24(archiveMedia, "backhmid2", 0);
 			aArea_911 = new DrawArea(image.anInt1440, image.anInt1441, getComponent());
 			image.method346(0, 0);
 			int i5 = (int) (Math.random() * 21D) - 10;
@@ -807,35 +823,35 @@ public class Game extends GameShell {
 				}
 			}
 			showProgress(83, "Unpacking textures");
-			Draw3D.method368(archive_3);
-			Draw3D.method372(0.80000000000000004D);
-			Draw3D.method367(20);
+			Draw3D.unpackTextures(archiveTextures);
+			Draw3D.setBrightness(0.80000000000000004D);
+			Draw3D.initPool(20);
 			showProgress(86, "Unpacking config");
-			SeqType.load(archive);
-			LocType.load(archive);
-			FloType.load(archive);
-			ObjType.load(archive);
-			NPCType.load(archive);
-			IDKType.load(archive);
-			SpotAnimType.load(archive);
-			VarpType.load(archive);
-			VarbitType.load(archive);
+			SeqType.unpack(archiveConfig);
+			LocType.unpack(archiveConfig);
+			FloType.unpack(archiveConfig);
+			ObjType.unpack(archiveConfig);
+			NPCType.unpack(archiveConfig);
+			IDKType.unpack(archiveConfig);
+			SpotAnimType.unpack(archiveConfig);
+			VarpType.unpack(archiveConfig);
+			VarbitType.unpack(archiveConfig);
 			ObjType.aBoolean182 = aBoolean959;
 			if (!aBoolean960) {
 				showProgress(90, "Unpacking sounds");
-				byte[] abyte0 = archive_5.read("sounds.dat", null);
+				byte[] abyte0 = archiveSounds.read("sounds.dat", null);
 				Packet packet = new Packet(abyte0);
 				SoundTrack.method240(packet);
 			}
 			showProgress(95, "Unpacking interfaces");
-			BitmapFont[] aclass30_sub2_sub1_sub4 = {aFont_1270, aFont_1271, aFont_1272, aFont_1273};
-			Component.load(archive_1, aclass30_sub2_sub1_sub4, archive_2);
+			BitmapFont[] aclass30_sub2_sub1_sub4 = {fontPlain11, fontPlain12, fontBold12, fontQuill8};
+			Component.unpack(archiveInterface, aclass30_sub2_sub1_sub4, archiveMedia);
 			showProgress(100, "Preparing game engine");
 			for (int j6 = 0; j6 < 33; j6++) {
 				int k6 = 999;
 				int i7 = 0;
 				for (int k7 = 0; k7 < 34; k7++) {
-					if (aImage_1197.aByteArray1450[k7 + (j6 * aImage_1197.anInt1452)] == 0) {
+					if (aImage_1197.pixels[k7 + (j6 * aImage_1197.anInt1452)] == 0) {
 						if (k6 == 999) {
 							k6 = k7;
 						}
@@ -854,7 +870,7 @@ public class Game extends GameShell {
 				int j7 = 999;
 				int l7 = 0;
 				for (int j8 = 25; j8 < 172; j8++) {
-					if ((aImage_1197.aByteArray1450[j8 + (l6 * aImage_1197.anInt1452)] == 0) && ((j8 > 34) || (l6 > 34))) {
+					if ((aImage_1197.pixels[j8 + (l6 * aImage_1197.anInt1452)] == 0) && ((j8 > 34) || (l6 > 34))) {
 						if (j7 == 999) {
 							j7 = j8;
 						}
@@ -869,12 +885,12 @@ public class Game extends GameShell {
 				anIntArray1052[l6 - 5] = j7 - 25;
 				anIntArray1229[l6 - 5] = l7 - j7;
 			}
-			Draw3D.method365(479, 96);
-			anIntArray1180 = Draw3D.anIntArray1472;
-			Draw3D.method365(190, 261);
-			anIntArray1181 = Draw3D.anIntArray1472;
-			Draw3D.method365(512, 334);
-			anIntArray1182 = Draw3D.anIntArray1472;
+			Draw3D.init3D(479, 96);
+			anIntArray1180 = Draw3D.lineOffset;
+			Draw3D.init3D(190, 261);
+			anIntArray1181 = Draw3D.lineOffset;
+			Draw3D.init3D(512, 334);
+			anIntArray1182 = Draw3D.lineOffset;
 			int[] ai = new int[9];
 			for (int i8 = 0; i8 < 9; i8++) {
 				int k8 = 128 + (i8 * 32) + 15;
@@ -882,8 +898,8 @@ public class Game extends GameShell {
 				int i9 = Draw3D.sin[k8];
 				ai[i8] = (l8 * i9) >> 16;
 			}
-			SceneGraph.method310(500, 800, 512, 334, ai);
-			Censor.method487(archive_4);
+			Scene.method310(500, 800, 512, 334, ai);
+			Censor.method487(archiveWordenc);
 			aMouseRecorder_879 = new MouseRecorder(this);
 			startThread(aMouseRecorder_879, 10);
 			LocEntity.aGame1609 = this;
@@ -898,7 +914,7 @@ public class Game extends GameShell {
 
 	@Override
 	public void update() {
-		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
+		if (errAlreadyStarted || aBoolean926 || errInvalidHost) {
 			return;
 		}
 		loopCycle++;
@@ -925,7 +941,7 @@ public class Game extends GameShell {
 			aMouseRecorder_879.aBoolean808 = false;
 		}
 		aMouseRecorder_879 = null;
-		ondemand.method553();
+		ondemand.stop();
 		ondemand = null;
 		aPacket_834 = null;
 		aPacket_1192 = null;
@@ -938,8 +954,8 @@ public class Game extends GameShell {
 		anIntArray1236 = null;
 		anIntArrayArrayArray1214 = null;
 		aByteArrayArrayArray1258 = null;
-		aGraph_946 = null;
-		aCollisionMapArray1230 = null;
+		scene = null;
+		collisions = null;
 		anIntArrayArray901 = null;
 		anIntArrayArray825 = null;
 		anIntArray1280 = null;
@@ -1010,7 +1026,7 @@ public class Game extends GameShell {
 		anIntArray1072 = null;
 		anIntArray1073 = null;
 		aImageArray1140 = null;
-		aImage_1263 = null;
+		imageMinimap = null;
 		aStringArray1082 = null;
 		aLongArray955 = null;
 		anIntArray826 = null;
@@ -1024,27 +1040,27 @@ public class Game extends GameShell {
 		aArea_1114 = null;
 		aArea_1115 = null;
 		method118();
-		LocType.method575();
-		NPCType.method163();
-		ObjType.method191();
-		FloType.aTypeArray388 = null;
-		IDKType.aIDKTypeArray656 = null;
+		LocType.unload();
+		NPCType.unload();
+		ObjType.unload();
+		FloType.instances = null;
+		IDKType.instances = null;
 		Component.instances = null;
-		SeqType.aTypeArray351 = null;
-		SpotAnimType.aTypeArray403 = null;
-		SpotAnimType.aCache_415 = null;
-		VarpType.aVarpArray701 = null;
-		PlayerEntity.aCache_1704 = null;
-		Draw3D.method363();
-		SceneGraph.method273();
-		Model.clear();
-		SeqFrame.clear();
+		SeqType.instances = null;
+		SpotAnimType.instances = null;
+		SpotAnimType.modelCache = null;
+		VarpType.instances = null;
+		PlayerEntity.modelCache = null;
+		Draw3D.unload();
+		Scene.unload();
+		Model.unload();
+		SeqFrame.unload();
 		System.gc();
 	}
 
 	@Override
 	public void draw() {
-		if (aBoolean1252 || aBoolean926 || aBoolean1176) {
+		if (errAlreadyStarted || aBoolean926 || errInvalidHost) {
 			method94();
 			return;
 		}
@@ -1091,7 +1107,7 @@ public class Game extends GameShell {
 		anInt1079 = percent;
 		aString1049 = message;
 		method64();
-		if (aArchive_1053 == null) {
+		if (archiveTitle == null) {
 			super.showProgress(percent, message);
 			return;
 		}
@@ -1099,13 +1115,13 @@ public class Game extends GameShell {
 		char c = '\u0168';
 		char c1 = '\310';
 		byte byte1 = 20;
-		aFont_1272.method381(0xffffff, "RuneScape is loading - please wait...", (c1 / 2) - 26 - byte1, c / 2);
+		fontBold12.drawStringCenter("RuneScape is loading - please wait...", c / 2, (c1 / 2) - 26 - byte1, 0xffffff);
 		int j = (c1 / 2) - 18 - byte1;
 		Draw2D.drawRect((c / 2) - 152, j, 304, 34, 0x8c1111);
 		Draw2D.drawRect((c / 2) - 151, j + 1, 302, 32, 0);
 		Draw2D.fillRect((c / 2) - 150, j + 2, percent * 3, 30, 0x8c1111);
 		Draw2D.fillRect(((c / 2) - 150) + (percent * 3), j + 2, 300 - (percent * 3), 30, 0);
-		aFont_1272.method381(0xffffff, message, ((c1 / 2) + 5) - byte1, c / 2);
+		fontBold12.drawStringCenter(message, c / 2, ((c1 / 2) + 5) - byte1, 0xffffff);
 		aArea_1109.method238(171, super.graphics, 202);
 		if (aBoolean1255) {
 			aBoolean1255 = false;
@@ -1147,8 +1163,8 @@ public class Game extends GameShell {
 	}
 
 	public static void method52() {
-		SceneGraph.aBoolean436 = false;
-		Draw3D.aBoolean1461 = false;
+		Scene.aBoolean436 = false;
+		Draw3D.lowmem = false;
 		aBoolean960 = false;
 		SceneBuilder.aBoolean151 = false;
 		LocType.aBoolean752 = false;
@@ -1218,8 +1234,8 @@ public class Game extends GameShell {
 	}
 
 	public static void method138() {
-		SceneGraph.aBoolean436 = true;
-		Draw3D.aBoolean1461 = true;
+		Scene.aBoolean436 = true;
+		Draw3D.lowmem = true;
 		aBoolean960 = true;
 		SceneBuilder.aBoolean151 = true;
 		LocType.aBoolean752 = true;
@@ -1230,7 +1246,7 @@ public class Game extends GameShell {
 		Signlink.midi = "stop";
 	}
 
-	public void method16() {
+	public void loadArchiveChecksums() {
 		int j = 5;
 		anIntArray1090[8] = 0;
 		int k = 0;
@@ -1303,26 +1319,26 @@ public class Game extends GameShell {
 
 	public void method18() {
 		aArea_1166.method237();
-		Draw3D.anIntArray1472 = anIntArray1180;
+		Draw3D.lineOffset = anIntArray1180;
 		aImage_1198.method361(0, 0);
 		if (aBoolean1256) {
-			aFont_1272.method381(0, aString1121, 40, 239);
-			aFont_1272.method381(128, aString1212 + "*", 60, 239);
+			fontBold12.drawStringCenter(aString1121, 239, 40, 0);
+			fontBold12.drawStringCenter(aString1212 + "*", 239, 60, 128);
 		} else if (anInt1225 == 1) {
-			aFont_1272.method381(0, "Enter amount:", 40, 239);
-			aFont_1272.method381(128, aString1004 + "*", 60, 239);
+			fontBold12.drawStringCenter("Enter amount:", 239, 40, 0);
+			fontBold12.drawStringCenter(aString1004 + "*", 239, 60, 128);
 		} else if (anInt1225 == 2) {
-			aFont_1272.method381(0, "Enter name:", 40, 239);
-			aFont_1272.method381(128, aString1004 + "*", 60, 239);
+			fontBold12.drawStringCenter("Enter name:", 239, 40, 0);
+			fontBold12.drawStringCenter(aString1004 + "*", 239, 60, 128);
 		} else if (aString844 != null) {
-			aFont_1272.method381(0, aString844, 40, 239);
-			aFont_1272.method381(128, "Click to continue", 60, 239);
+			fontBold12.drawStringCenter(aString844, 239, 40, 0);
+			fontBold12.drawStringCenter("Click to continue", 239, 60, 128);
 		} else if (anInt1276 != -1) {
 			method105(0, 0, Component.instances[anInt1276], 0);
 		} else if (anInt1042 != -1) {
 			method105(0, 0, Component.instances[anInt1042], 0);
 		} else {
-			BitmapFont font = aFont_1271;
+			BitmapFont font = fontPlain12;
 			int j = 0;
 			Draw2D.setBounds(77, 0, 463, 0);
 			for (int k = 0; k < 100; k++) {
@@ -1341,7 +1357,7 @@ public class Game extends GameShell {
 					}
 					if (l == 0) {
 						if ((i1 > 0) && (i1 < 110)) {
-							font.method385(0, aStringArray944[k], i1, 4);
+							font.drawString(aStringArray944[k], 4, i1, 0);
 						}
 						j++;
 					}
@@ -1356,17 +1372,17 @@ public class Game extends GameShell {
 								aImageArray1219[1].method361(j1, i1 - 12);
 								j1 += 14;
 							}
-							font.method385(0, s1 + ":", i1, j1);
-							j1 += font.method383(s1) + 8;
-							font.method385(255, aStringArray944[k], i1, j1);
+							font.drawString(s1 + ":", j1, i1, 0);
+							j1 += font.stringWidthTaggable(s1) + 8;
+							font.drawString(aStringArray944[k], j1, i1, 255);
 						}
 						j++;
 					}
 					if (((l == 3) || (l == 7)) && (anInt1195 == 0) && ((l == 7) || (anInt845 == 0) || ((anInt845 == 1) && method109(s1)))) {
 						if ((i1 > 0) && (i1 < 110)) {
 							int k1 = 4;
-							font.method385(0, "From", i1, k1);
-							k1 += font.method383("From ");
+							font.drawString("From", k1, i1, 0);
+							k1 += font.stringWidthTaggable("From ");
 							if (byte0 == 1) {
 								aImageArray1219[0].method361(k1, i1 - 12);
 								k1 += 14;
@@ -1375,34 +1391,34 @@ public class Game extends GameShell {
 								aImageArray1219[1].method361(k1, i1 - 12);
 								k1 += 14;
 							}
-							font.method385(0, s1 + ":", i1, k1);
-							k1 += font.method383(s1) + 8;
-							font.method385(0x800000, aStringArray944[k], i1, k1);
+							font.drawString(s1 + ":", k1, i1, 0);
+							k1 += font.stringWidthTaggable(s1) + 8;
+							font.drawString(aStringArray944[k], k1, i1, 0x800000);
 						}
 						j++;
 					}
 					if ((l == 4) && ((anInt1248 == 0) || ((anInt1248 == 1) && method109(s1)))) {
 						if ((i1 > 0) && (i1 < 110)) {
-							font.method385(0x800080, s1 + " " + aStringArray944[k], i1, 4);
+							font.drawString(s1 + " " + aStringArray944[k], 4, i1, 0x800080);
 						}
 						j++;
 					}
 					if ((l == 5) && (anInt1195 == 0) && (anInt845 < 2)) {
 						if ((i1 > 0) && (i1 < 110)) {
-							font.method385(0x800000, aStringArray944[k], i1, 4);
+							font.drawString(aStringArray944[k], 4, i1, 0x800000);
 						}
 						j++;
 					}
 					if ((l == 6) && (anInt1195 == 0) && (anInt845 < 2)) {
 						if ((i1 > 0) && (i1 < 110)) {
-							font.method385(0, "To " + s1 + ":", i1, 4);
-							font.method385(0x800000, aStringArray944[k], i1, 12 + font.method383("To " + s1));
+							font.drawString("To " + s1 + ":", 4, i1, 0);
+							font.drawString(aStringArray944[k], 12 + font.stringWidthTaggable("To " + s1), i1, 0x800000);
 						}
 						j++;
 					}
 					if ((l == 8) && ((anInt1248 == 0) || ((anInt1248 == 1) && method109(s1)))) {
 						if ((i1 > 0) && (i1 < 110)) {
-							font.method385(0x7e3200, s1 + " " + aStringArray944[k], i1, 4);
+							font.drawString(s1 + " " + aStringArray944[k], 4, i1, 0x7e3200);
 						}
 						j++;
 					}
@@ -1420,8 +1436,8 @@ public class Game extends GameShell {
 			} else {
 				s = StringUtil.formatName(aString1173);
 			}
-			font.method385(0, s + ":", 90, 4);
-			font.method385(255, aString887 + "*", 90, 6 + font.method383(s + ": "));
+			font.drawString(s + ":", 4, 90, 0);
+			font.drawString(aString887 + "*", 6 + font.stringWidthTaggable(s + ": "), 90, 255);
 			Draw2D.drawLineX(0, 77, 479, 0);
 		}
 		if (aBoolean885 && (anInt948 == 2)) {
@@ -1429,7 +1445,7 @@ public class Game extends GameShell {
 		}
 		aArea_1166.method238(357, super.graphics, 17);
 		aArea_1165.method237();
-		Draw3D.anIntArray1472 = anIntArray1182;
+		Draw3D.lineOffset = anIntArray1182;
 	}
 
 	public Socket method19(int i) throws IOException {
@@ -1557,12 +1573,12 @@ public class Game extends GameShell {
 			anInt985 = -1;
 			aList_1056.method256();
 			aList_1013.method256();
-			Draw3D.method366();
+			Draw3D.disposePool();
 			method23();
-			aGraph_946.method274();
+			scene.method274();
 			System.gc();
 			for (int i = 0; i < 4; i++) {
-				aCollisionMapArray1230[i].method210();
+				collisions[i].method210();
 			}
 			for (int l = 0; l < 4; l++) {
 				for (int k1 = 0; k1 < 104; k1++) {
@@ -1580,7 +1596,7 @@ public class Game extends GameShell {
 					int k5 = ((anIntArray1234[i3] & 0xff) * 64) - anInt1035;
 					byte[] abyte0 = aByteArrayArray1183[i3];
 					if (abyte0 != null) {
-						sceneBuilder.method180(abyte0, k5, i4, (anInt1069 - 6) * 8, (anInt1070 - 6) * 8, aCollisionMapArray1230);
+						sceneBuilder.method180(abyte0, k5, i4, (anInt1069 - 6) * 8, (anInt1070 - 6) * 8, collisions);
 					}
 				}
 				for (int j4 = 0; j4 < k2; j4++) {
@@ -1597,7 +1613,7 @@ public class Game extends GameShell {
 					if (abyte1 != null) {
 						int l8 = ((anIntArray1234[i6] >> 8) * 64) - anInt1034;
 						int k9 = ((anIntArray1234[i6] & 0xff) * 64) - anInt1035;
-						sceneBuilder.method190(l8, aCollisionMapArray1230, k9, aGraph_946, abyte1);
+						sceneBuilder.method190(l8, collisions, k9, scene, abyte1);
 					}
 				}
 			}
@@ -1616,7 +1632,7 @@ public class Game extends GameShell {
 									if ((anIntArray1234[l11] != j11) || (aByteArrayArray1183[l11] == null)) {
 										continue;
 									}
-									sceneBuilder.method179(i9, l9, aCollisionMapArray1230, k4 * 8, (j10 & 7) * 8, aByteArrayArray1183[l11], (l10 & 7) * 8, j3, j6 * 8);
+									sceneBuilder.method179(i9, l9, collisions, k4 * 8, (j10 & 7) * 8, aByteArrayArray1183[l11], (l10 & 7) * 8, j3, j6 * 8);
 									break;
 								}
 							}
@@ -1646,7 +1662,7 @@ public class Game extends GameShell {
 									if ((anIntArray1234[k12] != j12) || (aByteArrayArray1247[k12] == null)) {
 										continue;
 									}
-									sceneBuilder.method183(aCollisionMapArray1230, aGraph_946, k10, j8 * 8, (i12 & 7) * 8, l6, aByteArrayArray1247[k12], (k11 & 7) * 8, i11, j9 * 8);
+									sceneBuilder.method183(collisions, scene, k10, j8 * 8, (i12 & 7) * 8, l6, aByteArrayArray1247[k12], (k11 & 7) * 8, i11, j9 * 8);
 									break;
 								}
 							}
@@ -1655,7 +1671,7 @@ public class Game extends GameShell {
 				}
 			}
 			aPacket_1192.putOp(0);
-			sceneBuilder.method171(aCollisionMapArray1230, aGraph_946);
+			sceneBuilder.method171(collisions, scene);
 			aArea_1165.method237();
 			aPacket_1192.putOp(0);
 			int k3 = SceneBuilder.anInt145;
@@ -1665,9 +1681,9 @@ public class Game extends GameShell {
 			if (k3 < (anInt918 - 1)) {
 			}
 			if (aBoolean960) {
-				aGraph_946.method275(SceneBuilder.anInt145);
+				scene.method275(SceneBuilder.anInt145);
 			} else {
-				aGraph_946.method275(0);
+				scene.method275(0);
 			}
 			for (int i5 = 0; i5 < 104; i5++) {
 				for (int i7 = 0; i7 < 104; i7++) {
@@ -1692,7 +1708,7 @@ public class Game extends GameShell {
 			}
 		}
 		System.gc();
-		Draw3D.method367(20);
+		Draw3D.initPool(20);
 		ondemand.method566();
 		int k = ((anInt1069 - 6) / 8) - 1;
 		int j1 = ((anInt1069 + 6) / 8) + 1;
@@ -1726,12 +1742,12 @@ public class Game extends GameShell {
 		NPCType.aCache_95.method224();
 		ObjType.aCache_159.method224();
 		ObjType.aCache_158.method224();
-		PlayerEntity.aCache_1704.method224();
-		SpotAnimType.aCache_415.method224();
+		PlayerEntity.modelCache.method224();
+		SpotAnimType.modelCache.method224();
 	}
 
 	public void method24(int i) {
-		int[] ai = aImage_1263.anIntArray1439;
+		int[] ai = imageMinimap.anIntArray1439;
 		int j = ai.length;
 		for (int k = 0; k < j; k++) {
 			ai[k] = 0;
@@ -1740,17 +1756,17 @@ public class Game extends GameShell {
 			int i1 = 24628 + ((103 - l) * 512 * 4);
 			for (int k1 = 1; k1 < 103; k1++) {
 				if ((aByteArrayArrayArray1258[i][k1][l] & 0x18) == 0) {
-					aGraph_946.method309(ai, i1, 512, i, k1, l);
+					scene.method309(ai, i1, 512, i, k1, l);
 				}
 				if ((i < 3) && ((aByteArrayArrayArray1258[i + 1][k1][l] & 8) != 0)) {
-					aGraph_946.method309(ai, i1, 512, i + 1, k1, l);
+					scene.method309(ai, i1, 512, i + 1, k1, l);
 				}
 				i1 += 4;
 			}
 		}
 		int j1 = (((238 + (int) (Math.random() * 20D)) - 10) << 16) + (((238 + (int) (Math.random() * 20D)) - 10) << 8) + ((238 + (int) (Math.random() * 20D)) - 10);
 		int l1 = ((238 + (int) (Math.random() * 20D)) - 10) << 16;
-		aImage_1263.method343();
+		imageMinimap.method343();
 		for (int i2 = 1; i2 < 103; i2++) {
 			for (int j2 = 1; j2 < 103; j2++) {
 				if ((aByteArrayArrayArray1258[i][j2][i2] & 0x18) == 0) {
@@ -1765,7 +1781,7 @@ public class Game extends GameShell {
 		anInt1071 = 0;
 		for (int k2 = 0; k2 < 104; k2++) {
 			for (int l2 = 0; l2 < 104; l2++) {
-				int i3 = aGraph_946.method303(anInt918, k2, l2);
+				int i3 = scene.method303(anInt918, k2, l2);
 				if (i3 != 0) {
 					i3 = (i3 >> 14) & 0x7fff;
 					int j3 = LocType.method572(i3).anInt746;
@@ -1775,7 +1791,7 @@ public class Game extends GameShell {
 						if ((j3 != 22) && (j3 != 29) && (j3 != 34) && (j3 != 36) && (j3 != 46) && (j3 != 47) && (j3 != 48)) {
 							byte byte0 = 104;
 							byte byte1 = 104;
-							int[][] ai1 = aCollisionMapArray1230[anInt918].anIntArrayArray294;
+							int[][] ai1 = collisions[anInt918].anIntArrayArray294;
 							for (int i4 = 0; i4 < 10; i4++) {
 								int j4 = (int) (Math.random() * 4D);
 								if ((j4 == 0) && (k3 > 0) && (k3 > (k2 - 3)) && ((ai1[k3 - 1][l3] & 0x1280108) == 0)) {
@@ -1805,7 +1821,7 @@ public class Game extends GameShell {
 	public void method25(int i, int j) {
 		LinkedList list = aListArrayArrayArray827[anInt918][i][j];
 		if (list == null) {
-			aGraph_946.method295(anInt918, i, j);
+			scene.method295(anInt918, i, j);
 			return;
 		}
 		int k = 0xfa0a1f01;
@@ -1833,7 +1849,7 @@ public class Game extends GameShell {
 			}
 		}
 		int i1 = i + (j << 7) + 0x60000000;
-		aGraph_946.method281(i, i1, obj1, method42(anInt918, (j * 128) + 64, (i * 128) + 64), obj2, obj, anInt918, j);
+		scene.method281(i, i1, obj1, method42(anInt918, (j * 128) + 64, (i * 128) + 64), obj2, obj, anInt918, j);
 	}
 
 	public void method26(boolean flag) {
@@ -1857,7 +1873,7 @@ public class Game extends GameShell {
 			if (!npc.aType_1696.aBoolean84) {
 				k += 0x80000000;
 			}
-			aGraph_946.method285(anInt918, npc.anInt1552, method42(anInt918, npc.anInt1551, npc.anInt1550), k, npc.anInt1551, ((npc.anInt1540 - 1) * 64) + 60, npc.anInt1550, npc, npc.aBoolean1541);
+			scene.method285(anInt918, npc.anInt1552, method42(anInt918, npc.anInt1551, npc.anInt1550), k, npc.anInt1551, ((npc.anInt1540 - 1) * 64) + 60, npc.anInt1550, npc, npc.aBoolean1541);
 		}
 	}
 
@@ -2177,23 +2193,23 @@ public class Game extends GameShell {
 	}
 
 	public void method33(int i) {
-		int j = VarpType.aVarpArray701[i].anInt709;
+		int j = VarpType.instances[i].anInt709;
 		if (j == 0) {
 			return;
 		}
 		int k = anIntArray971[i];
 		if (j == 1) {
 			if (k == 1) {
-				Draw3D.method372(0.90000000000000002D);
+				Draw3D.setBrightness(0.90000000000000002D);
 			}
 			if (k == 2) {
-				Draw3D.method372(0.80000000000000004D);
+				Draw3D.setBrightness(0.80000000000000004D);
 			}
 			if (k == 3) {
-				Draw3D.method372(0.69999999999999996D);
+				Draw3D.setBrightness(0.69999999999999996D);
 			}
 			if (k == 4) {
-				Draw3D.method372(0.59999999999999998D);
+				Draw3D.setBrightness(0.59999999999999998D);
 			}
 			ObjType.aCache_158.method224();
 			aBoolean1255 = true;
@@ -2327,8 +2343,8 @@ public class Game extends GameShell {
 			if ((obj.aString1506 != null) && ((j >= anInt891) || (anInt1287 == 0) || (anInt1287 == 3) || ((anInt1287 == 1) && method109(((PlayerEntity) obj).aString1703)))) {
 				method127(obj, obj.anInt1507);
 				if ((anInt963 > -1) && (anInt974 < anInt975)) {
-					anIntArray979[anInt974] = aFont_1272.method384(obj.aString1506) / 2;
-					anIntArray978[anInt974] = aFont_1272.anInt1497;
+					anIntArray979[anInt974] = fontBold12.stringWidth(obj.aString1506) / 2;
+					anIntArray978[anInt974] = fontBold12.height;
 					anIntArray976[anInt974] = anInt963;
 					anIntArray977[anInt974] = anInt964;
 					anIntArray980[anInt974] = obj.anInt1513;
@@ -2374,8 +2390,8 @@ public class Game extends GameShell {
 							anInt964 -= 10;
 						}
 						aImageArray987[obj.anIntArray1515[j1]].method348(anInt963 - 12, anInt964 - 12);
-						aFont_1270.method381(0, String.valueOf(obj.anIntArray1514[j1]), anInt964 + 4, anInt963);
-						aFont_1270.method381(0xffffff, String.valueOf(obj.anIntArray1514[j1]), anInt964 + 3, anInt963 - 1);
+						fontPlain11.drawStringCenter(String.valueOf(obj.anIntArray1514[j1]), anInt963, anInt964 + 4, 0);
+						fontPlain11.drawStringCenter(String.valueOf(obj.anIntArray1514[j1]), anInt963 - 1, anInt964 + 3, 0xffffff);
 					}
 				}
 			}
@@ -2443,27 +2459,27 @@ public class Game extends GameShell {
 					}
 				}
 				if (anIntArray981[k] == 0) {
-					aFont_1272.method381(0, s, anInt964 + 1, anInt963);
-					aFont_1272.method381(i3, s, anInt964, anInt963);
+					fontBold12.drawStringCenter(s, anInt963, anInt964 + 1, 0);
+					fontBold12.drawStringCenter(s, anInt963, anInt964, i3);
 				}
 				if (anIntArray981[k] == 1) {
-					aFont_1272.method386(0, s, anInt963, anInt1265, anInt964 + 1);
-					aFont_1272.method386(i3, s, anInt963, anInt1265, anInt964);
+					fontBold12.drawStringWave(s, anInt963, anInt964 + 1, 0, anInt1265);
+					fontBold12.drawStringWave(s, anInt963, anInt964, i3, anInt1265);
 				}
 				if (anIntArray981[k] == 2) {
-					aFont_1272.method387(anInt963, s, anInt1265, anInt964 + 1, 0);
-					aFont_1272.method387(anInt963, s, anInt1265, anInt964, i3);
+					fontBold12.drawStringWave2(s, anInt963, anInt964 + 1, 0, anInt1265);
+					fontBold12.drawStringWave2(s, anInt963, anInt964, i3, anInt1265);
 				}
 				if (anIntArray981[k] == 3) {
-					aFont_1272.method388(150 - anIntArray982[k], s, anInt1265, anInt964 + 1, anInt963, 0);
-					aFont_1272.method388(150 - anIntArray982[k], s, anInt1265, anInt964, anInt963, i3);
+					fontBold12.drawStringShake(s, anInt963, anInt964 + 1, 0, anInt1265, 150 - anIntArray982[k]);
+					fontBold12.drawStringShake(s, anInt963, anInt964, i3, anInt1265, 150 - anIntArray982[k]);
 				}
 				if (anIntArray981[k] == 4) {
-					int i4 = aFont_1272.method384(s);
+					int i4 = fontBold12.stringWidth(s);
 					int k4 = ((150 - anIntArray982[k]) * (i4 + 100)) / 150;
 					Draw2D.setBounds(334, anInt963 - 50, anInt963 + 50, 0);
-					aFont_1272.method385(0, s, anInt964 + 1, (anInt963 + 50) - k4);
-					aFont_1272.method385(i3, s, anInt964, (anInt963 + 50) - k4);
+					fontBold12.drawString(s, (anInt963 + 50) - k4, anInt964 + 1, 0);
+					fontBold12.drawString(s, (anInt963 + 50) - k4, anInt964, i3);
 					Draw2D.resetBounds();
 				}
 				if (anIntArray981[k] == 5) {
@@ -2474,14 +2490,14 @@ public class Game extends GameShell {
 					} else if (j4 > 125) {
 						l4 = j4 - 125;
 					}
-					Draw2D.setBounds(anInt964 + 5, 0, 512, anInt964 - aFont_1272.anInt1497 - 1);
-					aFont_1272.method381(0, s, anInt964 + 1 + l4, anInt963);
-					aFont_1272.method381(i3, s, anInt964 + l4, anInt963);
+					Draw2D.setBounds(anInt964 + 5, 0, 512, anInt964 - fontBold12.height - 1);
+					fontBold12.drawStringCenter(s, anInt963, anInt964 + 1 + l4, 0);
+					fontBold12.drawStringCenter(s, anInt963, anInt964 + l4, i3);
 					Draw2D.resetBounds();
 				}
 			} else {
-				aFont_1272.method381(0, s, anInt964 + 1, anInt963);
-				aFont_1272.method381(0xffff00, s, anInt964, anInt963);
+				fontBold12.drawStringCenter(s, anInt963, anInt964 + 1, 0);
+				fontBold12.drawStringCenter(s, anInt963, anInt964, 0xffff00);
 			}
 		}
 	}
@@ -2509,7 +2525,7 @@ public class Game extends GameShell {
 
 	public void method36() {
 		aArea_1163.method237();
-		Draw3D.anIntArray1472 = anIntArray1181;
+		Draw3D.lineOffset = anIntArray1181;
 		aImage_1196.method361(0, 0);
 		if (anInt1189 != -1) {
 			method105(0, 0, Component.instances[anInt1189], 0);
@@ -2521,49 +2537,49 @@ public class Game extends GameShell {
 		}
 		aArea_1163.method238(205, super.graphics, 553);
 		aArea_1165.method237();
-		Draw3D.anIntArray1472 = anIntArray1182;
+		Draw3D.lineOffset = anIntArray1182;
 	}
 
 	public void method37(int j) {
 		if (!aBoolean960) {
-			if (Draw3D.anIntArray1480[17] >= j) {
-				Image8 image = Draw3D.aImageArray1474[17];
+			if (Draw3D.textureCycle[17] >= j) {
+				Image8 image = Draw3D.textures[17];
 				int k = (image.anInt1452 * image.anInt1453) - 1;
 				int j1 = image.anInt1452 * anInt945 * 2;
-				byte[] abyte0 = image.aByteArray1450;
+				byte[] abyte0 = image.pixels;
 				byte[] abyte3 = aByteArray912;
 				for (int i2 = 0; i2 <= k; i2++) {
 					abyte3[i2] = abyte0[(i2 - j1) & k];
 				}
-				image.aByteArray1450 = abyte3;
+				image.pixels = abyte3;
 				aByteArray912 = abyte0;
-				Draw3D.method370(17);
+				Draw3D.unloadTexture(17);
 			}
-			if (Draw3D.anIntArray1480[24] >= j) {
-				Image8 class30_sub2_sub1_sub2_1 = Draw3D.aImageArray1474[24];
+			if (Draw3D.textureCycle[24] >= j) {
+				Image8 class30_sub2_sub1_sub2_1 = Draw3D.textures[24];
 				int l = (class30_sub2_sub1_sub2_1.anInt1452 * class30_sub2_sub1_sub2_1.anInt1453) - 1;
 				int k1 = class30_sub2_sub1_sub2_1.anInt1452 * anInt945 * 2;
-				byte[] abyte1 = class30_sub2_sub1_sub2_1.aByteArray1450;
+				byte[] abyte1 = class30_sub2_sub1_sub2_1.pixels;
 				byte[] abyte4 = aByteArray912;
 				for (int j2 = 0; j2 <= l; j2++) {
 					abyte4[j2] = abyte1[(j2 - k1) & l];
 				}
-				class30_sub2_sub1_sub2_1.aByteArray1450 = abyte4;
+				class30_sub2_sub1_sub2_1.pixels = abyte4;
 				aByteArray912 = abyte1;
-				Draw3D.method370(24);
+				Draw3D.unloadTexture(24);
 			}
-			if (Draw3D.anIntArray1480[34] >= j) {
-				Image8 class30_sub2_sub1_sub2_2 = Draw3D.aImageArray1474[34];
+			if (Draw3D.textureCycle[34] >= j) {
+				Image8 class30_sub2_sub1_sub2_2 = Draw3D.textures[34];
 				int i1 = (class30_sub2_sub1_sub2_2.anInt1452 * class30_sub2_sub1_sub2_2.anInt1453) - 1;
 				int l1 = class30_sub2_sub1_sub2_2.anInt1452 * anInt945 * 2;
-				byte[] abyte2 = class30_sub2_sub1_sub2_2.aByteArray1450;
+				byte[] abyte2 = class30_sub2_sub1_sub2_2.pixels;
 				byte[] abyte5 = aByteArray912;
 				for (int k2 = 0; k2 <= i1; k2++) {
 					abyte5[k2] = abyte2[(k2 - l1) & i1];
 				}
-				class30_sub2_sub1_sub2_2.aByteArray1450 = abyte5;
+				class30_sub2_sub1_sub2_2.pixels = abyte5;
 				aByteArray912 = abyte2;
-				Draw3D.method370(34);
+				Draw3D.unloadTexture(34);
 			}
 		}
 	}
@@ -2699,7 +2715,7 @@ public class Game extends GameShell {
 		Draw2D.fillRect(i, j, k, l, i1);
 		Draw2D.fillRect(i + 1, j + 1, k - 2, 16, 0);
 		Draw2D.drawRect(i + 1, j + 18, k - 2, l - 19, 0);
-		aFont_1272.method385(i1, "Choose Option", j + 14, i + 3);
+		fontBold12.drawString("Choose Option", i + 3, j + 14, i1);
 		int j1 = super.anInt20;
 		int k1 = super.anInt21;
 		if (anInt948 == 0) {
@@ -2720,7 +2736,7 @@ public class Game extends GameShell {
 			if ((j1 > i) && (j1 < (i + k)) && (k1 > (i2 - 13)) && (k1 < (i2 + 3))) {
 				j2 = 0xffff00;
 			}
-			aFont_1272.method389(true, i + 3, j2, aStringArray1199[l1], i2);
+			fontBold12.drawStringTaggable(aStringArray1199[l1], i + 3, i2, j2, true);
 		}
 	}
 
@@ -2790,9 +2806,9 @@ public class Game extends GameShell {
 		aString1173 = "";
 		aString1174 = "";
 		method23();
-		aGraph_946.method274();
+		scene.method274();
 		for (int i = 0; i < 4; i++) {
-			aCollisionMapArray1230[i].method210();
+			collisions[i].method210();
 		}
 		System.gc();
 		method15();
@@ -2806,7 +2822,7 @@ public class Game extends GameShell {
 		for (int j = 0; j < 7; j++) {
 			anIntArray1065[j] = -1;
 			for (int k = 0; k < IDKType.anInt655; k++) {
-				if (IDKType.aIDKTypeArray656[k].aBoolean662 || (IDKType.aIDKTypeArray656[k].anInt657 != (j + (aBoolean1047 ? 0 : 7)))) {
+				if (IDKType.instances[k].aBoolean662 || (IDKType.instances[k].anInt657 != (j + (aBoolean1047 ? 0 : 7)))) {
 					continue;
 				}
 				anIntArray1065[j] = k;
@@ -2883,7 +2899,7 @@ public class Game extends GameShell {
 			if ((player.aModel_1714 != null) && (loopCycle >= player.anInt1707) && (loopCycle < player.anInt1708)) {
 				player.aBoolean1699 = false;
 				player.anInt1709 = method42(anInt918, player.anInt1551, player.anInt1550);
-				aGraph_946.method286(anInt918, player.anInt1551, player, player.anInt1552, player.anInt1722, player.anInt1550, player.anInt1709, player.anInt1719, player.anInt1721, i1, player.anInt1720);
+				scene.method286(anInt918, player.anInt1551, player, player.anInt1552, player.anInt1722, player.anInt1550, player.anInt1709, player.anInt1719, player.anInt1721, i1, player.anInt1720);
 				continue;
 			}
 			if (((player.anInt1550 & 0x7f) == 64) && ((player.anInt1551 & 0x7f) == 64)) {
@@ -2893,7 +2909,7 @@ public class Game extends GameShell {
 				anIntArrayArray929[j1][k1] = anInt1265;
 			}
 			player.anInt1709 = method42(anInt918, player.anInt1551, player.anInt1550);
-			aGraph_946.method285(anInt918, player.anInt1552, player.anInt1709, i1, player.anInt1551, 60, player.anInt1550, player, player.aBoolean1541);
+			scene.method285(anInt918, player.anInt1552, player.anInt1709, i1, player.anInt1551, 60, player.anInt1550, player, player.aBoolean1541);
 		}
 	}
 
@@ -2949,7 +2965,7 @@ public class Game extends GameShell {
 					if ((j1 == 1) && (++i2 >= IDKType.anInt655)) {
 						i2 = 0;
 					}
-				} while (IDKType.aIDKTypeArray656[i2].aBoolean662 || (IDKType.aIDKTypeArray656[i2].anInt657 != (k + (aBoolean1047 ? 0 : 7))));
+				} while (IDKType.instances[i2].aBoolean662 || (IDKType.instances[i2].anInt657 != (k + (aBoolean1047 ? 0 : 7))));
 				anIntArray1065[k] = i2;
 				aBoolean1031 = true;
 			}
@@ -3011,16 +3027,16 @@ public class Game extends GameShell {
 	}
 
 	public void method50(int i, int k, int l, int i1, int j1) {
-		int k1 = aGraph_946.method300(j1, l, i);
+		int k1 = scene.method300(j1, l, i);
 		if (k1 != 0) {
-			int l1 = aGraph_946.method304(j1, l, i, k1);
+			int l1 = scene.method304(j1, l, i, k1);
 			int k2 = (l1 >> 6) & 3;
 			int i3 = l1 & 0x1f;
 			int k3 = k;
 			if (k1 > 0) {
 				k3 = i1;
 			}
-			int[] ai = aImage_1263.anIntArray1439;
+			int[] ai = imageMinimap.anIntArray1439;
 			int k4 = 24624 + (l * 4) + ((103 - i) * 512 * 4);
 			int i5 = (k1 >> 14) & 0x7fff;
 			LocType type_2 = LocType.method572(i5);
@@ -3091,9 +3107,9 @@ public class Game extends GameShell {
 				}
 			}
 		}
-		k1 = aGraph_946.method302(j1, l, i);
+		k1 = scene.method302(j1, l, i);
 		if (k1 != 0) {
-			int i2 = aGraph_946.method304(j1, l, i, k1);
+			int i2 = scene.method304(j1, l, i, k1);
 			int l2 = (i2 >> 6) & 3;
 			int j3 = i2 & 0x1f;
 			int l3 = (k1 >> 14) & 0x7fff;
@@ -3110,7 +3126,7 @@ public class Game extends GameShell {
 				if (k1 > 0) {
 					l4 = 0xee0000;
 				}
-				int[] ai1 = aImage_1263.anIntArray1439;
+				int[] ai1 = imageMinimap.anIntArray1439;
 				int l5 = 24624 + (l * 4) + ((103 - i) * 512 * 4);
 				if ((l2 == 0) || (l2 == 2)) {
 					ai1[l5 + 1536] = l4;
@@ -3125,7 +3141,7 @@ public class Game extends GameShell {
 				}
 			}
 		}
-		k1 = aGraph_946.method303(j1, l, i);
+		k1 = scene.method303(j1, l, i);
 		if (k1 != 0) {
 			int j2 = (k1 >> 14) & 0x7fff;
 			LocType type = LocType.method572(j2);
@@ -3141,8 +3157,8 @@ public class Game extends GameShell {
 	}
 
 	public void method51() {
-		aImage_966 = new Image8(aArchive_1053, "titlebox", 0);
-		aImage_967 = new Image8(aArchive_1053, "titlebutton", 0);
+		aImage_966 = new Image8(archiveTitle, "titlebox", 0);
+		aImage_967 = new Image8(archiveTitle, "titlebutton", 0);
 		aImageArray1152 = new Image8[12];
 		int j = 0;
 		try {
@@ -3151,11 +3167,11 @@ public class Game extends GameShell {
 		}
 		if (j == 0) {
 			for (int k = 0; k < 12; k++) {
-				aImageArray1152[k] = new Image8(aArchive_1053, "runes", k);
+				aImageArray1152[k] = new Image8(archiveTitle, "runes", k);
 			}
 		} else {
 			for (int l = 0; l < 12; l++) {
-				aImageArray1152[l] = new Image8(aArchive_1053, "runes", 12 + (l & 3));
+				aImageArray1152[l] = new Image8(archiveTitle, "runes", 12 + (l & 3));
 			}
 		}
 		aImage_1201 = new Image24(128, 265);
@@ -3222,8 +3238,8 @@ public class Game extends GameShell {
 	public void method53() {
 		if (aBoolean960 && (anInt1023 == 2) && (SceneBuilder.anInt131 != anInt918)) {
 			aArea_1165.method237();
-			aFont_1271.method381(0, "Loading - please wait.", 151, 257);
-			aFont_1271.method381(0xffffff, "Loading - please wait.", 150, 256);
+			fontPlain12.drawStringCenter("Loading - please wait.", 257, 151, 0);
+			fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
 			aArea_1165.method238(4, super.graphics, 4);
 			anInt1023 = 1;
 			aLong824 = System.currentTimeMillis();
@@ -3231,7 +3247,7 @@ public class Game extends GameShell {
 		if (anInt1023 == 1) {
 			int j = method54();
 			if ((j != 0) && ((System.currentTimeMillis() - aLong824) > 0x57e40L)) {
-				Signlink.reporterror(aString1173 + " glcfb " + aLong1215 + "," + j + "," + aBoolean960 + "," + aFileStoreArray970[0] + "," + ondemand.method552() + "," + anInt918 + "," + anInt1069 + "," + anInt1070);
+				Signlink.reporterror(aString1173 + " glcfb " + aLong1215 + "," + j + "," + aBoolean960 + "," + filestores[0] + "," + ondemand.method552() + "," + anInt918 + "," + anInt1069 + "," + anInt1070);
 				aLong824 = System.currentTimeMillis();
 			}
 		}
@@ -3301,13 +3317,13 @@ public class Game extends GameShell {
 					}
 				}
 				projectile.method456(anInt945);
-				aGraph_946.method285(anInt918, projectile.anInt1595, (int) projectile.aDouble1587, -1, (int) projectile.aDouble1586, 60, (int) projectile.aDouble1585, projectile, false);
+				scene.method285(anInt918, projectile.anInt1595, (int) projectile.aDouble1587, -1, (int) projectile.aDouble1586, 60, (int) projectile.aDouble1585, projectile, false);
 			}
 		}
 	}
 
 	public void method56() {
-		byte[] abyte0 = aArchive_1053.read("title.dat", null);
+		byte[] abyte0 = archiveTitle.read("title.dat", null);
 		Image24 image = new Image24(abyte0, this);
 		aArea_1110.method237();
 		image.method346(0, 0);
@@ -3354,7 +3370,7 @@ public class Game extends GameShell {
 		image.method346(254, -171);
 		aArea_1115.method237();
 		image.method346(-180, -171);
-		image = new Image24(aArchive_1053, "logo", 0);
+		image = new Image24(archiveTitle, "logo", 0);
 		aArea_1107.method237();
 		image.method348(382 - (image.anInt1440 / 2) - 128, 18);
 		System.gc();
@@ -3369,7 +3385,7 @@ public class Game extends GameShell {
 					return;
 				}
 				if (request.anInt1419 == 0) {
-					Model.load(request.aByteArray1420, request.anInt1421);
+					Model.unpack(request.aByteArray1420, request.anInt1421);
 					if ((ondemand.method559(request.anInt1421) & 0x62) != 0) {
 						aBoolean1153 = true;
 						if (anInt1276 != -1) {
@@ -3378,7 +3394,7 @@ public class Game extends GameShell {
 					}
 				}
 				if ((request.anInt1419 == 1) && (request.aByteArray1420 != null)) {
-					SeqFrame.readAnimation(request.aByteArray1420);
+					SeqFrame.unpack(request.aByteArray1420);
 				}
 				if ((request.anInt1419 == 2) && (request.anInt1421 == anInt1227) && (request.aByteArray1420 != null)) {
 					method21(aBoolean1228, request.aByteArray1420);
@@ -3720,11 +3736,11 @@ public class Game extends GameShell {
 				super.mousePressButton = 0;
 			}
 		}
-		if (SceneGraph.anInt470 != -1) {
-			int k = SceneGraph.anInt470;
-			int k1 = SceneGraph.anInt471;
+		if (Scene.anInt470 != -1) {
+			int k = Scene.anInt470;
+			int k1 = Scene.anInt471;
 			boolean flag = method85(0, 0, 0, 0, aPlayer_1126.anIntArray1501[0], 0, 0, k1, aPlayer_1126.anIntArray1500[0], true, k);
-			SceneGraph.anInt470 = -1;
+			Scene.anInt470 = -1;
 			if (flag) {
 				anInt914 = super.mousePressX;
 				anInt915 = super.mousePressY;
@@ -3818,7 +3834,7 @@ public class Game extends GameShell {
 		Draw2D.clear();
 		aArea_1115 = new DrawArea(75, 94, getComponent());
 		Draw2D.clear();
-		if (aArchive_1053 != null) {
+		if (archiveTitle != null) {
 			method56();
 			method51();
 		}
@@ -3859,7 +3875,7 @@ public class Game extends GameShell {
 
 	public boolean method66(int i, int j, int k) {
 		int i1 = (i >> 14) & 0x7fff;
-		int j1 = aGraph_946.method304(anInt918, k, j, i);
+		int j1 = scene.method304(anInt918, k, j, i);
 		if (j1 == -1) {
 			return false;
 		}
@@ -3895,8 +3911,8 @@ public class Game extends GameShell {
 		byte[] abyte0 = null;
 		int l = 5;
 		try {
-			if (aFileStoreArray970[0] != null) {
-				abyte0 = aFileStoreArray970[0].method233(i);
+			if (filestores[0] != null) {
+				abyte0 = filestores[0].read(i);
 			}
 		} catch (Exception ignored) {
 		}
@@ -3905,7 +3921,7 @@ public class Game extends GameShell {
 			aCRC32_930.update(abyte0);
 			int i1 = (int) aCRC32_930.getValue();
 			if (i1 != j) {
-				abyte0 = null;
+				//abyte0 = null;
 			}
 		}
 		if (abyte0 != null) {
@@ -3947,18 +3963,18 @@ public class Game extends GameShell {
 				}
 				datainputstream.close();
 				try {
-					if (aFileStoreArray970[0] != null) {
-						aFileStoreArray970[0].method234(abyte0.length, abyte0, i);
+					if (filestores[0] != null) {
+						filestores[0].write(abyte0, i, abyte0.length);
 					}
 				} catch (Exception _ex) {
-					aFileStoreArray970[0] = null;
+					filestores[0] = null;
 				}
 				if (abyte0 != null) {
 					aCRC32_930.reset();
 					aCRC32_930.update(abyte0);
 					int i3 = (int) aCRC32_930.getValue();
 					if (i3 != j) {
-						abyte0 = null;
+						//abyte0 = null;
 						j1++;
 						s2 = "Checksum error: " + i3;
 					}
@@ -4016,10 +4032,10 @@ public class Game extends GameShell {
 			return;
 		}
 		aArea_1165.method237();
-		aFont_1271.method381(0, "Connection lost", 144, 257);
-		aFont_1271.method381(0xffffff, "Connection lost", 143, 256);
-		aFont_1271.method381(0, "Please wait - attempting to reestablish", 159, 257);
-		aFont_1271.method381(0xffffff, "Please wait - attempting to reestablish", 158, 256);
+		fontPlain12.drawStringCenter("Connection lost", 257, 144, 0);
+		fontPlain12.drawStringCenter("Connection lost", 256, 143, 0xffffff);
+		fontPlain12.drawStringCenter("Please wait - attempting to reestablish", 257, 159, 0);
+		fontPlain12.drawStringCenter("Please wait - attempting to reestablish", 256, 158, 0xffffff);
 		aArea_1165.method238(4, super.graphics, 4);
 		anInt1021 = 0;
 		anInt1261 = 0;
@@ -4171,9 +4187,9 @@ public class Game extends GameShell {
 		}
 		if (l == 516) {
 			if (!aBoolean885) {
-				aGraph_946.method312(super.mousePressY - 4, super.mousePressX - 4);
+				scene.method312(super.mousePressY - 4, super.mousePressX - 4);
 			} else {
-				aGraph_946.method312(k - 4, j - 4);
+				scene.method312(k - 4, j - 4);
 			}
 		}
 		if (l == 1062) {
@@ -4842,7 +4858,7 @@ public class Game extends GameShell {
 				continue;
 			}
 			j = l;
-			if ((k1 == 2) && (aGraph_946.method304(anInt918, i1, j1, l) >= 0)) {
+			if ((k1 == 2) && (scene.method304(anInt918, i1, j1, l) >= 0)) {
 				LocType type = LocType.method572(l1);
 				if (type.anIntArray759 != null) {
 					type = type.method580();
@@ -5152,7 +5168,7 @@ public class Game extends GameShell {
 							for (int k1 = 0; k1 < 4; k1++) {
 								for (int i2 = 1; i2 < 103; i2++) {
 									for (int k2 = 1; k2 < 103; k2++) {
-										aCollisionMapArray1230[k1].anIntArrayArray294[i2][k2] = 0;
+										collisions[k1].anIntArrayArray294[i2][k2] = 0;
 									}
 								}
 							}
@@ -5442,7 +5458,7 @@ public class Game extends GameShell {
 			if (aBoolean1031) {
 				for (int k1 = 0; k1 < 7; k1++) {
 					int l1 = anIntArray1065[k1];
-					if ((l1 >= 0) && !IDKType.aIDKTypeArray656[l1].method537()) {
+					if ((l1 >= 0) && !IDKType.instances[l1].method537()) {
 						return;
 					}
 				}
@@ -5452,7 +5468,7 @@ public class Game extends GameShell {
 				for (int j2 = 0; j2 < 7; j2++) {
 					int k2 = anIntArray1065[j2];
 					if (k2 >= 0) {
-						aclass30_sub2_sub4_sub6[i2++] = IDKType.aIDKTypeArray656[k2].method538();
+						aclass30_sub2_sub4_sub6[i2++] = IDKType.instances[k2].method538();
 					}
 				}
 				Model model = new Model(i2, aclass30_sub2_sub4_sub6);
@@ -5465,7 +5481,7 @@ public class Game extends GameShell {
 					}
 				}
 				model.createLabelReferences();
-				model.applySequenceFrame(SeqType.aTypeArray351[aPlayer_1126.anInt1511].anIntArray353[0]);
+				model.applySequenceFrame(SeqType.instances[aPlayer_1126.anInt1511].anIntArray353[0]);
 				model.calculateNormals(64, 850, -30, -50, -30, true);
 				component.anInt233 = 5;
 				component.anInt234 = 0;
@@ -5603,7 +5619,7 @@ public class Game extends GameShell {
 		if (anInt1195 == 0) {
 			return;
 		}
-		BitmapFont font = aFont_1271;
+		BitmapFont font = fontPlain12;
 		int i = 0;
 		if (anInt1104 != 0) {
 			i = 1;
@@ -5624,9 +5640,9 @@ public class Game extends GameShell {
 				if (((k == 3) || (k == 7)) && ((k == 7) || (anInt845 == 0) || ((anInt845 == 1) && method109(s)))) {
 					int l = 329 - (i * 13);
 					int k1 = 4;
-					font.method385(0, "From", l, k1);
-					font.method385(65535, "From", l - 1, k1);
-					k1 += font.method383("From ");
+					font.drawString("From", k1, l, 0);
+					font.drawString("From", k1, l - 1, 65535);
+					k1 += font.stringWidthTaggable("From ");
 					if (byte1 == 1) {
 						aImageArray1219[0].method361(k1, l - 12);
 						k1 += 14;
@@ -5635,24 +5651,24 @@ public class Game extends GameShell {
 						aImageArray1219[1].method361(k1, l - 12);
 						k1 += 14;
 					}
-					font.method385(0, s + ": " + aStringArray944[j], l, k1);
-					font.method385(65535, s + ": " + aStringArray944[j], l - 1, k1);
+					font.drawString(s + ": " + aStringArray944[j], k1, l, 0);
+					font.drawString(s + ": " + aStringArray944[j], k1, l - 1, 65535);
 					if (++i >= 5) {
 						return;
 					}
 				}
 				if ((k == 5) && (anInt845 < 2)) {
 					int i1 = 329 - (i * 13);
-					font.method385(0, aStringArray944[j], i1, 4);
-					font.method385(65535, aStringArray944[j], i1 - 1, 4);
+					font.drawString(aStringArray944[j], 4, i1, 0);
+					font.drawString(aStringArray944[j], 4, i1 - 1, 65535);
 					if (++i >= 5) {
 						return;
 					}
 				}
 				if ((k == 6) && (anInt845 < 2)) {
 					int j1 = 329 - (i * 13);
-					font.method385(0, "To " + s + ": " + aStringArray944[j], j1, 4);
-					font.method385(65535, "To " + s + ": " + aStringArray944[j], j1 - 1, 4);
+					font.drawString("To " + s + ": " + aStringArray944[j], 4, j1, 0);
+					font.drawString("To " + s + ": " + aStringArray944[j], 4, j1 - 1, 65535);
 					if (++i >= 5) {
 						return;
 					}
@@ -5781,7 +5797,7 @@ public class Game extends GameShell {
 		aBoolean1255 = true;
 	}
 
-	public String method80() {
+	public String getHost() {
 		if (Signlink.mainapp != null) {
 			return Signlink.mainapp.getDocumentBase().getHost().toLowerCase();
 		}
@@ -5922,7 +5938,7 @@ public class Game extends GameShell {
 				aPacket_1192.put4(Signlink.uid);
 				aPacket_1192.put(s);
 				aPacket_1192.put(s1);
-				aPacket_1192.encrypt(aBigInteger1032, aBigInteger856);
+				aPacket_1192.encrypt(RSA_PUBLIC_KEY, RSA_MODULUS);
 				aPacket_847.position = 0;
 				if (flag) {
 					aPacket_847.put1(18);
@@ -6192,7 +6208,7 @@ public class Game extends GameShell {
 		anIntArray1281[l3++] = j1;
 		boolean flag1 = false;
 		int j4 = anIntArray1280.length;
-		int[][] ai = aCollisionMapArray1230[anInt918].anIntArrayArray294;
+		int[][] ai = collisions[anInt918].anIntArrayArray294;
 		while (i4 != l3) {
 			j3 = anIntArray1280[i4];
 			k3 = anIntArray1281[i4];
@@ -6202,16 +6218,16 @@ public class Game extends GameShell {
 				break;
 			}
 			if (i1 != 0) {
-				if (((i1 < 5) || (i1 == 10)) && aCollisionMapArray1230[anInt918].method219(k2, j3, k3, j, i1 - 1, i2)) {
+				if (((i1 < 5) || (i1 == 10)) && collisions[anInt918].method219(k2, j3, k3, j, i1 - 1, i2)) {
 					flag1 = true;
 					break;
 				}
-				if ((i1 < 10) && aCollisionMapArray1230[anInt918].method220(k2, i2, k3, i1 - 1, j, j3)) {
+				if ((i1 < 10) && collisions[anInt918].method220(k2, i2, k3, i1 - 1, j, j3)) {
 					flag1 = true;
 					break;
 				}
 			}
-			if ((k1 != 0) && (k != 0) && aCollisionMapArray1230[anInt918].method221(i2, k2, j3, k, l1, k1, k3)) {
+			if ((k1 != 0) && (k != 0) && collisions[anInt918].method221(i2, k2, j3, k, l1, k1, k3)) {
 				flag1 = true;
 				break;
 			}
@@ -6367,7 +6383,7 @@ public class Game extends GameShell {
 				}
 				int i2 = packet.get1U();
 				if ((i1 == npc.anInt1526) && (i1 != -1)) {
-					int l2 = SeqType.aTypeArray351[i1].anInt365;
+					int l2 = SeqType.instances[i1].anInt365;
 					if (l2 == 1) {
 						npc.anInt1527 = 0;
 						npc.anInt1528 = 0;
@@ -6377,7 +6393,7 @@ public class Game extends GameShell {
 					if (l2 == 2) {
 						npc.anInt1530 = 0;
 					}
-				} else if ((i1 == -1) || (npc.anInt1526 == -1) || (SeqType.aTypeArray351[i1].anInt359 >= SeqType.aTypeArray351[npc.anInt1526].anInt359)) {
+				} else if ((i1 == -1) || (npc.anInt1526 == -1) || (SeqType.instances[i1].anInt359 >= SeqType.instances[npc.anInt1526].anInt359)) {
 					npc.anInt1526 = i1;
 					npc.anInt1527 = 0;
 					npc.anInt1528 = 0;
@@ -6628,19 +6644,19 @@ public class Game extends GameShell {
 		int k = 0;
 		int l = 0;
 		if (loc.anInt1296 == 0) {
-			i = aGraph_946.method300(loc.anInt1295, loc.anInt1297, loc.anInt1298);
+			i = scene.method300(loc.anInt1295, loc.anInt1297, loc.anInt1298);
 		}
 		if (loc.anInt1296 == 1) {
-			i = aGraph_946.method301(loc.anInt1295, loc.anInt1297, loc.anInt1298);
+			i = scene.method301(loc.anInt1295, loc.anInt1297, loc.anInt1298);
 		}
 		if (loc.anInt1296 == 2) {
-			i = aGraph_946.method302(loc.anInt1295, loc.anInt1297, loc.anInt1298);
+			i = scene.method302(loc.anInt1295, loc.anInt1297, loc.anInt1298);
 		}
 		if (loc.anInt1296 == 3) {
-			i = aGraph_946.method303(loc.anInt1295, loc.anInt1297, loc.anInt1298);
+			i = scene.method303(loc.anInt1295, loc.anInt1297, loc.anInt1298);
 		}
 		if (i != 0) {
-			int i1 = aGraph_946.method304(loc.anInt1295, loc.anInt1297, loc.anInt1298, i);
+			int i1 = scene.method304(loc.anInt1295, loc.anInt1297, loc.anInt1298, i);
 			j = (i >> 14) & 0x7fff;
 			k = i1 & 0x1f;
 			l = i1 >> 6;
@@ -6807,7 +6823,7 @@ public class Game extends GameShell {
 			k += 30;
 			g.drawString("5: Try selecting a different version of Java from the play-game menu", 30, k);
 		}
-		if (aBoolean1176) {
+		if (errInvalidHost) {
 			aBoolean831 = false;
 			g.setFont(new java.awt.Font("Helvetica", java.awt.Font.BOLD, 20));
 			g.setColor(Color.white);
@@ -6815,7 +6831,7 @@ public class Game extends GameShell {
 			g.drawString("To play RuneScape make sure you play from", 50, 100);
 			g.drawString("http://www.runescape.com", 50, 150);
 		}
-		if (aBoolean1252) {
+		if (errAlreadyStarted) {
 			aBoolean831 = false;
 			g.setColor(Color.yellow);
 			int l = 35;
@@ -6894,7 +6910,7 @@ public class Game extends GameShell {
 	}
 
 	public void method98(PathingEntity entity) {
-		if ((entity.anInt1548 == loopCycle) || (entity.anInt1526 == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.aTypeArray351[entity.anInt1526].method258(entity.anInt1527))) {
+		if ((entity.anInt1548 == loopCycle) || (entity.anInt1526 == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.instances[entity.anInt1526].method258(entity.anInt1527))) {
 			int i = entity.anInt1548 - entity.anInt1547;
 			int j = loopCycle - entity.anInt1547;
 			int k = (entity.anInt1543 * 128) + (entity.anInt1540 * 64);
@@ -6927,7 +6943,7 @@ public class Game extends GameShell {
 			return;
 		}
 		if ((entity.anInt1526 != -1) && (entity.anInt1529 == 0)) {
-			SeqType type = SeqType.aTypeArray351[entity.anInt1526];
+			SeqType type = SeqType.instances[entity.anInt1526];
 			if ((entity.anInt1542 > 0) && (type.anInt363 == 0)) {
 				entity.anInt1503++;
 				return;
@@ -7093,7 +7109,7 @@ public class Game extends GameShell {
 	public void method101(PathingEntity entity) {
 		entity.aBoolean1541 = false;
 		if (entity.anInt1517 != -1) {
-			SeqType type = SeqType.aTypeArray351[entity.anInt1517];
+			SeqType type = SeqType.instances[entity.anInt1517];
 			entity.anInt1519++;
 			if ((entity.anInt1518 < type.anInt352) && (entity.anInt1519 > type.method258(entity.anInt1518))) {
 				entity.anInt1519 = 0;
@@ -7108,7 +7124,7 @@ public class Game extends GameShell {
 			if (entity.anInt1521 < 0) {
 				entity.anInt1521 = 0;
 			}
-			SeqType type_1 = SpotAnimType.aTypeArray403[entity.anInt1520].aType_407;
+			SeqType type_1 = SpotAnimType.instances[entity.anInt1520].aType_407;
 			for (entity.anInt1522++; (entity.anInt1521 < type_1.anInt352) && (entity.anInt1522 > type_1.method258(entity.anInt1521)); entity.anInt1521++) {
 				entity.anInt1522 -= type_1.method258(entity.anInt1521);
 			}
@@ -7117,14 +7133,14 @@ public class Game extends GameShell {
 			}
 		}
 		if ((entity.anInt1526 != -1) && (entity.anInt1529 <= 1)) {
-			SeqType type_2 = SeqType.aTypeArray351[entity.anInt1526];
+			SeqType type_2 = SeqType.instances[entity.anInt1526];
 			if ((type_2.anInt363 == 1) && (entity.anInt1542 > 0) && (entity.anInt1547 <= loopCycle) && (entity.anInt1548 < loopCycle)) {
 				entity.anInt1529 = 1;
 				return;
 			}
 		}
 		if ((entity.anInt1526 != -1) && (entity.anInt1529 == 0)) {
-			SeqType type_3 = SeqType.aTypeArray351[entity.anInt1526];
+			SeqType type_3 = SeqType.instances[entity.anInt1526];
 			for (entity.anInt1528++; (entity.anInt1527 < type_3.anInt352) && (entity.anInt1528 > type_3.method258(entity.anInt1527)); entity.anInt1527++) {
 				entity.anInt1528 -= type_3.method258(entity.anInt1527);
 			}
@@ -7342,40 +7358,40 @@ public class Game extends GameShell {
 			aBoolean1233 = false;
 			aArea_1123.method237();
 			aImage_1027.method361(0, 0);
-			aFont_1271.method382(0xffffff, 55, "Public chat", 28, true);
+			fontPlain12.drawStringTaggableCenter("Public chat", 55, 28, 0xffffff, true);
 			if (anInt1287 == 0) {
-				aFont_1271.method382(65280, 55, "On", 41, true);
+				fontPlain12.drawStringTaggableCenter("On", 55, 41, 65280, true);
 			}
 			if (anInt1287 == 1) {
-				aFont_1271.method382(0xffff00, 55, "Friends", 41, true);
+				fontPlain12.drawStringTaggableCenter("Friends", 55, 41, 0xffff00, true);
 			}
 			if (anInt1287 == 2) {
-				aFont_1271.method382(0xff0000, 55, "Off", 41, true);
+				fontPlain12.drawStringTaggableCenter("Off", 55, 41, 0xff0000, true);
 			}
 			if (anInt1287 == 3) {
-				aFont_1271.method382(65535, 55, "Hide", 41, true);
+				fontPlain12.drawStringTaggableCenter("Hide", 55, 41, 65535, true);
 			}
-			aFont_1271.method382(0xffffff, 184, "Private chat", 28, true);
+			fontPlain12.drawStringTaggableCenter("Private chat", 184, 28, 0xffffff, true);
 			if (anInt845 == 0) {
-				aFont_1271.method382(65280, 184, "On", 41, true);
+				fontPlain12.drawStringTaggableCenter("On", 184, 41, 65280, true);
 			}
 			if (anInt845 == 1) {
-				aFont_1271.method382(0xffff00, 184, "Friends", 41, true);
+				fontPlain12.drawStringTaggableCenter("Friends", 184, 41, 0xffff00, true);
 			}
 			if (anInt845 == 2) {
-				aFont_1271.method382(0xff0000, 184, "Off", 41, true);
+				fontPlain12.drawStringTaggableCenter("Off", 184, 41, 0xff0000, true);
 			}
-			aFont_1271.method382(0xffffff, 324, "Trade/compete", 28, true);
+			fontPlain12.drawStringTaggableCenter("Trade/compete", 324, 28, 0xffffff, true);
 			if (anInt1248 == 0) {
-				aFont_1271.method382(65280, 324, "On", 41, true);
+				fontPlain12.drawStringTaggableCenter("On", 324, 41, 65280, true);
 			}
 			if (anInt1248 == 1) {
-				aFont_1271.method382(0xffff00, 324, "Friends", 41, true);
+				fontPlain12.drawStringTaggableCenter("Friends", 324, 41, 0xffff00, true);
 			}
 			if (anInt1248 == 2) {
-				aFont_1271.method382(0xff0000, 324, "Off", 41, true);
+				fontPlain12.drawStringTaggableCenter("Off", 324, 41, 0xff0000, true);
 			}
-			aFont_1271.method382(0xffffff, 458, "Report abuse", 33, true);
+			fontPlain12.drawStringTaggableCenter("Report abuse", 458, 33, 0xffffff, true);
 			aArea_1123.method238(453, super.graphics, 0);
 			aArea_1165.method237();
 		}
@@ -7422,7 +7438,7 @@ public class Game extends GameShell {
 				if (spotAnim.aBoolean1567) {
 					spotAnim.method329();
 				} else {
-					aGraph_946.method285(spotAnim.anInt1560, 0, spotAnim.anInt1563, -1, spotAnim.anInt1562, 60, spotAnim.anInt1561, spotAnim, false);
+					scene.method285(spotAnim.anInt1560, 0, spotAnim.anInt1563, -1, spotAnim.anInt1562, 60, spotAnim.anInt1561, spotAnim, false);
 				}
 			}
 		}
@@ -7526,8 +7542,8 @@ public class Game extends GameShell {
 										}
 										if ((class30_sub2_sub1_sub1_2.anInt1444 == 33) || (component_1.anIntArray252[i3] != 1)) {
 											int k10 = component_1.anIntArray252[i3];
-											aFont_1270.method385(0, method43(k10), j6 + 10 + j7, k5 + 1 + k6);
-											aFont_1270.method385(0xffff00, method43(k10), j6 + 9 + j7, k5 + k6);
+											fontPlain11.drawString(method43(k10), k5 + 1 + k6, j6 + 10 + j7, 0);
+											fontPlain11.drawString(method43(k10), k5 + k6, j6 + 9 + j7, 0xffff00);
 										}
 									}
 								}
@@ -7602,7 +7618,7 @@ public class Game extends GameShell {
 							i4 = 0xffffff;
 						}
 					}
-					for (int l6 = l2 + font.anInt1497; s.length() > 0; l6 += font.anInt1497) {
+					for (int l6 = l2 + font.height; s.length() > 0; l6 += font.height) {
 						if (s.contains("%")) {
 							do {
 								int k7 = s.indexOf("%1");
@@ -7650,9 +7666,9 @@ public class Game extends GameShell {
 							s = "";
 						}
 						if (component_1.aBoolean223) {
-							font.method382(i4, k2 + (component_1.anInt220 / 2), s1, l6, component_1.aBoolean268);
+							font.drawStringTaggableCenter(s1, k2 + (component_1.anInt220 / 2), l6, i4, component_1.aBoolean268);
 						} else {
-							font.method389(component_1.aBoolean268, k2, i4, s1, l6);
+							font.drawStringTaggable(s1, k2, l6, i4, component_1.aBoolean268);
 						}
 					}
 				} else if (component_1.anInt262 == 5) {
@@ -7683,7 +7699,7 @@ public class Game extends GameShell {
 					if (i7 == -1) {
 						model = component_1.method209(-1, -1, flag2);
 					} else {
-						SeqType type = SeqType.aTypeArray351[i7];
+						SeqType type = SeqType.instances[i7];
 						model = component_1.method209(type.anIntArray354[component_1.anInt246], type.anIntArray353[component_1.anInt246], flag2);
 					}
 					if (model != null) {
@@ -7705,9 +7721,9 @@ public class Game extends GameShell {
 								int i9 = k2 + (i6 * (115 + component_1.anInt231));
 								int k9 = l2 + (j5 * (12 + component_1.anInt244));
 								if (component_1.aBoolean223) {
-									class30_sub2_sub1_sub4_1.method382(component_1.anInt232, i9 + (component_1.anInt220 / 2), s2, k9, component_1.aBoolean268);
+									class30_sub2_sub1_sub4_1.drawStringTaggableCenter(s2, i9 + (component_1.anInt220 / 2), k9, component_1.anInt232, component_1.aBoolean268);
 								} else {
-									class30_sub2_sub1_sub4_1.method389(component_1.aBoolean268, i9, component_1.anInt232, s2, k9);
+									class30_sub2_sub1_sub4_1.drawStringTaggable(s2, i9, k9, component_1.anInt232, component_1.aBoolean268);
 								}
 							}
 							k4++;
@@ -7741,7 +7757,7 @@ public class Game extends GameShell {
 			int l1 = 0;
 			for (int j2 = 0; j2 < image.anInt1453; j2++) {
 				for (int l2 = 0; l2 < image.anInt1452; l2++) {
-					if (image.aByteArray1450[l1++] != 0) {
+					if (image.pixels[l1++] != 0) {
 						int i3 = l2 + 16 + image.anInt1454;
 						int j3 = j2 + 16 + image.anInt1455;
 						int k3 = i3 + (j3 << 7);
@@ -7784,7 +7800,7 @@ public class Game extends GameShell {
 			}
 			int i2 = packet.get1UC();
 			if ((l == player.anInt1526) && (l != -1)) {
-				int i3 = SeqType.aTypeArray351[l].anInt365;
+				int i3 = SeqType.instances[l].anInt365;
 				if (i3 == 1) {
 					player.anInt1527 = 0;
 					player.anInt1528 = 0;
@@ -7794,7 +7810,7 @@ public class Game extends GameShell {
 				if (i3 == 2) {
 					player.anInt1530 = 0;
 				}
-			} else if ((l == -1) || (player.anInt1526 == -1) || (SeqType.aTypeArray351[l].anInt359 >= SeqType.aTypeArray351[player.anInt1526].anInt359)) {
+			} else if ((l == -1) || (player.anInt1526 == -1) || (SeqType.instances[l].anInt359 >= SeqType.instances[player.anInt1526].anInt359)) {
 				player.anInt1526 = l;
 				player.anInt1527 = 0;
 				player.anInt1528 = 0;
@@ -8011,22 +8027,22 @@ public class Game extends GameShell {
 			if (super.fps < 15) {
 				i1 = 0xff0000;
 			}
-			aFont_1271.method380("Fps:" + super.fps, c, i1, k);
+			fontPlain12.drawStringRight("Fps:" + super.fps, c, k, i1);
 			k += 15;
 			Runtime runtime = Runtime.getRuntime();
 			int j1 = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
 			if ((j1 > 0x2000000) && aBoolean960) {
 			}
-			aFont_1271.method380("Mem:" + j1 + "k", c, 0xffff00, k);
+			fontPlain12.drawStringRight("Mem:" + j1 + "k", c, k, 0xffff00);
 		}
 		if (anInt1104 != 0) {
 			int j = anInt1104 / 50;
 			int l = j / 60;
 			j %= 60;
 			if (j < 10) {
-				aFont_1271.method385(0xffff00, "System update in: " + l + ":0" + j, 329, 4);
+				fontPlain12.drawString("System update in: " + l + ":0" + j, 4, 329, 0xffff00);
 			} else {
-				aFont_1271.method385(0xffff00, "System update in: " + l + ":" + j, 329, 4);
+				fontPlain12.drawString("System update in: " + l + ":" + j, 4, 329, 0xffff00);
 			}
 		}
 	}
@@ -8103,9 +8119,9 @@ public class Game extends GameShell {
 	}
 
 	public void method116() {
-		int i = aFont_1272.method383("Choose Option");
+		int i = fontBold12.stringWidthTaggable("Choose Option");
 		for (int j = 0; j < anInt1133; j++) {
-			int k = aFont_1272.method383(aStringArray1199[j]);
+			int k = fontBold12.stringWidthTaggable(aStringArray1199[j]);
 			if (k > i) {
 				i = k;
 			}
@@ -8264,7 +8280,7 @@ public class Game extends GameShell {
 					l = component_1.anInt257;
 				}
 				if (l != -1) {
-					SeqType type = SeqType.aTypeArray351[l];
+					SeqType type = SeqType.instances[l];
 					for (component_1.anInt208 += i; component_1.anInt208 > type.method258(component_1.anInt246); ) {
 						component_1.anInt208 -= type.method258(component_1.anInt246) + 1;
 						component_1.anInt246++;
@@ -8540,13 +8556,13 @@ public class Game extends GameShell {
 		if (anInt1133 > 2) {
 			s = s + "@whi@ / " + (anInt1133 - 2) + " more options";
 		}
-		aFont_1272.method390(true, 4, 0xffffff, s, loopCycle / 1000, 15);
+		fontBold12.drawStringTooltip(s, 4, 15, 0xffffff, true, loopCycle / 1000);
 	}
 
 	public void method126() {
 		aArea_1164.method237();
 		if (anInt1021 == 2) {
-			byte[] abyte0 = aImage_1197.aByteArray1450;
+			byte[] abyte0 = aImage_1197.pixels;
 			int[] ai = Draw2D.pixels;
 			int k2 = abyte0.length;
 			for (int i5 = 0; i5 < k2; i5++) {
@@ -8561,7 +8577,7 @@ public class Game extends GameShell {
 		int i = (anInt1185 + anInt1209) & 0x7ff;
 		int j = 48 + (aPlayer_1126.anInt1550 / 32);
 		int l2 = 464 - (aPlayer_1126.anInt1551 / 32);
-		aImage_1263.method352(151, i, anIntArray1229, 256 + anInt1170, anIntArray1052, l2, 5, 25, 146, j);
+		imageMinimap.method352(151, i, anIntArray1229, 256 + anInt1170, anIntArray1052, l2, 5, 25, 146, j);
 		aImage_1122.method352(33, anInt1185, anIntArray1057, 256, anIntArray968, 25, 0, 0, 33, 25);
 		for (int j5 = 0; j5 < anInt1071; j5++) {
 			int k = ((anIntArray1072[j5] * 4) + 2) - (aPlayer_1126.anInt1550 / 32);
@@ -8705,7 +8721,7 @@ public class Game extends GameShell {
 				if (((k == 3) || (k == 7)) && ((k == 7) || (anInt845 == 0) || ((anInt845 == 1) && method109(s)))) {
 					int l = 329 - (i * 13);
 					if ((super.anInt20 > 4) && ((super.anInt21 - 4) > (l - 10)) && ((super.anInt21 - 4) <= (l + 3))) {
-						int i1 = aFont_1271.method383("From:  " + s + aStringArray944[j]) + 25;
+						int i1 = fontPlain12.stringWidthTaggable("From:  " + s + aStringArray944[j]) + 25;
 						if (i1 > 450) {
 							i1 = 450;
 						}
@@ -8949,53 +8965,53 @@ public class Game extends GameShell {
 		char c1 = '\310';
 		if (anInt833 == 0) {
 			int i = (c1 / 2) + 80;
-			aFont_1270.method382(0x75a9a9, c / 2, ondemand.aString1333, i, true);
+			fontPlain11.drawStringTaggableCenter(ondemand.aString1333, c / 2, i, 0x75a9a9, true);
 			i = (c1 / 2) - 20;
-			aFont_1272.method382(0xffff00, c / 2, "Welcome to RuneScape", i, true);
+			fontBold12.drawStringTaggableCenter("Welcome to RuneScape", c / 2, i, 0xffff00, true);
 			int l = (c / 2) - 80;
 			int k1 = (c1 / 2) + 20;
 			aImage_967.method361(l - 73, k1 - 20);
-			aFont_1272.method382(0xffffff, l, "New User", k1 + 5, true);
+			fontBold12.drawStringTaggableCenter("New User", l, k1 + 5, 0xffffff, true);
 			l = (c / 2) + 80;
 			aImage_967.method361(l - 73, k1 - 20);
-			aFont_1272.method382(0xffffff, l, "Existing User", k1 + 5, true);
+			fontBold12.drawStringTaggableCenter("Existing User", l, k1 + 5, 0xffffff, true);
 		}
 		if (anInt833 == 2) {
 			int j = (c1 / 2) - 40;
 			if (aString1266.length() > 0) {
-				aFont_1272.method382(0xffff00, c / 2, aString1266, j - 15, true);
-				aFont_1272.method382(0xffff00, c / 2, aString1267, j, true);
+				fontBold12.drawStringTaggableCenter(aString1266, c / 2, j - 15, 0xffff00, true);
+				fontBold12.drawStringTaggableCenter(aString1267, c / 2, j, 0xffff00, true);
 			} else {
-				aFont_1272.method382(0xffff00, c / 2, aString1267, j - 7, true);
+				fontBold12.drawStringTaggableCenter(aString1267, c / 2, j - 7, 0xffff00, true);
 			}
 			j += 30;
-			aFont_1272.method389(true, (c / 2) - 90, 0xffffff, "Username: " + aString1173 + ((anInt1216 == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), j);
+			fontBold12.drawStringTaggable("Username: " + aString1173 + ((anInt1216 == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), (c / 2) - 90, j, 0xffffff, true);
 			j += 15;
-			aFont_1272.method389(true, (c / 2) - 88, 0xffffff, "Password: " + StringUtil.toAsterisks(aString1174) + ((anInt1216 == 1) & (loopCycle % 40 < 20) ? "@yel@|" : ""), j);
+			fontBold12.drawStringTaggable("Password: " + StringUtil.toAsterisks(aString1174) + ((anInt1216 == 1) & (loopCycle % 40 < 20) ? "@yel@|" : ""), (c / 2) - 88, j, 0xffffff, true);
 			if (!flag) {
 				int i1 = (c / 2) - 80;
 				int l1 = (c1 / 2) + 50;
 				aImage_967.method361(i1 - 73, l1 - 20);
-				aFont_1272.method382(0xffffff, i1, "Login", l1 + 5, true);
+				fontBold12.drawStringTaggableCenter("Login", i1, l1 + 5, 0xffffff, true);
 				i1 = (c / 2) + 80;
 				aImage_967.method361(i1 - 73, l1 - 20);
-				aFont_1272.method382(0xffffff, i1, "Cancel", l1 + 5, true);
+				fontBold12.drawStringTaggableCenter("Cancel", i1, l1 + 5, 0xffffff, true);
 			}
 		}
 		if (anInt833 == 3) {
-			aFont_1272.method382(0xffff00, c / 2, "Create a free account", (c1 / 2) - 60, true);
+			fontBold12.drawStringTaggableCenter("Create a free account", c / 2, (c1 / 2) - 60, 0xffff00, true);
 			int k = (c1 / 2) - 35;
-			aFont_1272.method382(0xffffff, c / 2, "To create a new account you need to", k, true);
+			fontBold12.drawStringTaggableCenter("To create a new account you need to", c / 2, k, 0xffffff, true);
 			k += 15;
-			aFont_1272.method382(0xffffff, c / 2, "go back to the main RuneScape webpage", k, true);
+			fontBold12.drawStringTaggableCenter("go back to the main RuneScape webpage", c / 2, k, 0xffffff, true);
 			k += 15;
-			aFont_1272.method382(0xffffff, c / 2, "and choose the red 'create account'", k, true);
+			fontBold12.drawStringTaggableCenter("and choose the red 'create account'", c / 2, k, 0xffffff, true);
 			k += 15;
-			aFont_1272.method382(0xffffff, c / 2, "button at the top right of that page.", k, true);
+			fontBold12.drawStringTaggableCenter("button at the top right of that page.", c / 2, k, 0xffffff, true);
 			int j1 = c / 2;
 			int i2 = (c1 / 2) + 50;
 			aImage_967.method361(j1 - 73, i2 - 20);
-			aFont_1272.method382(0xffffff, j1, "Cancel", i2 + 5, true);
+			fontBold12.drawStringTaggableCenter("Cancel", j1, i2 + 5, 0xffffff, true);
 		}
 		aArea_1109.method238(171, super.graphics, 202);
 		if (aBoolean1255) {
@@ -9135,7 +9151,7 @@ public class Game extends GameShell {
 				int l19 = anIntArrayArrayArray1214[anInt918][j4 + 1][i7 + 1];
 				int k20 = anIntArrayArrayArray1214[anInt918][j4][i7 + 1];
 				if (j16 == 0) {
-					SceneWall wall = aGraph_946.method296(anInt918, j4, i7);
+					SceneWall wall = scene.method296(anInt918, j4, i7);
 					if (wall != null) {
 						int k21 = (wall.anInt280 >> 14) & 0x7fff;
 						if (j12 == 2) {
@@ -9147,13 +9163,13 @@ public class Game extends GameShell {
 					}
 				}
 				if (j16 == 1) {
-					SceneWallDecoration wallDecoration = aGraph_946.method297(j4, i7, anInt918);
+					SceneWallDecoration wallDecoration = scene.method297(j4, i7, anInt918);
 					if (wallDecoration != null) {
 						wallDecoration.aEntity_504 = new LocEntity((wallDecoration.anInt505 >> 14) & 0x7fff, 0, 4, i19, l19, j18, k20, j17, false);
 					}
 				}
 				if (j16 == 2) {
-					SceneLoc loc = aGraph_946.method298(j4, i7, anInt918);
+					SceneLoc loc = scene.method298(j4, i7, anInt918);
 					if (j12 == 11) {
 						j12 = 10;
 					}
@@ -9162,7 +9178,7 @@ public class Game extends GameShell {
 					}
 				}
 				if (j16 == 3) {
-					SceneGroundDecoration groundDecoration = aGraph_946.method299(i7, j4, anInt918);
+					SceneGroundDecoration groundDecoration = scene.method299(i7, j4, anInt918);
 					if (groundDecoration != null) {
 						groundDecoration.aEntity_814 = new LocEntity((groundDecoration.anInt815 >> 14) & 0x7fff, k14, 22, i19, l19, j18, k20, j17, false);
 					}
@@ -9496,47 +9512,47 @@ public class Game extends GameShell {
 		}
 		int i2 = 0;
 		if (j1 == 0) {
-			i2 = aGraph_946.method300(j, i1, i);
+			i2 = scene.method300(j, i1, i);
 		}
 		if (j1 == 1) {
-			i2 = aGraph_946.method301(j, i1, i);
+			i2 = scene.method301(j, i1, i);
 		}
 		if (j1 == 2) {
-			i2 = aGraph_946.method302(j, i1, i);
+			i2 = scene.method302(j, i1, i);
 		}
 		if (j1 == 3) {
-			i2 = aGraph_946.method303(j, i1, i);
+			i2 = scene.method303(j, i1, i);
 		}
 		if (i2 != 0) {
-			int i3 = aGraph_946.method304(j, i1, i, i2);
+			int i3 = scene.method304(j, i1, i, i2);
 			int j2 = (i2 >> 14) & 0x7fff;
 			int k2 = i3 & 0x1f;
 			int l2 = i3 >> 6;
 			if (j1 == 0) {
-				aGraph_946.method291(i1, j, i);
+				scene.method291(i1, j, i);
 				LocType type = LocType.method572(j2);
 				if (type.aBoolean767) {
-					aCollisionMapArray1230[j].method215(l2, k2, type.aBoolean757, i1, i);
+					collisions[j].method215(l2, k2, type.aBoolean757, i1, i);
 				}
 			}
 			if (j1 == 1) {
-				aGraph_946.method292(i, j, i1);
+				scene.method292(i, j, i1);
 			}
 			if (j1 == 2) {
-				aGraph_946.method293(j, i1, i);
+				scene.method293(j, i1, i);
 				LocType type_1 = LocType.method572(j2);
 				if (((i1 + type_1.anInt744) > 103) || ((i + type_1.anInt744) > 103) || ((i1 + type_1.anInt761) > 103) || ((i + type_1.anInt761) > 103)) {
 					return;
 				}
 				if (type_1.aBoolean767) {
-					aCollisionMapArray1230[j].method216(l2, type_1.anInt744, i1, i, type_1.anInt761, type_1.aBoolean757);
+					collisions[j].method216(l2, type_1.anInt744, i1, i, type_1.anInt761, type_1.aBoolean757);
 				}
 			}
 			if (j1 == 3) {
-				aGraph_946.method294(j, i, i1);
+				scene.method294(j, i, i1);
 				LocType type_2 = LocType.method572(j2);
 				if (type_2.aBoolean767 && type_2.aBoolean778) {
-					aCollisionMapArray1230[j].method218(i, i1);
+					collisions[j].method218(i, i1);
 				}
 			}
 		}
@@ -9545,7 +9561,7 @@ public class Game extends GameShell {
 			if ((j3 < 3) && ((aByteArrayArrayArray1258[1][i1][i] & 2) == 2)) {
 				j3++;
 			}
-			SceneBuilder.method188(aGraph_946, k, i, l, j3, aCollisionMapArray1230[j], anIntArrayArrayArray1214, i1, k1, j);
+			SceneBuilder.method188(scene, k, i, l, j3, collisions[j], anIntArrayArrayArray1214, i1, k1, j);
 		}
 	}
 
@@ -9861,8 +9877,8 @@ public class Game extends GameShell {
 				anInt1023 = 1;
 				aLong824 = System.currentTimeMillis();
 				aArea_1165.method237();
-				aFont_1271.method381(0, "Loading - please wait.", 151, 257);
-				aFont_1271.method381(0xffffff, "Loading - please wait.", 150, 256);
+				fontPlain12.drawStringCenter("Loading - please wait.", 257, 151, 0);
+				fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
 				aArea_1165.method238(4, super.graphics, 4);
 				if (ptype == 73) {
 					int k16 = 0;
@@ -10464,8 +10480,12 @@ public class Game extends GameShell {
 					if (i25 == 255) {
 						i25 = aPacket_1083.get4ME();
 					}
-					component_1.anIntArray253[j22] = aPacket_1083.get2ULEA();
-					component_1.anIntArray252[j22] = i25;
+					if (j22 >= component_1.anIntArray253.length) {
+						aPacket_1083.get2ULEA();
+					} else {
+						component_1.anIntArray253[j22] = aPacket_1083.get2ULEA();
+						component_1.anIntArray252[j22] = i25;
+					}
 				}
 				for (int j25 = j19; j25 < component_1.anIntArray253.length; j25++) {
 					component_1.anIntArray253[j25] = 0;
@@ -10756,14 +10776,14 @@ public class Game extends GameShell {
 				}
 			}
 		}
-		int k2 = Draw3D.anInt1481;
+		int k2 = Draw3D.cycle;
 		Model.checkHover = true;
 		Model.pickedCount = 0;
 		Model.mouseX = super.anInt20 - 4;
 		Model.mouseY = super.anInt21 - 4;
 		Draw2D.clear();
-		aGraph_946.method313(anInt858, anInt860, anInt862, anInt859, j, anInt861);
-		aGraph_946.method288();
+		scene.method313(anInt858, anInt860, anInt862, anInt859, j, anInt861);
+		scene.method288();
 		method34();
 		method61();
 		method37(k2);

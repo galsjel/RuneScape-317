@@ -5,7 +5,7 @@
 public class VarpType {
 
 	public static int anInt700;
-	public static VarpType[] aVarpArray701;
+	public static VarpType[] instances;
 	public static int anInt702;
 	public static int[] anIntArray703;
 
@@ -24,21 +24,21 @@ public class VarpType {
 	public VarpType() {
 	}
 
-	public static void load(FileArchive archive) {
+	public static void unpack(FileArchive archive) {
 		Packet packet = new Packet(archive.read("varp.dat", null));
 		anInt702 = 0;
 		anInt700 = packet.get2U();
-		if (aVarpArray701 == null) {
-			aVarpArray701 = new VarpType[anInt700];
+		if (instances == null) {
+			instances = new VarpType[anInt700];
 		}
 		if (anIntArray703 == null) {
 			anIntArray703 = new int[anInt700];
 		}
 		for (int j = 0; j < anInt700; j++) {
-			if (aVarpArray701[j] == null) {
-				aVarpArray701[j] = new VarpType();
+			if (instances[j] == null) {
+				instances[j] = new VarpType();
 			}
-			aVarpArray701[j].method547(packet, j);
+			instances[j].method547(packet, j);
 		}
 		if (packet.position != packet.data.length) {
 			System.out.println("varptype load mismatch");

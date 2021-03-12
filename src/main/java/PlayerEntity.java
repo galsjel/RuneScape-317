@@ -4,7 +4,7 @@
 
 public class PlayerEntity extends PathingEntity {
 
-	public static LRUCache aCache_1704 = new LRUCache(260);
+	public static LRUCache modelCache = new LRUCache(260);
 	public long aLong1697 = -1L;
 	public NPCType aType_1698;
 	public boolean aBoolean1699 = false;
@@ -48,7 +48,7 @@ public class PlayerEntity extends PathingEntity {
 			return model;
 		}
 		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
-			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
+			SpotAnimType type = SpotAnimType.instances[super.anInt1520];
 			Model class30_sub2_sub4_sub6_2 = type.method266();
 			if (class30_sub2_sub4_sub6_2 != null) {
 				Model model_3 = new Model(true, SeqFrame.isNull(super.anInt1521), false, class30_sub2_sub4_sub6_2);
@@ -190,9 +190,9 @@ public class PlayerEntity extends PathingEntity {
 		if (aType_1698 != null) {
 			int j = -1;
 			if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
-				j = SeqType.aTypeArray351[super.anInt1526].anIntArray353[super.anInt1527];
+				j = SeqType.instances[super.anInt1526].anIntArray353[super.anInt1527];
 			} else if (super.anInt1517 >= 0) {
-				j = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+				j = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 			}
 			return aType_1698.method164(-1, j, null);
 		}
@@ -202,10 +202,10 @@ public class PlayerEntity extends PathingEntity {
 		int j1 = -1;
 		int k1 = -1;
 		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
-			SeqType type = SeqType.aTypeArray351[super.anInt1526];
+			SeqType type = SeqType.instances[super.anInt1526];
 			k = type.anIntArray353[super.anInt1527];
 			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
-				i1 = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+				i1 = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 			}
 			if (type.anInt360 >= 0) {
 				j1 = type.anInt360;
@@ -216,9 +216,9 @@ public class PlayerEntity extends PathingEntity {
 				l += ((long) k1 - anIntArray1717[3]) << 16;
 			}
 		} else if (super.anInt1517 >= 0) {
-			k = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+			k = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 		}
-		Model model_1 = (Model) aCache_1704.method222(l);
+		Model model_1 = (Model) modelCache.method222(l);
 		if (model_1 == null) {
 			boolean flag = false;
 			for (int i2 = 0; i2 < 12; i2++) {
@@ -229,7 +229,7 @@ public class PlayerEntity extends PathingEntity {
 				if ((j1 >= 0) && (i2 == 5)) {
 					k2 = j1;
 				}
-				if ((k2 >= 256) && (k2 < 512) && !IDKType.aIDKTypeArray656[k2 - 256].method537()) {
+				if ((k2 >= 256) && (k2 < 512) && !IDKType.instances[k2 - 256].method537()) {
 					flag = true;
 				}
 				if ((k2 >= 512) && !ObjType.method198(k2 - 512).method195(anInt1702)) {
@@ -238,7 +238,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (flag) {
 				if (aLong1697 != -1L) {
-					model_1 = (Model) aCache_1704.method222(aLong1697);
+					model_1 = (Model) modelCache.method222(aLong1697);
 				}
 				if (model_1 == null) {
 					return null;
@@ -257,7 +257,7 @@ public class PlayerEntity extends PathingEntity {
 					i3 = j1;
 				}
 				if ((i3 >= 256) && (i3 < 512)) {
-					Model model_3 = IDKType.aIDKTypeArray656[i3 - 256].method538();
+					Model model_3 = IDKType.instances[i3 - 256].method538();
 					if (model_3 != null) {
 						aclass30_sub2_sub4_sub6[j2++] = model_3;
 					}
@@ -280,7 +280,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			model_1.createLabelReferences();
 			model_1.calculateNormals(64, 850, -30, -50, -30, true);
-			aCache_1704.method223(model_1, l);
+			modelCache.method223(model_1, l);
 			aLong1697 = l;
 		}
 		if (aBoolean1699) {
@@ -289,7 +289,7 @@ public class PlayerEntity extends PathingEntity {
 		Model class30_sub2_sub4_sub6_2 = Model.EMPTY;
 		class30_sub2_sub4_sub6_2.set(model_1, SeqFrame.isNull(k) & SeqFrame.isNull(i1));
 		if ((k != -1) && (i1 != -1)) {
-			class30_sub2_sub4_sub6_2.applySequenceFrames(k, i1, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
+			class30_sub2_sub4_sub6_2.applySequenceFrames(k, i1, SeqType.instances[super.anInt1526].anIntArray357);
 		} else if (k != -1) {
 			class30_sub2_sub4_sub6_2.applySequenceFrame(k);
 		}
@@ -314,7 +314,7 @@ public class PlayerEntity extends PathingEntity {
 		boolean flag = false;
 		for (int i = 0; i < 12; i++) {
 			int j = anIntArray1717[i];
-			if ((j >= 256) && (j < 512) && !IDKType.aIDKTypeArray656[j - 256].method539()) {
+			if ((j >= 256) && (j < 512) && !IDKType.instances[j - 256].method539()) {
 				flag = true;
 			}
 			if ((j >= 512) && !ObjType.method198(j - 512).method192(anInt1702)) {
@@ -329,7 +329,7 @@ public class PlayerEntity extends PathingEntity {
 		for (int l = 0; l < 12; l++) {
 			int i1 = anIntArray1717[l];
 			if ((i1 >= 256) && (i1 < 512)) {
-				Model model_1 = IDKType.aIDKTypeArray656[i1 - 256].method540();
+				Model model_1 = IDKType.instances[i1 - 256].method540();
 				if (model_1 != null) {
 					aclass30_sub2_sub4_sub6[k++] = model_1;
 				}

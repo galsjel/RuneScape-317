@@ -428,7 +428,7 @@ public class Image24 extends Draw2D {
 		}
 		if ((j1 <= 0) || (i1 <= 0)) {
 		} else {
-			method355(anIntArray1439, j1, image.aByteArray1450, i1, Draw2D.pixels, k1, k, l1, l);
+			method355(anIntArray1439, j1, image.pixels, i1, Draw2D.pixels, k1, k, l1, l);
 		}
 	}
 

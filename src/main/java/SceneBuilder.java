@@ -138,7 +138,7 @@ public class SceneBuilder {
 		return (i & 0xff80) + i_225_;
 	}
 
-	public static void method188(SceneGraph graph, int i, int i_226_, int i_227_, int i_228_, SceneCollisionMap collisionMap, int[][][] is, int i_229_, int i_230_, int i_231_) {
+	public static void method188(Scene scene, int i, int i_226_, int i_227_, int i_228_, SceneCollisionMap collisionMap, int[][][] is, int i_229_, int i_230_, int i_231_) {
 		int i_233_ = is[i_228_][i_229_][i_226_];
 		int i_234_ = is[i_228_][i_229_ + 1][i_226_];
 		int i_235_ = is[i_228_][i_229_ + 1][i_226_ + 1];
@@ -157,7 +157,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, 22, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method280(i_231_, i_237_, i_226_, entity, i_239_, i_238_, i_229_);
+			scene.method280(i_231_, i_237_, i_226_, entity, i_239_, i_238_, i_229_);
 			if (type.aBoolean767 && type.aBoolean778) {
 				collisionMap.method213(i_226_, i_229_);
 			}
@@ -182,7 +182,7 @@ public class SceneBuilder {
 					i_241_ = type.anInt744;
 					i_242_ = type.anInt761;
 				}
-				graph.method284(i_238_, i_239_, i_237_, i_242_, entity, i_241_, i_231_, i_240_, i_226_, i_229_);
+				scene.method284(i_238_, i_239_, i_237_, i_242_, entity, i_241_, i_231_, i_240_, i_226_, i_229_);
 			}
 			if (type.aBoolean767) {
 				collisionMap.method212(type.aBoolean757, type.anInt744, type.anInt761, i_229_, i_226_, i);
@@ -194,7 +194,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, i_227_, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method284(i_238_, i_239_, i_237_, 1, entity, 1, i_231_, 0, i_226_, i_229_);
+			scene.method284(i_238_, i_239_, i_237_, 1, entity, 1, i_231_, 0, i_226_, i_229_);
 			if (type.aBoolean767) {
 				collisionMap.method212(type.aBoolean757, type.anInt744, type.anInt761, i_229_, i_226_, i);
 			}
@@ -205,7 +205,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, 0, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method282(anIntArray152[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
+			scene.method282(anIntArray152[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
 			if (type.aBoolean767) {
 				collisionMap.method211(i_226_, i, i_229_, i_227_, type.aBoolean757);
 			}
@@ -216,7 +216,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, 1, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method282(anIntArray140[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
+			scene.method282(anIntArray140[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
 			if (type.aBoolean767) {
 				collisionMap.method211(i_226_, i, i_229_, i_227_, type.aBoolean757);
 			}
@@ -231,7 +231,7 @@ public class SceneBuilder {
 				entity = new LocEntity(i_230_, 4 + i, 2, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				entity_244_ = new LocEntity(i_230_, i_243_, 2, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method282(anIntArray152[i], entity, i_238_, i_226_, i_239_, i_229_, entity_244_, i_237_, anIntArray152[i_243_], i_231_);
+			scene.method282(anIntArray152[i], entity, i_238_, i_226_, i_239_, i_229_, entity_244_, i_237_, anIntArray152[i_243_], i_231_);
 			if (type.aBoolean767) {
 				collisionMap.method211(i_226_, i, i_229_, i_227_, type.aBoolean757);
 			}
@@ -242,7 +242,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, 3, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method282(anIntArray140[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
+			scene.method282(anIntArray140[i], entity, i_238_, i_226_, i_239_, i_229_, null, i_237_, 0, i_231_);
 			if (type.aBoolean767) {
 				collisionMap.method211(i_226_, i, i_229_, i_227_, type.aBoolean757);
 			}
@@ -253,7 +253,7 @@ public class SceneBuilder {
 			} else {
 				entity = new LocEntity(i_230_, i, i_227_, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 			}
-			graph.method284(i_238_, i_239_, i_237_, 1, entity, 1, i_231_, 0, i_226_, i_229_);
+			scene.method284(i_238_, i_239_, i_237_, 1, entity, 1, i_231_, 0, i_226_, i_229_);
 			if (type.aBoolean767) {
 				collisionMap.method212(type.aBoolean757, type.anInt744, type.anInt761, i_229_, i_226_, i);
 			}
@@ -287,10 +287,10 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_230_, 0, 4, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				}
-				graph.method283(i_238_, i_226_, i * 512, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, anIntArray152[i]);
+				scene.method283(i_238_, i_226_, i * 512, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, anIntArray152[i]);
 			} else if (i_227_ == 5) {
 				int i_248_ = 16;
-				int i_249_ = graph.method300(i_231_, i_229_, i_226_);
+				int i_249_ = scene.method300(i_231_, i_229_, i_226_);
 				if (i_249_ > 0) {
 					i_248_ = LocType.method572((i_249_ >> 14) & 0x7fff).anInt775;
 				}
@@ -300,7 +300,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_230_, 0, 4, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				}
-				graph.method283(i_238_, i_226_, i * 512, i_231_, anIntArray137[i] * i_248_, i_237_, entity, i_229_, i_239_, anIntArray144[i] * i_248_, anIntArray152[i]);
+				scene.method283(i_238_, i_226_, i * 512, i_231_, anIntArray137[i] * i_248_, i_237_, entity, i_229_, i_239_, anIntArray144[i] * i_248_, anIntArray152[i]);
 			} else if (i_227_ == 6) {
 				Entity entity;
 				if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -308,7 +308,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_230_, 0, 4, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				}
-				graph.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 256);
+				scene.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 256);
 			} else if (i_227_ == 7) {
 				Entity entity;
 				if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -316,7 +316,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_230_, 0, 4, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				}
-				graph.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 512);
+				scene.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 512);
 			} else if (i_227_ == 8) {
 				Entity entity;
 				if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -324,7 +324,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_230_, 0, 4, i_234_, i_235_, i_233_, i_236_, type.anInt781, true);
 				}
-				graph.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 768);
+				scene.method283(i_238_, i_226_, i, i_231_, 0, i_237_, entity, i_229_, i_239_, 0, 768);
 			}
 		}
 	}
@@ -372,7 +372,7 @@ public class SceneBuilder {
 		return bool;
 	}
 
-	public void method171(SceneCollisionMap[] collisionMaps, SceneGraph graph) {
+	public void method171(SceneCollisionMap[] collisionMaps, Scene scene) {
 		for (int i_6_ = 0; i_6_ < 4; i_6_++) {
 			for (int i_7_ = 0; i_7_ < 104; i_7_++) {
 				for (int i_8_ = 0; i_8_ < 104; i_8_++) {
@@ -437,7 +437,7 @@ public class SceneBuilder {
 					if ((i_31_ >= 0) && (i_31_ < anInt146)) {
 						int i_32_ = aByteArrayArrayArray142[i_10_][i_31_][i_30_] & 0xff;
 						if (i_32_ > 0) {
-							FloType type = FloType.aTypeArray388[i_32_ - 1];
+							FloType type = FloType.instances[i_32_ - 1];
 							anIntArray124[i_30_] += type.anInt397;
 							anIntArray125[i_30_] += type.anInt395;
 							anIntArray126[i_30_] += type.anInt396;
@@ -449,7 +449,7 @@ public class SceneBuilder {
 					if ((i_33_ >= 0) && (i_33_ < anInt146)) {
 						int i_34_ = aByteArrayArrayArray142[i_10_][i_33_][i_30_] & 0xff;
 						if (i_34_ > 0) {
-							FloType type = FloType.aTypeArray388[i_34_ - 1];
+							FloType type = FloType.instances[i_34_ - 1];
 							anIntArray124[i_30_] -= type.anInt397;
 							anIntArray125[i_30_] -= type.anInt395;
 							anIntArray126[i_30_] -= type.anInt396;
@@ -517,7 +517,7 @@ public class SceneBuilder {
 									if ((i_43_ == 0) && ((aByteArrayArrayArray136[i_10_][i_29_][i_40_]) != 0)) {
 										bool = false;
 									}
-									if ((i_44_ > 0) && !(FloType.aTypeArray388[i_44_ - 1].aBoolean393)) {
+									if ((i_44_ > 0) && !(FloType.instances[i_44_ - 1].aBoolean393)) {
 										bool = false;
 									}
 									if (bool && (i_45_ == i_46_) && (i_45_ == i_47_) && (i_45_ == i_48_)) {
@@ -529,16 +529,16 @@ public class SceneBuilder {
 									i_58_ = (Draw3D.palette[method187(i_54_, 96)]);
 								}
 								if (i_44_ == 0) {
-									graph.method279(i_10_, i_29_, i_40_, 0, 0, -1, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), 0, 0, 0, 0, i_58_, 0);
+									scene.method279(i_10_, i_29_, i_40_, 0, 0, -1, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), 0, 0, 0, 0, i_58_, 0);
 								} else {
 									int i_59_ = ((aByteArrayArrayArray136[i_10_][i_29_][i_40_]) + 1);
 									byte i_60_ = (aByteArrayArrayArray148[i_10_][i_29_][i_40_]);
-									FloType type = FloType.aTypeArray388[i_44_ - 1];
+									FloType type = FloType.instances[i_44_ - 1];
 									int i_61_ = type.anInt391;
 									int i_62_;
 									int i_63_;
 									if (i_61_ >= 0) {
-										i_62_ = Draw3D.method369(i_61_);
+										i_62_ = Draw3D.getAverageTextureRGB(i_61_);
 										i_63_ = -1;
 									} else if (type.anInt390 == 16711935) {
 										i_62_ = 0;
@@ -548,7 +548,7 @@ public class SceneBuilder {
 										i_63_ = method177(type.anInt394, type.anInt395, type.anInt396);
 										i_62_ = (Draw3D.palette[method185(type.anInt399, 96)]);
 									}
-									graph.method279(i_10_, i_29_, i_40_, i_59_, i_60_, i_61_, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
+									scene.method279(i_10_, i_29_, i_40_, i_59_, i_60_, i_61_, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
 								}
 							}
 						}
@@ -557,15 +557,15 @@ public class SceneBuilder {
 			}
 			for (int i_64_ = 1; i_64_ < (anInt147 - 1); i_64_++) {
 				for (int i_65_ = 1; i_65_ < (anInt146 - 1); i_65_++) {
-					graph.method278(i_10_, i_65_, i_64_, method182(i_64_, i_10_, i_65_, 0));
+					scene.method278(i_10_, i_65_, i_64_, method182(i_64_, i_10_, i_65_, 0));
 				}
 			}
 		}
-		graph.method305(-10, 64, -50, 768, -50);
+		scene.method305(-10, 64, -50, 768, -50);
 		for (int i_66_ = 0; i_66_ < anInt146; i_66_++) {
 			for (int i_67_ = 0; i_67_ < anInt147; i_67_++) {
 				if ((aByteArrayArrayArray149[1][i_66_][i_67_] & 0x2) == 2) {
-					graph.method276(i_67_, i_66_);
+					scene.method276(i_67_, i_66_);
 				}
 			}
 		}
@@ -617,7 +617,7 @@ public class SceneBuilder {
 								int i_82_ = 240;
 								int i_83_ = (anIntArrayArrayArray129[i_78_][i_74_][i_75_] - i_82_);
 								int i_84_ = anIntArrayArrayArray129[i_77_][i_74_][i_75_];
-								SceneGraph.method277(i_71_, i_74_ * 128, i_84_, i_74_ * 128, (i_76_ * 128) + 128, i_83_, i_75_ * 128, 1);
+								Scene.method277(i_71_, i_74_ * 128, i_84_, i_74_ * 128, (i_76_ * 128) + 128, i_83_, i_75_ * 128, 1);
 								for (int i_85_ = i_77_; i_85_ <= i_78_; i_85_++) {
 									for (int i_86_ = i_75_; i_86_ <= i_76_; i_86_++) {
 										anIntArrayArrayArray135[i_85_][i_74_][i_86_] &= ~i_68_;
@@ -661,7 +661,7 @@ public class SceneBuilder {
 								int i_94_ = 240;
 								int i_95_ = (anIntArrayArrayArray129[i_90_][i_87_][i_73_] - i_94_);
 								int i_96_ = anIntArrayArrayArray129[i_89_][i_87_][i_73_];
-								SceneGraph.method277(i_71_, i_87_ * 128, i_96_, (i_88_ * 128) + 128, i_73_ * 128, i_95_, i_73_ * 128, 2);
+								Scene.method277(i_71_, i_87_ * 128, i_96_, (i_88_ * 128) + 128, i_73_ * 128, i_95_, i_73_ * 128, 2);
 								for (int i_97_ = i_89_; i_97_ <= i_90_; i_97_++) {
 									for (int i_98_ = i_87_; i_98_ <= i_88_; i_98_++) {
 										anIntArrayArrayArray135[i_97_][i_98_][i_73_] &= ~i_69_;
@@ -702,7 +702,7 @@ public class SceneBuilder {
 							}
 							if ((((i_100_ - i_99_) + 1) * ((i_102_ - i_101_) + 1)) >= 4) {
 								int i_105_ = anIntArrayArrayArray129[i_72_][i_99_][i_101_];
-								SceneGraph.method277(i_71_, i_99_ * 128, i_105_, (i_100_ * 128) + 128, (i_102_ * 128) + 128, i_105_, i_101_ * 128, 4);
+								Scene.method277(i_71_, i_99_ * 128, i_105_, (i_100_ * 128) + 128, (i_102_ * 128) + 128, i_105_, i_101_ * 128, 4);
 								for (int i_106_ = i_99_; i_106_ <= i_100_; i_106_++) {
 									for (int i_107_ = i_101_; i_107_ <= i_102_; i_107_++) {
 										anIntArrayArrayArray135[i_72_][i_106_][i_107_] &= ~i_70_;
@@ -738,7 +738,7 @@ public class SceneBuilder {
 		}
 	}
 
-	public void method175(int i, SceneGraph graph, SceneCollisionMap collisionMap, int i_119_, int i_120_, int i_121_, int i_122_, boolean bool, int i_123_) {
+	public void method175(int i, Scene scene, SceneCollisionMap collisionMap, int i_119_, int i_120_, int i_121_, int i_122_, boolean bool, int i_123_) {
 		if (aBoolean151 && ((aByteArrayArrayArray149[0][i_121_][i] & 0x2) == 0) && (((aByteArrayArrayArray149[i_120_][i_121_][i] & 0x10) != 0) || (method182(i, i_120_, i_121_, 0) != anInt131))) {
 			return;
 		}
@@ -765,7 +765,7 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, i_123_, 22, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method280(i_120_, i_128_, i, entity, i_130_, i_129_, i_121_);
+					scene.method280(i_120_, i_128_, i, entity, i_130_, i_129_, i_121_);
 					if (type.aBoolean767 && type.aBoolean778 && (collisionMap != null)) {
 						collisionMap.method213(i, i_121_);
 					}
@@ -791,7 +791,7 @@ public class SceneBuilder {
 						i_132_ = type.anInt744;
 						i_133_ = type.anInt761;
 					}
-					if (graph.method284(i_129_, i_130_, i_128_, i_133_, entity, i_132_, i_120_, i_131_, i, i_121_) && type.aBoolean779) {
+					if (scene.method284(i_129_, i_130_, i_128_, i_133_, entity, i_132_, i_120_, i_131_, i, i_121_) && type.aBoolean779) {
 						Model model;
 						if (entity instanceof Model) {
 							model = (Model) entity;
@@ -823,7 +823,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_122_, i_123_, i_119_, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method284(i_129_, i_130_, i_128_, 1, entity, 1, i_120_, 0, i, i_121_);
+				scene.method284(i_129_, i_130_, i_128_, 1, entity, 1, i_120_, 0, i, i_121_);
 				if ((i_119_ >= 12) && (i_119_ <= 17) && (i_119_ != 13) && (i_120_ > 0)) {
 					anIntArrayArrayArray135[i_120_][i_121_][i] |= 0x924;
 				}
@@ -837,7 +837,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_122_, i_123_, 0, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method282(anIntArray152[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
+				scene.method282(anIntArray152[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
 				if (i_123_ == 0) {
 					if (type.aBoolean779) {
 						aByteArrayArrayArray134[i_120_][i_121_][i] = (byte) 50;
@@ -875,7 +875,7 @@ public class SceneBuilder {
 					collisionMap.method211(i, i_123_, i_121_, i_119_, type.aBoolean757);
 				}
 				if (type.anInt775 != 16) {
-					graph.method290(i, type.anInt775, i_121_, i_120_);
+					scene.method290(i, type.anInt775, i_121_, i_120_);
 				}
 			} else if (i_119_ == 1) {
 				Entity entity;
@@ -884,7 +884,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_122_, i_123_, 1, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method282(anIntArray140[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
+				scene.method282(anIntArray140[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
 				if (type.aBoolean779) {
 					if (i_123_ == 0) {
 						aByteArrayArrayArray134[i_120_][i_121_][i + 1] = (byte) 50;
@@ -910,7 +910,7 @@ public class SceneBuilder {
 					entity = new LocEntity(i_122_, 4 + i_123_, 2, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					entity_138_ = new LocEntity(i_122_, i_137_, 2, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method282(anIntArray152[i_123_], entity, i_129_, i, i_130_, i_121_, entity_138_, i_128_, anIntArray152[i_137_], i_120_);
+				scene.method282(anIntArray152[i_123_], entity, i_129_, i, i_130_, i_121_, entity_138_, i_128_, anIntArray152[i_137_], i_120_);
 				if (type.aBoolean764) {
 					if (i_123_ == 0) {
 						anIntArrayArrayArray135[i_120_][i_121_][i] |= 0x249;
@@ -930,7 +930,7 @@ public class SceneBuilder {
 					collisionMap.method211(i, i_123_, i_121_, i_119_, type.aBoolean757);
 				}
 				if (type.anInt775 != 16) {
-					graph.method290(i, type.anInt775, i_121_, i_120_);
+					scene.method290(i, type.anInt775, i_121_, i_120_);
 				}
 			} else if (i_119_ == 3) {
 				Entity entity;
@@ -939,7 +939,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_122_, i_123_, 3, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method282(anIntArray140[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
+				scene.method282(anIntArray140[i_123_], entity, i_129_, i, i_130_, i_121_, null, i_128_, 0, i_120_);
 				if (type.aBoolean779) {
 					if (i_123_ == 0) {
 						aByteArrayArrayArray134[i_120_][i_121_][i + 1] = (byte) 50;
@@ -961,7 +961,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(i_122_, i_123_, i_119_, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 				}
-				graph.method284(i_129_, i_130_, i_128_, 1, entity, 1, i_120_, 0, i, i_121_);
+				scene.method284(i_129_, i_130_, i_128_, 1, entity, 1, i_120_, 0, i, i_121_);
 				if (type.aBoolean767 && (collisionMap != null)) {
 					collisionMap.method212(type.aBoolean757, type.anInt744, type.anInt761, i_121_, i, i_123_);
 				}
@@ -995,10 +995,10 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, 0, 4, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method283(i_129_, i, i_123_ * 512, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, anIntArray152[i_123_]);
+					scene.method283(i_129_, i, i_123_ * 512, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, anIntArray152[i_123_]);
 				} else if (i_119_ == 5) {
 					int i_142_ = 16;
-					int i_143_ = graph.method300(i_120_, i_121_, i);
+					int i_143_ = scene.method300(i_120_, i_121_, i);
 					if (i_143_ > 0) {
 						i_142_ = LocType.method572((i_143_ >> 14) & 0x7fff).anInt775;
 					}
@@ -1008,7 +1008,7 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, 0, 4, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method283(i_129_, i, i_123_ * 512, i_120_, anIntArray137[i_123_] * i_142_, i_128_, entity, i_121_, i_130_, anIntArray144[i_123_] * i_142_, anIntArray152[i_123_]);
+					scene.method283(i_129_, i, i_123_ * 512, i_120_, anIntArray137[i_123_] * i_142_, i_128_, entity, i_121_, i_130_, anIntArray144[i_123_] * i_142_, anIntArray152[i_123_]);
 				} else if (i_119_ == 6) {
 					Entity entity;
 					if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -1016,7 +1016,7 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, 0, 4, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 256);
+					scene.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 256);
 				} else if (i_119_ == 7) {
 					Entity entity;
 					if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -1024,7 +1024,7 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, 0, 4, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 512);
+					scene.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 512);
 				} else if (i_119_ == 8) {
 					Entity entity;
 					if ((type.anInt781 == -1) && (type.anIntArray759 == null)) {
@@ -1032,7 +1032,7 @@ public class SceneBuilder {
 					} else {
 						entity = new LocEntity(i_122_, 0, 4, i_125_, i_126_, i_124_, i_127_, type.anInt781, true);
 					}
-					graph.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 768);
+					scene.method283(i_129_, i, i_123_, i_120_, 0, i_128_, entity, i_121_, i_130_, 0, 768);
 				}
 			}
 		}
@@ -1163,7 +1163,7 @@ public class SceneBuilder {
 		return i_194_;
 	}
 
-	public void method183(SceneCollisionMap[] collisionMaps, SceneGraph graph, int i, int i_197_, int i_198_, int i_199_, byte[] is, int i_200_, int i_201_, int i_202_) {
+	public void method183(SceneCollisionMap[] collisionMaps, Scene scene, int i, int i_197_, int i_198_, int i_199_, byte[] is, int i_200_, int i_201_, int i_202_) {
 		Packet packet = new Packet(is);
 		int i_203_ = -1;
 		for (; ; ) {
@@ -1198,7 +1198,7 @@ public class SceneBuilder {
 						if (i_215_ >= 0) {
 							collisionMap = collisionMaps[i_215_];
 						}
-						method175(i_214_, graph, collisionMap, i_211_, i_199_, i_213_, i_203_, false, (i_212_ + i_201_) & 0x3);
+						method175(i_214_, scene, collisionMap, i_211_, i_199_, i_213_, i_203_, false, (i_212_ + i_201_) & 0x3);
 					}
 				}
 			}
@@ -1227,7 +1227,7 @@ public class SceneBuilder {
 		return (i & 0xff80) + i_220_;
 	}
 
-	public void method190(int i, SceneCollisionMap[] collisionMaps, int i_263_, SceneGraph graph, byte[] is) {
+	public void method190(int i, SceneCollisionMap[] collisionMaps, int i_263_, Scene scene, byte[] is) {
 		Packet packet = new Packet(is);
 		int i_265_ = -1;
 		for (; ; ) {
@@ -1260,7 +1260,7 @@ public class SceneBuilder {
 					if (i_277_ >= 0) {
 						collisionMap = collisionMaps[i_277_];
 					}
-					method175(i_276_, graph, collisionMap, i_273_, i_271_, i_275_, i_265_, false, i_274_);
+					method175(i_276_, scene, collisionMap, i_273_, i_271_, i_275_, i_265_, false, i_274_);
 				}
 			}
 		}

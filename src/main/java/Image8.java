@@ -2,10 +2,10 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Image8 extends Draw2D {
+public class Image8 {
 
-	public final int[] anIntArray1451;
-	public byte[] aByteArray1450;
+	public final int[] palette;
+	public byte[] pixels;
 	public int anInt1452;
 	public int anInt1453;
 	public int anInt1454;
@@ -20,9 +20,9 @@ public class Image8 extends Draw2D {
 		anInt1456 = packet_1.get2U();
 		anInt1457 = packet_1.get2U();
 		int j = packet_1.get1U();
-		anIntArray1451 = new int[j];
+		palette = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
-			anIntArray1451[k + 1] = packet_1.get3();
+			palette[k + 1] = packet_1.get3();
 		}
 		for (int l = 0; l < i; l++) {
 			packet_1.position += 2;
@@ -35,17 +35,17 @@ public class Image8 extends Draw2D {
 		anInt1453 = packet_1.get2U();
 		int i1 = packet_1.get1U();
 		int j1 = anInt1452 * anInt1453;
-		aByteArray1450 = new byte[j1];
+		pixels = new byte[j1];
 		if (i1 == 0) {
 			for (int k1 = 0; k1 < j1; k1++) {
-				aByteArray1450[k1] = packet.get1();
+				pixels[k1] = packet.get1();
 			}
 			return;
 		}
 		if (i1 == 1) {
 			for (int l1 = 0; l1 < anInt1452; l1++) {
 				for (int i2 = 0; i2 < anInt1453; i2++) {
-					aByteArray1450[l1 + (i2 * anInt1452)] = packet.get1();
+					pixels[l1 + (i2 * anInt1452)] = packet.get1();
 				}
 			}
 		}
@@ -58,10 +58,10 @@ public class Image8 extends Draw2D {
 		int i = 0;
 		for (int j = 0; j < anInt1453; j++) {
 			for (int k = 0; k < anInt1452; k++) {
-				abyte0[((k + anInt1454) >> 1) + (((j + anInt1455) >> 1) * anInt1456)] = aByteArray1450[i++];
+				abyte0[((k + anInt1454) >> 1) + (((j + anInt1455) >> 1) * anInt1456)] = pixels[i++];
 			}
 		}
-		aByteArray1450 = abyte0;
+		pixels = abyte0;
 		anInt1452 = anInt1456;
 		anInt1453 = anInt1457;
 		anInt1454 = 0;
@@ -76,10 +76,10 @@ public class Image8 extends Draw2D {
 		int i = 0;
 		for (int j = 0; j < anInt1453; j++) {
 			for (int k = 0; k < anInt1452; k++) {
-				abyte0[k + anInt1454 + ((j + anInt1455) * anInt1456)] = aByteArray1450[i++];
+				abyte0[k + anInt1454 + ((j + anInt1455) * anInt1456)] = pixels[i++];
 			}
 		}
-		aByteArray1450 = abyte0;
+		pixels = abyte0;
 		anInt1452 = anInt1456;
 		anInt1453 = anInt1457;
 		anInt1454 = 0;
@@ -91,10 +91,10 @@ public class Image8 extends Draw2D {
 		int j = 0;
 		for (int k = 0; k < anInt1453; k++) {
 			for (int l = anInt1452 - 1; l >= 0; l--) {
-				abyte0[j++] = aByteArray1450[l + (k * anInt1452)];
+				abyte0[j++] = pixels[l + (k * anInt1452)];
 			}
 		}
-		aByteArray1450 = abyte0;
+		pixels = abyte0;
 		anInt1454 = anInt1456 - anInt1452 - anInt1454;
 	}
 
@@ -103,37 +103,37 @@ public class Image8 extends Draw2D {
 		int i = 0;
 		for (int j = anInt1453 - 1; j >= 0; j--) {
 			for (int k = 0; k < anInt1452; k++) {
-				abyte0[i++] = aByteArray1450[k + (j * anInt1452)];
+				abyte0[i++] = pixels[k + (j * anInt1452)];
 			}
 		}
-		aByteArray1450 = abyte0;
+		pixels = abyte0;
 		anInt1455 = anInt1457 - anInt1453 - anInt1455;
 	}
 
 	public void method360(int i, int j, int k) {
-		for (int i1 = 0; i1 < anIntArray1451.length; i1++) {
-			int j1 = (anIntArray1451[i1] >> 16) & 0xff;
+		for (int i1 = 0; i1 < palette.length; i1++) {
+			int j1 = (palette[i1] >> 16) & 0xff;
 			j1 += i;
 			if (j1 < 0) {
 				j1 = 0;
 			} else if (j1 > 255) {
 				j1 = 255;
 			}
-			int k1 = (anIntArray1451[i1] >> 8) & 0xff;
+			int k1 = (palette[i1] >> 8) & 0xff;
 			k1 += j;
 			if (k1 < 0) {
 				k1 = 0;
 			} else if (k1 > 255) {
 				k1 = 255;
 			}
-			int l1 = anIntArray1451[i1] & 0xff;
+			int l1 = palette[i1] & 0xff;
 			l1 += k;
 			if (l1 < 0) {
 				l1 = 0;
 			} else if (l1 > 255) {
 				l1 = 255;
 			}
-			anIntArray1451[i1] = (j1 << 16) + (k1 << 8) + l1;
+			palette[i1] = (j1 << 16) + (k1 << 8) + l1;
 		}
 	}
 
@@ -172,7 +172,7 @@ public class Image8 extends Draw2D {
 			l1 += l2;
 		}
 		if ((k1 > 0) && (j1 > 0)) {
-			method362(j1, Draw2D.pixels, aByteArray1450, l1, l, k1, i1, anIntArray1451, i2);
+			method362(j1, Draw2D.pixels, pixels, l1, l, k1, i1, palette, i2);
 		}
 	}
 

@@ -4,7 +4,7 @@
 
 import java.util.Arrays;
 
-public class SceneGraph {
+public class Scene {
 
 	public static final int[] anIntArray463 = {53, -53, -53, 53};
 	public static final int[] anIntArray464 = {-53, -53, 53, 53};
@@ -71,7 +71,7 @@ public class SceneGraph {
 	public final int[][] anIntArrayArray489 = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
 	public final int[][] anIntArrayArray490 = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
 
-	public SceneGraph(int i, int j, int[][][] ai, int k) {
+	public Scene(int i, int j, int[][][] ai, int k) {
 		anInt437 = k;
 		anInt438 = j;
 		anInt439 = i;
@@ -81,7 +81,7 @@ public class SceneGraph {
 		method274();
 	}
 
-	public static void method273() {
+	public static void unload() {
 		aLocArray462 = null;
 		anIntArray473 = null;
 		aOccluderArrayArray474 = null;
@@ -900,9 +900,9 @@ public class SceneGraph {
 		sinEyeYaw = Model.sin[eyeYaw];
 		cosEyeYaw = Model.cos[eyeYaw];
 		aBooleanArrayArray492 = aBooleanArrayArrayArrayArray491[(eyePitch - 128) / 32][eyeYaw / 64];
-		SceneGraph.eyeX = eyeX;
-		SceneGraph.eyeY = eyeY;
-		SceneGraph.eyeZ = eyeZ;
+		Scene.eyeX = eyeX;
+		Scene.eyeY = eyeY;
+		Scene.eyeZ = eyeZ;
 		eyeTileX = eyeX / 128;
 		eyeTileZ = eyeZ / 128;
 		anInt447 = i1;

@@ -11,16 +11,16 @@ public class NPCEntity extends PathingEntity {
 
 	public Model method450() {
 		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
-			int k = SeqType.aTypeArray351[super.anInt1526].anIntArray353[super.anInt1527];
+			int k = SeqType.instances[super.anInt1526].anIntArray353[super.anInt1527];
 			int i1 = -1;
 			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
-				i1 = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+				i1 = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 			}
-			return aType_1696.method164(i1, k, SeqType.aTypeArray351[super.anInt1526].anIntArray357);
+			return aType_1696.method164(i1, k, SeqType.instances[super.anInt1526].anIntArray357);
 		}
 		int l = -1;
 		if (super.anInt1517 >= 0) {
-			l = SeqType.aTypeArray351[super.anInt1517].anIntArray353[super.anInt1518];
+			l = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 		}
 		return aType_1696.method164(-1, l, null);
 	}
@@ -36,7 +36,7 @@ public class NPCEntity extends PathingEntity {
 		}
 		super.anInt1507 = model.minY;
 		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
-			SpotAnimType type = SpotAnimType.aTypeArray403[super.anInt1520];
+			SpotAnimType type = SpotAnimType.instances[super.anInt1520];
 			Model model_1 = type.method266();
 			if (model_1 != null) {
 				int j = type.aType_407.anIntArray353[super.anInt1521];
