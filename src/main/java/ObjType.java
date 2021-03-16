@@ -2,12 +2,14 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 import java.io.IOException;
 
 public class ObjType {
 
-	public static LRUCache aCache_158 = new LRUCache(100);
-	public static LRUCache aCache_159 = new LRUCache(50);
+	public static LRUMap<Integer, Image24> iconCache = new LRUMap<>(100);
+	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(50);
 	public static ObjType[] aTypeArray172;
 	public static int anInt180;
 	public static boolean aBoolean182 = true;
@@ -59,8 +61,8 @@ public class ObjType {
 	}
 
 	public static void unload() {
-		aCache_159 = null;
-		aCache_158 = null;
+		modelCache = null;
+		iconCache = null;
 		anIntArray195 = null;
 		aTypeArray172 = null;
 		aBuffer_183 = null;
@@ -109,7 +111,7 @@ public class ObjType {
 
 	public static Image24 method200(int i, int j, int k) {
 		if (k == 0) {
-			Image24 image = (Image24) aCache_158.get(i);
+			Image24 image = iconCache.get(i);
 			if ((image != null) && (image.anInt1445 != j) && (image.anInt1445 != -1)) {
 				image.unlink();
 				image = null;
@@ -219,7 +221,7 @@ public class ObjType {
 			class30_sub2_sub1_sub1_2.anInt1445 = j6;
 		}
 		if (k == 0) {
-			aCache_158.put(i, class30_sub2_sub1_sub1_1);
+			iconCache.put(i, class30_sub2_sub1_sub1_1);
 		}
 		Draw2D.bind(ai1, i2, j2);
 		Draw2D.setBounds(j3, k2, l2, i3);
@@ -422,7 +424,7 @@ public class ObjType {
 				return method198(j).method201(1);
 			}
 		}
-		Model model = (Model) aCache_159.get(anInt157);
+		Model model = modelCache.get(anInt157);
 		if (model != null) {
 			return model;
 		}
@@ -440,7 +442,7 @@ public class ObjType {
 		}
 		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
 		model.pickBounds = true;
-		aCache_159.put(anInt157, model);
+		modelCache.put(anInt157, model);
 		return model;
 	}
 

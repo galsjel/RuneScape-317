@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 import java.io.IOException;
 
 public class NPCType {
@@ -12,7 +14,7 @@ public class NPCType {
 	public static int[] anIntArray72;
 	public static NPCType[] aTypeArray80;
 	public static Game aGame82;
-	public static LRUCache aCache_95 = new LRUCache(30);
+	public static LRUMap<Long, Model> modelCache = new LRUMap<>(30);
 
 	public static NPCType method159(int i) {
 		if (i > aTypeArray80.length) {
@@ -49,11 +51,12 @@ public class NPCType {
 	}
 
 	public static void unload() {
-		aCache_95 = null;
+		modelCache = null;
 		anIntArray72 = null;
 		aTypeArray80 = null;
 		aBuffer_60 = null;
 	}
+
 	public int anInt55 = -1;
 	public int anInt57 = -1;
 	public int anInt58 = -1;
@@ -155,7 +158,7 @@ public class NPCType {
 				return type.method164(j, k, ai);
 			}
 		}
-		Model model = (Model) aCache_95.get(aLong78);
+		Model model = modelCache.get(aLong78);
 		if (model == null) {
 			boolean flag = false;
 			for (int value : anIntArray94) {
@@ -182,7 +185,7 @@ public class NPCType {
 			}
 			model.createLabelReferences();
 			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
-			aCache_95.put(aLong78, model);
+			modelCache.put(aLong78, model);
 		}
 		Model model_1 = Model.EMPTY;
 		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));

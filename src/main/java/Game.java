@@ -1776,9 +1776,9 @@ public class Game extends GameShell {
 	public void method23() {
 		LocType.aCache_785.clear();
 		LocType.aCache_780.clear();
-		NPCType.aCache_95.clear();
-		ObjType.aCache_159.clear();
-		ObjType.aCache_158.clear();
+		NPCType.modelCache.clear();
+		ObjType.modelCache.clear();
+		ObjType.iconCache.clear();
 		PlayerEntity.modelCache.clear();
 		SpotAnimType.modelCache.clear();
 	}
@@ -2248,7 +2248,7 @@ public class Game extends GameShell {
 			if (k == 4) {
 				Draw3D.setBrightness(0.59999999999999998D);
 			}
-			ObjType.aCache_158.clear();
+			ObjType.iconCache.clear();
 			aBoolean1255 = true;
 		}
 		if (j == 3) {

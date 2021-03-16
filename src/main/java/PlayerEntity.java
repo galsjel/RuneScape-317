@@ -2,9 +2,11 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 public class PlayerEntity extends PathingEntity {
 
-	public static LRUCache modelCache = new LRUCache(260);
+	public static LRUMap<Long, Model> modelCache = new LRUMap<>(260);
 	public long aLong1697 = -1L;
 	public NPCType aType_1698;
 	public boolean aBoolean1699 = false;
@@ -218,7 +220,7 @@ public class PlayerEntity extends PathingEntity {
 		} else if (super.anInt1517 >= 0) {
 			k = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 		}
-		Model model_1 = (Model) modelCache.get(l);
+		Model model_1 = modelCache.get(l);
 		if (model_1 == null) {
 			boolean flag = false;
 			for (int i2 = 0; i2 < 12; i2++) {
@@ -238,7 +240,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (flag) {
 				if (aLong1697 != -1L) {
-					model_1 = (Model) modelCache.get(aLong1697);
+					model_1 = modelCache.get(aLong1697);
 				}
 				if (model_1 == null) {
 					return null;

@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 import java.io.IOException;
 
 public class LocType {
@@ -13,9 +15,9 @@ public class LocType {
 	public static int anInt756;
 	public static Game aGame765;
 	public static int anInt771;
-	public static LRUCache aCache_780 = new LRUCache(30);
+	public static LRUMap<Long, Model> aCache_780 = new LRUMap(30);
 	public static LocType[] aTypeArray782;
-	public static LRUCache aCache_785 = new LRUCache(500);
+	public static LRUMap<Long,Model> aCache_785 = new LRUMap(500);
 
 	public boolean aBoolean736;
 	public byte aByte737;
@@ -227,8 +229,8 @@ public class LocType {
 			if (j != 10) {
 				return null;
 			}
-			l1 = (long) (((long) anInt754 << 6) + l) + ((long) (k + 1) << 32);
-			Model model_1 = (Model) aCache_780.get(l1);
+			l1 = ((long) anInt754 << 6) + l + ((long) (k + 1) << 32);
+			Model model_1 = aCache_780.get(l1);
 			if (model_1 != null) {
 				return model_1;
 			}
@@ -242,7 +244,7 @@ public class LocType {
 				if (flag1) {
 					l2 += 0x10000;
 				}
-				model = (Model) aCache_785.get(l2);
+				model = aCache_785.get(l2);
 				if (model == null) {
 					model = Model.tryGet(l2 & 0xffff);
 					if (model == null) {
@@ -251,7 +253,7 @@ public class LocType {
 					if (flag1) {
 						model.rotateY180();
 					}
-					aCache_785.put(l2, model);
+					aCache_785.put((long)l2, model);
 				}
 				if (k1 > 1) {
 					A_MODEL_ARRAY_741[i2] = model;
@@ -272,8 +274,8 @@ public class LocType {
 			if (i1 == -1) {
 				return null;
 			}
-			l1 = (long) (((long) anInt754 << 6) + ((long) i1 << 3) + l) + ((long) (k + 1) << 32);
-			Model class30_sub2_sub4_sub6_2 = (Model) aCache_780.get(l1);
+			l1 = ((long) anInt754 << 6) + ((long) i1 << 3) + l + ((long) (k + 1) << 32);
+			Model class30_sub2_sub4_sub6_2 = aCache_780.get(l1);
 			if (class30_sub2_sub4_sub6_2 != null) {
 				return class30_sub2_sub4_sub6_2;
 			}
@@ -282,7 +284,7 @@ public class LocType {
 			if (flag3) {
 				j2 += 0x10000;
 			}
-			model = (Model) aCache_785.get(j2);
+			model = aCache_785.get(j2);
 			if (model == null) {
 				model = Model.tryGet(j2 & 0xffff);
 				if (model == null) {
@@ -291,7 +293,7 @@ public class LocType {
 				if (flag3) {
 					model.rotateY180();
 				}
-				aCache_785.put(j2, model);
+				aCache_785.put((long)j2, model);
 			}
 		}
 		boolean flag;

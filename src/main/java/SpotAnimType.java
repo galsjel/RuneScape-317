@@ -2,13 +2,15 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 import java.io.IOException;
 
 public class SpotAnimType {
 
 	public static int anInt402;
 	public static SpotAnimType[] instances;
-	public static LRUCache modelCache = new LRUCache(30);
+	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(30);
 	public int anInt404;
 	public int anInt405;
 	public int anInt406 = -1;
@@ -73,7 +75,7 @@ public class SpotAnimType {
 	}
 
 	public Model method266() {
-		Model model = (Model) modelCache.get(anInt404);
+		Model model = modelCache.get(anInt404);
 		if (model != null) {
 			return model;
 		}

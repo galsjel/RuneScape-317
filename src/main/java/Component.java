@@ -2,80 +2,18 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.collections4.map.LRUMap;
+
 import java.io.IOException;
 
 public class Component {
 
+	public static final LRUMap<Long, Model> modelCache = new LRUMap<>(30);
+	public static LRUMap<Long, Image24> imageCache;
 	public static Component[] instances;
-	public static LRUCache aCache_238;
-	public static final LRUCache A_CACHE___264 = new LRUCache(30);
-	public Image24 aImage_207;
-	public int anInt208;
-	public Image24[] aImageArray209;
-	public int unusedInt;
-	public int[] anIntArray212;
-	public int anInt214;
-	public int[] anIntArray215;
-	public int anInt216;
-	public int anInt217;
-	public String aString218;
-	public int anInt219;
-	public int anInt220;
-	public String aString221;
-	public String aString222;
-	public boolean aBoolean223;
-	public int anInt224;
-	public String[] aStringArray225;
-	public int[][] anIntArrayArray226;
-	public boolean aBoolean227;
-	public String aString228;
-	public int anInt230;
-	public int anInt231;
-	public int anInt232;
-	public int anInt233;
-	public int anInt234;
-	public boolean aBoolean235;
-	public int anInt236;
-	public int anInt237;
-	public int anInt239;
-	public int[] anIntArray240;
-	public int[] anIntArray241;
-	public boolean aBoolean242;
-	public BitmapFont aFont_243;
-	public int anInt244;
-	public int[] anIntArray245;
-	public int anInt246;
-	public int[] anIntArray247;
-	public String aString248;
-	public boolean aBoolean249;
-	public int anInt250;
-	public boolean unusedBool;
-	public int[] anIntArray252;
-	public int[] anIntArray253;
-	public byte aByte254;
-	public int anInt255;
-	public int anInt256;
-	public int anInt257;
-	public int anInt258;
-	public boolean aBoolean259;
-	public Image24 aImage_260;
-	public int anInt261;
-	public int anInt262;
-	public int anInt263;
-	public int anInt265;
-	public boolean aBoolean266;
-	public int anInt267;
-	public boolean aBoolean268;
-	public int anInt269;
-	public int anInt270;
-	public int anInt271;
-	public int[] anIntArray272;
-
-	public Component() {
-	}
 
 	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) throws IOException {
-		aCache_238 = new LRUCache(50000);
+		imageCache = new LRUMap<>(500);
 		Buffer buffer = new Buffer(archive.read("data"));
 		int i = -1;
 		int j = buffer.get2U();
@@ -276,18 +214,18 @@ public class Component {
 				}
 			}
 		}
-		aCache_238 = null;
+		imageCache = null;
 	}
 
 	public static Image24 method207(int i, FileArchive archive, String s) {
 		long l = (StringUtil.hashCode(s) << 8) + (long) i;
-		Image24 image = (Image24) aCache_238.get(l);
+		Image24 image = imageCache.get(l);
 		if (image != null) {
 			return image;
 		}
 		try {
 			image = new Image24(archive, s, i);
-			aCache_238.put(l, image);
+			imageCache.put(l, image);
 		} catch (Exception _ex) {
 			return null;
 		}
@@ -295,10 +233,75 @@ public class Component {
 	}
 
 	public static void method208(int i, int j, Model model) {
-		A_CACHE___264.clear();
+		modelCache.clear();
 		if ((model != null) && (j != 4)) {
-			A_CACHE___264.put(((long) j << 16) + i, model);
+			modelCache.put(((long) j << 16) + i, model);
 		}
+	}
+
+	public Image24 aImage_207;
+	public int anInt208;
+	public Image24[] aImageArray209;
+	public int unusedInt;
+	public int[] anIntArray212;
+	public int anInt214;
+	public int[] anIntArray215;
+	public int anInt216;
+	public int anInt217;
+	public String aString218;
+	public int anInt219;
+	public int anInt220;
+	public String aString221;
+	public String aString222;
+	public boolean aBoolean223;
+	public int anInt224;
+	public String[] aStringArray225;
+	public int[][] anIntArrayArray226;
+	public boolean aBoolean227;
+	public String aString228;
+	public int anInt230;
+	public int anInt231;
+	public int anInt232;
+	public int anInt233;
+	public int anInt234;
+	public boolean aBoolean235;
+	public int anInt236;
+	public int anInt237;
+	public int anInt239;
+	public int[] anIntArray240;
+	public int[] anIntArray241;
+	public boolean aBoolean242;
+	public BitmapFont aFont_243;
+	public int anInt244;
+	public int[] anIntArray245;
+	public int anInt246;
+	public int[] anIntArray247;
+	public String aString248;
+	public boolean aBoolean249;
+	public int anInt250;
+	public boolean unusedBool;
+	public int[] anIntArray252;
+	public int[] anIntArray253;
+	public byte aByte254;
+	public int anInt255;
+	public int anInt256;
+	public int anInt257;
+	public int anInt258;
+	public boolean aBoolean259;
+	public Image24 aImage_260;
+	public int anInt261;
+	public int anInt262;
+	public int anInt263;
+	public int anInt265;
+	public boolean aBoolean266;
+	public int anInt267;
+	public boolean aBoolean268;
+	public int anInt269;
+	public int anInt270;
+	public int anInt271;
+	public int[] anIntArray272;
+
+	public Component() {
 	}
 
 	public void method204(int i, int j) {
@@ -311,7 +314,7 @@ public class Component {
 	}
 
 	public Model method206(int i, int j) {
-		Model model = (Model) A_CACHE___264.get(((long) i << 16) + j);
+		Model model = modelCache.get(((long) i << 16) + j);
 		if (model != null) {
 			return model;
 		}
@@ -331,7 +334,7 @@ public class Component {
 			model = null;
 		}
 		if (model != null) {
-			A_CACHE___264.put((i << 16) + j, model);
+			modelCache.put((long) ((i << 16) + j), model);
 		}
 		return model;
 	}
