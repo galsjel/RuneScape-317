@@ -1,27 +1,73 @@
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * {@link BZip2} itself is an implementation of {@link InputStream} to feed the header magic to a {@link BZip2CompressorInputStream}.
+ *
+ * @see #decompress(byte[], int, int, byte[])
+ */
 public class BZip2 extends InputStream {
 
 	private static final byte[] MAGIC = {'B', 'Z', 'h', '1'};
 
-	public static void decompress(byte[] dst, byte[] src, int srcOff, int srcLen) throws IOException {
-		BZip2CompressorInputStream bz2in = new BZip2CompressorInputStream(new BZip2(src, srcOff, srcLen));
+	/**
+	 * Decompresses the source.
+	 *
+	 * @param src the source data.
+	 * @param off the source offset.
+	 * @param len the source length.
+	 * @param dst the destination or <code>null</code> to create a new one.
+	 * @throws IOException if the stream content is malformed or an I/O error occurs.
+	 */
+	public static byte[] decompress(byte[] src, int off, int len, byte[] dst) throws IOException {
+		ByteArrayOutputStream tmp = null;
+
+		if (dst == null) {
+			tmp = new ByteArrayOutputStream();
+		}
+
+		BZip2CompressorInputStream in = new BZip2CompressorInputStream(new BZip2(src, off, len));
+
 		byte[] buf = new byte[2048];
 		int read;
 		int written = 0;
-		while ((read = bz2in.read(buf)) != -1) {
-			System.arraycopy(buf, 0, dst, written, read);
+
+		while ((read = in.read(buf)) != -1) {
+			if (tmp != null) {
+				tmp.write(buf, 0, read);
+			} else {
+				System.arraycopy(buf, 0, dst, written, read);
+			}
 			written += read;
 		}
+
+		if (tmp != null) {
+			return tmp.toByteArray();
+		}
+
+		return dst;
 	}
 
+	/**
+	 * The input.
+	 */
 	private final ByteArrayInputStream in;
+	/**
+	 * The position.
+	 */
 	private int position;
 
+	/**
+	 * Constructs a new helper class to fool that silly compressor.
+	 *
+	 * @param src the source.
+	 * @param off the source offset.
+	 * @param len the source length.
+	 */
 	private BZip2(byte[] src, int off, int len) {
 		this.in = new ByteArrayInputStream(src, off, len);
 	}

@@ -25,7 +25,7 @@ public class FileArchive {
 
 		if (packedSize != unpackedSize) {
 			data = new byte[unpackedSize];
-			BZip2.decompress(data, src, 6, packedSize);
+			BZip2.decompress(src, 6, packedSize, data);
 			buffer = new Buffer(data);
 			unpacked = true;
 		} else {
@@ -65,7 +65,7 @@ public class FileArchive {
 			byte[] dst = new byte[fileSizeInflated[file]];
 
 			if (!unpacked) {
-				BZip2.decompress(dst, data, fileOffset[file], fileSizeDeflated[file]);
+				BZip2.decompress(data, fileOffset[file], fileSizeDeflated[file], dst);
 			} else {
 				System.arraycopy(data, fileOffset[file], dst, 0, fileSizeInflated[file]);
 			}
