@@ -135,7 +135,7 @@ public class Draw3D {
 	/**
 	 * Nullifies the texel pool. {@link #initPool(int)} must be called again if textured triangles are drawn.
 	 */
-	public static void disposePool() {
+	public static void clearTexels() {
 		texelPool = null;
 		for (int j = 0; j < 50; j++) {
 			activeTexels[j] = null;
@@ -261,7 +261,7 @@ public class Draw3D {
 			}
 		} else {
 			// scale 64x64 textures up to 128x128
-			if (texture.anInt1452 == 64) {
+			if (texture.width == 64) {
 				for (int y = 0; y < 128; y++) {
 					for (int x = 0; x < 128; x++) {
 						texels[x + (y << 7)] = palette[texture.pixels[(x >> 1) + ((y >> 1) << 6)]];

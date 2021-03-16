@@ -6,59 +6,66 @@ import java.io.IOException;
 
 public class VarbitType {
 
-	public static int anInt645;
-	public static VarbitType[] aVarbitArray646;
+	public static VarbitType[] instances;
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("varbit.dat"));
-		anInt645 = buffer.get2U();
-		if (aVarbitArray646 == null) {
-			aVarbitArray646 = new VarbitType[anInt645];
+		int count = buffer.get2U();
+
+		if (instances == null) {
+			instances = new VarbitType[count];
 		}
-		for (int j = 0; j < anInt645; j++) {
-			if (aVarbitArray646[j] == null) {
-				aVarbitArray646[j] = new VarbitType();
+
+		for (int j = 0; j < count; j++) {
+			if (instances[j] == null) {
+				instances[j] = new VarbitType();
 			}
-			aVarbitArray646[j].method534(buffer);
-			if (aVarbitArray646[j].aBoolean651) {
-				VarpType.instances[aVarbitArray646[j].anInt648].unusedBool3 = true;
+			instances[j].read(buffer);
+			if (instances[j].unusedBool) {
+				VarpType.instances[instances[j].varp].unusedBool3 = true;
 			}
 		}
 		if (buffer.position != buffer.data.length) {
 			System.out.println("varbit load mismatch");
 		}
 	}
+
 	public String unusedString;
-	public int anInt648;
-	public int anInt649;
-	public int anInt650;
-	public boolean aBoolean651 = false;
+	public int varp;
+	/**
+	 * The least significant bit.
+	 */
+	public int lsb;
+	/**
+	 * The most significant bit.
+	 */
+	public int msb;
+	public boolean unusedBool = false;
 	public int unusedInt0 = -1;
 	public int unusedInt1;
 
 	public VarbitType() {
 	}
 
-	public void method534(Buffer buffer) {
+	public void read(Buffer buffer) {
 		do {
-			int j = buffer.get1U();
-			if (j == 0) {
+			int op = buffer.get1U();
+			if (op == 0) {
 				return;
-			}
-			if (j == 1) {
-				anInt648 = buffer.get2U();
-				anInt649 = buffer.get1U();
-				anInt650 = buffer.get1U();
-			} else if (j == 10) {
+			} else if (op == 1) {
+				varp = buffer.get2U();
+				lsb = buffer.get1U();
+				msb = buffer.get1U();
+			} else if (op == 10) {
 				unusedString = buffer.getString();
-			} else if (j == 2) {
-				aBoolean651 = true;
-			} else if (j == 3) {
+			} else if (op == 2) {
+				unusedBool = true;
+			} else if (op == 3) {
 				unusedInt0 = buffer.get4();
-			} else if (j == 4) {
+			} else if (op == 4) {
 				unusedInt1 = buffer.get4();
 			} else {
-				System.out.println("Error unrecognised config code: " + j);
+				System.out.println("Error unrecognised config code: " + op);
 			}
 		} while (true);
 	}

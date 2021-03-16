@@ -19,17 +19,17 @@ public class PlayerEntity extends PathingEntity {
 	public int anInt1706;
 	public int anInt1707;
 	public int anInt1708;
-	public int anInt1709;
+	public int y;
 	public boolean aBoolean1710 = false;
 	public int anInt1711;
 	public int anInt1712;
 	public int anInt1713;
-	public Model aModel_1714;
+	public Model model;
 	public long aLong1718;
-	public int anInt1719;
-	public int anInt1720;
-	public int anInt1721;
-	public int anInt1722;
+	public int minSceneTileX;
+	public int minSceneTileZ;
+	public int maxSceneTileX;
+	public int maxSceneTileZ;
 	public int anInt1723;
 
 	public PlayerEntity() {
@@ -49,14 +49,14 @@ public class PlayerEntity extends PathingEntity {
 		if (aBoolean1699) {
 			return model;
 		}
-		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
-			SpotAnimType type = SpotAnimType.instances[super.anInt1520];
+		if ((super.spotanim != -1) && (super.spotanimFrame != -1)) {
+			SpotAnimType type = SpotAnimType.instances[super.spotanim];
 			Model class30_sub2_sub4_sub6_2 = type.method266();
 			if (class30_sub2_sub4_sub6_2 != null) {
-				Model model_3 = new Model(true, SeqFrame.isNull(super.anInt1521), false, class30_sub2_sub4_sub6_2);
+				Model model_3 = new Model(true, SeqFrame.isNull(super.spotanimFrame), false, class30_sub2_sub4_sub6_2);
 				model_3.translate(0, -super.anInt1524, 0);
 				model_3.createLabelReferences();
-				model_3.applySequenceFrame(type.aType_407.anIntArray353[super.anInt1521]);
+				model_3.applySequenceFrame(type.seq.primaryFrames[super.spotanimFrame]);
 				model_3.labelFaces = null;
 				model_3.labelVertices = null;
 				if ((type.anInt410 != 128) || (type.anInt411 != 128)) {
@@ -67,36 +67,36 @@ public class PlayerEntity extends PathingEntity {
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6_1);
 			}
 		}
-		if (aModel_1714 != null) {
+		if (this.model != null) {
 			if (Game.loopCycle >= anInt1708) {
-				aModel_1714 = null;
+				this.model = null;
 			}
 			if ((Game.loopCycle >= anInt1707) && (Game.loopCycle < anInt1708)) {
-				Model model_1 = aModel_1714;
-				model_1.translate(anInt1711 - super.x, anInt1712 - anInt1709, anInt1713 - super.z);
-				if (super.anInt1510 == 512) {
+				Model model_1 = this.model;
+				model_1.translate(anInt1711 - super.x, anInt1712 - y, anInt1713 - super.z);
+				if (super.dstYaw == 512) {
 					model_1.rotateY90();
 					model_1.rotateY90();
 					model_1.rotateY90();
-				} else if (super.anInt1510 == 1024) {
+				} else if (super.dstYaw == 1024) {
 					model_1.rotateY90();
 					model_1.rotateY90();
-				} else if (super.anInt1510 == 1536) {
+				} else if (super.dstYaw == 1536) {
 					model_1.rotateY90();
 				}
 				Model[] aclass30_sub2_sub4_sub6 = {model, model_1};
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6);
-				if (super.anInt1510 == 512) {
+				if (super.dstYaw == 512) {
 					model_1.rotateY90();
-				} else if (super.anInt1510 == 1024) {
+				} else if (super.dstYaw == 1024) {
 					model_1.rotateY90();
 					model_1.rotateY90();
-				} else if (super.anInt1510 == 1536) {
+				} else if (super.dstYaw == 1536) {
 					model_1.rotateY90();
 					model_1.rotateY90();
 					model_1.rotateY90();
 				}
-				model_1.translate(super.x - anInt1711, anInt1709 - anInt1712, super.z - anInt1713);
+				model_1.translate(super.x - anInt1711, y - anInt1712, super.z - anInt1713);
 			}
 		}
 		model.pickBounds = true;
@@ -118,7 +118,7 @@ public class PlayerEntity extends PathingEntity {
 			int i1 = buffer.get1U();
 			anIntArray1717[j] = (k << 8) + i1;
 			if ((j == 0) && (anIntArray1717[0] == 65535)) {
-				aType_1698 = NPCType.method159(buffer.get2U());
+				aType_1698 = NPCType.get(buffer.get2U());
 				break;
 			}
 			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
@@ -135,33 +135,33 @@ public class PlayerEntity extends PathingEntity {
 			}
 			anIntArray1700[l] = j1;
 		}
-		super.anInt1511 = buffer.get2U();
-		if (super.anInt1511 == 65535) {
-			super.anInt1511 = -1;
+		super.seqStand = buffer.get2U();
+		if (super.seqStand == 65535) {
+			super.seqStand = -1;
 		}
-		super.anInt1512 = buffer.get2U();
-		if (super.anInt1512 == 65535) {
-			super.anInt1512 = -1;
+		super.seqTurn = buffer.get2U();
+		if (super.seqTurn == 65535) {
+			super.seqTurn = -1;
 		}
-		super.anInt1554 = buffer.get2U();
-		if (super.anInt1554 == 65535) {
-			super.anInt1554 = -1;
+		super.seqWalk = buffer.get2U();
+		if (super.seqWalk == 65535) {
+			super.seqWalk = -1;
 		}
-		super.anInt1555 = buffer.get2U();
-		if (super.anInt1555 == 65535) {
-			super.anInt1555 = -1;
+		super.seqTurnAround = buffer.get2U();
+		if (super.seqTurnAround == 65535) {
+			super.seqTurnAround = -1;
 		}
-		super.anInt1556 = buffer.get2U();
-		if (super.anInt1556 == 65535) {
-			super.anInt1556 = -1;
+		super.seqTurnLeft = buffer.get2U();
+		if (super.seqTurnLeft == 65535) {
+			super.seqTurnLeft = -1;
 		}
-		super.anInt1557 = buffer.get2U();
-		if (super.anInt1557 == 65535) {
-			super.anInt1557 = -1;
+		super.seqTurnRight = buffer.get2U();
+		if (super.seqTurnRight == 65535) {
+			super.seqTurnRight = -1;
 		}
-		super.anInt1505 = buffer.get2U();
-		if (super.anInt1505 == 65535) {
-			super.anInt1505 = -1;
+		super.seqRun = buffer.get2U();
+		if (super.seqRun == 65535) {
+			super.seqRun = -1;
 		}
 		aString1703 = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
 		anInt1705 = buffer.get1U();
@@ -192,9 +192,9 @@ public class PlayerEntity extends PathingEntity {
 		if (aType_1698 != null) {
 			int j = -1;
 			if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
-				j = SeqType.instances[super.anInt1526].anIntArray353[super.anInt1527];
-			} else if (super.anInt1517 >= 0) {
-				j = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
+				j = SeqType.instances[super.anInt1526].primaryFrames[super.anInt1527];
+			} else if (super.seqCurrent >= 0) {
+				j = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 			}
 			return aType_1698.method164(-1, j, null);
 		}
@@ -205,9 +205,9 @@ public class PlayerEntity extends PathingEntity {
 		int k1 = -1;
 		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
 			SeqType type = SeqType.instances[super.anInt1526];
-			k = type.anIntArray353[super.anInt1527];
-			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
-				i1 = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
+			k = type.primaryFrames[super.anInt1527];
+			if ((super.seqCurrent >= 0) && (super.seqCurrent != super.seqStand)) {
+				i1 = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 			}
 			if (type.anInt360 >= 0) {
 				j1 = type.anInt360;
@@ -217,8 +217,8 @@ public class PlayerEntity extends PathingEntity {
 				k1 = type.anInt361;
 				l += ((long) k1 - anIntArray1717[3]) << 16;
 			}
-		} else if (super.anInt1517 >= 0) {
-			k = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
+		} else if (super.seqCurrent >= 0) {
+			k = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 		}
 		Model model_1 = modelCache.get(l);
 		if (model_1 == null) {

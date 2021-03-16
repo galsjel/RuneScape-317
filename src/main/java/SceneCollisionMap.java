@@ -8,12 +8,12 @@ public class SceneCollisionMap {
 	public final int anInt291 = 0;
 	public final int anInt292;
 	public final int anInt293;
-	public final int[][] anIntArrayArray294;
+	public final int[][] flags;
 
 	public SceneCollisionMap(int i, int j) {
 		anInt292 = i;
 		anInt293 = j;
-		anIntArrayArray294 = new int[anInt292][anInt293];
+		flags = new int[anInt292][anInt293];
 		method210();
 	}
 
@@ -21,9 +21,9 @@ public class SceneCollisionMap {
 		for (int i = 0; i < anInt292; i++) {
 			for (int j = 0; j < anInt293; j++) {
 				if ((i == 0) || (j == 0) || (i == (anInt292 - 1)) || (j == (anInt293 - 1))) {
-					anIntArrayArray294[i][j] = 0xffffff;
+					flags[i][j] = 0xffffff;
 				} else {
-					anIntArrayArray294[i][j] = 0x1000000;
+					flags[i][j] = 0x1000000;
 				}
 			}
 		}
@@ -178,11 +178,11 @@ public class SceneCollisionMap {
 	public void method213(int i, int k) {
 		k -= anInt290;
 		i -= anInt291;
-		anIntArrayArray294[k][i] |= 0x200000;
+		flags[k][i] |= 0x200000;
 	}
 
 	public void method214(int i, int j, int k) {
-		anIntArrayArray294[i][j] |= k;
+		flags[i][j] |= k;
 	}
 
 	public void method215(int i, int j, boolean flag, int k, int l) {
@@ -332,13 +332,13 @@ public class SceneCollisionMap {
 	}
 
 	public void method217(int i, int j, int k) {
-		anIntArrayArray294[j][k] &= 0xffffff - i;
+		flags[j][k] &= 0xffffff - i;
 	}
 
 	public void method218(int j, int k) {
 		k -= anInt290;
 		j -= anInt291;
-		anIntArrayArray294[k][j] &= 0xdfffff;
+		flags[k][j] &= 0xdfffff;
 	}
 
 	public boolean method219(int i, int j, int k, int i1, int j1, int k1) {
@@ -354,40 +354,40 @@ public class SceneCollisionMap {
 				if ((j == (i - 1)) && (k == k1)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((anIntArrayArray294[j][k] & 0x1280120) == 0)) {
+				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((anIntArrayArray294[j][k] & 0x1280102) == 0)) {
+				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
 					return true;
 				}
 			} else if (i1 == 1) {
 				if ((j == i) && (k == (k1 + 1))) {
 					return true;
 				}
-				if ((j == (i - 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280108) == 0)) {
+				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280180) == 0)) {
+				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
 					return true;
 				}
 			} else if (i1 == 2) {
 				if ((j == (i + 1)) && (k == k1)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((anIntArrayArray294[j][k] & 0x1280120) == 0)) {
+				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((anIntArrayArray294[j][k] & 0x1280102) == 0)) {
+				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
 					return true;
 				}
 			} else if (i1 == 3) {
 				if ((j == i) && (k == (k1 - 1))) {
 					return true;
 				}
-				if ((j == (i - 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280108) == 0)) {
+				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280180) == 0)) {
+				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
 					return true;
 				}
 			}
@@ -400,14 +400,14 @@ public class SceneCollisionMap {
 				if ((j == i) && (k == (k1 + 1))) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280180) == 0)) {
+				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((anIntArrayArray294[j][k] & 0x1280102) == 0)) {
+				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
 					return true;
 				}
 			} else if (i1 == 1) {
-				if ((j == (i - 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280108) == 0)) {
+				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
 					return true;
 				}
 				if ((j == i) && (k == (k1 + 1))) {
@@ -416,14 +416,14 @@ public class SceneCollisionMap {
 				if ((j == (i + 1)) && (k == k1)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((anIntArrayArray294[j][k] & 0x1280102) == 0)) {
+				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
 					return true;
 				}
 			} else if (i1 == 2) {
-				if ((j == (i - 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280108) == 0)) {
+				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((anIntArrayArray294[j][k] & 0x1280120) == 0)) {
+				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
 					return true;
 				}
 				if ((j == (i + 1)) && (k == k1)) {
@@ -436,10 +436,10 @@ public class SceneCollisionMap {
 				if ((j == (i - 1)) && (k == k1)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((anIntArrayArray294[j][k] & 0x1280120) == 0)) {
+				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x1280180) == 0)) {
+				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
 					return true;
 				}
 				if ((j == i) && (k == (k1 - 1))) {
@@ -448,16 +448,16 @@ public class SceneCollisionMap {
 			}
 		}
 		if (j1 == 9) {
-			if ((j == i) && (k == (k1 + 1)) && ((anIntArrayArray294[j][k] & 0x20) == 0)) {
+			if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x20) == 0)) {
 				return true;
 			}
-			if ((j == i) && (k == (k1 - 1)) && ((anIntArrayArray294[j][k] & 2) == 0)) {
+			if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 2) == 0)) {
 				return true;
 			}
-			if ((j == (i - 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 8) == 0)) {
+			if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 8) == 0)) {
 				return true;
 			}
-			return (j == (i + 1)) && (k == k1) && ((anIntArrayArray294[j][k] & 0x80) == 0);
+			return (j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x80) == 0);
 		}
 		return false;
 	}
@@ -475,46 +475,46 @@ public class SceneCollisionMap {
 				i1 = (i1 + 2) & 3;
 			}
 			if (i1 == 0) {
-				if ((j1 == (i + 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 0x80) == 0)) {
+				if ((j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j - 1)) && ((anIntArrayArray294[j1][k] & 2) == 0)) {
+				if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
 					return true;
 				}
 			} else if (i1 == 1) {
-				if ((j1 == (i - 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 8) == 0)) {
+				if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j - 1)) && ((anIntArrayArray294[j1][k] & 2) == 0)) {
+				if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
 					return true;
 				}
 			} else if (i1 == 2) {
-				if ((j1 == (i - 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 8) == 0)) {
+				if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j + 1)) && ((anIntArrayArray294[j1][k] & 0x20) == 0)) {
+				if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
 					return true;
 				}
 			} else if (i1 == 3) {
-				if ((j1 == (i + 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 0x80) == 0)) {
+				if ((j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j + 1)) && ((anIntArrayArray294[j1][k] & 0x20) == 0)) {
+				if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
 					return true;
 				}
 			}
 		}
 		if (l == 8) {
-			if ((j1 == i) && (k == (j + 1)) && ((anIntArrayArray294[j1][k] & 0x20) == 0)) {
+			if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
 				return true;
 			}
-			if ((j1 == i) && (k == (j - 1)) && ((anIntArrayArray294[j1][k] & 2) == 0)) {
+			if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
 				return true;
 			}
-			if ((j1 == (i - 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 8) == 0)) {
+			if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
 				return true;
 			}
-			return (j1 == (i + 1)) && (k == j) && ((anIntArrayArray294[j1][k] & 0x80) == 0);
+			return (j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0);
 		}
 		return false;
 	}
@@ -525,16 +525,16 @@ public class SceneCollisionMap {
 		if ((k >= j) && (k <= l1) && (k1 >= i) && (k1 <= i2)) {
 			return true;
 		}
-		if ((k == (j - 1)) && (k1 >= i) && (k1 <= i2) && ((anIntArrayArray294[k - anInt290][k1 - anInt291] & 8) == 0) && ((i1 & 8) == 0)) {
+		if ((k == (j - 1)) && (k1 >= i) && (k1 <= i2) && ((flags[k - anInt290][k1 - anInt291] & 8) == 0) && ((i1 & 8) == 0)) {
 			return true;
 		}
-		if ((k == (l1 + 1)) && (k1 >= i) && (k1 <= i2) && ((anIntArrayArray294[k - anInt290][k1 - anInt291] & 0x80) == 0) && ((i1 & 2) == 0)) {
+		if ((k == (l1 + 1)) && (k1 >= i) && (k1 <= i2) && ((flags[k - anInt290][k1 - anInt291] & 0x80) == 0) && ((i1 & 2) == 0)) {
 			return true;
 		}
-		if ((k1 == (i - 1)) && (k >= j) && (k <= l1) && ((anIntArrayArray294[k - anInt290][k1 - anInt291] & 2) == 0) && ((i1 & 4) == 0)) {
+		if ((k1 == (i - 1)) && (k >= j) && (k <= l1) && ((flags[k - anInt290][k1 - anInt291] & 2) == 0) && ((i1 & 4) == 0)) {
 			return true;
 		}
-		return (k1 == (i2 + 1)) && (k >= j) && (k <= l1) && ((anIntArrayArray294[k - anInt290][k1 - anInt291] & 0x20) == 0) && ((i1 & 1) == 0);
+		return (k1 == (i2 + 1)) && (k >= j) && (k <= l1) && ((flags[k - anInt290][k1 - anInt291] & 0x20) == 0) && ((i1 & 1) == 0);
 	}
 
 }

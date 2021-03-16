@@ -322,10 +322,10 @@ public class Component {
 			model = Model.tryGet(j);
 		}
 		if (i == 2) {
-			model = NPCType.method159(j).method160();
+			model = NPCType.get(j).method160();
 		}
 		if (i == 3) {
-			model = Game.aPlayer_1126.method453();
+			model = Game.self.method453();
 		}
 		if (i == 4) {
 			model = ObjType.method198(j).method202(50);

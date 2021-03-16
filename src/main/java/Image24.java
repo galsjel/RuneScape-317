@@ -4,19 +4,19 @@ import java.io.IOException;
 
 public class Image24 extends DoublyLinkedList.Node {
 
-	public int[] anIntArray1439;
-	public int anInt1440;
-	public int anInt1441;
-	public int anInt1442;
-	public int anInt1443;
-	public int anInt1444;
-	public int anInt1445;
+	public int[] pixels;
+	public int width;
+	public int height;
+	public int cropX;
+	public int cropY;
+	public int cropW;
+	public int cropH;
 
 	public Image24(int i, int j) {
-		anIntArray1439 = new int[i * j];
-		anInt1440 = anInt1444 = i;
-		anInt1441 = anInt1445 = j;
-		anInt1442 = anInt1443 = 0;
+		pixels = new int[i * j];
+		width = cropW = i;
+		height = cropH = j;
+		cropX = cropY = 0;
 	}
 
 	public Image24(byte[] abyte0, java.awt.Component component) {
@@ -25,14 +25,14 @@ public class Image24 extends DoublyLinkedList.Node {
 			MediaTracker mediatracker = new MediaTracker(component);
 			mediatracker.addImage(image, 0);
 			mediatracker.waitForAll();
-			anInt1440 = image.getWidth(component);
-			anInt1441 = image.getHeight(component);
-			anInt1444 = anInt1440;
-			anInt1445 = anInt1441;
-			anInt1442 = 0;
-			anInt1443 = 0;
-			anIntArray1439 = new int[anInt1440 * anInt1441];
-			PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, anInt1440, anInt1441, anIntArray1439, 0, anInt1440);
+			width = image.getWidth(component);
+			height = image.getHeight(component);
+			cropW = width;
+			cropH = height;
+			cropX = 0;
+			cropY = 0;
+			pixels = new int[width * height];
+			PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, width, height, pixels, 0, width);
 			pixelgrabber.grabPixels();
 		} catch (Exception _ex) {
 			System.out.println("Error converting jpg");
@@ -43,8 +43,8 @@ public class Image24 extends DoublyLinkedList.Node {
 		Buffer buffer = new Buffer(archive.read(s + ".dat"));
 		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
 		buffer_1.position = buffer.get2U();
-		anInt1444 = buffer_1.get2U();
-		anInt1445 = buffer_1.get2U();
+		cropW = buffer_1.get2U();
+		cropH = buffer_1.get2U();
 		int j = buffer_1.get1U();
 		int[] ai = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
@@ -58,35 +58,35 @@ public class Image24 extends DoublyLinkedList.Node {
 			buffer.position += buffer_1.get2U() * buffer_1.get2U();
 			buffer_1.position++;
 		}
-		anInt1442 = buffer_1.get1U();
-		anInt1443 = buffer_1.get1U();
-		anInt1440 = buffer_1.get2U();
-		anInt1441 = buffer_1.get2U();
-		int i1 = buffer_1.get1U();
-		int j1 = anInt1440 * anInt1441;
-		anIntArray1439 = new int[j1];
-		if (i1 == 0) {
-			for (int k1 = 0; k1 < j1; k1++) {
-				anIntArray1439[k1] = ai[buffer.get1U()];
+		cropX = buffer_1.get1U();
+		cropY = buffer_1.get1U();
+		width = buffer_1.get2U();
+		height = buffer_1.get2U();
+		int layout = buffer_1.get1U();
+		int pixelLen = width * height;
+		pixels = new int[pixelLen];
+		if (layout == 0) {
+			for (int k1 = 0; k1 < pixelLen; k1++) {
+				pixels[k1] = ai[buffer.get1U()];
 			}
 			return;
 		}
-		if (i1 == 1) {
-			for (int l1 = 0; l1 < anInt1440; l1++) {
-				for (int i2 = 0; i2 < anInt1441; i2++) {
-					anIntArray1439[l1 + (i2 * anInt1440)] = ai[buffer.get1U()];
+		if (layout == 1) {
+			for (int l1 = 0; l1 < width; l1++) {
+				for (int i2 = 0; i2 < height; i2++) {
+					pixels[l1 + (i2 * width)] = ai[buffer.get1U()];
 				}
 			}
 		}
 	}
 
-	public void method343() {
-		Draw2D.bind(anIntArray1439, anInt1440, anInt1441);
+	public void bind() {
+		Draw2D.bind(pixels, width, height);
 	}
 
 	public void method344(int i, int j, int k) {
-		for (int i1 = 0; i1 < anIntArray1439.length; i1++) {
-			int j1 = anIntArray1439[i1];
+		for (int i1 = 0; i1 < pixels.length; i1++) {
+			int j1 = pixels[i1];
 			if (j1 != 0) {
 				int k1 = (j1 >> 16) & 0xff;
 				k1 += i;
@@ -109,367 +109,364 @@ public class Image24 extends DoublyLinkedList.Node {
 				} else if (i2 > 255) {
 					i2 = 255;
 				}
-				anIntArray1439[i1] = (k1 << 16) + (l1 << 8) + i2;
+				pixels[i1] = (k1 << 16) + (l1 << 8) + i2;
 			}
 		}
 	}
 
 	public void method345() {
-		int[] ai = new int[anInt1444 * anInt1445];
-		for (int j = 0; j < anInt1441; j++) {
-			for (int k = 0; k < anInt1440; k++) {
-				ai[((j + anInt1443) * anInt1444) + (k + anInt1442)] = anIntArray1439[(j * anInt1440) + k];
+		int[] pixels = new int[cropW * cropH];
+		for (int j = 0; j < height; j++) {
+			for (int k = 0; k < width; k++) {
+				pixels[((j + cropY) * cropW) + (k + cropX)] = this.pixels[(j * width) + k];
 			}
 		}
-		anIntArray1439 = ai;
-		anInt1440 = anInt1444;
-		anInt1441 = anInt1445;
-		anInt1442 = 0;
-		anInt1443 = 0;
+		this.pixels = pixels;
+		width = cropW;
+		height = cropH;
+		cropX = 0;
+		cropY = 0;
 	}
 
-	public void method346(int i, int j) {
-		i += anInt1442;
-		j += anInt1443;
-		int l = i + (j * Draw2D.width);
-		int i1 = 0;
-		int j1 = anInt1441;
-		int k1 = anInt1440;
-		int l1 = Draw2D.width - k1;
-		int i2 = 0;
-		if (j < Draw2D.top) {
-			int j2 = Draw2D.top - j;
-			j1 -= j2;
-			j = Draw2D.top;
-			i1 += j2 * k1;
-			l += j2 * Draw2D.width;
+	public void blitOpaque(int x, int y) {
+		x += cropX;
+		y += cropY;
+		int dstOff = x + (y * Draw2D.width);
+		int srcOff = 0;
+		int h = height;
+		int w = width;
+		int dstStep = Draw2D.width - w;
+		int srcStep = 0;
+		if (y < Draw2D.top) {
+			int trim = Draw2D.top - y;
+			h -= trim;
+			y = Draw2D.top;
+			srcOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
-		if ((j + j1) > Draw2D.bottom) {
-			j1 -= (j + j1) - Draw2D.bottom;
+		if ((y + h) > Draw2D.bottom) {
+			h -= (y + h) - Draw2D.bottom;
 		}
-		if (i < Draw2D.left) {
-			int k2 = Draw2D.left - i;
-			k1 -= k2;
-			i = Draw2D.left;
-			i1 += k2;
-			l += k2;
-			i2 += k2;
-			l1 += k2;
+		if (x < Draw2D.left) {
+			int trim = Draw2D.left - x;
+			w -= trim;
+			x = Draw2D.left;
+			srcOff += trim;
+			dstOff += trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
-		if ((i + k1) > Draw2D.right) {
-			int l2 = (i + k1) - Draw2D.right;
-			k1 -= l2;
-			i2 += l2;
-			l1 += l2;
+		if ((x + w) > Draw2D.right) {
+			int trim = (x + w) - Draw2D.right;
+			w -= trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
-		if ((k1 <= 0) || (j1 <= 0)) {
-		} else {
-			method347(l, k1, j1, i2, i1, l1, anIntArray1439, Draw2D.pixels);
-		}
-	}
-
-	public void method347(int i, int j, int k, int l, int i1, int k1, int[] ai, int[] ai1) {
-		int l1 = -(j >> 2);
-		j = -(j & 3);
-		for (int i2 = -k; i2 < 0; i2++) {
-			for (int j2 = l1; j2 < 0; j2++) {
-				ai1[i++] = ai[i1++];
-				ai1[i++] = ai[i1++];
-				ai1[i++] = ai[i1++];
-				ai1[i++] = ai[i1++];
-			}
-			for (int k2 = j; k2 < 0; k2++) {
-				ai1[i++] = ai[i1++];
-			}
-			i += k1;
-			i1 += l;
+		if ((w > 0) && (h > 0)) {
+			copyPixels(dstOff, w, h, srcStep, srcOff, dstStep, pixels, Draw2D.pixels);
 		}
 	}
 
-	public void method348(int i, int k) {
-		i += anInt1442;
-		k += anInt1443;
-		int l = i + (k * Draw2D.width);
-		int i1 = 0;
-		int j1 = anInt1441;
-		int k1 = anInt1440;
-		int l1 = Draw2D.width - k1;
-		int i2 = 0;
-		if (k < Draw2D.top) {
-			int j2 = Draw2D.top - k;
-			j1 -= j2;
-			k = Draw2D.top;
-			i1 += j2 * k1;
-			l += j2 * Draw2D.width;
-		}
-		if ((k + j1) > Draw2D.bottom) {
-			j1 -= (k + j1) - Draw2D.bottom;
-		}
-		if (i < Draw2D.left) {
-			int k2 = Draw2D.left - i;
-			k1 -= k2;
-			i = Draw2D.left;
-			i1 += k2;
-			l += k2;
-			i2 += k2;
-			l1 += k2;
-		}
-		if ((i + k1) > Draw2D.right) {
-			int l2 = (i + k1) - Draw2D.right;
-			k1 -= l2;
-			i2 += l2;
-			l1 += l2;
-		}
-		if ((k1 <= 0) || (j1 <= 0)) {
-		} else {
-			method349(Draw2D.pixels, anIntArray1439, i1, l, k1, j1, l1, i2);
+	public void copyPixels(int dstOff, int w, int h, int srcStep, int srcOff, int dstStep, int[] src, int[] dst) {
+		int quarterWidth = -(w >> 2);
+		w = -(w & 3);
+		for (int i2 = -h; i2 < 0; i2++) {
+			for (int j2 = quarterWidth; j2 < 0; j2++) {
+				dst[dstOff++] = src[srcOff++];
+				dst[dstOff++] = src[srcOff++];
+				dst[dstOff++] = src[srcOff++];
+				dst[dstOff++] = src[srcOff++];
+			}
+			for (int k2 = w; k2 < 0; k2++) {
+				dst[dstOff++] = src[srcOff++];
+			}
+			dstOff += dstStep;
+			srcOff += srcStep;
 		}
 	}
 
-	public void method349(int[] ai, int[] ai1, int j, int k, int l, int i1, int j1, int k1) {
-		int l1 = -(l >> 2);
-		l = -(l & 3);
-		for (int i2 = -i1; i2 < 0; i2++) {
-			int i;
-			for (int j2 = l1; j2 < 0; j2++) {
-				i = ai1[j++];
-				if (i != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				i = ai1[j++];
-				if (i != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				i = ai1[j++];
-				if (i != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-				i = ai1[j++];
-				if (i != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-			}
-			for (int k2 = l; k2 < 0; k2++) {
-				i = ai1[j++];
-				if (i != 0) {
-					ai[k++] = i;
-				} else {
-					k++;
-				}
-			}
-			k += j1;
-			j += k1;
+	public void draw(int x, int y) {
+		x += cropX;
+		y += cropY;
+		int dstOff = x + (y * Draw2D.width);
+		int srcOff = 0;
+		int h = height;
+		int w = width;
+		int dstStep = Draw2D.width - w;
+		int srcStep = 0;
+		if (y < Draw2D.top) {
+			int j2 = Draw2D.top - y;
+			h -= j2;
+			y = Draw2D.top;
+			srcOff += j2 * w;
+			dstOff += j2 * Draw2D.width;
+		}
+		if ((y + h) > Draw2D.bottom) {
+			h -= (y + h) - Draw2D.bottom;
+		}
+		if (x < Draw2D.left) {
+			int k2 = Draw2D.left - x;
+			w -= k2;
+			x = Draw2D.left;
+			srcOff += k2;
+			dstOff += k2;
+			srcStep += k2;
+			dstStep += k2;
+		}
+		if ((x + w) > Draw2D.right) {
+			int trim = (x + w) - Draw2D.right;
+			w -= trim;
+			srcStep += trim;
+			dstStep += trim;
+		}
+		if ((w > 0) && (h > 0)) {
+			copyPixels(Draw2D.pixels, pixels, srcOff, dstOff, w, h, dstStep, srcStep);
 		}
 	}
 
-	public void method350(int i, int j, int k) {
-		i += anInt1442;
-		j += anInt1443;
-		int i1 = i + (j * Draw2D.width);
+	public void copyPixels(int[] dst, int[] src, int srcOff, int dstOff, int w, int h, int dstStep, int srcstep) {
+		int quarterW = -(w >> 2);
+		w = -(w & 3);
+		for (int y = -h; y < 0; y++) {
+			int rgb;
+			for (int x = quarterW; x < 0; x++) {
+				rgb = src[srcOff++];
+				if (rgb != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+				rgb = src[srcOff++];
+				if (rgb != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+				rgb = src[srcOff++];
+				if (rgb != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+				rgb = src[srcOff++];
+				if (rgb != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+			}
+			for (int k2 = w; k2 < 0; k2++) {
+				rgb = src[srcOff++];
+				if (rgb != 0) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+			}
+			dstOff += dstStep;
+			srcOff += srcstep;
+		}
+	}
+
+	public void draw(int x, int y, int alpha) {
+		x += cropX;
+		y += cropY;
+		int i1 = x + (y * Draw2D.width);
 		int j1 = 0;
-		int k1 = anInt1441;
-		int l1 = anInt1440;
-		int i2 = Draw2D.width - l1;
+		int k1 = height;
+		int w = width;
+		int i2 = Draw2D.width - w;
 		int j2 = 0;
-		if (j < Draw2D.top) {
-			int k2 = Draw2D.top - j;
+		if (y < Draw2D.top) {
+			int k2 = Draw2D.top - y;
 			k1 -= k2;
-			j = Draw2D.top;
-			j1 += k2 * l1;
+			y = Draw2D.top;
+			j1 += k2 * w;
 			i1 += k2 * Draw2D.width;
 		}
-		if ((j + k1) > Draw2D.bottom) {
-			k1 -= (j + k1) - Draw2D.bottom;
+		if ((y + k1) > Draw2D.bottom) {
+			k1 -= (y + k1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.left) {
-			int l2 = Draw2D.left - i;
-			l1 -= l2;
-			i = Draw2D.left;
+		if (x < Draw2D.left) {
+			int l2 = Draw2D.left - x;
+			w -= l2;
+			x = Draw2D.left;
 			j1 += l2;
 			i1 += l2;
 			j2 += l2;
 			i2 += l2;
 		}
-		if ((i + l1) > Draw2D.right) {
-			int i3 = (i + l1) - Draw2D.right;
-			l1 -= i3;
+		if ((x + w) > Draw2D.right) {
+			int i3 = (x + w) - Draw2D.right;
+			w -= i3;
 			j2 += i3;
 			i2 += i3;
 		}
-		if ((l1 <= 0) || (k1 <= 0)) {
-		} else {
-			method351(j1, l1, Draw2D.pixels, anIntArray1439, j2, k1, i2, k, i1);
+		if ((w > 0) && (k1 > 0)) {
+			copyPixelsAlpha(j1, w, Draw2D.pixels, pixels, j2, k1, i2, alpha, i1);
 		}
 	}
 
-	public void method351(int i, int j, int[] ai, int[] ai1, int l, int i1, int j1, int k1, int l1) {
-		int j2 = 256 - k1;
-		for (int k2 = -i1; k2 < 0; k2++) {
-			for (int l2 = -j; l2 < 0; l2++) {
-				int k = ai1[i++];
-				if (k != 0) {
-					int i3 = ai[l1];
-					ai[l1++] = (((((k & 0xff00ff) * k1) + ((i3 & 0xff00ff) * j2)) & 0xff00ff00) + ((((k & 0xff00) * k1) + ((i3 & 0xff00) * j2)) & 0xff0000)) >> 8;
+	public void copyPixelsAlpha(int srcOff, int w, int[] dst, int[] src, int srcstep, int h, int dstStep, int alpha, int dstOff) {
+		int invAlpha = 256 - alpha;
+		for (int k2 = -h; k2 < 0; k2++) {
+			for (int l2 = -w; l2 < 0; l2++) {
+				int srcRGB = src[srcOff++];
+				if (srcRGB != 0) {
+					int dstRGB = dst[dstOff];
+					dst[dstOff++] = (((((srcRGB & 0xff00ff) * alpha) + ((dstRGB & 0xff00ff) * invAlpha)) & 0xff00ff00) + ((((srcRGB & 0xff00) * alpha) + ((dstRGB & 0xff00) * invAlpha)) & 0xff0000)) >> 8;
 				} else {
-					l1++;
+					dstOff++;
 				}
 			}
-			l1 += j1;
-			i += l;
+			dstOff += dstStep;
+			srcOff += srcstep;
 		}
 	}
 
-	public void method352(int i, int j, int[] ai, int k, int[] ai1, int i1, int j1, int k1, int l1, int i2) {
+	public void drawRotatedMasked(int x, int y, int width, int height, int anchorX, int anchorY, int zoom, int angle, int[] lineLengths, int[] lineOffsets) {
 		try {
-			int j2 = -l1 / 2;
-			int k2 = -i / 2;
-			int l2 = (int) (Math.sin((double) j / 326.11000000000001D) * 65536D);
-			int i3 = (int) (Math.cos((double) j / 326.11000000000001D) * 65536D);
-			l2 = (l2 * k) >> 8;
-			i3 = (i3 * k) >> 8;
-			int j3 = (i2 << 16) + ((k2 * l2) + (j2 * i3));
-			int k3 = (i1 << 16) + ((k2 * i3) - (j2 * l2));
-			int l3 = k1 + (j1 * Draw2D.width);
-			for (j1 = 0; j1 < i; j1++) {
-				int i4 = ai1[j1];
-				int j4 = l3 + i4;
-				int k4 = j3 + (i3 * i4);
-				int l4 = k3 - (l2 * i4);
-				for (k1 = -ai[j1]; k1 < 0; k1++) {
-					Draw2D.pixels[j4++] = anIntArray1439[(k4 >> 16) + ((l4 >> 16) * anInt1440)];
-					k4 += i3;
-					l4 -= l2;
+			int midX = -width / 2;
+			int midY = -height / 2;
+			int sin = (int) (Math.sin((double) angle / 326.11000000000001D) * 65536D);
+			int cos = (int) (Math.cos((double) angle / 326.11000000000001D) * 65536D);
+			sin = (sin * zoom) >> 8;
+			cos = (cos * zoom) >> 8;
+			int leftX = (anchorX << 16) + ((midY * sin) + (midX * cos));
+			int lefty = (anchorY << 16) + ((midY * cos) - (midX * sin));
+			int leftOff = x + (y * Draw2D.width);
+			for (y = 0; y < height; y++) {
+				int lineOffset = lineOffsets[y];
+				int dstOff = leftOff + lineOffset;
+				int srcX = leftX + (cos * lineOffset);
+				int srcY = lefty - (sin * lineOffset);
+				for (x = -lineLengths[y]; x < 0; x++) {
+					Draw2D.pixels[dstOff++] = pixels[(srcX >> 16) + ((srcY >> 16) * this.width)];
+					srcX += cos;
+					srcY -= sin;
 				}
-				j3 += l2;
-				k3 += i3;
-				l3 += Draw2D.width;
+				leftX += sin;
+				lefty += cos;
+				leftOff += Draw2D.width;
 			}
 		} catch (Exception ignored) {
 		}
 	}
 
-	public void method353(int i, int j, int k, int l, int j1, int k1, double d, int l1) {
+	public void drawRotated(int x, int y, int width, int height, int anchorX, int anchorY, double radians, int zoom) {
 		try {
-			int i2 = -k / 2;
-			int j2 = -k1 / 2;
-			int k2 = (int) (Math.sin(d) * 65536D);
-			int l2 = (int) (Math.cos(d) * 65536D);
-			k2 = (k2 * j1) >> 8;
-			l2 = (l2 * j1) >> 8;
-			int i3 = (l << 16) + ((j2 * k2) + (i2 * l2));
-			int j3 = (j << 16) + ((j2 * l2) - (i2 * k2));
-			int k3 = l1 + (i * Draw2D.width);
-			for (i = 0; i < k1; i++) {
-				int l3 = k3;
-				int i4 = i3;
-				int j4 = j3;
-				for (l1 = -k; l1 < 0; l1++) {
-					int k4 = anIntArray1439[(i4 >> 16) + ((j4 >> 16) * anInt1440)];
-					if (k4 != 0) {
-						Draw2D.pixels[l3++] = k4;
+			int centerX = -width / 2;
+			int centerY = -height / 2;
+			int sin = (int) (Math.sin(radians) * 65536D);
+			int cos = (int) (Math.cos(radians) * 65536D);
+			sin = (sin * zoom) >> 8;
+			cos = (cos * zoom) >> 8;
+			int leftX = (anchorX << 16) + ((centerY * sin) + (centerX * cos));
+			int leftY = (anchorY << 16) + ((centerY * cos) - (centerX * sin));
+			int leftOff = x + (y * Draw2D.width);
+
+			for (y = 0; y < height; y++) {
+				int dstOff = leftOff;
+				int dstX = leftX;
+				int dstY = leftY;
+				for (x = -width; x < 0; x++) {
+					int rgb = pixels[(dstX >> 16) + ((dstY >> 16) * this.width)];
+					if (rgb != 0) {
+						Draw2D.pixels[dstOff++] = rgb;
 					} else {
-						l3++;
+						dstOff++;
 					}
-					i4 += l2;
-					j4 -= k2;
+					dstX += cos;
+					dstY -= sin;
 				}
-				i3 += k2;
-				j3 += l2;
-				k3 += Draw2D.width;
+				leftX += sin;
+				leftY += cos;
+				leftOff += Draw2D.width;
 			}
 		} catch (Exception ignored) {
 		}
 	}
 
-	public void method354(Image8 image, int i, int j) {
-		j += anInt1442;
-		i += anInt1443;
-		int k = j + (i * Draw2D.width);
-		int l = 0;
-		int i1 = anInt1441;
-		int j1 = anInt1440;
-		int k1 = Draw2D.width - j1;
-		int l1 = 0;
-		if (i < Draw2D.top) {
-			int i2 = Draw2D.top - i;
-			i1 -= i2;
-			i = Draw2D.top;
-			l += i2 * j1;
-			k += i2 * Draw2D.width;
+	public void drawMasked(Image8 mask, int y, int x) {
+		x += cropX;
+		y += cropY;
+		int dstOff = x + (y * Draw2D.width);
+		int srcOff = 0;
+		int h = height;
+		int w = width;
+		int dstStep = Draw2D.width - w;
+		int srcStep = 0;
+		if (y < Draw2D.top) {
+			int trim = Draw2D.top - y;
+			h -= trim;
+			y = Draw2D.top;
+			srcOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
-		if ((i + i1) > Draw2D.bottom) {
-			i1 -= (i + i1) - Draw2D.bottom;
+		if ((y + h) > Draw2D.bottom) {
+			h -= (y + h) - Draw2D.bottom;
 		}
-		if (j < Draw2D.left) {
-			int j2 = Draw2D.left - j;
-			j1 -= j2;
-			j = Draw2D.left;
-			l += j2;
-			k += j2;
-			l1 += j2;
-			k1 += j2;
+		if (x < Draw2D.left) {
+			int trim = Draw2D.left - x;
+			w -= trim;
+			x = Draw2D.left;
+			srcOff += trim;
+			dstOff += trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
-		if ((j + j1) > Draw2D.right) {
-			int k2 = (j + j1) - Draw2D.right;
-			j1 -= k2;
-			l1 += k2;
-			k1 += k2;
+		if ((x + w) > Draw2D.right) {
+			int trim = (x + w) - Draw2D.right;
+			w -= trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
-		if ((j1 <= 0) || (i1 <= 0)) {
-		} else {
-			method355(anIntArray1439, j1, image.pixels, i1, Draw2D.pixels, k1, k, l1, l);
+		if ((w > 0) && (h > 0)) {
+			copyPixelsMasked(pixels, srcOff, srcStep, mask.pixels, w, h, Draw2D.pixels, dstOff, dstStep);
 		}
 	}
 
-	public void method355(int[] ai, int i, byte[] abyte0, int j, int[] ai1, int l, int i1, int j1, int k1) {
-		int l1 = -(i >> 2);
-		i = -(i & 3);
-		for (int j2 = -j; j2 < 0; j2++) {
-			int k;
-			for (int k2 = l1; k2 < 0; k2++) {
-				k = ai[k1++];
-				if ((k != 0) && (abyte0[i1] == 0)) {
-					ai1[i1++] = k;
+	public void copyPixelsMasked(int[] src, int srcOff, int srcStep, byte[] mask, int w, int h, int[] dst, int dstOff, int dstStep) {
+		int quarterW = -(w >> 2);
+		w = -(w & 3);
+		for (int y = -h; y < 0; y++) {
+			int rgb;
+			for (int k2 = quarterW; k2 < 0; k2++) {
+				rgb = src[srcOff++];
+				if ((rgb != 0) && (mask[dstOff] == 0)) {
+					dst[dstOff++] = rgb;
 				} else {
-					i1++;
+					dstOff++;
 				}
-				k = ai[k1++];
-				if ((k != 0) && (abyte0[i1] == 0)) {
-					ai1[i1++] = k;
+				rgb = src[srcOff++];
+				if ((rgb != 0) && (mask[dstOff] == 0)) {
+					dst[dstOff++] = rgb;
 				} else {
-					i1++;
+					dstOff++;
 				}
-				k = ai[k1++];
-				if ((k != 0) && (abyte0[i1] == 0)) {
-					ai1[i1++] = k;
+				rgb = src[srcOff++];
+				if ((rgb != 0) && (mask[dstOff] == 0)) {
+					dst[dstOff++] = rgb;
 				} else {
-					i1++;
+					dstOff++;
 				}
-				k = ai[k1++];
-				if ((k != 0) && (abyte0[i1] == 0)) {
-					ai1[i1++] = k;
+				rgb = src[srcOff++];
+				if ((rgb != 0) && (mask[dstOff] == 0)) {
+					dst[dstOff++] = rgb;
 				} else {
-					i1++;
-				}
-			}
-			for (int l2 = i; l2 < 0; l2++) {
-				k = ai[k1++];
-				if ((k != 0) && (abyte0[i1] == 0)) {
-					ai1[i1++] = k;
-				} else {
-					i1++;
+					dstOff++;
 				}
 			}
-			i1 += l;
-			k1 += j1;
+			for (int l2 = w; l2 < 0; l2++) {
+				rgb = src[srcOff++];
+				if ((rgb != 0) && (mask[dstOff] == 0)) {
+					dst[dstOff++] = rgb;
+				} else {
+					dstOff++;
+				}
+			}
+			dstOff += dstStep;
+			srcOff += srcStep;
 		}
 	}
 

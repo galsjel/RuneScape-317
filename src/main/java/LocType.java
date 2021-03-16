@@ -13,7 +13,7 @@ public class LocType {
 	public static Buffer aBuffer_753;
 	public static int[] anIntArray755;
 	public static int anInt756;
-	public static Game aGame765;
+	public static Game game;
 	public static int anInt771;
 	public static LRUMap<Long, Model> aCache_780 = new LRUMap(30);
 	public static LocType[] aTypeArray782;
@@ -205,14 +205,14 @@ public class LocType {
 	public LocType method580() {
 		int i = -1;
 		if (anInt774 != -1) {
-			VarbitType varbit = VarbitType.aVarbitArray646[anInt774];
-			int j = varbit.anInt648;
-			int k = varbit.anInt649;
-			int l = varbit.anInt650;
-			int i1 = Game.anIntArray1232[l - k];
-			i = (aGame765.anIntArray971[j] >> k) & i1;
+			VarbitType varbit = VarbitType.instances[anInt774];
+			int j = varbit.varp;
+			int k = varbit.lsb;
+			int l = varbit.msb;
+			int i1 = Game.BITMASK[l - k];
+			i = (game.anIntArray971[j] >> k) & i1;
 		} else if (anInt749 != -1) {
-			i = aGame765.anIntArray971[anInt749];
+			i = game.anIntArray971[anInt749];
 		}
 		if ((i < 0) || (i >= anIntArray759.length) || (anIntArray759[i] == -1)) {
 			return null;

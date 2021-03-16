@@ -4,15 +4,15 @@
 
 public class SceneWall {
 
-	public int anInt273;
-	public int anInt274;
-	public int anInt275;
-	public int anInt276;
-	public int anInt277;
-	public Entity aEntity_278;
-	public Entity aEntity_279;
-	public int anInt280;
-	public byte aByte281;
+	public int y;
+	public int x;
+	public int z;
+	public int type0;
+	public int type1;
+	public Entity entity0;
+	public Entity entity1;
+	public int bitset;
+	public byte info;
 
 	public SceneWall() {
 	}

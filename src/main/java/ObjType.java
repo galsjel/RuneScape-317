@@ -69,7 +69,7 @@ public class ObjType {
 	public static Image24 method200(int i, int j, int k) {
 		if (k == 0) {
 			Image24 image = iconCache.get(i);
-			if ((image != null) && (image.anInt1445 != j) && (image.anInt1445 != -1)) {
+			if ((image != null) && (image.cropH != j) && (image.cropH != -1)) {
 				image.unlink();
 				image = null;
 			}
@@ -115,7 +115,7 @@ public class ObjType {
 		int i3 = Draw2D.top;
 		int j3 = Draw2D.bottom;
 		Draw3D.jagged = false;
-		Draw2D.bind(class30_sub2_sub1_sub1_1.anIntArray1439, 32, 32);
+		Draw2D.bind(class30_sub2_sub1_sub1_1.pixels, 32, 32);
 		Draw2D.fillRect(0, 0, 32, 32, 0);
 		Draw3D.init2D();
 		int k3 = type.anInt181;
@@ -130,15 +130,15 @@ public class ObjType {
 		model.drawSimple(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + (model.minY / 2) + type.anInt194, i4 + type.anInt194);
 		for (int i5 = 31; i5 >= 0; i5--) {
 			for (int j4 = 31; j4 >= 0; j4--) {
-				if (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] == 0) {
-					if ((i5 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(i5 - 1) + (j4 * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
-					} else if ((j4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + ((j4 - 1) * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
-					} else if ((i5 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + 1 + (j4 * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
-					} else if ((j4 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[i5 + ((j4 + 1) * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[i5 + (j4 * 32)] = 1;
+				if (class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] == 0) {
+					if ((i5 > 0) && (class30_sub2_sub1_sub1_1.pixels[(i5 - 1) + (j4 * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
+					} else if ((j4 > 0) && (class30_sub2_sub1_sub1_1.pixels[i5 + ((j4 - 1) * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
+					} else if ((i5 < 31) && (class30_sub2_sub1_sub1_1.pixels[i5 + 1 + (j4 * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
+					} else if ((j4 < 31) && (class30_sub2_sub1_sub1_1.pixels[i5 + ((j4 + 1) * 32)] > 1)) {
+						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
 					}
 				}
 			}
@@ -146,15 +146,15 @@ public class ObjType {
 		if (k > 0) {
 			for (int j5 = 31; j5 >= 0; j5--) {
 				for (int k4 = 31; k4 >= 0; k4--) {
-					if (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] == 0) {
-						if ((j5 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(j5 - 1) + (k4 * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
-						} else if ((k4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + ((k4 - 1) * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
-						} else if ((j5 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + 1 + (k4 * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
-						} else if ((k4 < 31) && (class30_sub2_sub1_sub1_1.anIntArray1439[j5 + ((k4 + 1) * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.anIntArray1439[j5 + (k4 * 32)] = k;
+					if (class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] == 0) {
+						if ((j5 > 0) && (class30_sub2_sub1_sub1_1.pixels[(j5 - 1) + (k4 * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
+						} else if ((k4 > 0) && (class30_sub2_sub1_sub1_1.pixels[j5 + ((k4 - 1) * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
+						} else if ((j5 < 31) && (class30_sub2_sub1_sub1_1.pixels[j5 + 1 + (k4 * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
+						} else if ((k4 < 31) && (class30_sub2_sub1_sub1_1.pixels[j5 + ((k4 + 1) * 32)] == 1)) {
+							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
 						}
 					}
 				}
@@ -162,20 +162,20 @@ public class ObjType {
 		} else if (k == 0) {
 			for (int k5 = 31; k5 >= 0; k5--) {
 				for (int l4 = 31; l4 >= 0; l4--) {
-					if ((class30_sub2_sub1_sub1_1.anIntArray1439[k5 + (l4 * 32)] == 0) && (k5 > 0) && (l4 > 0) && (class30_sub2_sub1_sub1_1.anIntArray1439[(k5 - 1) + ((l4 - 1) * 32)] > 0)) {
-						class30_sub2_sub1_sub1_1.anIntArray1439[k5 + (l4 * 32)] = 0x302020;
+					if ((class30_sub2_sub1_sub1_1.pixels[k5 + (l4 * 32)] == 0) && (k5 > 0) && (l4 > 0) && (class30_sub2_sub1_sub1_1.pixels[(k5 - 1) + ((l4 - 1) * 32)] > 0)) {
+						class30_sub2_sub1_sub1_1.pixels[k5 + (l4 * 32)] = 0x302020;
 					}
 				}
 			}
 		}
 		if (type.anInt163 != -1) {
-			int l5 = class30_sub2_sub1_sub1_2.anInt1444;
-			int j6 = class30_sub2_sub1_sub1_2.anInt1445;
-			class30_sub2_sub1_sub1_2.anInt1444 = 32;
-			class30_sub2_sub1_sub1_2.anInt1445 = 32;
-			class30_sub2_sub1_sub1_2.method348(0, 0);
-			class30_sub2_sub1_sub1_2.anInt1444 = l5;
-			class30_sub2_sub1_sub1_2.anInt1445 = j6;
+			int l5 = class30_sub2_sub1_sub1_2.cropW;
+			int j6 = class30_sub2_sub1_sub1_2.cropH;
+			class30_sub2_sub1_sub1_2.cropW = 32;
+			class30_sub2_sub1_sub1_2.cropH = 32;
+			class30_sub2_sub1_sub1_2.draw(0, 0);
+			class30_sub2_sub1_sub1_2.cropW = l5;
+			class30_sub2_sub1_sub1_2.cropH = j6;
 		}
 		if (k == 0) {
 			iconCache.put(i, class30_sub2_sub1_sub1_1);
@@ -187,11 +187,11 @@ public class ObjType {
 		Draw3D.lineOffset = ai;
 		Draw3D.jagged = true;
 		if (type.aBoolean176) {
-			class30_sub2_sub1_sub1_1.anInt1444 = 33;
+			class30_sub2_sub1_sub1_1.cropW = 33;
 		} else {
-			class30_sub2_sub1_sub1_1.anInt1444 = 32;
+			class30_sub2_sub1_sub1_1.cropW = 32;
 		}
-		class30_sub2_sub1_sub1_1.anInt1445 = j;
+		class30_sub2_sub1_sub1_1.cropH = j;
 		return class30_sub2_sub1_sub1_1;
 	}
 	public byte aByte154;

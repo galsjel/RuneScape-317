@@ -4,8 +4,8 @@ public class Image8 {
 
 	public final int[] palette;
 	public byte[] pixels;
-	public int anInt1452;
-	public int anInt1453;
+	public int width;
+	public int height;
 	public int anInt1454;
 	public int anInt1455;
 	public int anInt1456;
@@ -29,10 +29,10 @@ public class Image8 {
 		}
 		anInt1454 = buffer_1.get1U();
 		anInt1455 = buffer_1.get1U();
-		anInt1452 = buffer_1.get2U();
-		anInt1453 = buffer_1.get2U();
+		width = buffer_1.get2U();
+		height = buffer_1.get2U();
 		int i1 = buffer_1.get1U();
-		int j1 = anInt1452 * anInt1453;
+		int j1 = width * height;
 		pixels = new byte[j1];
 		if (i1 == 0) {
 			for (int k1 = 0; k1 < j1; k1++) {
@@ -41,9 +41,9 @@ public class Image8 {
 			return;
 		}
 		if (i1 == 1) {
-			for (int l1 = 0; l1 < anInt1452; l1++) {
-				for (int i2 = 0; i2 < anInt1453; i2++) {
-					pixels[l1 + (i2 * anInt1452)] = buffer.get1();
+			for (int l1 = 0; l1 < width; l1++) {
+				for (int i2 = 0; i2 < height; i2++) {
+					pixels[l1 + (i2 * width)] = buffer.get1();
 				}
 			}
 		}
@@ -54,58 +54,58 @@ public class Image8 {
 		anInt1457 /= 2;
 		byte[] abyte0 = new byte[anInt1456 * anInt1457];
 		int i = 0;
-		for (int j = 0; j < anInt1453; j++) {
-			for (int k = 0; k < anInt1452; k++) {
+		for (int j = 0; j < height; j++) {
+			for (int k = 0; k < width; k++) {
 				abyte0[((k + anInt1454) >> 1) + (((j + anInt1455) >> 1) * anInt1456)] = pixels[i++];
 			}
 		}
 		pixels = abyte0;
-		anInt1452 = anInt1456;
-		anInt1453 = anInt1457;
+		width = anInt1456;
+		height = anInt1457;
 		anInt1454 = 0;
 		anInt1455 = 0;
 	}
 
 	public void method357() {
-		if ((anInt1452 == anInt1456) && (anInt1453 == anInt1457)) {
+		if ((width == anInt1456) && (height == anInt1457)) {
 			return;
 		}
 		byte[] abyte0 = new byte[anInt1456 * anInt1457];
 		int i = 0;
-		for (int j = 0; j < anInt1453; j++) {
-			for (int k = 0; k < anInt1452; k++) {
+		for (int j = 0; j < height; j++) {
+			for (int k = 0; k < width; k++) {
 				abyte0[k + anInt1454 + ((j + anInt1455) * anInt1456)] = pixels[i++];
 			}
 		}
 		pixels = abyte0;
-		anInt1452 = anInt1456;
-		anInt1453 = anInt1457;
+		width = anInt1456;
+		height = anInt1457;
 		anInt1454 = 0;
 		anInt1455 = 0;
 	}
 
 	public void method358() {
-		byte[] abyte0 = new byte[anInt1452 * anInt1453];
+		byte[] abyte0 = new byte[width * height];
 		int j = 0;
-		for (int k = 0; k < anInt1453; k++) {
-			for (int l = anInt1452 - 1; l >= 0; l--) {
-				abyte0[j++] = pixels[l + (k * anInt1452)];
+		for (int k = 0; k < height; k++) {
+			for (int l = width - 1; l >= 0; l--) {
+				abyte0[j++] = pixels[l + (k * width)];
 			}
 		}
 		pixels = abyte0;
-		anInt1454 = anInt1456 - anInt1452 - anInt1454;
+		anInt1454 = anInt1456 - width - anInt1454;
 	}
 
 	public void method359() {
-		byte[] abyte0 = new byte[anInt1452 * anInt1453];
+		byte[] abyte0 = new byte[width * height];
 		int i = 0;
-		for (int j = anInt1453 - 1; j >= 0; j--) {
-			for (int k = 0; k < anInt1452; k++) {
-				abyte0[i++] = pixels[k + (j * anInt1452)];
+		for (int j = height - 1; j >= 0; j--) {
+			for (int k = 0; k < width; k++) {
+				abyte0[i++] = pixels[k + (j * width)];
 			}
 		}
 		pixels = abyte0;
-		anInt1455 = anInt1457 - anInt1453 - anInt1455;
+		anInt1455 = anInt1457 - height - anInt1455;
 	}
 
 	public void method360(int i, int j, int k) {
@@ -135,46 +135,46 @@ public class Image8 {
 		}
 	}
 
-	public void method361(int i, int k) {
-		i += anInt1454;
-		k += anInt1455;
-		int l = i + (k * Draw2D.width);
+	public void blit(int x, int y) {
+		x += anInt1454;
+		y += anInt1455;
+		int l = x + (y * Draw2D.width);
 		int i1 = 0;
-		int j1 = anInt1453;
-		int k1 = anInt1452;
+		int j1 = height;
+		int k1 = width;
 		int l1 = Draw2D.width - k1;
 		int i2 = 0;
-		if (k < Draw2D.top) {
-			int j2 = Draw2D.top - k;
+		if (y < Draw2D.top) {
+			int j2 = Draw2D.top - y;
 			j1 -= j2;
-			k = Draw2D.top;
+			y = Draw2D.top;
 			i1 += j2 * k1;
 			l += j2 * Draw2D.width;
 		}
-		if ((k + j1) > Draw2D.bottom) {
-			j1 -= (k + j1) - Draw2D.bottom;
+		if ((y + j1) > Draw2D.bottom) {
+			j1 -= (y + j1) - Draw2D.bottom;
 		}
-		if (i < Draw2D.left) {
-			int k2 = Draw2D.left - i;
+		if (x < Draw2D.left) {
+			int k2 = Draw2D.left - x;
 			k1 -= k2;
-			i = Draw2D.left;
+			x = Draw2D.left;
 			i1 += k2;
 			l += k2;
 			i2 += k2;
 			l1 += k2;
 		}
-		if ((i + k1) > Draw2D.right) {
-			int l2 = (i + k1) - Draw2D.right;
+		if ((x + k1) > Draw2D.right) {
+			int l2 = (x + k1) - Draw2D.right;
 			k1 -= l2;
 			i2 += l2;
 			l1 += l2;
 		}
 		if ((k1 > 0) && (j1 > 0)) {
-			method362(j1, Draw2D.pixels, pixels, l1, l, k1, i1, palette, i2);
+			blit(j1, Draw2D.pixels, pixels, l1, l, k1, i1, palette, i2);
 		}
 	}
 
-	public void method362(int i, int[] ai, byte[] abyte0, int j, int k, int l, int i1, int[] ai1, int j1) {
+	public void blit(int i, int[] ai, byte[] abyte0, int j, int k, int l, int i1, int[] ai1, int j1) {
 		int k1 = -(l >> 2);
 		l = -(l & 3);
 		for (int l1 = -i; l1 < 0; l1++) {

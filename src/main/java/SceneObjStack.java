@@ -4,14 +4,14 @@
 
 public class SceneObjStack {
 
-	public int anInt45;
-	public int anInt46;
-	public int anInt47;
-	public Entity aEntity_48;
-	public Entity aEntity_49;
-	public Entity aEntity_50;
-	public int anInt51;
-	public int anInt52;
+	public int y;
+	public int x;
+	public int z;
+	public Entity entity0;
+	public Entity entity1;
+	public Entity entity2;
+	public int bitset;
+	public int offset;
 
 	public SceneObjStack() {
 	}

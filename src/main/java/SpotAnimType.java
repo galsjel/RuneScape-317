@@ -31,7 +31,7 @@ public class SpotAnimType {
 	public int anInt404;
 	public int anInt405;
 	public int anInt406 = -1;
-	public SeqType aType_407;
+	public SeqType seq;
 	public int anInt410 = 128;
 	public int anInt411 = 128;
 	public int anInt412;
@@ -52,7 +52,7 @@ public class SpotAnimType {
 			} else if (i == 2) {
 				anInt406 = buffer.get2U();
 				if (SeqType.instances != null) {
-					aType_407 = SeqType.instances[anInt406];
+					seq = SeqType.instances[anInt406];
 				}
 			} else if (i == 4) {
 				anInt410 = buffer.get2U();

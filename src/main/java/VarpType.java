@@ -25,12 +25,13 @@ public class VarpType {
 			if (instances[j] == null) {
 				instances[j] = new VarpType();
 			}
-			instances[j].method547(buffer, j);
+			instances[j].read(buffer, j);
 		}
 		if (buffer.position != buffer.data.length) {
 			System.out.println("varptype load mismatch");
 		}
 	}
+
 	public String unusedString;
 	public int unusedInt0;
 	public int unusedInt1;
@@ -46,40 +47,39 @@ public class VarpType {
 	public VarpType() {
 	}
 
-	public void method547(Buffer buffer, int i) {
+	public void read(Buffer buffer, int i) {
 		do {
-			int j = buffer.get1U();
-			if (j == 0) {
+			int op = buffer.get1U();
+			if (op == 0) {
 				return;
-			}
-			if (j == 1) {
+			} else if (op == 1) {
 				unusedInt0 = buffer.get1U();
-			} else if (j == 2) {
+			} else if (op == 2) {
 				unusedInt1 = buffer.get1U();
-			} else if (j == 3) {
+			} else if (op == 3) {
 				unusedBool0 = true;
 				anIntArray703[anInt702++] = i;
-			} else if (j == 4) {
+			} else if (op == 4) {
 				unusedBool1 = false;
-			} else if (j == 5) {
+			} else if (op == 5) {
 				anInt709 = buffer.get2U();
-			} else if (j == 6) {
+			} else if (op == 6) {
 				unusedBool2 = true;
-			} else if (j == 7) {
+			} else if (op == 7) {
 				unusedInt2 = buffer.get4();
-			} else if (j == 8) {
+			} else if (op == 8) {
 				unusedInt3 = 1;
 				unusedBool3 = true;
-			} else if (j == 10) {
+			} else if (op == 10) {
 				unusedString = buffer.getString();
-			} else if (j == 11) {
+			} else if (op == 11) {
 				unusedBool3 = true;
-			} else if (j == 12) {
+			} else if (op == 12) {
 				unusedInt4 = buffer.get4();
-			} else if (j == 13) {
+			} else if (op == 13) {
 				unusedInt3 = 2;
 			} else {
-				System.out.println("Error unrecognised config code: " + j);
+				System.out.println("Error unrecognised config code: " + op);
 			}
 		} while (true);
 	}

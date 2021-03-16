@@ -8,78 +8,79 @@ import java.io.IOException;
 
 public class NPCType {
 
-	public static int anInt56;
-	public static Buffer aBuffer_60;
-	public static int anInt62;
-	public static int[] anIntArray72;
-	public static NPCType[] aTypeArray80;
-	public static Game aGame82;
+	private static int cachePosition;
+	private static Buffer dat;
+	public static int[] offsets;
+	private static NPCType[] cache;
+	public static Game game;
 	public static LRUMap<Long, Model> modelCache = new LRUMap<>(30);
 
-	public static NPCType method159(int i) {
-		if (i > aTypeArray80.length) {
-			i = 0;
+	public static NPCType get(int id) {
+		if (id > cache.length) {
+			id = 0;
 		}
-
 		for (int j = 0; j < 20; j++) {
-			if (aTypeArray80[j].aLong78 == (long) i) {
-				return aTypeArray80[j];
+			if (cache[j].uid == (long) id) {
+				return cache[j];
 			}
 		}
-		anInt56 = (anInt56 + 1) % 20;
-		NPCType type = aTypeArray80[anInt56] = new NPCType();
-		aBuffer_60.position = anIntArray72[i];
-		type.aLong78 = i;
-		type.method165(aBuffer_60);
+		cachePosition = (cachePosition + 1) % 20;
+		NPCType type = cache[cachePosition] = new NPCType();
+		dat.position = offsets[id];
+		type.uid = id;
+		type.read(dat);
 		return type;
 	}
 
 	public static void unpack(FileArchive archive) throws IOException {
-		aBuffer_60 = new Buffer(archive.read("npc.dat"));
+		dat = new Buffer(archive.read("npc.dat"));
 		Buffer buffer = new Buffer(archive.read("npc.idx"));
-		anInt62 = buffer.get2U();
-		anIntArray72 = new int[anInt62];
-		int i = 2;
-		for (int j = 0; j < anInt62; j++) {
-			anIntArray72[j] = i;
-			i += buffer.get2U();
+		int count = buffer.get2U();
+		offsets = new int[count];
+
+		int offset = 2;
+		for (int i = 0; i < count; i++) {
+			offsets[i] = offset;
+			offset += buffer.get2U();
 		}
-		aTypeArray80 = new NPCType[20];
+
+		cache = new NPCType[20];
+
 		for (int k = 0; k < 20; k++) {
-			aTypeArray80[k] = new NPCType();
+			cache[k] = new NPCType();
 		}
 	}
 
 	public static void unload() {
 		modelCache = null;
-		anIntArray72 = null;
-		aTypeArray80 = null;
-		aBuffer_60 = null;
+		offsets = null;
+		cache = null;
+		dat = null;
 	}
 
-	public int anInt55 = -1;
-	public int anInt57 = -1;
-	public int anInt58 = -1;
-	public int anInt59 = -1;
+	public int seqTurnRight = -1;
+	public int varbit = -1;
+	public int seqTurnAround = -1;
+	public int varp = -1;
 	public int anInt61 = -1;
 	public String aString65;
 	public String[] aStringArray66;
-	public int anInt67 = -1;
-	public byte aByte68 = 1;
+	public int seqWalk = -1;
+	public byte size = 1;
 	public int[] anIntArray70;
 	public int unusedInt0 = -1;
 	public int[] anIntArray73;
 	public int anInt75 = -1;
 	public int[] anIntArray76;
-	public int anInt77 = -1;
-	public long aLong78 = -1L;
-	public int anInt79 = 32;
-	public int anInt83 = -1;
+	public int seqStand = -1;
+	public long uid = -1L;
+	public int turnSpeed = 32;
+	public int seqTurnLeft = -1;
 	public boolean aBoolean84 = true;
 	public int anInt85;
 	public int anInt86 = 128;
 	public boolean aBoolean87 = true;
-	public int[] anIntArray88;
+	public int[] overrides;
 	public byte[] aByteArray89;
 	public int unusedInt1 = -1;
 	public int anInt91 = 128;
@@ -92,8 +93,8 @@ public class NPCType {
 	}
 
 	public Model method160() {
-		if (anIntArray88 != null) {
-			NPCType type = method161();
+		if (overrides != null) {
+			NPCType type = getOverrideType();
 			if (type == null) {
 				return null;
 			} else {
@@ -130,35 +131,39 @@ public class NPCType {
 		return model;
 	}
 
-	public NPCType method161() {
-		int j = -1;
-		if (anInt57 != -1) {
-			VarbitType varbit = VarbitType.aVarbitArray646[anInt57];
-			int k = varbit.anInt648;
-			int l = varbit.anInt649;
-			int i1 = varbit.anInt650;
-			int j1 = Game.anIntArray1232[i1 - l];
-			j = (aGame82.anIntArray971[k] >> l) & j1;
-		} else if (anInt59 != -1) {
-			j = aGame82.anIntArray971[anInt59];
+	public NPCType getOverrideType() {
+		int value = -1;
+
+		if (varbit != -1) {
+			VarbitType vb = VarbitType.instances[this.varbit];
+			int varp = vb.varp;
+			int lsb = vb.lsb;
+			int msb = vb.msb;
+			int mask = Game.BITMASK[msb - lsb];
+			value = (game.anIntArray971[varp] >> lsb) & mask;
+		} else if (varp != -1) {
+			value = game.anIntArray971[varp];
 		}
-		if ((j < 0) || (j >= anIntArray88.length) || (anIntArray88[j] == -1)) {
+
+		if ((value < 0) || (value >= overrides.length) || (overrides[value] == -1)) {
 			return null;
 		} else {
-			return method159(anIntArray88[j]);
+			return get(overrides[value]);
 		}
 	}
 
 	public Model method164(int j, int k, int[] ai) {
-		if (anIntArray88 != null) {
-			NPCType type = method161();
+		if (overrides != null) {
+			NPCType type = getOverrideType();
 			if (type == null) {
 				return null;
 			} else {
 				return type.method164(j, k, ai);
 			}
 		}
-		Model model = modelCache.get(aLong78);
+
+		Model model = modelCache.get(uid);
+
 		if (model == null) {
 			boolean flag = false;
 			for (int value : anIntArray94) {
@@ -185,7 +190,7 @@ public class NPCType {
 			}
 			model.createLabelReferences();
 			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
-			modelCache.put(aLong78, model);
+			modelCache.put(uid, model);
 		}
 		Model model_1 = Model.EMPTY;
 		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));
@@ -200,13 +205,13 @@ public class NPCType {
 		model_1.calculateBoundsCylinder();
 		model_1.labelFaces = null;
 		model_1.labelVertices = null;
-		if (aByte68 == 1) {
+		if (size == 1) {
 			model_1.pickBounds = true;
 		}
 		return model_1;
 	}
 
-	public void method165(Buffer buffer) {
+	public void read(Buffer buffer) {
 		do {
 			int i = buffer.get1U();
 			if (i == 0) {
@@ -223,16 +228,16 @@ public class NPCType {
 			} else if (i == 3) {
 				aByteArray89 = buffer.getStringRaw();
 			} else if (i == 12) {
-				aByte68 = buffer.get1();
+				size = buffer.get1();
 			} else if (i == 13) {
-				anInt77 = buffer.get2U();
+				seqStand = buffer.get2U();
 			} else if (i == 14) {
-				anInt67 = buffer.get2U();
+				seqWalk = buffer.get2U();
 			} else if (i == 17) {
-				anInt67 = buffer.get2U();
-				anInt58 = buffer.get2U();
-				anInt83 = buffer.get2U();
-				anInt55 = buffer.get2U();
+				seqWalk = buffer.get2U();
+				seqTurnAround = buffer.get2U();
+				seqTurnLeft = buffer.get2U();
+				seqTurnRight = buffer.get2U();
 			} else if ((i >= 30) && (i < 40)) {
 				if (aStringArray66 == null) {
 					aStringArray66 = new String[5];
@@ -278,22 +283,22 @@ public class NPCType {
 			} else if (i == 102) {
 				anInt75 = buffer.get2U();
 			} else if (i == 103) {
-				anInt79 = buffer.get2U();
+				turnSpeed = buffer.get2U();
 			} else if (i == 106) {
-				anInt57 = buffer.get2U();
-				if (anInt57 == 65535) {
-					anInt57 = -1;
+				varbit = buffer.get2U();
+				if (varbit == 65535) {
+					varbit = -1;
 				}
-				anInt59 = buffer.get2U();
-				if (anInt59 == 65535) {
-					anInt59 = -1;
+				varp = buffer.get2U();
+				if (varp == 65535) {
+					varp = -1;
 				}
 				int i1 = buffer.get1U();
-				anIntArray88 = new int[i1 + 1];
+				overrides = new int[i1 + 1];
 				for (int i2 = 0; i2 <= i1; i2++) {
-					anIntArray88[i2] = buffer.get2U();
-					if (anIntArray88[i2] == 65535) {
-						anIntArray88[i2] = -1;
+					overrides[i2] = buffer.get2U();
+					if (overrides[i2] == 65535) {
+						overrides[i2] = -1;
 					}
 				}
 			} else if (i == 107) {

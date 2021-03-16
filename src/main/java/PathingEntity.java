@@ -4,31 +4,31 @@
 
 public class PathingEntity extends Entity {
 
-	public final int[] moveQueueTileX = new int[10];
-	public final int[] moveQueueTileZ = new int[10];
+	public final int[] pathTileX = new int[10];
+	public final int[] pathTileZ = new int[10];
 	public final int[] anIntArray1514 = new int[4];
 	public final int[] anIntArray1515 = new int[4];
 	public final int[] anIntArray1516 = new int[4];
-	public final boolean[] aBooleanArray1553 = new boolean[10];
-	public int anInt1502 = -1;
+	public final boolean[] pathRunning = new boolean[10];
+	public int index = -1;
 	public int anInt1503;
-	public int anInt1504 = 32;
-	public int anInt1505 = -1;
+	public int turnSpeed = 32;
+	public int seqRun = -1;
 	public String aString1506;
 	public int anInt1507 = 200;
-	public int anInt1510;
-	public int anInt1511 = -1;
-	public int anInt1512 = -1;
+	public int dstYaw;
+	public int seqStand = -1;
+	public int seqTurn = -1;
 	public int anInt1513;
-	public int anInt1517 = -1;
-	public int anInt1518;
-	public int anInt1519;
-	public int anInt1520 = -1;
-	public int anInt1521;
-	public int anInt1522;
+	public int seqCurrent = -1;
+	public int seqFrame;
+	public int seqCycle;
+	public int spotanim = -1;
+	public int spotanimFrame;
+	public int spotanimCycle;
 	public int anInt1523;
 	public int anInt1524;
-	public int anInt1525;
+	public int pathRemaining;
 	public int anInt1526 = -1;
 	public int anInt1527;
 	public int anInt1528;
@@ -40,62 +40,65 @@ public class PathingEntity extends Entity {
 	public int anInt1534;
 	public int anInt1535 = 100;
 	public int anInt1537;
-	public int anInt1538;
-	public int anInt1539;
-	public int anInt1540 = 1;
+	public int faceTileX;
+	public int faceTileZ;
+	public int size = 1;
 	public boolean aBoolean1541 = false;
 	public int anInt1542;
-	public int anInt1543;
-	public int anInt1544;
-	public int anInt1545;
-	public int anInt1546;
-	public int anInt1547;
-	public int anInt1548;
-	public int anInt1549;
+	public int forceMoveStartSceneTileX;
+	public int forceMoveEndSceneTileX;
+	public int forceMoveStartSceneTileZ;
+	public int forceMoveEndSceneTileZ;
+	public int forceMoveEndCycle;
+	public int forceMoveStartCycle;
+	public int forceMoveFaceDirection;
 	public int x;
 	public int z;
-	public int anInt1552;
-	public int anInt1554 = -1;
-	public int anInt1555 = -1;
-	public int anInt1556 = -1;
-	public int anInt1557 = -1;
+	public int yaw;
+	public int seqWalk = -1;
+	public int seqTurnAround = -1;
+	public int seqTurnLeft = -1;
+	public int seqTurnRight = -1;
 
 	public PathingEntity() {
 	}
 
-	public void method445(int i, int j, boolean flag) {
+	public void move(int x, int z, boolean teleport) {
 		if ((anInt1526 != -1) && (SeqType.instances[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
-		if (!flag) {
-			int k = i - moveQueueTileX[0];
-			int l = j - moveQueueTileZ[0];
-			if ((k >= -8) && (k <= 8) && (l >= -8) && (l <= 8)) {
-				if (anInt1525 < 9) {
-					anInt1525++;
+		if (!teleport) {
+			int dx = x - pathTileX[0];
+			int dz = z - pathTileZ[0];
+
+			if ((dx >= -8) && (dx <= 8) && (dz >= -8) && (dz <= 8)) {
+				if (pathRemaining < 9) {
+					pathRemaining++;
 				}
-				for (int i1 = anInt1525; i1 > 0; i1--) {
-					moveQueueTileX[i1] = moveQueueTileX[i1 - 1];
-					moveQueueTileZ[i1] = moveQueueTileZ[i1 - 1];
-					aBooleanArray1553[i1] = aBooleanArray1553[i1 - 1];
+
+				for (int i = pathRemaining; i > 0; i--) {
+					pathTileX[i] = pathTileX[i - 1];
+					pathTileZ[i] = pathTileZ[i - 1];
+					pathRunning[i] = pathRunning[i - 1];
 				}
-				moveQueueTileX[0] = i;
-				moveQueueTileZ[0] = j;
-				aBooleanArray1553[0] = false;
+
+				pathTileX[0] = x;
+				pathTileZ[0] = z;
+				pathRunning[0] = false;
 				return;
 			}
 		}
-		anInt1525 = 0;
+		pathRemaining = 0;
 		anInt1542 = 0;
 		anInt1503 = 0;
-		moveQueueTileX[0] = i;
-		moveQueueTileZ[0] = j;
-		x = (moveQueueTileX[0] * 128) + (anInt1540 * 64);
-		z = (moveQueueTileZ[0] * 128) + (anInt1540 * 64);
+		pathTileX[0] = x;
+		pathTileZ[0] = z;
+		this.x = (pathTileX[0] * 128) + (size * 64);
+		this.z = (pathTileZ[0] * 128) + (size * 64);
 	}
 
 	public void method446() {
-		anInt1525 = 0;
+		pathRemaining = 0;
 		anInt1542 = 0;
 	}
 
@@ -111,8 +114,8 @@ public class PathingEntity extends Entity {
 	}
 
 	public void method448(boolean flag, int i) {
-		int j = moveQueueTileX[0];
-		int k = moveQueueTileZ[0];
+		int j = pathTileX[0];
+		int k = pathTileZ[0];
 		if (i == 0) {
 			j--;
 			k++;
@@ -144,17 +147,17 @@ public class PathingEntity extends Entity {
 		if ((anInt1526 != -1) && (SeqType.instances[anInt1526].anInt364 == 1)) {
 			anInt1526 = -1;
 		}
-		if (anInt1525 < 9) {
-			anInt1525++;
+		if (pathRemaining < 9) {
+			pathRemaining++;
 		}
-		for (int l = anInt1525; l > 0; l--) {
-			moveQueueTileX[l] = moveQueueTileX[l - 1];
-			moveQueueTileZ[l] = moveQueueTileZ[l - 1];
-			aBooleanArray1553[l] = aBooleanArray1553[l - 1];
+		for (int l = pathRemaining; l > 0; l--) {
+			pathTileX[l] = pathTileX[l - 1];
+			pathTileZ[l] = pathTileZ[l - 1];
+			pathRunning[l] = pathRunning[l - 1];
 		}
-		moveQueueTileX[0] = j;
-		moveQueueTileZ[0] = k;
-		aBooleanArray1553[0] = flag;
+		pathTileX[0] = j;
+		pathTileZ[0] = k;
+		pathRunning[0] = flag;
 	}
 
 	public boolean method449() {

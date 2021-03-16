@@ -19,11 +19,11 @@ public class Scene {
 	public static final int[] anIntArray484 = {1, 1, 0, 0, 0, 8, 0, 0, 8};
 	public static final int[] anIntArray485 = {41, 39248, 41, 4643, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 43086, 41, 41, 41, 41, 41, 41, 41, 8602, 41, 28992, 41, 41, 41, 41, 41, 5056, 41, 41, 41, 7079, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 3131, 41, 41, 41};
 	public static final int anInt472 = 4;
-	public static final SceneOccluder[] A_OCCLUDER_ARRAY_476 = new SceneOccluder[500];
+	public static final SceneOccluder[] activeOccluders = new SceneOccluder[500];
 	public static boolean lowmem = true;
 	public static int anInt446;
 	public static int anInt447;
-	public static int anInt448;
+	public static int cycle;
 	public static int anInt449;
 	public static int anInt450;
 	public static int anInt451;
@@ -37,7 +37,7 @@ public class Scene {
 	public static int cosEyePitch;
 	public static int sinEyeYaw;
 	public static int cosEyeYaw;
-	public static SceneLoc[] aLocArray462 = new SceneLoc[100];
+	public static SceneLoc[] tmp = new SceneLoc[100];
 	public static boolean aBoolean467;
 	public static int anInt468;
 	public static int anInt469;
@@ -45,7 +45,7 @@ public class Scene {
 	public static int anInt471 = -1;
 	public static int[] anIntArray473 = new int[anInt472];
 	public static SceneOccluder[][] aOccluderArrayArray474 = new SceneOccluder[anInt472][500];
-	public static int anInt475;
+	public static int activeOccluderCount;
 	public static DoublyLinkedList aList_477 = new DoublyLinkedList();
 	public static boolean[][][][] aBooleanArrayArrayArrayArray491 = new boolean[8][32][51][51];
 	public static boolean[][] aBooleanArrayArray492;
@@ -57,7 +57,7 @@ public class Scene {
 	public static int anInt498;
 
 	public static void unload() {
-		aLocArray462 = null;
+		tmp = null;
 		anIntArray473 = null;
 		aOccluderArrayArray474 = null;
 		aList_477 = null;
@@ -156,36 +156,37 @@ public class Scene {
 		int i2 = anInt494 + ((k1 << 9) / j1);
 		return (l1 >= anInt495) && (l1 <= anInt497) && (i2 >= anInt496) && (i2 <= anInt498);
 	}
-	public final int anInt437;
-	public final int anInt438;
-	public final int anInt439;
-	public final int[][][] anIntArrayArrayArray440;
-	public final SceneTile[][][] aTileArrayArrayArray441;
-	public final SceneLoc[] aLocArray444 = new SceneLoc[5000];
-	public final int[][][] anIntArrayArrayArray445;
+
+	public final int maxPlane;
+	public final int maxTileX;
+	public final int maxTileZ;
+	public final int[][][] planeHeightmaps;
+	public final SceneTile[][][] planeTiles;
+	public final SceneLoc[] temporaryLocs = new SceneLoc[5000];
+	public final int[][][] planeTileOcclusionCycles;
 	public final int[] anIntArray486 = new int[10000];
 	public final int[] anIntArray487 = new int[10000];
 	public final int[][] anIntArrayArray489 = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
 	public final int[][] anIntArrayArray490 = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
-	public int anInt442;
-	public int anInt443;
+	public int minPlane;
+	public int temporaryLocCount;
 	public int anInt488;
 
-	public Scene(int i, int j, int[][][] ai, int k) {
-		anInt437 = k;
-		anInt438 = j;
-		anInt439 = i;
-		aTileArrayArrayArray441 = new SceneTile[k][j][i];
-		anIntArrayArrayArray445 = new int[k][j + 1][i + 1];
-		anIntArrayArrayArray440 = ai;
-		method274();
+	public Scene(int maxTileZ, int maxTileX, int[][][] planeHeightmaps, int maxPlane) {
+		this.maxPlane = maxPlane;
+		this.maxTileX = maxTileX;
+		this.maxTileZ = maxTileZ;
+		planeTiles = new SceneTile[maxPlane][maxTileX][maxTileZ];
+		planeTileOcclusionCycles = new int[maxPlane][maxTileX + 1][maxTileZ + 1];
+		this.planeHeightmaps = planeHeightmaps;
+		clear();
 	}
 
-	public void method274() {
-		for (int j = 0; j < anInt437; j++) {
-			for (int k = 0; k < anInt438; k++) {
-				for (int i1 = 0; i1 < anInt439; i1++) {
-					aTileArrayArrayArray441[j][k][i1] = null;
+	public void clear() {
+		for (int plane = 0; plane < maxPlane; plane++) {
+			for (int stx = 0; stx < maxTileX; stx++) {
+				for (int stz = 0; stz < maxTileZ; stz++) {
+					planeTiles[plane][stx][stz] = null;
 				}
 			}
 		}
@@ -195,466 +196,496 @@ public class Scene {
 			}
 			anIntArray473[l] = 0;
 		}
-		for (int k1 = 0; k1 < anInt443; k1++) {
-			aLocArray444[k1] = null;
+		for (int k1 = 0; k1 < temporaryLocCount; k1++) {
+			temporaryLocs[k1] = null;
 		}
-		anInt443 = 0;
-		Arrays.fill(aLocArray462, null);
+		temporaryLocCount = 0;
+		Arrays.fill(tmp, null);
 	}
 
-	public void method275(int i) {
-		anInt442 = i;
-		for (int k = 0; k < anInt438; k++) {
-			for (int l = 0; l < anInt439; l++) {
-				if (aTileArrayArrayArray441[i][k][l] == null) {
-					aTileArrayArrayArray441[i][k][l] = new SceneTile(i, k, l);
+	public void setMinPlane(int plane) {
+		minPlane = plane;
+		for (int stx = 0; stx < maxTileX; stx++) {
+			for (int stz = 0; stz < maxTileZ; stz++) {
+				if (planeTiles[plane][stx][stz] == null) {
+					planeTiles[plane][stx][stz] = new SceneTile(plane, stx, stz);
 				}
 			}
 		}
 	}
 
-	public void method276(int i, int j) {
-		SceneTile tile = aTileArrayArrayArray441[0][j][i];
-		for (int l = 0; l < 3; l++) {
-			SceneTile tile_1 = aTileArrayArrayArray441[l][j][i] = aTileArrayArrayArray441[l + 1][j][i];
-			if (tile_1 != null) {
-				tile_1.anInt1307--;
-				for (int j1 = 0; j1 < tile_1.anInt1317; j1++) {
-					SceneLoc loc = tile_1.aLocArray1318[j1];
-					if ((((loc.anInt529 >> 29) & 3) == 2) && (loc.anInt523 == j) && (loc.anInt525 == i)) {
-						loc.anInt517--;
-					}
+	public void setBridge(int stx, int stz) {
+		SceneTile ground = planeTiles[0][stx][stz];
+
+		for (int plane = 0; plane < 3; plane++) {
+			SceneTile above = planeTiles[plane][stx][stz] = planeTiles[plane + 1][stx][stz];
+
+			if (above == null) {
+				continue;
+			}
+
+			above.anInt1307--;
+
+			for (int i = 0; i < above.locCount; i++) {
+				SceneLoc loc = above.locs[i];
+
+				if ((((loc.bitset >> 29) & 3) == 2) && (loc.minSceneTileX == stx) && (loc.minSceneTileZ == stz)) {
+					loc.plane--;
 				}
 			}
 		}
-		if (aTileArrayArrayArray441[0][j][i] == null) {
-			aTileArrayArrayArray441[0][j][i] = new SceneTile(0, j, i);
+
+		if (planeTiles[0][stx][stz] == null) {
+			planeTiles[0][stx][stz] = new SceneTile(0, stx, stz);
 		}
-		aTileArrayArrayArray441[0][j][i].aTile_1329 = tile;
-		aTileArrayArrayArray441[3][j][i] = null;
+
+		planeTiles[0][stx][stz].bridge = ground;
+		planeTiles[3][stx][stz] = null;
 	}
 
-	public void method278(int i, int j, int k, int l) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
-		if (tile == null) {
-		} else {
-			aTileArrayArrayArray441[i][j][k].anInt1321 = l;
+	public void setDrawPlane(int plane, int stx, int stz, int drawPlane) {
+		SceneTile tile = planeTiles[plane][stx][stz];
+		if (tile != null) {
+			planeTiles[plane][stx][stz].drawPlane = drawPlane;
 		}
 	}
 
-	public void method279(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
-		if (l == 0) {
+	public void method279(int plane, int stx, int stz, int type, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
+		if (type == 0) {
 			SceneTileUnderlay underlay = new SceneTileUnderlay(k2, l2, i3, j3, -1, k4, false);
-			for (int i5 = i; i5 >= 0; i5--) {
-				if (aTileArrayArrayArray441[i5][j][k] == null) {
-					aTileArrayArrayArray441[i5][j][k] = new SceneTile(i5, j, k);
+			for (int p = plane; p >= 0; p--) {
+				if (planeTiles[p][stx][stz] == null) {
+					planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
 				}
 			}
-			aTileArrayArrayArray441[i][j][k].aUnderlay_1311 = underlay;
-			return;
-		}
-		if (l == 1) {
-			SceneTileUnderlay underlay_1 = new SceneTileUnderlay(k3, l3, i4, j4, j1, l4, (k1 == l1) && (k1 == i2) && (k1 == j2));
-			for (int j5 = i; j5 >= 0; j5--) {
-				if (aTileArrayArrayArray441[j5][j][k] == null) {
-					aTileArrayArrayArray441[j5][j][k] = new SceneTile(j5, j, k);
+			planeTiles[plane][stx][stz].underlay = underlay;
+		} else if (type == 1) {
+			SceneTileUnderlay underlay = new SceneTileUnderlay(k3, l3, i4, j4, j1, l4, (k1 == l1) && (k1 == i2) && (k1 == j2));
+			for (int p = plane; p >= 0; p--) {
+				if (planeTiles[p][stx][stz] == null) {
+					planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
 				}
 			}
-			aTileArrayArrayArray441[i][j][k].aUnderlay_1311 = underlay_1;
-			return;
-		}
-		SceneTileOverlay overlay = new SceneTileOverlay(k, k3, j3, i2, j1, i4, i1, k2, k4, i3, j2, l1, k1, l, j4, l3, l2, j, l4);
-		for (int k5 = i; k5 >= 0; k5--) {
-			if (aTileArrayArrayArray441[k5][j][k] == null) {
-				aTileArrayArrayArray441[k5][j][k] = new SceneTile(k5, j, k);
+			planeTiles[plane][stx][stz].underlay = underlay;
+		} else {
+			SceneTileOverlay overlay = new SceneTileOverlay(stz, k3, j3, i2, j1, i4, i1, k2, k4, i3, j2, l1, k1, type, j4, l3, l2, stx, l4);
+			for (int k5 = plane; k5 >= 0; k5--) {
+				if (planeTiles[k5][stx][stz] == null) {
+					planeTiles[k5][stx][stz] = new SceneTile(k5, stx, stz);
+				}
 			}
+			planeTiles[plane][stx][stz].overlay = overlay;
 		}
-		aTileArrayArrayArray441[i][j][k].aOverlay_1312 = overlay;
 	}
 
-	public void method280(int i, int j, int k, Entity entity, byte byte0, int i1, int j1) {
+	public void addGroundDecoration(Entity entity, int plane, int stx, int stz, int y, int bitset, byte info) {
 		if (entity == null) {
 			return;
 		}
-		SceneGroundDecoration groundDecoration = new SceneGroundDecoration();
-		groundDecoration.aEntity_814 = entity;
-		groundDecoration.anInt812 = (j1 * 128) + 64;
-		groundDecoration.anInt813 = (k * 128) + 64;
-		groundDecoration.anInt811 = j;
-		groundDecoration.anInt815 = i1;
-		groundDecoration.aByte816 = byte0;
-		if (aTileArrayArrayArray441[i][j1][k] == null) {
-			aTileArrayArrayArray441[i][j1][k] = new SceneTile(i, j1, k);
+		SceneGroundDecoration decor = new SceneGroundDecoration();
+		decor.entity = entity;
+		decor.x = (stx * 128) + 64;
+		decor.z = (stz * 128) + 64;
+		decor.y = y;
+		decor.bitset = bitset;
+		decor.info = info;
+		if (planeTiles[plane][stx][stz] == null) {
+			planeTiles[plane][stx][stz] = new SceneTile(plane, stx, stz);
 		}
-		aTileArrayArrayArray441[i][j1][k].aGroundDecoration_1315 = groundDecoration;
+		planeTiles[plane][stx][stz].groundDecoration = decor;
 	}
 
-	public void method281(int i, int j, Entity entity, int k, Entity entity_1, Entity class30_sub2_sub4_2, int l, int i1) {
+	public void addObjStack(Entity entity0, Entity entity1, Entity entity2, int plane, int stx, int stz, int y, int bitset) {
 		SceneObjStack objStack = new SceneObjStack();
-		objStack.aEntity_48 = class30_sub2_sub4_2;
-		objStack.anInt46 = (i * 128) + 64;
-		objStack.anInt47 = (i1 * 128) + 64;
-		objStack.anInt45 = k;
-		objStack.anInt51 = j;
-		objStack.aEntity_49 = entity;
-		objStack.aEntity_50 = entity_1;
-		int j1 = 0;
-		SceneTile tile = aTileArrayArrayArray441[l][i][i1];
+		objStack.x = (stx * 128) + 64;
+		objStack.z = (stz * 128) + 64;
+		objStack.y = y;
+		objStack.bitset = bitset;
+		objStack.entity0 = entity0;
+		objStack.entity1 = entity1;
+		objStack.entity2 = entity2;
+
+		int stackOffset = 0;
+
+		SceneTile tile = planeTiles[plane][stx][stz];
+
 		if (tile != null) {
-			for (int k1 = 0; k1 < tile.anInt1317; k1++) {
-				if (tile.aLocArray1318[k1].aEntity_521 instanceof Model) {
-					int l1 = ((Model) tile.aLocArray1318[k1].aEntity_521).anInt1654;
-					if (l1 > j1) {
-						j1 = l1;
-					}
+			for (int l = 0; l < tile.locCount; l++) {
+				if (!(tile.locs[l].entity instanceof Model)) {
+					continue;
+				}
+				int height = ((Model) tile.locs[l].entity).anInt1654;
+				if (height > stackOffset) {
+					stackOffset = height;
 				}
 			}
 		}
-		objStack.anInt52 = j1;
-		if (aTileArrayArrayArray441[l][i][i1] == null) {
-			aTileArrayArrayArray441[l][i][i1] = new SceneTile(l, i, i1);
+
+		objStack.offset = stackOffset;
+
+		if (planeTiles[plane][stx][stz] == null) {
+			planeTiles[plane][stx][stz] = new SceneTile(plane, stx, stz);
 		}
-		aTileArrayArrayArray441[l][i][i1].aObjStack_1316 = objStack;
+		planeTiles[plane][stx][stz].objStack = objStack;
 	}
 
-	public void method282(int i, Entity entity, int j, int k, byte byte0, int l, Entity entity_1, int i1, int j1, int k1) {
-		if ((entity == null) && (entity_1 == null)) {
+	public void addWall(int type0, Entity wall0, int type1, Entity wall1, int plane, int stx, int stz, int y, int bitset, byte info) {
+		if ((wall0 == null) && (wall1 == null)) {
 			return;
 		}
 		SceneWall wall = new SceneWall();
-		wall.anInt280 = j;
-		wall.aByte281 = byte0;
-		wall.anInt274 = (l * 128) + 64;
-		wall.anInt275 = (k * 128) + 64;
-		wall.anInt273 = i1;
-		wall.aEntity_278 = entity;
-		wall.aEntity_279 = entity_1;
-		wall.anInt276 = i;
-		wall.anInt277 = j1;
-		for (int l1 = k1; l1 >= 0; l1--) {
-			if (aTileArrayArrayArray441[l1][l][k] == null) {
-				aTileArrayArrayArray441[l1][l][k] = new SceneTile(l1, l, k);
+		wall.bitset = bitset;
+		wall.info = info;
+		wall.x = (stx * 128) + 64;
+		wall.z = (stz * 128) + 64;
+		wall.y = y;
+		wall.entity0 = wall0;
+		wall.entity1 = wall1;
+		wall.type0 = type0;
+		wall.type1 = type1;
+		for (int p = plane; p >= 0; p--) {
+			if (planeTiles[p][stx][stz] == null) {
+				planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
 			}
 		}
-		aTileArrayArrayArray441[k1][l][k].aWall_1313 = wall;
+		planeTiles[plane][stx][stz].wall = wall;
 	}
 
-	public void method283(int i, int j, int k, int i1, int j1, int k1, Entity entity, int l1, byte byte0, int i2, int j2) {
+	public void addWallDecoration(int type, Entity entity, int plane, int stx, int stz, int y, int yaw, int offsetX, int offsetZ, int bitset, byte info) {
 		if (entity == null) {
 			return;
 		}
-		SceneWallDecoration wallDecoration = new SceneWallDecoration();
-		wallDecoration.anInt505 = i;
-		wallDecoration.aByte506 = byte0;
-		wallDecoration.anInt500 = (l1 * 128) + 64 + j1;
-		wallDecoration.anInt501 = (j * 128) + 64 + i2;
-		wallDecoration.anInt499 = k1;
-		wallDecoration.aEntity_504 = entity;
-		wallDecoration.anInt502 = j2;
-		wallDecoration.anInt503 = k;
-		for (int k2 = i1; k2 >= 0; k2--) {
-			if (aTileArrayArrayArray441[k2][l1][j] == null) {
-				aTileArrayArrayArray441[k2][l1][j] = new SceneTile(k2, l1, j);
+		SceneWallDecoration decor = new SceneWallDecoration();
+		decor.bitset = bitset;
+		decor.info = info;
+		decor.x = (stx * 128) + 64 + offsetX;
+		decor.z = (stz * 128) + 64 + offsetZ;
+		decor.y = y;
+		decor.entity = entity;
+		decor.type = type;
+		decor.yaw = yaw;
+		for (int p = plane; p >= 0; p--) {
+			if (planeTiles[p][stx][stz] == null) {
+				planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
 			}
 		}
-		aTileArrayArrayArray441[i1][l1][j].aWallDecoration_1314 = wallDecoration;
+		planeTiles[plane][stx][stz].wallDecoration = decor;
 	}
 
-	public boolean method284(int i, byte byte0, int j, int k, Entity entity, int l, int i1, int j1, int k1, int l1) {
+	public boolean add(Entity entity, int plane, int stx, int stz, int y, int sizeX, int sizeZ, int yaw, int bitset, byte info) {
 		if (entity == null) {
 			return true;
 		} else {
-			int i2 = (l1 * 128) + (64 * l);
-			int j2 = (k1 * 128) + (64 * k);
-			return method287(i1, l1, k1, l, k, i2, j2, j, entity, j1, false, i, byte0);
+			int x = (stx * 128) + (64 * sizeX);
+			int z = (stz * 128) + (64 * sizeZ);
+			return add(entity, plane, stx, stz, sizeX, sizeZ, x, z, y, yaw, bitset, info, false);
 		}
 	}
 
-	public boolean method285(int i, int j, int k, int l, int i1, int j1, int k1, Entity entity, boolean flag) {
+	public boolean addTemporary(Entity entity, int plane, int x, int z, int y, int yaw, int bitset, boolean forwardPadding, int padding) {
 		if (entity == null) {
 			return true;
 		}
-		int l1 = k1 - j1;
-		int i2 = i1 - j1;
-		int j2 = k1 + j1;
-		int k2 = i1 + j1;
-		if (flag) {
-			if ((j > 640) && (j < 1408)) {
-				k2 += 128;
+
+		int x0 = x - padding;
+		int z0 = z - padding;
+		int x1 = x + padding;
+		int z1 = z + padding;
+
+		if (forwardPadding) {
+			if ((yaw > 640) && (yaw < 1408)) {
+				z1 += 128;
 			}
-			if ((j > 1152) && (j < 1920)) {
-				j2 += 128;
+			if ((yaw > 1152) && (yaw < 1920)) {
+				x1 += 128;
 			}
-			if ((j > 1664) || (j < 384)) {
-				i2 -= 128;
+			if ((yaw > 1664) || (yaw < 384)) {
+				z0 -= 128;
 			}
-			if ((j > 128) && (j < 896)) {
-				l1 -= 128;
+			if ((yaw > 128) && (yaw < 896)) {
+				x0 -= 128;
 			}
 		}
-		l1 /= 128;
-		i2 /= 128;
-		j2 /= 128;
-		k2 /= 128;
-		return method287(i, l1, i2, (j2 - l1) + 1, (k2 - i2) + 1, k1, i1, k, entity, j, true, l, (byte) 0);
+
+		x0 /= 128;
+		z0 /= 128;
+		x1 /= 128;
+		z1 /= 128;
+		return add(entity, plane, x0, z0, (x1 - x0) + 1, (z1 - z0) + 1, x, z, y, yaw, bitset, (byte) 0, true);
 	}
 
-	public boolean method286(int j, int k, Entity entity, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2) {
+	public boolean addTemporary(Entity entity, int plane, int stx0, int stz0, int stx1, int stz1, int x, int z, int y, int yaw, int bitset) {
 		if (entity == null) {
 			return true;
 		} else {
-			return method287(j, l1, k2, (i2 - l1) + 1, (i1 - k2) + 1, j1, k, k1, entity, l, true, j2, (byte) 0);
+			return add(entity, plane, stx0, stz0, (stx1 - stx0) + 1, (stz1 - stz0) + 1, x, z, y, yaw, bitset, (byte) 0, true);
 		}
 	}
 
-	public boolean method287(int i, int j, int k, int l, int i1, int j1, int k1, int l1, Entity entity, int i2, boolean flag, int j2, byte byte0) {
-		for (int k2 = j; k2 < (j + l); k2++) {
-			for (int l2 = k; l2 < (k + i1); l2++) {
-				if ((k2 < 0) || (l2 < 0) || (k2 >= anInt438) || (l2 >= anInt439)) {
+	public boolean add(Entity entity, int plane, int stx, int stz, int sizeX, int sizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
+		for (int tx = stx; tx < (stx + sizeX); tx++) {
+			for (int tz = stz; tz < (stz + sizeZ); tz++) {
+				if ((tx < 0) || (tz < 0) || (tx >= maxTileX) || (tz >= maxTileZ)) {
 					return false;
 				}
-				SceneTile tile = aTileArrayArrayArray441[i][k2][l2];
-				if ((tile != null) && (tile.anInt1317 >= 5)) {
+				SceneTile tile = planeTiles[plane][tx][tz];
+				if ((tile != null) && (tile.locCount >= 5)) {
 					return false;
 				}
 			}
 		}
 		SceneLoc loc = new SceneLoc();
-		loc.anInt529 = j2;
-		loc.aByte530 = byte0;
-		loc.anInt517 = i;
-		loc.anInt519 = j1;
-		loc.anInt520 = k1;
-		loc.anInt518 = l1;
-		loc.aEntity_521 = entity;
-		loc.anInt522 = i2;
-		loc.anInt523 = j;
-		loc.anInt525 = k;
-		loc.anInt524 = (j + l) - 1;
-		loc.anInt526 = (k + i1) - 1;
-		for (int i3 = j; i3 < (j + l); i3++) {
-			for (int j3 = k; j3 < (k + i1); j3++) {
-				int k3 = 0;
-				if (i3 > j) {
-					k3++;
+		loc.bitset = bitset;
+		loc.info = info;
+		loc.plane = plane;
+		loc.x = x;
+		loc.z = z;
+		loc.y = y;
+		loc.entity = entity;
+		loc.yaw = yaw;
+		loc.minSceneTileX = stx;
+		loc.minSceneTileZ = stz;
+		loc.maxSceneTileX = (stx + sizeX) - 1;
+		loc.maxSceneTileZ = (stz + sizeZ) - 1;
+
+		for (int tx = stx; tx < (stx + sizeX); tx++) {
+			for (int tz = stz; tz < (stz + sizeZ); tz++) {
+				int flags = 0;
+
+				if (tx > stx) {
+					flags++;
 				}
-				if (i3 < ((j + l) - 1)) {
-					k3 += 4;
+
+				if (tx < ((stx + sizeX) - 1)) {
+					flags += 4;
 				}
-				if (j3 > k) {
-					k3 += 8;
+
+				if (tz > stz) {
+					flags += 8;
 				}
-				if (j3 < ((k + i1) - 1)) {
-					k3 += 2;
+
+				if (tz < ((stz + sizeZ) - 1)) {
+					flags += 2;
 				}
-				for (int l3 = i; l3 >= 0; l3--) {
-					if (aTileArrayArrayArray441[l3][i3][j3] == null) {
-						aTileArrayArrayArray441[l3][i3][j3] = new SceneTile(l3, i3, j3);
+
+				for (int p = plane; p >= 0; p--) {
+					if (planeTiles[p][tx][tz] == null) {
+						planeTiles[p][tx][tz] = new SceneTile(p, tx, tz);
 					}
 				}
-				SceneTile tile_1 = aTileArrayArrayArray441[i][i3][j3];
-				tile_1.aLocArray1318[tile_1.anInt1317] = loc;
-				tile_1.anIntArray1319[tile_1.anInt1317] = k3;
-				tile_1.anInt1320 |= k3;
-				tile_1.anInt1317++;
+
+				SceneTile tile = planeTiles[plane][tx][tz];
+				tile.locs[tile.locCount] = loc;
+				tile.locFlags[tile.locCount] = flags;
+				tile.flags |= flags;
+				tile.locCount++;
 			}
 		}
-		if (flag) {
-			aLocArray444[anInt443++] = loc;
+
+		if (temporary) {
+			temporaryLocs[temporaryLocCount++] = loc;
 		}
+
 		return true;
 	}
 
-	public void method288() {
-		for (int i = 0; i < anInt443; i++) {
-			SceneLoc loc = aLocArray444[i];
-			method289(loc);
-			aLocArray444[i] = null;
+	public void clearTemporaryLocs() {
+		for (int i = 0; i < temporaryLocCount; i++) {
+			SceneLoc loc = temporaryLocs[i];
+			remove(loc);
+			temporaryLocs[i] = null;
 		}
-		anInt443 = 0;
+		temporaryLocCount = 0;
 	}
 
-	public void method289(SceneLoc loc) {
-		for (int j = loc.anInt523; j <= loc.anInt524; j++) {
-			for (int k = loc.anInt525; k <= loc.anInt526; k++) {
-				SceneTile tile = aTileArrayArrayArray441[loc.anInt517][j][k];
-				if (tile != null) {
-					for (int l = 0; l < tile.anInt1317; l++) {
-						if (tile.aLocArray1318[l] != loc) {
-							continue;
-						}
-						tile.anInt1317--;
-						for (int i1 = l; i1 < tile.anInt1317; i1++) {
-							tile.aLocArray1318[i1] = tile.aLocArray1318[i1 + 1];
-							tile.anIntArray1319[i1] = tile.anIntArray1319[i1 + 1];
-						}
-						tile.aLocArray1318[tile.anInt1317] = null;
-						break;
+	public void remove(SceneLoc loc) {
+		for (int tx = loc.minSceneTileX; tx <= loc.maxSceneTileX; tx++) {
+			for (int tz = loc.minSceneTileZ; tz <= loc.maxSceneTileZ; tz++) {
+				SceneTile tile = planeTiles[loc.plane][tx][tz];
+
+				if (tile == null) {
+					continue;
+				}
+
+				for (int i = 0; i < tile.locCount; i++) {
+					if (tile.locs[i] != loc) {
+						continue;
 					}
-					tile.anInt1320 = 0;
-					for (int j1 = 0; j1 < tile.anInt1317; j1++) {
-						tile.anInt1320 |= tile.anIntArray1319[j1];
+
+					tile.locCount--;
+
+					for (int j = i; j < tile.locCount; j++) {
+						tile.locs[j] = tile.locs[j + 1];
+						tile.locFlags[j] = tile.locFlags[j + 1];
 					}
+					tile.locs[tile.locCount] = null;
+					break;
+				}
+
+				tile.flags = 0;
+
+				for (int j1 = 0; j1 < tile.locCount; j1++) {
+					tile.flags |= tile.locFlags[j1];
 				}
 			}
 		}
 	}
 
-	public void method290(int i, int k, int l, int i1) {
-		SceneTile tile = aTileArrayArrayArray441[i1][l][i];
+	public void setWallDecorationOffset(int plane, int stx, int stz, int offset) {
+		SceneTile tile = planeTiles[plane][stx][stz];
 		if (tile == null) {
 			return;
 		}
-		SceneWallDecoration wallDecoration = tile.aWallDecoration_1314;
-		if (wallDecoration != null) {
-			int j1 = (l * 128) + 64;
-			int k1 = (i * 128) + 64;
-			wallDecoration.anInt500 = j1 + (((wallDecoration.anInt500 - j1) * k) / 16);
-			wallDecoration.anInt501 = k1 + (((wallDecoration.anInt501 - k1) * k) / 16);
+		SceneWallDecoration decoration = tile.wallDecoration;
+		if (decoration != null) {
+			int sx = (stx * 128) + 64;
+			int sz = (stz * 128) + 64;
+			decoration.x = sx + (((decoration.x - sx) * offset) / 16);
+			decoration.z = sz + (((decoration.z - sz) * offset) / 16);
 		}
 	}
 
-	public void method291(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[j][i][k];
+	public void removeWall(int x, int plane, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			tile.aWall_1313 = null;
+			tile.wall = null;
 		}
 	}
 
-	public void method292(int j, int k, int l) {
-		SceneTile tile = aTileArrayArrayArray441[k][l][j];
+	public void removeWallDecoration(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			tile.aWallDecoration_1314 = null;
+			tile.wallDecoration = null;
 		}
 	}
 
-	public void method293(int i, int k, int l) {
-		SceneTile tile = aTileArrayArrayArray441[i][k][l];
+	public void removeLoc(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile == null) {
 			return;
 		}
-		for (int j1 = 0; j1 < tile.anInt1317; j1++) {
-			SceneLoc loc = tile.aLocArray1318[j1];
-			if ((((loc.anInt529 >> 29) & 3) == 2) && (loc.anInt523 == k) && (loc.anInt525 == l)) {
-				method289(loc);
+		for (int j1 = 0; j1 < tile.locCount; j1++) {
+			SceneLoc loc = tile.locs[j1];
+			if ((((loc.bitset >> 29) & 3) == 2) && (loc.minSceneTileX == x) && (loc.minSceneTileZ == z)) {
+				remove(loc);
 				return;
 			}
 		}
 	}
 
-	public void method294(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][k][j];
+	public void removeGroundDecoration(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			tile.aGroundDecoration_1315 = null;
+			tile.groundDecoration = null;
 		}
 	}
 
-	public void method295(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
+	public void removeObjStack(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			tile.aObjStack_1316 = null;
+			tile.objStack = null;
 		}
 	}
 
-	public SceneWall method296(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
+	public SceneWall getWall(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			return tile.aWall_1313;
+			return tile.wall;
 		} else {
 			return null;
 		}
 	}
 
-	public SceneWallDecoration method297(int i, int k, int l) {
-		SceneTile tile = aTileArrayArrayArray441[l][i][k];
+	public SceneWallDecoration getWallDecoration(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile != null) {
-			return tile.aWallDecoration_1314;
+			return tile.wallDecoration;
 		} else {
 			return null;
 		}
 	}
 
-	public SceneLoc method298(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[k][i][j];
+	public SceneLoc getLoc(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile == null) {
 			return null;
 		}
-		for (int l = 0; l < tile.anInt1317; l++) {
-			SceneLoc loc = tile.aLocArray1318[l];
-			if ((((loc.anInt529 >> 29) & 3) == 2) && (loc.anInt523 == i) && (loc.anInt525 == j)) {
+		for (int l = 0; l < tile.locCount; l++) {
+			SceneLoc loc = tile.locs[l];
+			if ((((loc.bitset >> 29) & 3) == 2) && (loc.minSceneTileX == x) && (loc.minSceneTileZ == z)) {
 				return loc;
 			}
 		}
 		return null;
 	}
 
-	public SceneGroundDecoration method299(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[k][j][i];
-		if ((tile != null) && (tile.aGroundDecoration_1315 != null)) {
-			return tile.aGroundDecoration_1315;
+	public SceneGroundDecoration getGroundDecoration(int z, int x, int plane) {
+		SceneTile tile = planeTiles[plane][x][z];
+		if ((tile != null) && (tile.groundDecoration != null)) {
+			return tile.groundDecoration;
 		} else {
 			return null;
 		}
 	}
 
-	public int method300(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
-		if ((tile != null) && (tile.aWall_1313 != null)) {
-			return tile.aWall_1313.anInt280;
+	public int getWallBitset(int i, int j, int k) {
+		SceneTile tile = planeTiles[i][j][k];
+		if ((tile != null) && (tile.wall != null)) {
+			return tile.wall.bitset;
 		} else {
 			return 0;
 		}
 	}
 
-	public int method301(int i, int j, int l) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][l];
-		if ((tile == null) || (tile.aWallDecoration_1314 == null)) {
+	public int getWallDecorationBitset(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
+		if ((tile == null) || (tile.wallDecoration == null)) {
 			return 0;
 		} else {
-			return tile.aWallDecoration_1314.anInt505;
+			return tile.wallDecoration.bitset;
 		}
 	}
 
-	public int method302(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
+	public int getLocBitset(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile == null) {
 			return 0;
 		}
-		for (int l = 0; l < tile.anInt1317; l++) {
-			SceneLoc loc = tile.aLocArray1318[l];
-			if ((((loc.anInt529 >> 29) & 3) == 2) && (loc.anInt523 == j) && (loc.anInt525 == k)) {
-				return loc.anInt529;
+		for (int l = 0; l < tile.locCount; l++) {
+			SceneLoc loc = tile.locs[l];
+			if ((((loc.bitset >> 29) & 3) == 2) && (loc.minSceneTileX == x) && (loc.minSceneTileZ == z)) {
+				return loc.bitset;
 			}
 		}
 		return 0;
 	}
 
-	public int method303(int i, int j, int k) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
-		if ((tile == null) || (tile.aGroundDecoration_1315 == null)) {
+	public int getGroundDecorationBitset(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
+		if ((tile == null) || (tile.groundDecoration == null)) {
 			return 0;
 		} else {
-			return tile.aGroundDecoration_1315.anInt815;
+			return tile.groundDecoration.bitset;
 		}
 	}
 
-	public int method304(int i, int j, int k, int l) {
-		SceneTile tile = aTileArrayArrayArray441[i][j][k];
+	public int getInfo(int plane, int x, int z, int bitset) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if (tile == null) {
 			return -1;
 		}
-		if ((tile.aWall_1313 != null) && (tile.aWall_1313.anInt280 == l)) {
-			return tile.aWall_1313.aByte281 & 0xff;
+		if ((tile.wall != null) && (tile.wall.bitset == bitset)) {
+			return tile.wall.info & 0xff;
 		}
-		if ((tile.aWallDecoration_1314 != null) && (tile.aWallDecoration_1314.anInt505 == l)) {
-			return tile.aWallDecoration_1314.aByte506 & 0xff;
+		if ((tile.wallDecoration != null) && (tile.wallDecoration.bitset == bitset)) {
+			return tile.wallDecoration.info & 0xff;
 		}
-		if ((tile.aGroundDecoration_1315 != null) && (tile.aGroundDecoration_1315.anInt815 == l)) {
-			return tile.aGroundDecoration_1315.aByte816 & 0xff;
+		if ((tile.groundDecoration != null) && (tile.groundDecoration.bitset == bitset)) {
+			return tile.groundDecoration.info & 0xff;
 		}
-		for (int i1 = 0; i1 < tile.anInt1317; i1++) {
-			if (tile.aLocArray1318[i1].anInt529 == l) {
-				return tile.aLocArray1318[i1].aByte530 & 0xff;
+		for (int i1 = 0; i1 < tile.locCount; i1++) {
+			if (tile.locs[i1].bitset == bitset) {
+				return tile.locs[i1].info & 0xff;
 			}
 		}
 		return -1;
@@ -663,32 +694,32 @@ public class Scene {
 	public void method305(int i, int j, int k, int l, int i1) {
 		int j1 = (int) Math.sqrt((k * k) + (i * i) + (i1 * i1));
 		int k1 = (l * j1) >> 8;
-		for (int l1 = 0; l1 < anInt437; l1++) {
-			for (int i2 = 0; i2 < anInt438; i2++) {
-				for (int j2 = 0; j2 < anInt439; j2++) {
-					SceneTile tile = aTileArrayArrayArray441[l1][i2][j2];
+		for (int l1 = 0; l1 < maxPlane; l1++) {
+			for (int i2 = 0; i2 < maxTileX; i2++) {
+				for (int j2 = 0; j2 < maxTileZ; j2++) {
+					SceneTile tile = planeTiles[l1][i2][j2];
 					if (tile != null) {
-						SceneWall wall = tile.aWall_1313;
-						if ((wall != null) && (wall.aEntity_278 != null) && (wall.aEntity_278.vertexNormal != null)) {
-							method307(l1, 1, 1, i2, j2, (Model) wall.aEntity_278);
-							if ((wall.aEntity_279 != null) && (wall.aEntity_279.vertexNormal != null)) {
-								method307(l1, 1, 1, i2, j2, (Model) wall.aEntity_279);
-								method308((Model) wall.aEntity_278, (Model) wall.aEntity_279, 0, 0, 0, false);
-								((Model) wall.aEntity_279).applyLighting(j, k1, k, i, i1);
+						SceneWall wall = tile.wall;
+						if ((wall != null) && (wall.entity0 != null) && (wall.entity0.vertexNormal != null)) {
+							method307(l1, 1, 1, i2, j2, (Model) wall.entity0);
+							if ((wall.entity1 != null) && (wall.entity1.vertexNormal != null)) {
+								method307(l1, 1, 1, i2, j2, (Model) wall.entity1);
+								method308((Model) wall.entity0, (Model) wall.entity1, 0, 0, 0, false);
+								((Model) wall.entity1).applyLighting(j, k1, k, i, i1);
 							}
-							((Model) wall.aEntity_278).applyLighting(j, k1, k, i, i1);
+							((Model) wall.entity0).applyLighting(j, k1, k, i, i1);
 						}
-						for (int k2 = 0; k2 < tile.anInt1317; k2++) {
-							SceneLoc loc = tile.aLocArray1318[k2];
-							if ((loc != null) && (loc.aEntity_521 != null) && (loc.aEntity_521.vertexNormal != null)) {
-								method307(l1, (loc.anInt524 - loc.anInt523) + 1, (loc.anInt526 - loc.anInt525) + 1, i2, j2, (Model) loc.aEntity_521);
-								((Model) loc.aEntity_521).applyLighting(j, k1, k, i, i1);
+						for (int k2 = 0; k2 < tile.locCount; k2++) {
+							SceneLoc loc = tile.locs[k2];
+							if ((loc != null) && (loc.entity != null) && (loc.entity.vertexNormal != null)) {
+								method307(l1, (loc.maxSceneTileX - loc.minSceneTileX) + 1, (loc.maxSceneTileZ - loc.minSceneTileZ) + 1, i2, j2, (Model) loc.entity);
+								((Model) loc.entity).applyLighting(j, k1, k, i, i1);
 							}
 						}
-						SceneGroundDecoration groundDecoration = tile.aGroundDecoration_1315;
-						if ((groundDecoration != null) && (groundDecoration.aEntity_814.vertexNormal != null)) {
-							method306(i2, l1, (Model) groundDecoration.aEntity_814, j2);
-							((Model) groundDecoration.aEntity_814).applyLighting(j, k1, k, i, i1);
+						SceneGroundDecoration groundDecoration = tile.groundDecoration;
+						if ((groundDecoration != null) && (groundDecoration.entity.vertexNormal != null)) {
+							method306(i2, l1, (Model) groundDecoration.entity, j2);
+							((Model) groundDecoration.entity).applyLighting(j, k1, k, i, i1);
 						}
 					}
 				}
@@ -697,28 +728,28 @@ public class Scene {
 	}
 
 	public void method306(int i, int j, Model model, int k) {
-		if (i < anInt438) {
-			SceneTile tile = aTileArrayArrayArray441[j][i + 1][k];
-			if ((tile != null) && (tile.aGroundDecoration_1315 != null) && (tile.aGroundDecoration_1315.aEntity_814.vertexNormal != null)) {
-				method308(model, (Model) tile.aGroundDecoration_1315.aEntity_814, 128, 0, 0, true);
+		if (i < maxTileX) {
+			SceneTile tile = planeTiles[j][i + 1][k];
+			if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.vertexNormal != null)) {
+				method308(model, (Model) tile.groundDecoration.entity, 128, 0, 0, true);
 			}
 		}
-		if (k < anInt438) {
-			SceneTile tile_1 = aTileArrayArrayArray441[j][i][k + 1];
-			if ((tile_1 != null) && (tile_1.aGroundDecoration_1315 != null) && (tile_1.aGroundDecoration_1315.aEntity_814.vertexNormal != null)) {
-				method308(model, (Model) tile_1.aGroundDecoration_1315.aEntity_814, 0, 0, 128, true);
+		if (k < maxTileX) {
+			SceneTile tile_1 = planeTiles[j][i][k + 1];
+			if ((tile_1 != null) && (tile_1.groundDecoration != null) && (tile_1.groundDecoration.entity.vertexNormal != null)) {
+				method308(model, (Model) tile_1.groundDecoration.entity, 0, 0, 128, true);
 			}
 		}
-		if ((i < anInt438) && (k < anInt439)) {
-			SceneTile tile_2 = aTileArrayArrayArray441[j][i + 1][k + 1];
-			if ((tile_2 != null) && (tile_2.aGroundDecoration_1315 != null) && (tile_2.aGroundDecoration_1315.aEntity_814.vertexNormal != null)) {
-				method308(model, (Model) tile_2.aGroundDecoration_1315.aEntity_814, 128, 0, 128, true);
+		if ((i < maxTileX) && (k < maxTileZ)) {
+			SceneTile tile_2 = planeTiles[j][i + 1][k + 1];
+			if ((tile_2 != null) && (tile_2.groundDecoration != null) && (tile_2.groundDecoration.entity.vertexNormal != null)) {
+				method308(model, (Model) tile_2.groundDecoration.entity, 128, 0, 128, true);
 			}
 		}
-		if ((i < anInt438) && (k > 0)) {
-			SceneTile tile_3 = aTileArrayArrayArray441[j][i + 1][k - 1];
-			if ((tile_3 != null) && (tile_3.aGroundDecoration_1315 != null) && (tile_3.aGroundDecoration_1315.aEntity_814.vertexNormal != null)) {
-				method308(model, (Model) tile_3.aGroundDecoration_1315.aEntity_814, 128, 0, -128, true);
+		if ((i < maxTileX) && (k > 0)) {
+			SceneTile tile_3 = planeTiles[j][i + 1][k - 1];
+			if ((tile_3 != null) && (tile_3.groundDecoration != null) && (tile_3.groundDecoration.entity.vertexNormal != null)) {
+				method308(model, (Model) tile_3.groundDecoration.entity, 128, 0, -128, true);
 			}
 		}
 	}
@@ -730,27 +761,27 @@ public class Scene {
 		int l1 = i1 - 1;
 		int i2 = i1 + k;
 		for (int j2 = i; j2 <= (i + 1); j2++) {
-			if (j2 != anInt437) {
+			if (j2 != maxPlane) {
 				for (int k2 = j1; k2 <= k1; k2++) {
-					if ((k2 >= 0) && (k2 < anInt438)) {
+					if ((k2 >= 0) && (k2 < maxTileX)) {
 						for (int l2 = l1; l2 <= i2; l2++) {
-							if ((l2 >= 0) && (l2 < anInt439) && (!flag || (k2 >= k1) || (l2 >= i2) || ((l2 < i1) && (k2 != l)))) {
-								SceneTile tile = aTileArrayArrayArray441[j2][k2][l2];
+							if ((l2 >= 0) && (l2 < maxTileZ) && (!flag || (k2 >= k1) || (l2 >= i2) || ((l2 < i1) && (k2 != l)))) {
+								SceneTile tile = planeTiles[j2][k2][l2];
 								if (tile != null) {
-									int i3 = ((anIntArrayArrayArray440[j2][k2][l2] + anIntArrayArrayArray440[j2][k2 + 1][l2] + anIntArrayArrayArray440[j2][k2][l2 + 1] + anIntArrayArrayArray440[j2][k2 + 1][l2 + 1]) / 4) - ((anIntArrayArrayArray440[i][l][i1] + anIntArrayArrayArray440[i][l + 1][i1] + anIntArrayArrayArray440[i][l][i1 + 1] + anIntArrayArrayArray440[i][l + 1][i1 + 1]) / 4);
-									SceneWall wall = tile.aWall_1313;
-									if ((wall != null) && (wall.aEntity_278 != null) && (wall.aEntity_278.vertexNormal != null)) {
-										method308(model, (Model) wall.aEntity_278, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
+									int i3 = ((planeHeightmaps[j2][k2][l2] + planeHeightmaps[j2][k2 + 1][l2] + planeHeightmaps[j2][k2][l2 + 1] + planeHeightmaps[j2][k2 + 1][l2 + 1]) / 4) - ((planeHeightmaps[i][l][i1] + planeHeightmaps[i][l + 1][i1] + planeHeightmaps[i][l][i1 + 1] + planeHeightmaps[i][l + 1][i1 + 1]) / 4);
+									SceneWall wall = tile.wall;
+									if ((wall != null) && (wall.entity0 != null) && (wall.entity0.vertexNormal != null)) {
+										method308(model, (Model) wall.entity0, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
 									}
-									if ((wall != null) && (wall.aEntity_279 != null) && (wall.aEntity_279.vertexNormal != null)) {
-										method308(model, (Model) wall.aEntity_279, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
+									if ((wall != null) && (wall.entity1 != null) && (wall.entity1.vertexNormal != null)) {
+										method308(model, (Model) wall.entity1, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
 									}
-									for (int j3 = 0; j3 < tile.anInt1317; j3++) {
-										SceneLoc loc = tile.aLocArray1318[j3];
-										if ((loc != null) && (loc.aEntity_521 != null) && (loc.aEntity_521.vertexNormal != null)) {
-											int k3 = (loc.anInt524 - loc.anInt523) + 1;
-											int l3 = (loc.anInt526 - loc.anInt525) + 1;
-											method308(model, (Model) loc.aEntity_521, ((loc.anInt523 - l) * 128) + ((k3 - j) * 64), i3, ((loc.anInt525 - i1) * 128) + ((l3 - k) * 64), flag);
+									for (int j3 = 0; j3 < tile.locCount; j3++) {
+										SceneLoc loc = tile.locs[j3];
+										if ((loc != null) && (loc.entity != null) && (loc.entity.vertexNormal != null)) {
+											int k3 = (loc.maxSceneTileX - loc.minSceneTileX) + 1;
+											int l3 = (loc.maxSceneTileZ - loc.minSceneTileZ) + 1;
+											method308(model, (Model) loc.entity, ((loc.minSceneTileX - l) * 128) + ((k3 - j) * 64), i3, ((loc.minSceneTileZ - i1) * 128) + ((l3 - k) * 64), flag);
 										}
 									}
 								}
@@ -816,12 +847,12 @@ public class Scene {
 		}
 	}
 
-	public void method309(int[] ai, int i, int j, int k, int l, int i1) {
-		SceneTile tile = aTileArrayArrayArray441[k][l][i1];
+	public void drawMinimapTile(int[] ai, int i, int j, int k, int l, int i1) {
+		SceneTile tile = planeTiles[k][l][i1];
 		if (tile == null) {
 			return;
 		}
-		SceneTileUnderlay underlay = tile.aUnderlay_1311;
+		SceneTileUnderlay underlay = tile.underlay;
 		if (underlay != null) {
 			int j1 = underlay.anInt722;
 			if (j1 == 0) {
@@ -836,7 +867,7 @@ public class Scene {
 			}
 			return;
 		}
-		SceneTileOverlay overlay = tile.aOverlay_1312;
+		SceneTileOverlay overlay = tile.overlay;
 		if (overlay == null) {
 			return;
 		}
@@ -885,15 +916,15 @@ public class Scene {
 	public void method313(int eyeX, int eyeZ, int eyeYaw, int eyeY, int i1, int eyePitch) {
 		if (eyeX < 0) {
 			eyeX = 0;
-		} else if (eyeX >= (anInt438 * 128)) {
-			eyeX = (anInt438 * 128) - 1;
+		} else if (eyeX >= (maxTileX * 128)) {
+			eyeX = (maxTileX * 128) - 1;
 		}
 		if (eyeZ < 0) {
 			eyeZ = 0;
-		} else if (eyeZ >= (anInt439 * 128)) {
-			eyeZ = (anInt439 * 128) - 1;
+		} else if (eyeZ >= (maxTileZ * 128)) {
+			eyeZ = (maxTileZ * 128) - 1;
 		}
-		anInt448++;
+		cycle++;
 		sinEyePitch = Model.sin[eyePitch];
 		cosEyePitch = Model.cos[eyePitch];
 		sinEyeYaw = Model.sin[eyeYaw];
@@ -914,37 +945,37 @@ public class Scene {
 			anInt451 = 0;
 		}
 		anInt450 = eyeTileX + 25;
-		if (anInt450 > anInt438) {
-			anInt450 = anInt438;
+		if (anInt450 > maxTileX) {
+			anInt450 = maxTileX;
 		}
 		anInt452 = eyeTileZ + 25;
-		if (anInt452 > anInt439) {
-			anInt452 = anInt439;
+		if (anInt452 > maxTileZ) {
+			anInt452 = maxTileZ;
 		}
 		method319();
 		anInt446 = 0;
-		for (int k1 = anInt442; k1 < anInt437; k1++) {
-			SceneTile[][] aclass30_sub3 = aTileArrayArrayArray441[k1];
+		for (int k1 = minPlane; k1 < maxPlane; k1++) {
+			SceneTile[][] aclass30_sub3 = planeTiles[k1];
 			for (int i2 = anInt449; i2 < anInt450; i2++) {
 				for (int k2 = anInt451; k2 < anInt452; k2++) {
 					SceneTile tile = aclass30_sub3[i2][k2];
 					if (tile != null) {
-						if ((tile.anInt1321 > i1) || (!aBooleanArrayArray492[(i2 - eyeTileX) + 25][(k2 - eyeTileZ) + 25] && ((anIntArrayArrayArray440[k1][i2][k2] - eyeY) < 2000))) {
+						if ((tile.drawPlane > i1) || (!aBooleanArrayArray492[(i2 - eyeTileX) + 25][(k2 - eyeTileZ) + 25] && ((planeHeightmaps[k1][i2][k2] - eyeY) < 2000))) {
 							tile.aBoolean1322 = false;
 							tile.aBoolean1323 = false;
 							tile.anInt1325 = 0;
 						} else {
 							tile.aBoolean1322 = true;
 							tile.aBoolean1323 = true;
-							tile.aBoolean1324 = tile.anInt1317 > 0;
+							tile.aBoolean1324 = tile.locCount > 0;
 							anInt446++;
 						}
 					}
 				}
 			}
 		}
-		for (int l1 = anInt442; l1 < anInt437; l1++) {
-			SceneTile[][] aclass30_sub3_1 = aTileArrayArrayArray441[l1];
+		for (int l1 = minPlane; l1 < maxPlane; l1++) {
+			SceneTile[][] aclass30_sub3_1 = planeTiles[l1];
 			for (int l2 = -25; l2 <= 0; l2++) {
 				int i3 = eyeTileX + l2;
 				int k3 = eyeTileX - l2;
@@ -988,8 +1019,8 @@ public class Scene {
 				}
 			}
 		}
-		for (int j2 = anInt442; j2 < anInt437; j2++) {
-			SceneTile[][] aclass30_sub3_2 = aTileArrayArrayArray441[j2];
+		for (int j2 = minPlane; j2 < maxPlane; j2++) {
+			SceneTile[][] aclass30_sub3_2 = planeTiles[j2];
 			for (int j3 = -25; j3 <= 0; j3++) {
 				int l3 = eyeTileX + j3;
 				int j4 = eyeTileX - j3;
@@ -1050,36 +1081,36 @@ public class Scene {
 			int j = tile_1.anInt1309;
 			int k = tile_1.anInt1307;
 			int l = tile_1.anInt1310;
-			SceneTile[][] aclass30_sub3 = aTileArrayArrayArray441[k];
+			SceneTile[][] tiles = planeTiles[k];
 			if (tile_1.aBoolean1322) {
 				if (flag) {
 					if (k > 0) {
-						SceneTile tile_2 = aTileArrayArrayArray441[k - 1][i][j];
+						SceneTile tile_2 = planeTiles[k - 1][i][j];
 						if ((tile_2 != null) && tile_2.aBoolean1323) {
 							continue;
 						}
 					}
 					if ((i <= eyeTileX) && (i > anInt449)) {
-						SceneTile tile_3 = aclass30_sub3[i - 1][j];
-						if ((tile_3 != null) && tile_3.aBoolean1323 && (tile_3.aBoolean1322 || ((tile_1.anInt1320 & 1) == 0))) {
+						SceneTile tile_3 = tiles[i - 1][j];
+						if ((tile_3 != null) && tile_3.aBoolean1323 && (tile_3.aBoolean1322 || ((tile_1.flags & 1) == 0))) {
 							continue;
 						}
 					}
 					if ((i >= eyeTileX) && (i < (anInt450 - 1))) {
-						SceneTile tile_4 = aclass30_sub3[i + 1][j];
-						if ((tile_4 != null) && tile_4.aBoolean1323 && (tile_4.aBoolean1322 || ((tile_1.anInt1320 & 4) == 0))) {
+						SceneTile tile_4 = tiles[i + 1][j];
+						if ((tile_4 != null) && tile_4.aBoolean1323 && (tile_4.aBoolean1322 || ((tile_1.flags & 4) == 0))) {
 							continue;
 						}
 					}
 					if ((j <= eyeTileZ) && (j > anInt451)) {
-						SceneTile tile_5 = aclass30_sub3[i][j - 1];
-						if ((tile_5 != null) && tile_5.aBoolean1323 && (tile_5.aBoolean1322 || ((tile_1.anInt1320 & 8) == 0))) {
+						SceneTile tile_5 = tiles[i][j - 1];
+						if ((tile_5 != null) && tile_5.aBoolean1323 && (tile_5.aBoolean1322 || ((tile_1.flags & 8) == 0))) {
 							continue;
 						}
 					}
 					if ((j >= eyeTileZ) && (j < (anInt452 - 1))) {
-						SceneTile tile_6 = aclass30_sub3[i][j + 1];
-						if ((tile_6 != null) && tile_6.aBoolean1323 && (tile_6.aBoolean1322 || ((tile_1.anInt1320 & 2) == 0))) {
+						SceneTile tile_6 = tiles[i][j + 1];
+						if ((tile_6 != null) && tile_6.aBoolean1323 && (tile_6.aBoolean1322 || ((tile_1.flags & 2) == 0))) {
 							continue;
 						}
 					}
@@ -1087,41 +1118,41 @@ public class Scene {
 					flag = true;
 				}
 				tile_1.aBoolean1322 = false;
-				if (tile_1.aTile_1329 != null) {
-					SceneTile tile_7 = tile_1.aTile_1329;
-					if (tile_7.aUnderlay_1311 != null) {
-						if (!method320(0, i, j)) {
-							method315(tile_7.aUnderlay_1311, 0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i, j);
+				if (tile_1.bridge != null) {
+					SceneTile tile_7 = tile_1.bridge;
+					if (tile_7.underlay != null) {
+						if (!tileOccluded(0, i, j)) {
+							method315(tile_7.underlay, 0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i, j);
 						}
-					} else if ((tile_7.aOverlay_1312 != null) && !method320(0, i, j)) {
-						method316(i, sinEyePitch, sinEyeYaw, tile_7.aOverlay_1312, cosEyePitch, j, cosEyeYaw);
+					} else if ((tile_7.overlay != null) && !tileOccluded(0, i, j)) {
+						method316(i, sinEyePitch, sinEyeYaw, tile_7.overlay, cosEyePitch, j, cosEyeYaw);
 					}
-					SceneWall wall = tile_7.aWall_1313;
+					SceneWall wall = tile_7.wall;
 					if (wall != null) {
-						wall.aEntity_278.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.anInt274 - eyeX, wall.anInt273 - eyeY, wall.anInt275 - eyeZ, wall.anInt280);
+						wall.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
-					for (int i2 = 0; i2 < tile_7.anInt1317; i2++) {
-						SceneLoc loc = tile_7.aLocArray1318[i2];
+					for (int i2 = 0; i2 < tile_7.locCount; i2++) {
+						SceneLoc loc = tile_7.locs[i2];
 						if (loc != null) {
-							loc.aEntity_521.draw(loc.anInt522, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, loc.anInt519 - eyeX, loc.anInt518 - eyeY, loc.anInt520 - eyeZ, loc.anInt529);
+							loc.entity.draw(loc.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, loc.x - eyeX, loc.y - eyeY, loc.z - eyeZ, loc.bitset);
 						}
 					}
 				}
 				boolean flag1 = false;
-				if (tile_1.aUnderlay_1311 != null) {
-					if (!method320(l, i, j)) {
+				if (tile_1.underlay != null) {
+					if (!tileOccluded(l, i, j)) {
 						flag1 = true;
-						method315(tile_1.aUnderlay_1311, l, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i, j);
+						method315(tile_1.underlay, l, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i, j);
 					}
-				} else if ((tile_1.aOverlay_1312 != null) && !method320(l, i, j)) {
+				} else if ((tile_1.overlay != null) && !tileOccluded(l, i, j)) {
 					flag1 = true;
-					method316(i, sinEyePitch, sinEyeYaw, tile_1.aOverlay_1312, cosEyePitch, j, cosEyeYaw);
+					method316(i, sinEyePitch, sinEyeYaw, tile_1.overlay, cosEyePitch, j, cosEyeYaw);
 				}
 				int j1 = 0;
 				int j2 = 0;
-				SceneWall wall_3 = tile_1.aWall_1313;
-				SceneWallDecoration wallDecoration_1 = tile_1.aWallDecoration_1314;
-				if ((wall_3 != null) || (wallDecoration_1 != null)) {
+				SceneWall wall = tile_1.wall;
+				SceneWallDecoration decor = tile_1.wallDecoration;
+				if ((wall != null) || (decor != null)) {
 					if (eyeTileX == i) {
 						j1++;
 					} else if (eyeTileX < i) {
@@ -1135,17 +1166,17 @@ public class Scene {
 					j2 = anIntArray478[j1];
 					tile_1.anInt1328 = anIntArray480[j1];
 				}
-				if (wall_3 != null) {
-					if ((wall_3.anInt276 & anIntArray479[j1]) != 0) {
-						if (wall_3.anInt276 == 16) {
+				if (wall != null) {
+					if ((wall.type0 & anIntArray479[j1]) != 0) {
+						if (wall.type0 == 16) {
 							tile_1.anInt1325 = 3;
 							tile_1.anInt1326 = anIntArray481[j1];
 							tile_1.anInt1327 = 3 - tile_1.anInt1326;
-						} else if (wall_3.anInt276 == 32) {
+						} else if (wall.type0 == 32) {
 							tile_1.anInt1325 = 6;
 							tile_1.anInt1326 = anIntArray482[j1];
 							tile_1.anInt1327 = 6 - tile_1.anInt1326;
-						} else if (wall_3.anInt276 == 64) {
+						} else if (wall.type0 == 64) {
 							tile_1.anInt1325 = 12;
 							tile_1.anInt1326 = anIntArray483[j1];
 							tile_1.anInt1327 = 12 - tile_1.anInt1326;
@@ -1157,21 +1188,21 @@ public class Scene {
 					} else {
 						tile_1.anInt1325 = 0;
 					}
-					if (((wall_3.anInt276 & j2) != 0) && !method321(l, i, j, wall_3.anInt276)) {
-						wall_3.aEntity_278.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_3.anInt274 - eyeX, wall_3.anInt273 - eyeY, wall_3.anInt275 - eyeZ, wall_3.anInt280);
+					if (((wall.type0 & j2) != 0) && !wallOccluded(l, i, j, wall.type0)) {
+						wall.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
-					if (((wall_3.anInt277 & j2) != 0) && !method321(l, i, j, wall_3.anInt277)) {
-						wall_3.aEntity_279.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_3.anInt274 - eyeX, wall_3.anInt273 - eyeY, wall_3.anInt275 - eyeZ, wall_3.anInt280);
+					if (((wall.type1 & j2) != 0) && !wallOccluded(l, i, j, wall.type1)) {
+						wall.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
 				}
-				if ((wallDecoration_1 != null) && !method322(l, i, j, wallDecoration_1.aEntity_504.minY)) {
-					if ((wallDecoration_1.anInt502 & j2) != 0) {
-						wallDecoration_1.aEntity_504.draw(wallDecoration_1.anInt503, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration_1.anInt500 - eyeX, wallDecoration_1.anInt499 - eyeY, wallDecoration_1.anInt501 - eyeZ, wallDecoration_1.anInt505);
-					} else if ((wallDecoration_1.anInt502 & 0x300) != 0) {
-						int j4 = wallDecoration_1.anInt500 - eyeX;
-						int l5 = wallDecoration_1.anInt499 - eyeY;
-						int k6 = wallDecoration_1.anInt501 - eyeZ;
-						int i8 = wallDecoration_1.anInt503;
+				if ((decor != null) && !occluded(l, i, j, decor.entity.minY)) {
+					if ((decor.type & j2) != 0) {
+						decor.entity.draw(decor.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, decor.x - eyeX, decor.y - eyeY, decor.z - eyeZ, decor.bitset);
+					} else if ((decor.type & 0x300) != 0) {
+						int j4 = decor.x - eyeX;
+						int l5 = decor.y - eyeY;
+						int k6 = decor.z - eyeZ;
+						int i8 = decor.yaw;
 						int k9;
 						if ((i8 == 1) || (i8 == 2)) {
 							k9 = -j4;
@@ -1184,58 +1215,58 @@ public class Scene {
 						} else {
 							k10 = k6;
 						}
-						if (((wallDecoration_1.anInt502 & 0x100) != 0) && (k10 < k9)) {
+						if (((decor.type & 0x100) != 0) && (k10 < k9)) {
 							int i11 = j4 + anIntArray463[i8];
 							int k11 = k6 + anIntArray464[i8];
-							wallDecoration_1.aEntity_504.draw((i8 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i11, l5, k11, wallDecoration_1.anInt505);
+							decor.entity.draw((i8 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i11, l5, k11, decor.bitset);
 						}
-						if (((wallDecoration_1.anInt502 & 0x200) != 0) && (k10 > k9)) {
+						if (((decor.type & 0x200) != 0) && (k10 > k9)) {
 							int j11 = j4 + anIntArray465[i8];
 							int l11 = k6 + anIntArray466[i8];
-							wallDecoration_1.aEntity_504.draw(((i8 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j11, l5, l11, wallDecoration_1.anInt505);
+							decor.entity.draw(((i8 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j11, l5, l11, decor.bitset);
 						}
 					}
 				}
 				if (flag1) {
-					SceneGroundDecoration groundDecoration = tile_1.aGroundDecoration_1315;
+					SceneGroundDecoration groundDecoration = tile_1.groundDecoration;
 					if (groundDecoration != null) {
-						groundDecoration.aEntity_814.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, groundDecoration.anInt812 - eyeX, groundDecoration.anInt811 - eyeY, groundDecoration.anInt813 - eyeZ, groundDecoration.anInt815);
+						groundDecoration.entity.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, groundDecoration.x - eyeX, groundDecoration.y - eyeY, groundDecoration.z - eyeZ, groundDecoration.bitset);
 					}
-					SceneObjStack objStack_1 = tile_1.aObjStack_1316;
-					if ((objStack_1 != null) && (objStack_1.anInt52 == 0)) {
-						if (objStack_1.aEntity_49 != null) {
-							objStack_1.aEntity_49.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.anInt46 - eyeX, objStack_1.anInt45 - eyeY, objStack_1.anInt47 - eyeZ, objStack_1.anInt51);
+					SceneObjStack objStack_1 = tile_1.objStack;
+					if ((objStack_1 != null) && (objStack_1.offset == 0)) {
+						if (objStack_1.entity1 != null) {
+							objStack_1.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.x - eyeX, objStack_1.y - eyeY, objStack_1.z - eyeZ, objStack_1.bitset);
 						}
-						if (objStack_1.aEntity_50 != null) {
-							objStack_1.aEntity_50.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.anInt46 - eyeX, objStack_1.anInt45 - eyeY, objStack_1.anInt47 - eyeZ, objStack_1.anInt51);
+						if (objStack_1.entity2 != null) {
+							objStack_1.entity2.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.x - eyeX, objStack_1.y - eyeY, objStack_1.z - eyeZ, objStack_1.bitset);
 						}
-						if (objStack_1.aEntity_48 != null) {
-							objStack_1.aEntity_48.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.anInt46 - eyeX, objStack_1.anInt45 - eyeY, objStack_1.anInt47 - eyeZ, objStack_1.anInt51);
+						if (objStack_1.entity0 != null) {
+							objStack_1.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack_1.x - eyeX, objStack_1.y - eyeY, objStack_1.z - eyeZ, objStack_1.bitset);
 						}
 					}
 				}
-				int k4 = tile_1.anInt1320;
+				int k4 = tile_1.flags;
 				if (k4 != 0) {
 					if ((i < eyeTileX) && ((k4 & 4) != 0)) {
-						SceneTile tile_17 = aclass30_sub3[i + 1][j];
+						SceneTile tile_17 = tiles[i + 1][j];
 						if ((tile_17 != null) && tile_17.aBoolean1323) {
 							aList_477.pushBack(tile_17);
 						}
 					}
 					if ((j < eyeTileZ) && ((k4 & 2) != 0)) {
-						SceneTile tile_18 = aclass30_sub3[i][j + 1];
+						SceneTile tile_18 = tiles[i][j + 1];
 						if ((tile_18 != null) && tile_18.aBoolean1323) {
 							aList_477.pushBack(tile_18);
 						}
 					}
 					if ((i > eyeTileX) && ((k4 & 1) != 0)) {
-						SceneTile tile_19 = aclass30_sub3[i - 1][j];
+						SceneTile tile_19 = tiles[i - 1][j];
 						if ((tile_19 != null) && tile_19.aBoolean1323) {
 							aList_477.pushBack(tile_19);
 						}
 					}
 					if ((j > eyeTileZ) && ((k4 & 8) != 0)) {
-						SceneTile tile_20 = aclass30_sub3[i][j - 1];
+						SceneTile tile_20 = tiles[i][j - 1];
 						if ((tile_20 != null) && tile_20.aBoolean1323) {
 							aList_477.pushBack(tile_20);
 						}
@@ -1244,53 +1275,57 @@ public class Scene {
 			}
 			if (tile_1.anInt1325 != 0) {
 				boolean flag2 = true;
-				for (int k1 = 0; k1 < tile_1.anInt1317; k1++) {
-					if ((tile_1.aLocArray1318[k1].anInt528 == anInt448) || ((tile_1.anIntArray1319[k1] & tile_1.anInt1325) != tile_1.anInt1326)) {
+				for (int k1 = 0; k1 < tile_1.locCount; k1++) {
+					if ((tile_1.locs[k1].cycle == cycle) || ((tile_1.locFlags[k1] & tile_1.anInt1325) != tile_1.anInt1326)) {
 						continue;
 					}
 					flag2 = false;
 					break;
 				}
 				if (flag2) {
-					SceneWall wall_1 = tile_1.aWall_1313;
-					if (!method321(l, i, j, wall_1.anInt276)) {
-						wall_1.aEntity_278.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_1.anInt274 - eyeX, wall_1.anInt273 - eyeY, wall_1.anInt275 - eyeZ, wall_1.anInt280);
+					SceneWall wall_1 = tile_1.wall;
+					if (!wallOccluded(l, i, j, wall_1.type0)) {
+						wall_1.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_1.x - eyeX, wall_1.y - eyeY, wall_1.z - eyeZ, wall_1.bitset);
 					}
 					tile_1.anInt1325 = 0;
 				}
 			}
 			if (tile_1.aBoolean1324) {
 				try {
-					int i1 = tile_1.anInt1317;
+					int locCount = tile_1.locCount;
 					tile_1.aBoolean1324 = false;
-					int l1 = 0;
+					int tmpCount = 0;
+
 					label0:
-					for (int k2 = 0; k2 < i1; k2++) {
-						SceneLoc loc_1 = tile_1.aLocArray1318[k2];
-						if (loc_1.anInt528 == anInt448) {
+					for (int k2 = 0; k2 < locCount; k2++) {
+						SceneLoc loc = tile_1.locs[k2];
+
+						if (loc.cycle == cycle) {
 							continue;
 						}
-						for (int k3 = loc_1.anInt523; k3 <= loc_1.anInt524; k3++) {
-							for (int l4 = loc_1.anInt525; l4 <= loc_1.anInt526; l4++) {
-								SceneTile tile_21 = aclass30_sub3[k3][l4];
-								if (!tile_21.aBoolean1322) {
-									if (tile_21.anInt1325 == 0) {
+
+						for (int stx = loc.minSceneTileX; stx <= loc.maxSceneTileX; stx++) {
+							for (int stz = loc.minSceneTileZ; stz <= loc.maxSceneTileZ; stz++) {
+								SceneTile ground = tiles[stx][stz];
+
+								if (!ground.aBoolean1322) {
+									if (ground.anInt1325 == 0) {
 										continue;
 									}
 									int l6 = 0;
-									if (k3 > loc_1.anInt523) {
+									if (stx > loc.minSceneTileX) {
 										l6++;
 									}
-									if (k3 < loc_1.anInt524) {
+									if (stx < loc.maxSceneTileX) {
 										l6 += 4;
 									}
-									if (l4 > loc_1.anInt525) {
+									if (stz > loc.minSceneTileZ) {
 										l6 += 8;
 									}
-									if (l4 < loc_1.anInt526) {
+									if (stz < loc.maxSceneTileZ) {
 										l6 += 2;
 									}
-									if ((l6 & tile_21.anInt1325) != tile_1.anInt1327) {
+									if ((l6 & ground.anInt1325) != tile_1.anInt1327) {
 										continue;
 									}
 								}
@@ -1298,51 +1333,65 @@ public class Scene {
 								continue label0;
 							}
 						}
-						aLocArray462[l1++] = loc_1;
-						int i5 = eyeTileX - loc_1.anInt523;
-						int i6 = loc_1.anInt524 - eyeTileX;
-						if (i6 > i5) {
-							i5 = i6;
+
+						tmp[tmpCount++] = loc;
+
+						int dtx0 = eyeTileX - loc.minSceneTileX;
+						int dtx1 = loc.maxSceneTileX - eyeTileX;
+
+						if (dtx1 > dtx0) {
+							dtx0 = dtx1;
 						}
-						int i7 = eyeTileZ - loc_1.anInt525;
-						int j8 = loc_1.anInt526 - eyeTileZ;
-						if (j8 > i7) {
-							loc_1.anInt527 = i5 + j8;
+
+						int dtz0 = eyeTileZ - loc.minSceneTileZ;
+						int dtz1 = loc.maxSceneTileZ - eyeTileZ;
+
+						if (dtz1 > dtz0) {
+							loc.distance = dtx0 + dtz1;
 						} else {
-							loc_1.anInt527 = i5 + i7;
+							loc.distance = dtx0 + dtz0;
 						}
 					}
+
 					while (true) {
-						int i3 = -50;
-						int l3 = -1;
-						for (int j5 = 0; j5 < l1; j5++) {
-							SceneLoc loc_2 = aLocArray462[j5];
-							if (loc_2.anInt528 != anInt448) {
-								if (loc_2.anInt527 > i3) {
-									i3 = loc_2.anInt527;
-									l3 = j5;
-								} else if (loc_2.anInt527 == i3) {
-									int j7 = loc_2.anInt519 - eyeX;
-									int k8 = loc_2.anInt520 - eyeZ;
-									int l9 = aLocArray462[l3].anInt519 - eyeX;
-									int l10 = aLocArray462[l3].anInt520 - eyeZ;
-									if (((j7 * j7) + (k8 * k8)) > ((l9 * l9) + (l10 * l10))) {
-										l3 = j5;
+						int farthestDistance = -50;
+						int farthestIndex = -1;
+
+						for (int i0 = 0; i0 < tmpCount; i0++) {
+							SceneLoc loc = tmp[i0];
+
+							if (loc.cycle != cycle) {
+								if (loc.distance > farthestDistance) {
+									farthestDistance = loc.distance;
+									farthestIndex = i0;
+								} else if (loc.distance == farthestDistance) {
+									int dx0 = loc.x - eyeX;
+									int dz0 = loc.z - eyeZ;
+									int dx1 = tmp[farthestIndex].x - eyeX;
+									int dz1 = tmp[farthestIndex].z - eyeZ;
+
+									// dot
+									if (((dx0 * dx0) + (dz0 * dz0)) > ((dx1 * dx1) + (dz1 * dz1))) {
+										farthestIndex = i0;
 									}
 								}
 							}
 						}
-						if (l3 == -1) {
+
+						if (farthestIndex == -1) {
 							break;
 						}
-						SceneLoc loc_3 = aLocArray462[l3];
-						loc_3.anInt528 = anInt448;
-						if (!method323(l, loc_3.anInt523, loc_3.anInt524, loc_3.anInt525, loc_3.anInt526, loc_3.aEntity_521.minY)) {
-							loc_3.aEntity_521.draw(loc_3.anInt522, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, loc_3.anInt519 - eyeX, loc_3.anInt518 - eyeY, loc_3.anInt520 - eyeZ, loc_3.anInt529);
+
+						SceneLoc farthest = tmp[farthestIndex];
+						farthest.cycle = cycle;
+
+						if (!occluded(l, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
+							farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
 						}
-						for (int k7 = loc_3.anInt523; k7 <= loc_3.anInt524; k7++) {
-							for (int l8 = loc_3.anInt525; l8 <= loc_3.anInt526; l8++) {
-								SceneTile tile_22 = aclass30_sub3[k7][l8];
+
+						for (int k7 = farthest.minSceneTileX; k7 <= farthest.maxSceneTileX; k7++) {
+							for (int l8 = farthest.minSceneTileZ; l8 <= farthest.maxSceneTileZ; l8++) {
+								SceneTile tile_22 = tiles[k7][l8];
 								if (tile_22.anInt1325 != 0) {
 									aList_477.pushBack(tile_22);
 								} else if (((k7 != i) || (l8 != j)) && tile_22.aBoolean1323) {
@@ -1362,53 +1411,53 @@ public class Scene {
 				continue;
 			}
 			if ((i <= eyeTileX) && (i > anInt449)) {
-				SceneTile tile_8 = aclass30_sub3[i - 1][j];
+				SceneTile tile_8 = tiles[i - 1][j];
 				if ((tile_8 != null) && tile_8.aBoolean1323) {
 					continue;
 				}
 			}
 			if ((i >= eyeTileX) && (i < (anInt450 - 1))) {
-				SceneTile tile_9 = aclass30_sub3[i + 1][j];
+				SceneTile tile_9 = tiles[i + 1][j];
 				if ((tile_9 != null) && tile_9.aBoolean1323) {
 					continue;
 				}
 			}
 			if ((j <= eyeTileZ) && (j > anInt451)) {
-				SceneTile tile_10 = aclass30_sub3[i][j - 1];
+				SceneTile tile_10 = tiles[i][j - 1];
 				if ((tile_10 != null) && tile_10.aBoolean1323) {
 					continue;
 				}
 			}
 			if ((j >= eyeTileZ) && (j < (anInt452 - 1))) {
-				SceneTile tile_11 = aclass30_sub3[i][j + 1];
+				SceneTile tile_11 = tiles[i][j + 1];
 				if ((tile_11 != null) && tile_11.aBoolean1323) {
 					continue;
 				}
 			}
 			tile_1.aBoolean1323 = false;
 			anInt446--;
-			SceneObjStack objStack = tile_1.aObjStack_1316;
-			if ((objStack != null) && (objStack.anInt52 != 0)) {
-				if (objStack.aEntity_49 != null) {
-					objStack.aEntity_49.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.anInt46 - eyeX, objStack.anInt45 - eyeY - objStack.anInt52, objStack.anInt47 - eyeZ, objStack.anInt51);
+			SceneObjStack objStack = tile_1.objStack;
+			if ((objStack != null) && (objStack.offset != 0)) {
+				if (objStack.entity1 != null) {
+					objStack.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.x - eyeX, objStack.y - eyeY - objStack.offset, objStack.z - eyeZ, objStack.bitset);
 				}
-				if (objStack.aEntity_50 != null) {
-					objStack.aEntity_50.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.anInt46 - eyeX, objStack.anInt45 - eyeY - objStack.anInt52, objStack.anInt47 - eyeZ, objStack.anInt51);
+				if (objStack.entity2 != null) {
+					objStack.entity2.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.x - eyeX, objStack.y - eyeY - objStack.offset, objStack.z - eyeZ, objStack.bitset);
 				}
-				if (objStack.aEntity_48 != null) {
-					objStack.aEntity_48.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.anInt46 - eyeX, objStack.anInt45 - eyeY - objStack.anInt52, objStack.anInt47 - eyeZ, objStack.anInt51);
+				if (objStack.entity0 != null) {
+					objStack.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, objStack.x - eyeX, objStack.y - eyeY - objStack.offset, objStack.z - eyeZ, objStack.bitset);
 				}
 			}
 			if (tile_1.anInt1328 != 0) {
-				SceneWallDecoration wallDecoration = tile_1.aWallDecoration_1314;
-				if ((wallDecoration != null) && !method322(l, i, j, wallDecoration.aEntity_504.minY)) {
-					if ((wallDecoration.anInt502 & tile_1.anInt1328) != 0) {
-						wallDecoration.aEntity_504.draw(wallDecoration.anInt503, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration.anInt500 - eyeX, wallDecoration.anInt499 - eyeY, wallDecoration.anInt501 - eyeZ, wallDecoration.anInt505);
-					} else if ((wallDecoration.anInt502 & 0x300) != 0) {
-						int l2 = wallDecoration.anInt500 - eyeX;
-						int j3 = wallDecoration.anInt499 - eyeY;
-						int i4 = wallDecoration.anInt501 - eyeZ;
-						int k5 = wallDecoration.anInt503;
+				SceneWallDecoration wallDecoration = tile_1.wallDecoration;
+				if ((wallDecoration != null) && !occluded(l, i, j, wallDecoration.entity.minY)) {
+					if ((wallDecoration.type & tile_1.anInt1328) != 0) {
+						wallDecoration.entity.draw(wallDecoration.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration.x - eyeX, wallDecoration.y - eyeY, wallDecoration.z - eyeZ, wallDecoration.bitset);
+					} else if ((wallDecoration.type & 0x300) != 0) {
+						int l2 = wallDecoration.x - eyeX;
+						int j3 = wallDecoration.y - eyeY;
+						int i4 = wallDecoration.z - eyeZ;
+						int k5 = wallDecoration.yaw;
 						int j6;
 						if ((k5 == 1) || (k5 == 2)) {
 							j6 = -l2;
@@ -1421,54 +1470,54 @@ public class Scene {
 						} else {
 							l7 = i4;
 						}
-						if (((wallDecoration.anInt502 & 0x100) != 0) && (l7 >= j6)) {
+						if (((wallDecoration.type & 0x100) != 0) && (l7 >= j6)) {
 							int i9 = l2 + anIntArray463[k5];
 							int i10 = i4 + anIntArray464[k5];
-							wallDecoration.aEntity_504.draw((k5 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i9, j3, i10, wallDecoration.anInt505);
+							wallDecoration.entity.draw((k5 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i9, j3, i10, wallDecoration.bitset);
 						}
-						if (((wallDecoration.anInt502 & 0x200) != 0) && (l7 <= j6)) {
+						if (((wallDecoration.type & 0x200) != 0) && (l7 <= j6)) {
 							int j9 = l2 + anIntArray465[k5];
 							int j10 = i4 + anIntArray466[k5];
-							wallDecoration.aEntity_504.draw(((k5 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j9, j3, j10, wallDecoration.anInt505);
+							wallDecoration.entity.draw(((k5 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j9, j3, j10, wallDecoration.bitset);
 						}
 					}
 				}
-				SceneWall wall_2 = tile_1.aWall_1313;
+				SceneWall wall_2 = tile_1.wall;
 				if (wall_2 != null) {
-					if (((wall_2.anInt277 & tile_1.anInt1328) != 0) && !method321(l, i, j, wall_2.anInt277)) {
-						wall_2.aEntity_279.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.anInt274 - eyeX, wall_2.anInt273 - eyeY, wall_2.anInt275 - eyeZ, wall_2.anInt280);
+					if (((wall_2.type1 & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.type1)) {
+						wall_2.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
 					}
-					if (((wall_2.anInt276 & tile_1.anInt1328) != 0) && !method321(l, i, j, wall_2.anInt276)) {
-						wall_2.aEntity_278.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.anInt274 - eyeX, wall_2.anInt273 - eyeY, wall_2.anInt275 - eyeZ, wall_2.anInt280);
+					if (((wall_2.type0 & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.type0)) {
+						wall_2.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
 					}
 				}
 			}
-			if (k < (anInt437 - 1)) {
-				SceneTile tile_12 = aTileArrayArrayArray441[k + 1][i][j];
+			if (k < (maxPlane - 1)) {
+				SceneTile tile_12 = planeTiles[k + 1][i][j];
 				if ((tile_12 != null) && tile_12.aBoolean1323) {
 					aList_477.pushBack(tile_12);
 				}
 			}
 			if (i < eyeTileX) {
-				SceneTile tile_13 = aclass30_sub3[i + 1][j];
+				SceneTile tile_13 = tiles[i + 1][j];
 				if ((tile_13 != null) && tile_13.aBoolean1323) {
 					aList_477.pushBack(tile_13);
 				}
 			}
 			if (j < eyeTileZ) {
-				SceneTile tile_14 = aclass30_sub3[i][j + 1];
+				SceneTile tile_14 = tiles[i][j + 1];
 				if ((tile_14 != null) && tile_14.aBoolean1323) {
 					aList_477.pushBack(tile_14);
 				}
 			}
 			if (i > eyeTileX) {
-				SceneTile tile_15 = aclass30_sub3[i - 1][j];
+				SceneTile tile_15 = tiles[i - 1][j];
 				if ((tile_15 != null) && tile_15.aBoolean1323) {
 					aList_477.pushBack(tile_15);
 				}
 			}
 			if (j > eyeTileZ) {
-				SceneTile tile_16 = aclass30_sub3[i][j - 1];
+				SceneTile tile_16 = tiles[i][j - 1];
 				if ((tile_16 != null) && tile_16.aBoolean1323) {
 					aList_477.pushBack(tile_16);
 				}
@@ -1485,10 +1534,10 @@ public class Scene {
 		int i3 = l2 = i2 + 128;
 		int j3;
 		int k3 = j3 = k2 + 128;
-		int l3 = anIntArrayArrayArray440[i][j1][k1] - eyeY;
-		int i4 = anIntArrayArrayArray440[i][j1 + 1][k1] - eyeY;
-		int j4 = anIntArrayArrayArray440[i][j1 + 1][k1 + 1] - eyeY;
-		int k4 = anIntArrayArrayArray440[i][j1][k1 + 1] - eyeY;
+		int l3 = planeHeightmaps[i][j1][k1] - eyeY;
+		int i4 = planeHeightmaps[i][j1 + 1][k1] - eyeY;
+		int j4 = planeHeightmaps[i][j1 + 1][k1 + 1] - eyeY;
+		int k4 = planeHeightmaps[i][j1][k1 + 1] - eyeY;
 		int l4 = ((k2 * l) + (i2 * i1)) >> 16;
 		k2 = ((k2 * i1) - (i2 * l)) >> 16;
 		i2 = l4;
@@ -1668,7 +1717,7 @@ public class Scene {
 	public void method319() {
 		int j = anIntArray473[anInt447];
 		SceneOccluder[] aclass47 = aOccluderArrayArray474[anInt447];
-		anInt475 = 0;
+		activeOccluderCount = 0;
 		for (int k = 0; k < j; k++) {
 			SceneOccluder occluder = aclass47[k];
 			if (occluder.anInt791 == 1) {
@@ -1696,19 +1745,19 @@ public class Scene {
 				}
 				int j3 = eyeX - occluder.anInt792;
 				if (j3 > 32) {
-					occluder.anInt798 = 1;
+					occluder.mode = 1;
 				} else {
 					if (j3 >= -32) {
 						continue;
 					}
-					occluder.anInt798 = 2;
+					occluder.mode = 2;
 					j3 = -j3;
 				}
 				occluder.anInt801 = ((occluder.anInt794 - eyeZ) << 8) / j3;
 				occluder.anInt802 = ((occluder.anInt795 - eyeZ) << 8) / j3;
 				occluder.anInt803 = ((occluder.anInt796 - eyeY) << 8) / j3;
 				occluder.anInt804 = ((occluder.anInt797 - eyeY) << 8) / j3;
-				A_OCCLUDER_ARRAY_476[anInt475++] = occluder;
+				activeOccluders[activeOccluderCount++] = occluder;
 				continue;
 			}
 			if (occluder.anInt791 == 2) {
@@ -1736,19 +1785,19 @@ public class Scene {
 				}
 				int k3 = eyeZ - occluder.anInt794;
 				if (k3 > 32) {
-					occluder.anInt798 = 3;
+					occluder.mode = 3;
 				} else {
 					if (k3 >= -32) {
 						continue;
 					}
-					occluder.anInt798 = 4;
+					occluder.mode = 4;
 					k3 = -k3;
 				}
 				occluder.anInt799 = ((occluder.anInt792 - eyeX) << 8) / k3;
 				occluder.anInt800 = ((occluder.anInt793 - eyeX) << 8) / k3;
 				occluder.anInt803 = ((occluder.anInt796 - eyeY) << 8) / k3;
 				occluder.anInt804 = ((occluder.anInt797 - eyeY) << 8) / k3;
-				A_OCCLUDER_ARRAY_476[anInt475++] = occluder;
+				activeOccluders[activeOccluderCount++] = occluder;
 			} else if (occluder.anInt791 == 4) {
 				int j1 = occluder.anInt796 - eyeY;
 				if (j1 > 128) {
@@ -1781,12 +1830,12 @@ public class Scene {
 							}
 						}
 						if (flag2) {
-							occluder.anInt798 = 5;
+							occluder.mode = 5;
 							occluder.anInt799 = ((occluder.anInt792 - eyeX) << 8) / j1;
 							occluder.anInt800 = ((occluder.anInt793 - eyeX) << 8) / j1;
 							occluder.anInt801 = ((occluder.anInt794 - eyeZ) << 8) / j1;
 							occluder.anInt802 = ((occluder.anInt795 - eyeZ) << 8) / j1;
-							A_OCCLUDER_ARRAY_476[anInt475++] = occluder;
+							activeOccluders[activeOccluderCount++] = occluder;
 						}
 					}
 				}
@@ -1794,244 +1843,268 @@ public class Scene {
 		}
 	}
 
-	public boolean method320(int i, int j, int k) {
-		int l = anIntArrayArrayArray445[i][j][k];
-		if (l == -anInt448) {
+	public boolean tileOccluded(int plane, int x, int z) {
+		int cycle = planeTileOcclusionCycles[plane][x][z];
+
+		if (cycle == -Scene.cycle) {
 			return false;
 		}
-		if (l == anInt448) {
+
+		if (cycle == Scene.cycle) {
 			return true;
 		}
-		int i1 = j << 7;
-		int j1 = k << 7;
-		if (method324(i1 + 1, anIntArrayArrayArray440[i][j][k], j1 + 1) && method324((i1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][k], j1 + 1) && method324((i1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][k + 1], (j1 + 128) - 1) && method324(i1 + 1, anIntArrayArrayArray440[i][j][k + 1], (j1 + 128) - 1)) {
-			anIntArrayArrayArray445[i][j][k] = anInt448;
+
+		int sx = x << 7;
+		int sz = z << 7;
+
+		if (occluded(sx + 1, planeHeightmaps[plane][x][z], sz + 1) && occluded((sx + 128) - 1, planeHeightmaps[plane][x + 1][z], sz + 1) && occluded((sx + 128) - 1, planeHeightmaps[plane][x + 1][z + 1], (sz + 128) - 1) && occluded(sx + 1, planeHeightmaps[plane][x][z + 1], (sz + 128) - 1)) {
+			planeTileOcclusionCycles[plane][x][z] = Scene.cycle;
 			return true;
 		} else {
-			anIntArrayArrayArray445[i][j][k] = -anInt448;
+			planeTileOcclusionCycles[plane][x][z] = -Scene.cycle;
 			return false;
 		}
 	}
 
-	public boolean method321(int i, int j, int k, int l) {
-		if (!method320(i, j, k)) {
+	public boolean wallOccluded(int plane, int stx, int stz, int type) {
+		if (!tileOccluded(plane, stx, stz)) {
 			return false;
 		}
-		int i1 = j << 7;
-		int j1 = k << 7;
-		int k1 = anIntArrayArrayArray440[i][j][k] - 1;
-		int l1 = k1 - 120;
-		int i2 = k1 - 230;
-		int j2 = k1 - 238;
-		if (l < 16) {
-			if (l == 1) {
-				if (i1 > eyeX) {
-					if (!method324(i1, k1, j1)) {
+
+		int x = stx << 7;
+		int z = stz << 7;
+		int y = planeHeightmaps[plane][stx][stz] - 1;
+		int y0 = y - 120;
+		int y1 = y - 230;
+		int y2 = y - 238;
+
+		if (type < 16) {
+			if (type == 1) {
+				if (x > eyeX) {
+					if (!occluded(x, y, z)) {
 						return false;
 					}
-					if (!method324(i1, k1, j1 + 128)) {
-						return false;
-					}
-				}
-				if (i > 0) {
-					if (!method324(i1, l1, j1)) {
-						return false;
-					}
-					if (!method324(i1, l1, j1 + 128)) {
+					if (!occluded(x, y, z + 128)) {
 						return false;
 					}
 				}
-				if (!method324(i1, i2, j1)) {
+				if (plane > 0) {
+					if (!occluded(x, y0, z)) {
+						return false;
+					}
+					if (!occluded(x, y0, z + 128)) {
+						return false;
+					}
+				}
+				if (!occluded(x, y1, z)) {
 					return false;
 				}
-				return method324(i1, i2, j1 + 128);
+				return occluded(x, y1, z + 128);
 			}
-			if (l == 2) {
-				if (j1 < eyeZ) {
-					if (!method324(i1, k1, j1 + 128)) {
+			if (type == 2) {
+				if (z < eyeZ) {
+					if (!occluded(x, y, z + 128)) {
 						return false;
 					}
-					if (!method324(i1 + 128, k1, j1 + 128)) {
-						return false;
-					}
-				}
-				if (i > 0) {
-					if (!method324(i1, l1, j1 + 128)) {
-						return false;
-					}
-					if (!method324(i1 + 128, l1, j1 + 128)) {
+					if (!occluded(x + 128, y, z + 128)) {
 						return false;
 					}
 				}
-				if (!method324(i1, i2, j1 + 128)) {
+				if (plane > 0) {
+					if (!occluded(x, y0, z + 128)) {
+						return false;
+					}
+					if (!occluded(x + 128, y0, z + 128)) {
+						return false;
+					}
+				}
+				if (!occluded(x, y1, z + 128)) {
 					return false;
 				}
-				return method324(i1 + 128, i2, j1 + 128);
+				return occluded(x + 128, y1, z + 128);
 			}
-			if (l == 4) {
-				if (i1 < eyeX) {
-					if (!method324(i1 + 128, k1, j1)) {
+			if (type == 4) {
+				if (x < eyeX) {
+					if (!occluded(x + 128, y, z)) {
 						return false;
 					}
-					if (!method324(i1 + 128, k1, j1 + 128)) {
-						return false;
-					}
-				}
-				if (i > 0) {
-					if (!method324(i1 + 128, l1, j1)) {
-						return false;
-					}
-					if (!method324(i1 + 128, l1, j1 + 128)) {
+					if (!occluded(x + 128, y, z + 128)) {
 						return false;
 					}
 				}
-				if (!method324(i1 + 128, i2, j1)) {
+				if (plane > 0) {
+					if (!occluded(x + 128, y0, z)) {
+						return false;
+					}
+					if (!occluded(x + 128, y0, z + 128)) {
+						return false;
+					}
+				}
+				if (!occluded(x + 128, y1, z)) {
 					return false;
 				}
-				return method324(i1 + 128, i2, j1 + 128);
+				return occluded(x + 128, y1, z + 128);
 			}
-			if (l == 8) {
-				if (j1 > eyeZ) {
-					if (!method324(i1, k1, j1)) {
+			if (type == 8) {
+				if (z > eyeZ) {
+					if (!occluded(x, y, z)) {
 						return false;
 					}
-					if (!method324(i1 + 128, k1, j1)) {
-						return false;
-					}
-				}
-				if (i > 0) {
-					if (!method324(i1, l1, j1)) {
-						return false;
-					}
-					if (!method324(i1 + 128, l1, j1)) {
+					if (!occluded(x + 128, y, z)) {
 						return false;
 					}
 				}
-				if (!method324(i1, i2, j1)) {
+				if (plane > 0) {
+					if (!occluded(x, y0, z)) {
+						return false;
+					}
+					if (!occluded(x + 128, y0, z)) {
+						return false;
+					}
+				}
+				if (!occluded(x, y1, z)) {
 					return false;
 				}
-				return method324(i1 + 128, i2, j1);
+				return occluded(x + 128, y1, z);
 			}
 		}
-		if (!method324(i1 + 64, j2, j1 + 64)) {
+
+		if (!occluded(x + 64, y2, z + 64)) {
 			return false;
 		}
-		if (l == 16) {
-			return method324(i1, i2, j1 + 128);
+
+		if (type == 16) {
+			return occluded(x, y1, z + 128);
 		}
-		if (l == 32) {
-			return method324(i1 + 128, i2, j1 + 128);
+
+		if (type == 32) {
+			return occluded(x + 128, y1, z + 128);
 		}
-		if (l == 64) {
-			return method324(i1 + 128, i2, j1);
+
+		if (type == 64) {
+			return occluded(x + 128, y1, z);
 		}
-		if (l == 128) {
-			return method324(i1, i2, j1);
+
+		if (type == 128) {
+			return occluded(x, y1, z);
 		} else {
 			System.out.println("Warning unsupported wall type");
 			return true;
 		}
 	}
 
-	public boolean method322(int i, int j, int k, int l) {
-		if (!method320(i, j, k)) {
+	public boolean occluded(int plane, int tx, int tz, int y) {
+		if (!tileOccluded(plane, tx, tz)) {
 			return false;
 		}
-		int i1 = j << 7;
-		int j1 = k << 7;
-		return method324(i1 + 1, anIntArrayArrayArray440[i][j][k] - l, j1 + 1) && method324((i1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][k] - l, j1 + 1) && method324((i1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][k + 1] - l, (j1 + 128) - 1) && method324(i1 + 1, anIntArrayArrayArray440[i][j][k + 1] - l, (j1 + 128) - 1);
+		int x = tx << 7;
+		int z = tz << 7;
+		return occluded(x + 1, planeHeightmaps[plane][tx][tz] - y, z + 1) && occluded((x + 128) - 1, planeHeightmaps[plane][tx + 1][tz] - y, z + 1) && occluded((x + 128) - 1, planeHeightmaps[plane][tx + 1][tz + 1] - y, (z + 128) - 1) && occluded(x + 1, planeHeightmaps[plane][tx][tz + 1] - y, (z + 128) - 1);
 	}
 
-	public boolean method323(int i, int j, int k, int l, int i1, int j1) {
-		if ((j == k) && (l == i1)) {
-			if (!method320(i, j, l)) {
+	public boolean occluded(int plane, int tx0, int tx1, int tz0, int tz1, int y) {
+		if ((tx0 == tx1) && (tz0 == tz1)) {
+			if (!tileOccluded(plane, tx0, tz0)) {
 				return false;
 			}
-			int k1 = j << 7;
-			int i2 = l << 7;
-			return method324(k1 + 1, anIntArrayArrayArray440[i][j][l] - j1, i2 + 1) && method324((k1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][l] - j1, i2 + 1) && method324((k1 + 128) - 1, anIntArrayArrayArray440[i][j + 1][l + 1] - j1, (i2 + 128) - 1) && method324(k1 + 1, anIntArrayArrayArray440[i][j][l + 1] - j1, (i2 + 128) - 1);
+			int x = tx0 << 7;
+			int z = tz0 << 7;
+			return occluded(x + 1, planeHeightmaps[plane][tx0][tz0] - y, z + 1) && occluded((x + 128) - 1, planeHeightmaps[plane][tx0 + 1][tz0] - y, z + 1) && occluded((x + 128) - 1, planeHeightmaps[plane][tx0 + 1][tz0 + 1] - y, (z + 128) - 1) && occluded(x + 1, planeHeightmaps[plane][tx0][tz0 + 1] - y, (z + 128) - 1);
 		}
-		for (int l1 = j; l1 <= k; l1++) {
-			for (int j2 = l; j2 <= i1; j2++) {
-				if (anIntArrayArrayArray445[i][l1][j2] == -anInt448) {
+
+		for (int stx = tx0; stx <= tx1; stx++) {
+			for (int stz = tz0; stz <= tz1; stz++) {
+				if (planeTileOcclusionCycles[plane][stx][stz] == -cycle) {
 					return false;
 				}
 			}
 		}
-		int k2 = (j << 7) + 1;
-		int l2 = (l << 7) + 2;
-		int i3 = anIntArrayArrayArray440[i][j][l] - j1;
-		if (!method324(k2, i3, l2)) {
+
+		int x0 = (tx0 << 7) + 1;
+		int z0 = (tz0 << 7) + 2;
+		int y0 = planeHeightmaps[plane][tx0][tz0] - y;
+
+		if (!occluded(x0, y0, z0)) {
 			return false;
 		}
-		int j3 = (k << 7) - 1;
-		if (!method324(j3, i3, l2)) {
+
+		int x1 = (tx1 << 7) - 1;
+
+		if (!occluded(x1, y0, z0)) {
 			return false;
 		}
-		int k3 = (i1 << 7) - 1;
-		if (!method324(k2, i3, k3)) {
+
+		int z1 = (tz1 << 7) - 1;
+
+		if (!occluded(x0, y0, z1)) {
 			return false;
 		}
-		return method324(j3, i3, k3);
+
+		return occluded(x1, y0, z1);
 	}
 
-	public boolean method324(int i, int j, int k) {
-		for (int l = 0; l < anInt475; l++) {
-			SceneOccluder occluder = A_OCCLUDER_ARRAY_476[l];
-			if (occluder.anInt798 == 1) {
-				int i1 = occluder.anInt792 - i;
-				if (i1 > 0) {
-					int j2 = occluder.anInt794 + ((occluder.anInt801 * i1) >> 8);
-					int k3 = occluder.anInt795 + ((occluder.anInt802 * i1) >> 8);
-					int l4 = occluder.anInt796 + ((occluder.anInt803 * i1) >> 8);
-					int i6 = occluder.anInt797 + ((occluder.anInt804 * i1) >> 8);
-					if ((k >= j2) && (k <= k3) && (j >= l4) && (j <= i6)) {
-						return true;
-					}
+	public boolean occluded(int x, int y, int z) {
+		for (int i = 0; i < activeOccluderCount; i++) {
+			SceneOccluder occluder = activeOccluders[i];
+			if (occluder.mode == 1) {
+				int i1 = occluder.anInt792 - x;
+				if (i1 <= 0) {
+					continue;
 				}
-			} else if (occluder.anInt798 == 2) {
-				int j1 = i - occluder.anInt792;
-				if (j1 > 0) {
-					int k2 = occluder.anInt794 + ((occluder.anInt801 * j1) >> 8);
-					int l3 = occluder.anInt795 + ((occluder.anInt802 * j1) >> 8);
-					int i5 = occluder.anInt796 + ((occluder.anInt803 * j1) >> 8);
-					int j6 = occluder.anInt797 + ((occluder.anInt804 * j1) >> 8);
-					if ((k >= k2) && (k <= l3) && (j >= i5) && (j <= j6)) {
-						return true;
-					}
+				int j2 = occluder.anInt794 + ((occluder.anInt801 * i1) >> 8);
+				int k3 = occluder.anInt795 + ((occluder.anInt802 * i1) >> 8);
+				int l4 = occluder.anInt796 + ((occluder.anInt803 * i1) >> 8);
+				int i6 = occluder.anInt797 + ((occluder.anInt804 * i1) >> 8);
+				if ((z >= j2) && (z <= k3) && (y >= l4) && (y <= i6)) {
+					return true;
 				}
-			} else if (occluder.anInt798 == 3) {
-				int k1 = occluder.anInt794 - k;
-				if (k1 > 0) {
-					int l2 = occluder.anInt792 + ((occluder.anInt799 * k1) >> 8);
-					int i4 = occluder.anInt793 + ((occluder.anInt800 * k1) >> 8);
-					int j5 = occluder.anInt796 + ((occluder.anInt803 * k1) >> 8);
-					int k6 = occluder.anInt797 + ((occluder.anInt804 * k1) >> 8);
-					if ((i >= l2) && (i <= i4) && (j >= j5) && (j <= k6)) {
-						return true;
-					}
+			} else if (occluder.mode == 2) {
+				int j1 = x - occluder.anInt792;
+				if (j1 <= 0) {
+					continue;
 				}
-			} else if (occluder.anInt798 == 4) {
-				int l1 = k - occluder.anInt794;
-				if (l1 > 0) {
-					int i3 = occluder.anInt792 + ((occluder.anInt799 * l1) >> 8);
-					int j4 = occluder.anInt793 + ((occluder.anInt800 * l1) >> 8);
-					int k5 = occluder.anInt796 + ((occluder.anInt803 * l1) >> 8);
-					int l6 = occluder.anInt797 + ((occluder.anInt804 * l1) >> 8);
-					if ((i >= i3) && (i <= j4) && (j >= k5) && (j <= l6)) {
-						return true;
-					}
+				int k2 = occluder.anInt794 + ((occluder.anInt801 * j1) >> 8);
+				int l3 = occluder.anInt795 + ((occluder.anInt802 * j1) >> 8);
+				int i5 = occluder.anInt796 + ((occluder.anInt803 * j1) >> 8);
+				int j6 = occluder.anInt797 + ((occluder.anInt804 * j1) >> 8);
+				if ((z >= k2) && (z <= l3) && (y >= i5) && (y <= j6)) {
+					return true;
 				}
-			} else if (occluder.anInt798 == 5) {
-				int i2 = j - occluder.anInt796;
-				if (i2 > 0) {
-					int j3 = occluder.anInt792 + ((occluder.anInt799 * i2) >> 8);
-					int k4 = occluder.anInt793 + ((occluder.anInt800 * i2) >> 8);
-					int l5 = occluder.anInt794 + ((occluder.anInt801 * i2) >> 8);
-					int i7 = occluder.anInt795 + ((occluder.anInt802 * i2) >> 8);
-					if ((i >= j3) && (i <= k4) && (k >= l5) && (k <= i7)) {
-						return true;
-					}
+			} else if (occluder.mode == 3) {
+				int k1 = occluder.anInt794 - z;
+				if (k1 <= 0) {
+					continue;
+				}
+				int l2 = occluder.anInt792 + ((occluder.anInt799 * k1) >> 8);
+				int i4 = occluder.anInt793 + ((occluder.anInt800 * k1) >> 8);
+				int j5 = occluder.anInt796 + ((occluder.anInt803 * k1) >> 8);
+				int k6 = occluder.anInt797 + ((occluder.anInt804 * k1) >> 8);
+				if ((x >= l2) && (x <= i4) && (y >= j5) && (y <= k6)) {
+					return true;
+				}
+			} else if (occluder.mode == 4) {
+				int l1 = z - occluder.anInt794;
+				if (l1 <= 0) {
+					continue;
+				}
+				int i3 = occluder.anInt792 + ((occluder.anInt799 * l1) >> 8);
+				int j4 = occluder.anInt793 + ((occluder.anInt800 * l1) >> 8);
+				int k5 = occluder.anInt796 + ((occluder.anInt803 * l1) >> 8);
+				int l6 = occluder.anInt797 + ((occluder.anInt804 * l1) >> 8);
+				if ((x >= i3) && (x <= j4) && (y >= k5) && (y <= l6)) {
+					return true;
+				}
+			} else if (occluder.mode == 5) {
+				int i2 = y - occluder.anInt796;
+				if (i2 <= 0) {
+					continue;
+				}
+				int j3 = occluder.anInt792 + ((occluder.anInt799 * i2) >> 8);
+				int k4 = occluder.anInt793 + ((occluder.anInt800 * i2) >> 8);
+				int l5 = occluder.anInt794 + ((occluder.anInt801 * i2) >> 8);
+				int i7 = occluder.anInt795 + ((occluder.anInt802 * i2) >> 8);
+				if ((x >= j3) && (x <= k4) && (z >= l5) && (z <= i7)) {
+					return true;
 				}
 			}
 		}

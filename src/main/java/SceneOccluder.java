@@ -15,7 +15,7 @@ public class SceneOccluder {
 	public int anInt795;
 	public int anInt796;
 	public int anInt797;
-	public int anInt798;
+	public int mode;
 	public int anInt799;
 	public int anInt800;
 	public int anInt801;

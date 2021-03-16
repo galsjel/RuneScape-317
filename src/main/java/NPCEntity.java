@@ -4,30 +4,30 @@
 
 public class NPCEntity extends PathingEntity {
 
-	public NPCType aType_1696;
+	public NPCType type;
 
 	public NPCEntity() {
 	}
 
 	public Model method450() {
 		if ((super.anInt1526 >= 0) && (super.anInt1529 == 0)) {
-			int k = SeqType.instances[super.anInt1526].anIntArray353[super.anInt1527];
+			int k = SeqType.instances[super.anInt1526].primaryFrames[super.anInt1527];
 			int i1 = -1;
-			if ((super.anInt1517 >= 0) && (super.anInt1517 != super.anInt1511)) {
-				i1 = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
+			if ((super.seqCurrent >= 0) && (super.seqCurrent != super.seqStand)) {
+				i1 = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 			}
-			return aType_1696.method164(i1, k, SeqType.instances[super.anInt1526].anIntArray357);
+			return type.method164(i1, k, SeqType.instances[super.anInt1526].anIntArray357);
 		}
 		int l = -1;
-		if (super.anInt1517 >= 0) {
-			l = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
+		if (super.seqCurrent >= 0) {
+			l = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 		}
-		return aType_1696.method164(-1, l, null);
+		return type.method164(-1, l, null);
 	}
 
 	@Override
 	public Model getModel() {
-		if (aType_1696 == null) {
+		if (type == null) {
 			return null;
 		}
 		Model model = method450();
@@ -35,11 +35,11 @@ public class NPCEntity extends PathingEntity {
 			return null;
 		}
 		super.anInt1507 = model.minY;
-		if ((super.anInt1520 != -1) && (super.anInt1521 != -1)) {
-			SpotAnimType type = SpotAnimType.instances[super.anInt1520];
+		if ((super.spotanim != -1) && (super.spotanimFrame != -1)) {
+			SpotAnimType type = SpotAnimType.instances[super.spotanim];
 			Model model_1 = type.method266();
 			if (model_1 != null) {
-				int j = type.aType_407.anIntArray353[super.anInt1521];
+				int j = type.seq.primaryFrames[super.spotanimFrame];
 				Model class30_sub2_sub4_sub6_2 = new Model(true, SeqFrame.isNull(j), false, model_1);
 				class30_sub2_sub4_sub6_2.translate(0, -super.anInt1524, 0);
 				class30_sub2_sub4_sub6_2.createLabelReferences();
@@ -54,7 +54,7 @@ public class NPCEntity extends PathingEntity {
 				model = new Model(2, -819, aclass30_sub2_sub4_sub6);
 			}
 		}
-		if (aType_1696.aByte68 == 1) {
+		if (type.size == 1) {
 			model.pickBounds = true;
 		}
 		return model;
@@ -62,7 +62,7 @@ public class NPCEntity extends PathingEntity {
 
 	@Override
 	public boolean method449() {
-		return aType_1696 != null;
+		return type != null;
 	}
 
 }

@@ -4,20 +4,20 @@
 
 public class SceneLoc {
 
-	public int anInt517;
-	public int anInt518;
-	public int anInt519;
-	public int anInt520;
-	public Entity aEntity_521;
-	public int anInt522;
-	public int anInt523;
-	public int anInt524;
-	public int anInt525;
-	public int anInt526;
-	public int anInt527;
-	public int anInt528;
-	public int anInt529;
-	public byte aByte530;
+	public int plane;
+	public int y;
+	public int x;
+	public int z;
+	public Entity entity;
+	public int yaw;
+	public int minSceneTileX;
+	public int maxSceneTileX;
+	public int minSceneTileZ;
+	public int maxSceneTileZ;
+	public int distance;
+	public int cycle;
+	public int bitset;
+	public byte info;
 
 	public SceneLoc() {
 	}

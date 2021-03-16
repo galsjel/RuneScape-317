@@ -6,26 +6,29 @@ import java.io.IOException;
 
 public class SeqType {
 
-	public static int anInt350;
+	public static int count;
 	public static SeqType[] instances;
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("seq.dat"));
-		anInt350 = buffer.get2U();
+		count = buffer.get2U();
+
 		if (instances == null) {
-			instances = new SeqType[anInt350];
+			instances = new SeqType[count];
 		}
-		for (int j = 0; j < anInt350; j++) {
-			if (instances[j] == null) {
-				instances[j] = new SeqType();
+
+		for (int i = 0; i < count; i++) {
+			if (instances[i] == null) {
+				instances[i] = new SeqType();
 			}
-			instances[j].method259(buffer);
+			instances[i].load(buffer);
 		}
 	}
-	public int anInt352;
-	public int[] anIntArray353;
-	public int[] anIntArray354;
-	public int[] anIntArray355;
+
+	public int frameCount;
+	public int[] primaryFrames;
+	public int[] secondaryFrames;
+	public int[] frameDelays;
 	public int anInt356 = -1;
 	public int[] anIntArray357;
 	public boolean aBoolean358 = false;
@@ -41,79 +44,81 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public int method258(int i) {
-		int j = anIntArray355[i];
-		if (j == 0) {
-			SeqFrame transform = SeqFrame.get(anIntArray353[i]);
+	public int getFrameDelay(int frame) {
+		int delay = frameDelays[frame];
+		if (delay == 0) {
+			SeqFrame transform = SeqFrame.get(primaryFrames[frame]);
+
 			if (transform != null) {
-				j = anIntArray355[i] = transform.delay;
+				delay = frameDelays[frame] = transform.delay;
 			}
 		}
-		if (j == 0) {
-			j = 1;
+		if (delay == 0) {
+			delay = 1;
 		}
-		return j;
+		return delay;
 	}
 
-	public void method259(Buffer buffer) {
+	public void load(Buffer buffer) {
 		do {
-			int i = buffer.get1U();
-			if (i == 0) {
+			int op = buffer.get1U();
+			if (op == 0) {
 				break;
-			}
-			if (i == 1) {
-				anInt352 = buffer.get1U();
-				anIntArray353 = new int[anInt352];
-				anIntArray354 = new int[anInt352];
-				anIntArray355 = new int[anInt352];
-				for (int j = 0; j < anInt352; j++) {
-					anIntArray353[j] = buffer.get2U();
-					anIntArray354[j] = buffer.get2U();
-					if (anIntArray354[j] == 65535) {
-						anIntArray354[j] = -1;
+			} else if (op == 1) {
+				frameCount = buffer.get1U();
+				primaryFrames = new int[frameCount];
+				secondaryFrames = new int[frameCount];
+				frameDelays = new int[frameCount];
+				for (int j = 0; j < frameCount; j++) {
+					primaryFrames[j] = buffer.get2U();
+					secondaryFrames[j] = buffer.get2U();
+					if (secondaryFrames[j] == 65535) {
+						secondaryFrames[j] = -1;
 					}
-					anIntArray355[j] = buffer.get2U();
+					frameDelays[j] = buffer.get2U();
 				}
-			} else if (i == 2) {
+			} else if (op == 2) {
 				anInt356 = buffer.get2U();
-			} else if (i == 3) {
+			} else if (op == 3) {
 				int k = buffer.get1U();
 				anIntArray357 = new int[k + 1];
 				for (int l = 0; l < k; l++) {
 					anIntArray357[l] = buffer.get1U();
 				}
 				anIntArray357[k] = 9999999;
-			} else if (i == 4) {
+			} else if (op == 4) {
 				aBoolean358 = true;
-			} else if (i == 5) {
+			} else if (op == 5) {
 				anInt359 = buffer.get1U();
-			} else if (i == 6) {
+			} else if (op == 6) {
 				anInt360 = buffer.get2U();
-			} else if (i == 7) {
+			} else if (op == 7) {
 				anInt361 = buffer.get2U();
-			} else if (i == 8) {
+			} else if (op == 8) {
 				anInt362 = buffer.get1U();
-			} else if (i == 9) {
+			} else if (op == 9) {
 				anInt363 = buffer.get1U();
-			} else if (i == 10) {
+			} else if (op == 10) {
 				anInt364 = buffer.get1U();
-			} else if (i == 11) {
+			} else if (op == 11) {
 				anInt365 = buffer.get1U();
-			} else if (i == 12) {
+			} else if (op == 12) {
 				unusedInt = buffer.get4();
 			} else {
-				System.out.println("Error unrecognised seq config code: " + i);
+				System.out.println("Error unrecognised seq config code: " + op);
 			}
 		} while (true);
-		if (anInt352 == 0) {
-			anInt352 = 1;
-			anIntArray353 = new int[1];
-			anIntArray353[0] = -1;
-			anIntArray354 = new int[1];
-			anIntArray354[0] = -1;
-			anIntArray355 = new int[1];
-			anIntArray355[0] = -1;
+
+		if (frameCount == 0) {
+			frameCount = 1;
+			primaryFrames = new int[1];
+			primaryFrames[0] = -1;
+			secondaryFrames = new int[1];
+			secondaryFrames[0] = -1;
+			frameDelays = new int[1];
+			frameDelays[0] = -1;
 		}
+
 		if (anInt363 == -1) {
 			if (anIntArray357 != null) {
 				anInt363 = 2;
@@ -121,6 +126,7 @@ public class SeqType {
 				anInt363 = 0;
 			}
 		}
+
 		if (anInt364 == -1) {
 			if (anIntArray357 != null) {
 				anInt364 = 2;

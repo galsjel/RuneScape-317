@@ -29,7 +29,7 @@ public class SpotAnimEntity extends Entity {
 		if (model == null) {
 			return null;
 		}
-		int j = aType_1568.aType_407.anIntArray353[anInt1569];
+		int j = aType_1568.seq.primaryFrames[anInt1569];
 		Model model_1 = new Model(true, SeqFrame.isNull(j), false, model);
 		if (!aBoolean1567) {
 			model_1.createLabelReferences();
@@ -59,10 +59,10 @@ public class SpotAnimEntity extends Entity {
 	}
 
 	public void method454(int i) {
-		for (anInt1570 += i; anInt1570 > aType_1568.aType_407.method258(anInt1569); ) {
-			anInt1570 -= aType_1568.aType_407.method258(anInt1569) + 1;
+		for (anInt1570 += i; anInt1570 > aType_1568.seq.getFrameDelay(anInt1569); ) {
+			anInt1570 -= aType_1568.seq.getFrameDelay(anInt1569) + 1;
 			anInt1569++;
-			if ((anInt1569 >= aType_1568.aType_407.anInt352) && ((anInt1569 < 0) || (anInt1569 >= aType_1568.aType_407.anInt352))) {
+			if ((anInt1569 >= aType_1568.seq.frameCount) && ((anInt1569 < 0) || (anInt1569 >= aType_1568.seq.frameCount))) {
 				anInt1569 = 0;
 				aBoolean1567 = true;
 			}
