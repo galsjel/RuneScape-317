@@ -153,7 +153,7 @@ public class NPCType {
 				return type.method164(j, k, ai);
 			}
 		}
-		Model model = (Model) aCache_95.method222(aLong78);
+		Model model = (Model) aCache_95.get(aLong78);
 		if (model == null) {
 			boolean flag = false;
 			for (int value : anIntArray94) {
@@ -180,7 +180,7 @@ public class NPCType {
 			}
 			model.createLabelReferences();
 			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
-			aCache_95.method223(model, aLong78);
+			aCache_95.put(aLong78, model);
 		}
 		Model model_1 = Model.EMPTY;
 		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));

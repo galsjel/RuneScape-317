@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SceneLocTemporary extends LinkedListNode {
+public class SceneLocTemporary extends DoublyLinkedList.Node {
 
 	public int anInt1291;
 	public int anInt1292;

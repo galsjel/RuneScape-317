@@ -1,4 +1,4 @@
-public class Entity extends DoublyLinkedListNode {
+public class Entity extends DoublyLinkedList.Node {
 
 	public VertexNormal[] vertexNormal;
 	public int minY = 1000;

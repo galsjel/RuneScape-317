@@ -7,23 +7,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 
 public class OnDemand implements Runnable {
 
-	public final LinkedList aList_1331 = new LinkedList();
+	public final DoublyLinkedList aList_1331 = new DoublyLinkedList();
 	public final CRC32 crc32 = new CRC32();
 	public final byte[] aByteArray1339 = new byte[500];
 	public final byte[][] storeFilePriority = new byte[4][];
-	public final LinkedList aList_1344 = new LinkedList();
-	public final LinkedList aList_1358 = new LinkedList();
+	public final DoublyLinkedList aList_1344 = new DoublyLinkedList();
+	public final DoublyLinkedList aList_1358 = new DoublyLinkedList();
 	public final byte[] aByteArray1359 = new byte[65000];
-	public final DoublyLinkedList aDoublyLinkedList_1361 = new DoublyLinkedList();
+	private final Object lock = new Object();
+	private final LinkedList<OnDemandRequest> requests = new LinkedList<>();
 	public final int[][] storeFileVersions = new int[4][];
 	public final int[][] storeFileChecksums = new int[4][];
-	public final LinkedList aList_1368 = new LinkedList();
-	public final LinkedList aList_1370 = new LinkedList();
+	public final DoublyLinkedList aList_1368 = new DoublyLinkedList();
+	public final DoublyLinkedList aList_1370 = new DoublyLinkedList();
 	public int anInt1330;
 	public int topPriority;
 	public String aString1333 = "";
@@ -82,7 +84,7 @@ public class OnDemand implements Runnable {
 				int l1 = ((aByteArray1339[3] & 0xff) << 8) + (aByteArray1339[4] & 0xff);
 				int i2 = aByteArray1339[5] & 0xff;
 				aRequest_1369 = null;
-				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+				for (OnDemandRequest request = (OnDemandRequest) aList_1331.peekFront(); request != null; request = (OnDemandRequest) aList_1331.prev()) {
 					if ((request.store == l) && (request.file == j1)) {
 						aRequest_1369 = request;
 					}
@@ -97,10 +99,10 @@ public class OnDemand implements Runnable {
 						aRequest_1369.data = null;
 						if (aRequest_1369.aBoolean1422) {
 							synchronized (aList_1358) {
-								aList_1358.method249(aRequest_1369);
+								aList_1358.pushBack(aRequest_1369);
 							}
 						} else {
-							aRequest_1369.method329();
+							aRequest_1369.unlink();
 						}
 						aRequest_1369 = null;
 					} else {
@@ -138,10 +140,10 @@ public class OnDemand implements Runnable {
 					}
 					if (aRequest_1369.aBoolean1422) {
 						synchronized (aList_1358) {
-							aList_1358.method249(aRequest_1369);
+							aList_1358.pushBack(aRequest_1369);
 						}
 					} else {
-						aRequest_1369.method329();
+						aRequest_1369.unlink();
 					}
 				}
 				anInt1347 = 0;
@@ -240,8 +242,8 @@ public class OnDemand implements Runnable {
 	}
 
 	public int remaining() {
-		synchronized (aDoublyLinkedList_1361) {
-			return aDoublyLinkedList_1361.method154();
+		synchronized (lock) {
+			return requests.size();
 		}
 	}
 
@@ -318,9 +320,10 @@ public class OnDemand implements Runnable {
 		if (storeFileVersions[archive][file] == 0) {
 			return;
 		}
-		synchronized (aDoublyLinkedList_1361) {
-			for (OnDemandRequest request = (OnDemandRequest) aDoublyLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aDoublyLinkedList_1361.method153()) {
-				if ((request.store == archive) && (request.file == file)) {
+
+		synchronized (lock) {
+			for (OnDemandRequest request : requests) {
+				if (request.store == archive && request.file == file) {
 					return;
 				}
 			}
@@ -329,9 +332,9 @@ public class OnDemand implements Runnable {
 			request.file = file;
 			request.aBoolean1422 = true;
 			synchronized (aList_1370) {
-				aList_1370.method249(request);
+				aList_1370.pushBack(request);
 			}
-			aDoublyLinkedList_1361.method150(request);
+			requests.addFirst(request);
 		}
 	}
 
@@ -369,7 +372,7 @@ public class OnDemand implements Runnable {
 					}
 				}
 				boolean flag = false;
-				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+				for (OnDemandRequest request = (OnDemandRequest) aList_1331.peekFront(); request != null; request = (OnDemandRequest) aList_1331.prev()) {
 					if (request.aBoolean1422) {
 						flag = true;
 						request.anInt1423++;
@@ -380,7 +383,7 @@ public class OnDemand implements Runnable {
 					}
 				}
 				if (!flag) {
-					for (OnDemandRequest request_1 = (OnDemandRequest) aList_1331.method252(); request_1 != null; request_1 = (OnDemandRequest) aList_1331.method254()) {
+					for (OnDemandRequest request_1 = (OnDemandRequest) aList_1331.peekFront(); request_1 != null; request_1 = (OnDemandRequest) aList_1331.prev()) {
 						flag = true;
 						request_1.anInt1423++;
 						if (request_1.anInt1423 > 50) {
@@ -444,20 +447,20 @@ public class OnDemand implements Runnable {
 		request.file = i;
 		request.aBoolean1422 = false;
 		synchronized (aList_1344) {
-			aList_1344.method249(request);
+			aList_1344.pushBack(request);
 		}
 	}
 
 	public OnDemandRequest poll() {
 		OnDemandRequest request;
 		synchronized (aList_1358) {
-			request = (OnDemandRequest) aList_1358.method251();
+			request = (OnDemandRequest) aList_1358.pollFront();
 		}
 		if (request == null) {
 			return null;
 		}
-		synchronized (aDoublyLinkedList_1361) {
-			request.method330();
+		synchronized(lock) {
+			requests.remove(request);
 		}
 		if (request.data == null) {
 			return request;
@@ -538,7 +541,7 @@ public class OnDemand implements Runnable {
 	public void method565() {
 		anInt1366 = 0;
 		anInt1367 = 0;
-		for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
+		for (OnDemandRequest request = (OnDemandRequest) aList_1331.peekFront(); request != null; request = (OnDemandRequest) aList_1331.prev()) {
 			if (request.aBoolean1422) {
 				anInt1366++;
 			} else {
@@ -546,7 +549,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 		while (anInt1366 < 10) {
-			OnDemandRequest request_1 = (OnDemandRequest) aList_1368.method251();
+			OnDemandRequest request_1 = (OnDemandRequest) aList_1368.pollFront();
 			if (request_1 == null) {
 				break;
 			}
@@ -554,7 +557,7 @@ public class OnDemand implements Runnable {
 				anInt1351++;
 			}
 			storeFilePriority[request_1.store][request_1.file] = 0;
-			aList_1331.method249(request_1);
+			aList_1331.pushBack(request_1);
 			anInt1366++;
 			method556(request_1);
 			aBoolean1357 = true;
@@ -563,14 +566,14 @@ public class OnDemand implements Runnable {
 
 	public void method566() {
 		synchronized (aList_1344) {
-			aList_1344.method256();
+			aList_1344.clear();
 		}
 	}
 
 	public void method567() {
 		OnDemandRequest request;
 		synchronized (aList_1370) {
-			request = (OnDemandRequest) aList_1370.method251();
+			request = (OnDemandRequest) aList_1370.pollFront();
 		}
 		while (request != null) {
 			aBoolean1357 = true;
@@ -583,14 +586,14 @@ public class OnDemand implements Runnable {
 			}
 			synchronized (aList_1370) {
 				if (abyte0 == null) {
-					aList_1368.method249(request);
+					aList_1368.pushBack(request);
 				} else {
 					request.data = abyte0;
 					synchronized (aList_1358) {
-						aList_1358.method249(request);
+						aList_1358.pushBack(request);
 					}
 				}
-				request = (OnDemandRequest) aList_1370.method251();
+				request = (OnDemandRequest) aList_1370.pollFront();
 			}
 		}
 	}
@@ -602,12 +605,12 @@ public class OnDemand implements Runnable {
 			}
 			OnDemandRequest request;
 			synchronized (aList_1344) {
-				request = (OnDemandRequest) aList_1344.method251();
+				request = (OnDemandRequest) aList_1344.pollFront();
 			}
 			while (request != null) {
 				if (storeFilePriority[request.store][request.file] != 0) {
 					storeFilePriority[request.store][request.file] = 0;
-					aList_1331.method249(request);
+					aList_1331.pushBack(request);
 					method556(request);
 					aBoolean1357 = true;
 					if (anInt1351 < anInt1330) {
@@ -620,7 +623,7 @@ public class OnDemand implements Runnable {
 					}
 				}
 				synchronized (aList_1344) {
-					request = (OnDemandRequest) aList_1344.method251();
+					request = (OnDemandRequest) aList_1344.pollFront();
 				}
 			}
 			for (int j = 0; j < 4; j++) {
@@ -633,7 +636,7 @@ public class OnDemand implements Runnable {
 						request_1.store = j;
 						request_1.file = l;
 						request_1.aBoolean1422 = false;
-						aList_1331.method249(request_1);
+						aList_1331.pushBack(request_1);
 						method556(request_1);
 						aBoolean1357 = true;
 						if (anInt1351 < anInt1330) {

@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class OnDemandRequest extends DoublyLinkedListNode {
+public class OnDemandRequest extends DoublyLinkedList.Node {
 
 	public int store;
 	public byte[] data;

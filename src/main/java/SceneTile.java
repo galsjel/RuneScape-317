@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SceneTile extends LinkedListNode {
+public class SceneTile extends DoublyLinkedList.Node {
 
 	public int anInt1307;
 	public final int anInt1308;

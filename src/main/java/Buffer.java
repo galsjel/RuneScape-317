@@ -24,11 +24,11 @@ import java.nio.charset.StandardCharsets;
  * C — put(-v) — get returns (-v)<br/>
  * S — put(128 - v) — get returns (128 - v)<br/>
  */
-public class Buffer extends DoublyLinkedListNode {
+public class Buffer extends DoublyLinkedList.Node {
 
-	public static final LinkedList pool0 = new LinkedList();
-	public static final LinkedList pool1 = new LinkedList();
-	public static final LinkedList pool2 = new LinkedList();
+	public static final DoublyLinkedList pool0 = new DoublyLinkedList();
+	public static final DoublyLinkedList pool1 = new DoublyLinkedList();
+	public static final DoublyLinkedList pool2 = new DoublyLinkedList();
 	private static final int[] BITMASK = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
 	public static int poolSize0;
 	public static int poolSize1;
@@ -40,13 +40,13 @@ public class Buffer extends DoublyLinkedListNode {
 
 			if ((sizeType == 0) && (poolSize0 > 0)) {
 				poolSize0--;
-				buffer = (Buffer) pool0.method251();
+				buffer = (Buffer) pool0.pollFront();
 			} else if ((sizeType == 1) && (poolSize1 > 0)) {
 				poolSize1--;
-				buffer = (Buffer) pool1.method251();
+				buffer = (Buffer) pool1.pollFront();
 			} else if ((sizeType == 2) && (poolSize2 > 0)) {
 				poolSize2--;
-				buffer = (Buffer) pool2.method251();
+				buffer = (Buffer) pool2.pollFront();
 			}
 
 			if (buffer != null) {

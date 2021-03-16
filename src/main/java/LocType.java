@@ -226,7 +226,7 @@ public class LocType {
 				return null;
 			}
 			l1 = (long) (((long) anInt754 << 6) + l) + ((long) (k + 1) << 32);
-			Model model_1 = (Model) aCache_780.method222(l1);
+			Model model_1 = (Model) aCache_780.get(l1);
 			if (model_1 != null) {
 				return model_1;
 			}
@@ -240,7 +240,7 @@ public class LocType {
 				if (flag1) {
 					l2 += 0x10000;
 				}
-				model = (Model) aCache_785.method222(l2);
+				model = (Model) aCache_785.get(l2);
 				if (model == null) {
 					model = Model.tryGet(l2 & 0xffff);
 					if (model == null) {
@@ -249,7 +249,7 @@ public class LocType {
 					if (flag1) {
 						model.rotateY180();
 					}
-					aCache_785.method223(model, l2);
+					aCache_785.put(l2, model);
 				}
 				if (k1 > 1) {
 					A_MODEL_ARRAY_741[i2] = model;
@@ -271,7 +271,7 @@ public class LocType {
 				return null;
 			}
 			l1 = (long) (((long) anInt754 << 6) + ((long) i1 << 3) + l) + ((long) (k + 1) << 32);
-			Model class30_sub2_sub4_sub6_2 = (Model) aCache_780.method222(l1);
+			Model class30_sub2_sub4_sub6_2 = (Model) aCache_780.get(l1);
 			if (class30_sub2_sub4_sub6_2 != null) {
 				return class30_sub2_sub4_sub6_2;
 			}
@@ -280,7 +280,7 @@ public class LocType {
 			if (flag3) {
 				j2 += 0x10000;
 			}
-			model = (Model) aCache_785.method222(j2);
+			model = (Model) aCache_785.get(j2);
 			if (model == null) {
 				model = Model.tryGet(j2 & 0xffff);
 				if (model == null) {
@@ -289,7 +289,7 @@ public class LocType {
 				if (flag3) {
 					model.rotateY180();
 				}
-				aCache_785.method223(model, j2);
+				aCache_785.put(j2, model);
 			}
 		}
 		boolean flag;
@@ -321,7 +321,7 @@ public class LocType {
 		if (anInt760 == 1) {
 			model_3.anInt1654 = model_3.minY;
 		}
-		aCache_780.method223(model_3, l1);
+		aCache_780.put(l1, model_3);
 		return model_3;
 	}
 

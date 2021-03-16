@@ -107,9 +107,9 @@ public class ObjType {
 
 	public static Image24 method200(int i, int j, int k) {
 		if (k == 0) {
-			Image24 image = (Image24) aCache_158.method222(i);
+			Image24 image = (Image24) aCache_158.get(i);
 			if ((image != null) && (image.anInt1445 != j) && (image.anInt1445 != -1)) {
-				image.method329();
+				image.unlink();
 				image = null;
 			}
 			if (image != null) {
@@ -217,7 +217,7 @@ public class ObjType {
 			class30_sub2_sub1_sub1_2.anInt1445 = j6;
 		}
 		if (k == 0) {
-			aCache_158.method223(class30_sub2_sub1_sub1_1, i);
+			aCache_158.put(i, class30_sub2_sub1_sub1_1);
 		}
 		Draw2D.bind(ai1, i2, j2);
 		Draw2D.setBounds(j3, k2, l2, i3);
@@ -420,7 +420,7 @@ public class ObjType {
 				return method198(j).method201(1);
 			}
 		}
-		Model model = (Model) aCache_159.method222(anInt157);
+		Model model = (Model) aCache_159.get(anInt157);
 		if (model != null) {
 			return model;
 		}
@@ -438,7 +438,7 @@ public class ObjType {
 		}
 		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
 		model.pickBounds = true;
-		aCache_159.method223(model, anInt157);
+		aCache_159.put(anInt157, model);
 		return model;
 	}
 

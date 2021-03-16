@@ -58,7 +58,7 @@ public class Game extends GameShell {
 	public long sceneLoadStartTime;
 	public int[][] anIntArrayArray825 = new int[104][104];
 	public int[] anIntArray826 = new int[200];
-	public LinkedList[][][] aListArrayArrayArray827 = new LinkedList[4][104][104];
+	public DoublyLinkedList[][][] aListArrayArrayArray827 = new DoublyLinkedList[4][104][104];
 	public int[] anIntArray828;
 	public int[] anIntArray829;
 	public volatile boolean aBoolean831 = false;
@@ -210,7 +210,7 @@ public class Game extends GameShell {
 	public int anInt1009;
 	public int anInt1010;
 	public int anInt1011;
-	public LinkedList aList_1013 = new LinkedList();
+	public DoublyLinkedList aList_1013 = new DoublyLinkedList();
 	public int anInt1014;
 	public int anInt1015;
 	public int anInt1016;
@@ -247,7 +247,7 @@ public class Game extends GameShell {
 	public FileArchive archiveTitle;
 	public int anInt1054 = -1;
 	public int anInt1055;
-	public LinkedList aList_1056 = new LinkedList();
+	public DoublyLinkedList aList_1056 = new DoublyLinkedList();
 	public final int[] anIntArray1057 = new int[33];
 	public final Component aComponent_1059 = new Component();
 	public Image8[] imageMapscene = new Image8[100];
@@ -347,7 +347,7 @@ public class Game extends GameShell {
 	public String aString1174 = "";
 	public boolean errInvalidHost = false;
 	public int anInt1178 = -1;
-	public LinkedList listTemporaryLocs = new LinkedList();
+	public DoublyLinkedList listTemporaryLocs = new DoublyLinkedList();
 	public int[] anIntArray1180;
 	public int[] anIntArray1181;
 	public int[] anIntArray1182;
@@ -1606,8 +1606,8 @@ public class Game extends GameShell {
 	public void method22() {
 		try {
 			anInt985 = -1;
-			aList_1056.method256();
-			aList_1013.method256();
+			aList_1056.clear();
+			aList_1013.clear();
 			Draw3D.disposePool();
 			method23();
 			scene.method274();
@@ -1728,7 +1728,7 @@ public class Game extends GameShell {
 			method63();
 		} catch (Exception ignored) {
 		}
-		LocType.aCache_785.method224();
+		LocType.aCache_785.clear();
 		if (super.frame != null) {
 			aBuffer_1192.putOp(210);
 			aBuffer_1192.put4(0x3f008edd);
@@ -1776,13 +1776,13 @@ public class Game extends GameShell {
 	}
 
 	public void method23() {
-		LocType.aCache_785.method224();
-		LocType.aCache_780.method224();
-		NPCType.aCache_95.method224();
-		ObjType.aCache_159.method224();
-		ObjType.aCache_158.method224();
-		PlayerEntity.modelCache.method224();
-		SpotAnimType.modelCache.method224();
+		LocType.aCache_785.clear();
+		LocType.aCache_780.clear();
+		NPCType.aCache_95.clear();
+		ObjType.aCache_159.clear();
+		ObjType.aCache_158.clear();
+		PlayerEntity.modelCache.clear();
+		SpotAnimType.modelCache.clear();
 	}
 
 	public void method24(int i) {
@@ -1858,14 +1858,14 @@ public class Game extends GameShell {
 	}
 
 	public void method25(int i, int j) {
-		LinkedList list = aListArrayArrayArray827[anInt918][i][j];
+		DoublyLinkedList list = aListArrayArrayArray827[anInt918][i][j];
 		if (list == null) {
 			scene.method295(anInt918, i, j);
 			return;
 		}
 		int k = 0xfa0a1f01;
 		ObjStackEntity obj = null;
-		for (ObjStackEntity objStack = (ObjStackEntity) list.method252(); objStack != null; objStack = (ObjStackEntity) list.method254()) {
+		for (ObjStackEntity objStack = (ObjStackEntity) list.peekFront(); objStack != null; objStack = (ObjStackEntity) list.prev()) {
 			ObjType type = ObjType.method198(objStack.anInt1558);
 			int l = type.anInt155;
 			if (type.aBoolean176) {
@@ -1876,10 +1876,10 @@ public class Game extends GameShell {
 				obj = objStack;
 			}
 		}
-		list.method250(obj);
+		list.pushFront(obj);
 		ObjStackEntity obj1 = null;
 		Entity obj2 = null;
-		for (ObjStackEntity objStack_1 = (ObjStackEntity) list.method252(); objStack_1 != null; objStack_1 = (ObjStackEntity) list.method254()) {
+		for (ObjStackEntity objStack_1 = (ObjStackEntity) list.peekFront(); objStack_1 != null; objStack_1 = (ObjStackEntity) list.prev()) {
 			if ((objStack_1.anInt1558 != obj.anInt1558) && (obj1 == null)) {
 				obj1 = objStack_1;
 			}
@@ -2250,7 +2250,7 @@ public class Game extends GameShell {
 			if (k == 4) {
 				Draw3D.setBrightness(0.59999999999999998D);
 			}
-			ObjType.aCache_158.method224();
+			ObjType.aCache_158.clear();
 			aBoolean1255 = true;
 		}
 		if (j == 3) {
@@ -3335,9 +3335,9 @@ public class Game extends GameShell {
 	}
 
 	public void method55() {
-		for (ProjectileEntity projectile = (ProjectileEntity) aList_1013.method252(); projectile != null; projectile = (ProjectileEntity) aList_1013.method254()) {
+		for (ProjectileEntity projectile = (ProjectileEntity) aList_1013.peekFront(); projectile != null; projectile = (ProjectileEntity) aList_1013.prev()) {
 			if ((projectile.anInt1597 != anInt918) || (loopCycle > projectile.anInt1572)) {
-				projectile.method329();
+				projectile.unlink();
 			} else if (loopCycle >= projectile.anInt1571) {
 				if (projectile.anInt1590 > 0) {
 					NPCEntity npc = npcs[projectile.anInt1590 - 1];
@@ -3839,13 +3839,13 @@ public class Game extends GameShell {
 	}
 
 	public void method63() {
-		SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.method252();
-		for (; loc != null; loc = (SceneLocTemporary) listTemporaryLocs.method254()) {
+		SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.peekFront();
+		for (; loc != null; loc = (SceneLocTemporary) listTemporaryLocs.prev()) {
 			if (loc.anInt1294 == -1) {
 				loc.anInt1302 = 0;
 				method89(loc);
 			} else {
-				loc.method329();
+				loc.unlink();
 			}
 		}
 	}
@@ -4999,9 +4999,9 @@ public class Game extends GameShell {
 				method88(i1, l1, player, j1);
 			}
 			if (k1 == 3) {
-				LinkedList list = aListArrayArrayArray827[anInt918][i1][j1];
+				DoublyLinkedList list = aListArrayArrayArray827[anInt918][i1][j1];
 				if (list != null) {
-					for (ObjStackEntity objStack = (ObjStackEntity) list.method253(); objStack != null; objStack = (ObjStackEntity) list.method255()) {
+					for (ObjStackEntity objStack = (ObjStackEntity) list.peekBack(); objStack != null; objStack = (ObjStackEntity) list.next()) {
 						ObjType type = ObjType.method198(objStack.anInt1558);
 						if (anInt1282 == 1) {
 							aStringArray1199[anInt1133] = "Use " + aString1286 + " with @lre@" + type.aString170;
@@ -6064,8 +6064,8 @@ public class Game extends GameShell {
 					npcs[k2] = null;
 				}
 				aPlayer_1126 = players[LOCAL_PLAYER_INDEX] = new PlayerEntity();
-				aList_1013.method256();
-				aList_1056.method256();
+				aList_1013.clear();
+				aList_1056.clear();
 				for (int l2 = 0; l2 < 4; l2++) {
 					for (int i3 = 0; i3 < 104; i3++) {
 						for (int k3 = 0; k3 < 104; k3++) {
@@ -6073,7 +6073,7 @@ public class Game extends GameShell {
 						}
 					}
 				}
-				listTemporaryLocs = new LinkedList();
+				listTemporaryLocs = new DoublyLinkedList();
 				anInt900 = 0;
 				anInt899 = 0;
 				anInt1042 = -1;
@@ -7474,14 +7474,14 @@ public class Game extends GameShell {
 	}
 
 	public void method104() {
-		SpotAnimEntity spotAnim = (SpotAnimEntity) aList_1056.method252();
-		for (; spotAnim != null; spotAnim = (SpotAnimEntity) aList_1056.method254()) {
+		SpotAnimEntity spotAnim = (SpotAnimEntity) aList_1056.peekFront();
+		for (; spotAnim != null; spotAnim = (SpotAnimEntity) aList_1056.prev()) {
 			if ((spotAnim.anInt1560 != anInt918) || spotAnim.aBoolean1567) {
-				spotAnim.method329();
+				spotAnim.unlink();
 			} else if (loopCycle >= spotAnim.anInt1564) {
 				spotAnim.method454(anInt945);
 				if (spotAnim.aBoolean1567) {
-					spotAnim.method329();
+					spotAnim.unlink();
 				} else {
 					scene.method285(spotAnim.anInt1560, 0, spotAnim.anInt1563, -1, spotAnim.anInt1562, 60, spotAnim.anInt1561, spotAnim, false);
 				}
@@ -8136,14 +8136,14 @@ public class Game extends GameShell {
 
 	public void method115() {
 		if (sceneState == 2) {
-			for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.method252(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.method254()) {
+			for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.prev()) {
 				if (loc.anInt1294 > 0) {
 					loc.anInt1294--;
 				}
 				if (loc.anInt1294 == 0) {
 					if ((loc.anInt1299 < 0) || SceneBuilder.method178(loc.anInt1299, loc.anInt1301)) {
 						method142(loc.sceneTileZ, loc.anInt1295, loc.anInt1300, loc.anInt1301, loc.sceneTileX, loc.anInt1296, loc.anInt1299);
-						loc.method329();
+						loc.unlink();
 					}
 				} else {
 					if (loc.anInt1302 > 0) {
@@ -8153,9 +8153,9 @@ public class Game extends GameShell {
 						method142(loc.sceneTileZ, loc.anInt1295, loc.anInt1292, loc.anInt1293, loc.sceneTileX, loc.anInt1296, loc.anInt1291);
 						loc.anInt1302 = -1;
 						if ((loc.anInt1291 == loc.anInt1299) && (loc.anInt1299 == -1)) {
-							loc.method329();
+							loc.unlink();
 						} else if ((loc.anInt1291 == loc.anInt1299) && (loc.anInt1292 == loc.anInt1300) && (loc.anInt1293 == loc.anInt1301)) {
-							loc.method329();
+							loc.unlink();
 						}
 					}
 				}
@@ -8631,7 +8631,7 @@ public class Game extends GameShell {
 		}
 		for (int k5 = 0; k5 < 104; k5++) {
 			for (int l5 = 0; l5 < 104; l5++) {
-				LinkedList list = aListArrayArrayArray827[anInt918][k5][l5];
+				DoublyLinkedList list = aListArrayArrayArray827[anInt918][k5][l5];
 				if (list != null) {
 					int l = ((k5 * 4) + 2) - (aPlayer_1126.x / 32);
 					int j3 = ((l5 * 4) + 2) - (aPlayer_1126.z / 32);
@@ -8797,7 +8797,7 @@ public class Game extends GameShell {
 
 	public void method130(int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2) {
 		SceneLocTemporary loc = null;
-		for (SceneLocTemporary loc_1 = (SceneLocTemporary) listTemporaryLocs.method252(); loc_1 != null; loc_1 = (SceneLocTemporary) listTemporaryLocs.method254()) {
+		for (SceneLocTemporary loc_1 = (SceneLocTemporary) listTemporaryLocs.peekFront(); loc_1 != null; loc_1 = (SceneLocTemporary) listTemporaryLocs.prev()) {
 			if ((loc_1.anInt1295 != l1) || (loc_1.sceneTileX != i2) || (loc_1.sceneTileZ != j1) || (loc_1.anInt1296 != i1)) {
 				continue;
 			}
@@ -8811,7 +8811,7 @@ public class Game extends GameShell {
 			loc.sceneTileX = i2;
 			loc.sceneTileZ = j1;
 			method89(loc);
-			listTemporaryLocs.method249(loc);
+			listTemporaryLocs.pushBack(loc);
 		}
 		loc.anInt1291 = k;
 		loc.anInt1293 = k1;
@@ -9110,9 +9110,9 @@ public class Game extends GameShell {
 			int k11 = buffer.get2U();
 			int l13 = buffer.get2U();
 			if ((j3 >= 0) && (i6 >= 0) && (j3 < 104) && (i6 < 104)) {
-				LinkedList list_1 = aListArrayArrayArray827[anInt918][j3][i6];
+				DoublyLinkedList list_1 = aListArrayArrayArray827[anInt918][j3][i6];
 				if (list_1 != null) {
-					for (ObjStackEntity objStack_3 = (ObjStackEntity) list_1.method252(); objStack_3 != null; objStack_3 = (ObjStackEntity) list_1.method254()) {
+					for (ObjStackEntity objStack_3 = (ObjStackEntity) list_1.peekFront(); objStack_3 != null; objStack_3 = (ObjStackEntity) list_1.prev()) {
 						if ((objStack_3.anInt1558 != (l8 & 0x7fff)) || (objStack_3.anInt1559 != k11)) {
 							continue;
 						}
@@ -9151,9 +9151,9 @@ public class Game extends GameShell {
 				class30_sub2_sub4_sub2_2.anInt1558 = i1;
 				class30_sub2_sub4_sub2_2.anInt1559 = j14;
 				if (aListArrayArrayArray827[anInt918][k6][j9] == null) {
-					aListArrayArrayArray827[anInt918][k6][j9] = new LinkedList();
+					aListArrayArrayArray827[anInt918][k6][j9] = new DoublyLinkedList();
 				}
-				aListArrayArrayArray827[anInt918][k6][j9].method249(class30_sub2_sub4_sub2_2);
+				aListArrayArrayArray827[anInt918][k6][j9].pushBack(class30_sub2_sub4_sub2_2);
 				method25(k6, j9);
 			}
 			return;
@@ -9164,16 +9164,16 @@ public class Game extends GameShell {
 			int l6 = anInt1269 + (j1 & 7);
 			int k9 = buffer.get2U();
 			if ((i4 >= 0) && (l6 >= 0) && (i4 < 104) && (l6 < 104)) {
-				LinkedList list = aListArrayArrayArray827[anInt918][i4][l6];
+				DoublyLinkedList list = aListArrayArrayArray827[anInt918][i4][l6];
 				if (list != null) {
-					for (ObjStackEntity objStack = (ObjStackEntity) list.method252(); objStack != null; objStack = (ObjStackEntity) list.method254()) {
+					for (ObjStackEntity objStack = (ObjStackEntity) list.peekFront(); objStack != null; objStack = (ObjStackEntity) list.prev()) {
 						if (objStack.anInt1558 != (k9 & 0x7fff)) {
 							continue;
 						}
-						objStack.method329();
+						objStack.unlink();
 						break;
 					}
-					if (list.method252() == null) {
+					if (list.peekFront() == null) {
 						aListArrayArrayArray827[anInt918][i4][l6] = null;
 					}
 					method25(i4, l6);
@@ -9316,7 +9316,7 @@ public class Game extends GameShell {
 				i5 = (i5 * 128) + 64;
 				l7 = (l7 * 128) + 64;
 				SpotAnimEntity spotAnim = new SpotAnimEntity(anInt918, loopCycle, j15, k10, method42(anInt918, l7, i5) - l12, l7, i5);
-				aList_1056.method249(spotAnim);
+				aList_1056.pushBack(spotAnim);
 			}
 			return;
 		}
@@ -9331,9 +9331,9 @@ public class Game extends GameShell {
 				objStack_1.anInt1558 = k2;
 				objStack_1.anInt1559 = j5;
 				if (aListArrayArrayArray827[anInt918][l10][i13] == null) {
-					aListArrayArrayArray827[anInt918][l10][i13] = new LinkedList();
+					aListArrayArrayArray827[anInt918][l10][i13] = new DoublyLinkedList();
 				}
-				aListArrayArrayArray827[anInt918][l10][i13].method249(objStack_1);
+				aListArrayArrayArray827[anInt918][l10][i13].pushBack(objStack_1);
 				method25(l10, i13);
 			}
 			return;
@@ -9372,7 +9372,7 @@ public class Game extends GameShell {
 				k13 = (k13 * 128) + 64;
 				ProjectileEntity projectile = new ProjectileEntity(i21, l18, k19 + loopCycle, j20 + loopCycle, j21, anInt918, method42(anInt918, k8, l5) - i18, k8, l5, l15, i17);
 				projectile.method455(k19 + loopCycle, k13, method42(anInt918, k13, j11) - l18, j11);
-				aList_1013.method249(projectile);
+				aList_1013.pushBack(projectile);
 			}
 		}
 	}
@@ -9758,7 +9758,7 @@ public class Game extends GameShell {
 						}
 					}
 				}
-				for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.method252(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.method254()) {
+				for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.prev()) {
 					if ((loc.sceneTileX >= anInt1268) && (loc.sceneTileX < (anInt1268 + 8)) && (loc.sceneTileZ >= anInt1269) && (loc.sceneTileZ < (anInt1269 + 8)) && (loc.anInt1295 == anInt918)) {
 						loc.anInt1294 = 0;
 					}
@@ -10109,11 +10109,11 @@ public class Game extends GameShell {
 					}
 				}
 
-				for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.method252(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.method254()) {
+				for (SceneLocTemporary loc = (SceneLocTemporary) listTemporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) listTemporaryLocs.prev()) {
 					loc.sceneTileX -= dtx;
 					loc.sceneTileZ -= dtz;
 					if ((loc.sceneTileX < 0) || (loc.sceneTileZ < 0) || (loc.sceneTileX >= 104) || (loc.sceneTileZ >= 104)) {
-						loc.method329();
+						loc.unlink();
 					}
 				}
 
