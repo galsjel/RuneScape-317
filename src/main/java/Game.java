@@ -155,6 +155,7 @@ public class Game extends GameShell {
 		SceneBuilder.lowmem = true;
 		LocType.lowmem = true;
 	}
+
 	public final int[] anIntArray1177 = {0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
 	public final int[] anIntArray864 = new int[SkillConstants.anInt733];
 	public final int[] anIntArray873 = new int[5];
@@ -237,7 +238,7 @@ public class Game extends GameShell {
 	public int anInt860;
 	public int anInt861;
 	public int anInt862;
-	public int anInt863;
+	public int rights;
 	public Image8 aImage_865;
 	public Image8 aImage_866;
 	public Image8 aImage_867;
@@ -437,7 +438,7 @@ public class Game extends GameShell {
 	public Image8[] aImageArray1152;
 	public boolean aBoolean1153 = false;
 	public int anInt1154;
-	public boolean aBoolean1157 = false;
+	public boolean ingame = false;
 	public boolean aBoolean1158 = false;
 	public boolean sceneInstanced = false;
 	public boolean aBoolean1160 = false;
@@ -688,7 +689,7 @@ public class Game extends GameShell {
 			ondemand = new OnDemand();
 			ondemand.load(archiveVersionlist, this);
 
-			SeqFrame.init(ondemand.method557());
+			SeqFrame.init(ondemand.getSeqFrameCount());
 			Model.init(ondemand.getFileCount(0), ondemand);
 
 			if (!lowmem) {
@@ -831,7 +832,7 @@ public class Game extends GameShell {
 					byte0 = 3;
 				}
 				if (byte0 != 0) {
-					ondemand.method563(byte0, 0, k2);
+					ondemand.prefetch(byte0, 0, k2);
 				}
 			}
 			ondemand.prefetchMaps(members);
@@ -839,7 +840,7 @@ public class Game extends GameShell {
 				int l = ondemand.getFileCount(2);
 				for (int i3 = 1; i3 < l; i3++) {
 					if (ondemand.method569(i3)) {
-						ondemand.method563((byte) 1, 2, i3);
+						ondemand.prefetch((byte) 1, 2, i3);
 					}
 				}
 			}
@@ -1050,7 +1051,7 @@ public class Game extends GameShell {
 			return;
 		}
 		loopCycle++;
-		if (!aBoolean1157) {
+		if (!ingame) {
 			method140();
 		} else {
 			method62();
@@ -1071,7 +1072,7 @@ public class Game extends GameShell {
 		method15();
 		if (aMouseRecorder_879 != null) {
 			aMouseRecorder_879.aBoolean808 = false;
-		aMouseRecorder_879 = null;
+			aMouseRecorder_879 = null;
 		}
 		if (ondemand != null) {
 			ondemand.stop();
@@ -1199,7 +1200,7 @@ public class Game extends GameShell {
 			return;
 		}
 		drawCycle++;
-		if (!aBoolean1157) {
+		if (!ingame) {
 			method135(false);
 		} else {
 			method102();
@@ -2837,7 +2838,7 @@ public class Game extends GameShell {
 		} catch (Exception ignored) {
 		}
 		connection = null;
-		aBoolean1157 = false;
+		ingame = false;
 		anInt833 = 0;
 		aString1173 = "";
 		aString1174 = "";
@@ -3567,7 +3568,7 @@ public class Game extends GameShell {
 				break;
 			}
 		}
-		if (!aBoolean1157) {
+		if (!ingame) {
 			return;
 		}
 		synchronized (aMouseRecorder_879.lock) {
@@ -4082,10 +4083,10 @@ public class Game extends GameShell {
 		anInt1021 = 0;
 		anInt1261 = 0;
 		Connection connection = this.connection;
-		aBoolean1157 = false;
+		ingame = false;
 		anInt1038 = 0;
 		method84(aString1173, aString1174, true);
-		if (!aBoolean1157) {
+		if (!ingame) {
 			method44();
 		}
 		try {
@@ -5066,11 +5067,17 @@ public class Game extends GameShell {
 		System.out.println("flame-cycle:" + flameCycle);
 		if (ondemand != null) {
 			System.out.println("Od-cycle:" + ondemand.cycle);
+			System.out.println("Od-remaining:" + ondemand.remaining());
+			for (OnDemandRequest request : ondemand.requests) {
+				System.out.println(request);
+			}
 		}
 		System.out.println("loop-cycle:" + loopCycle);
 		System.out.println("draw-cycle:" + drawCycle);
 		System.out.println("ptype:" + ptype);
 		System.out.println("psize:" + psize);
+		System.out.println("scene-state:" + sceneState);
+		System.out.println("draw-state:" + method54());
 		if (connection != null) {
 			connection.method272();
 		}
@@ -5188,7 +5195,7 @@ public class Game extends GameShell {
 					aBoolean1223 = true;
 				}
 				if (((j == 13) || (j == 10)) && (aString887.length() > 0)) {
-					if (anInt863 == 2) {
+					if (rights == 0) {
 						if (aString887.equals("::clientdrop")) {
 							method68();
 						}
@@ -5197,7 +5204,7 @@ public class Game extends GameShell {
 						}
 						if (aString887.equals("::prefetchmusic")) {
 							for (int j1 = 0; j1 < ondemand.getFileCount(2); j1++) {
-								ondemand.method563((byte) 1, 2, j1);
+								ondemand.prefetch((byte) 1, 2, j1);
 							}
 						}
 						if (aString887.equals("::fpson")) {
@@ -5293,9 +5300,9 @@ public class Game extends GameShell {
 						aPlayer_1126.anInt1513 = j2;
 						aPlayer_1126.anInt1531 = i3;
 						aPlayer_1126.anInt1535 = 150;
-						if (anInt863 == 2) {
+						if (rights == 2) {
 							method77(2, "@cr2@" + aPlayer_1126.aString1703, aPlayer_1126.aString1506);
-						} else if (anInt863 == 1) {
+						} else if (rights == 1) {
 							method77(2, "@cr1@" + aPlayer_1126.aString1703, aPlayer_1126.aString1506);
 						} else {
 							method77(2, aPlayer_1126.aString1703, aPlayer_1126.aString1506);
@@ -5339,7 +5346,7 @@ public class Game extends GameShell {
 			}
 			if (((j1 == 1) || (j1 == 2)) && ((j1 == 1) || (anInt1287 == 0) || ((anInt1287 == 1) && method109(s)))) {
 				if ((j > (k1 - 14)) && (j <= k1) && !s.equals(aPlayer_1126.aString1703)) {
-					if (anInt863 >= 1) {
+					if (rights >= 1) {
 						aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
 						anIntArray1093[anInt1133] = 606;
 						anInt1133++;
@@ -5355,7 +5362,7 @@ public class Game extends GameShell {
 			}
 			if (((j1 == 3) || (j1 == 7)) && (anInt1195 == 0) && ((j1 == 7) || (anInt845 == 0) || ((anInt845 == 1) && method109(s)))) {
 				if ((j > (k1 - 14)) && (j <= k1)) {
-					if (anInt863 >= 1) {
+					if (rights >= 1) {
 						aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
 						anIntArray1093[anInt1133] = 606;
 						anInt1133++;
@@ -5565,7 +5572,7 @@ public class Game extends GameShell {
 			return;
 		}
 		if (j == 613) {
-			if (anInt863 >= 1) {
+			if (rights >= 1) {
 				if (aBoolean1158) {
 					component.anInt232 = 0xff0000;
 					component.aString248 = "Moderator option: Mute player for 48 hours: <ON>";
@@ -6015,14 +6022,14 @@ public class Game extends GameShell {
 				return;
 			}
 			if (k == 2) {
-				anInt863 = connection.method268();
+				rights = connection.method268();
 				aBoolean1205 = connection.method268() == 1;
 				aLong1220 = 0L;
 				anInt1022 = 0;
 				aMouseRecorder_879.anInt810 = 0;
 				super.aBoolean17 = true;
 				aBoolean954 = true;
-				aBoolean1157 = true;
+				ingame = true;
 				aBuffer_1192.position = 0;
 				in.position = 0;
 				ptype = -1;
@@ -6162,7 +6169,7 @@ public class Game extends GameShell {
 				return;
 			}
 			if (k == 15) {
-				aBoolean1157 = true;
+				ingame = true;
 				aBuffer_1192.position = 0;
 				in.position = 0;
 				ptype = -1;
@@ -8771,7 +8778,7 @@ public class Game extends GameShell {
 							i1 = 450;
 						}
 						if (super.anInt20 < (4 + i1)) {
-							if (anInt863 >= 1) {
+							if (rights >= 1) {
 								aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
 								anIntArray1093[anInt1133] = 2606;
 								anInt1133++;
@@ -9010,7 +9017,7 @@ public class Game extends GameShell {
 		char c1 = '\310';
 		if (anInt833 == 0) {
 			int i = (c1 / 2) + 80;
-			fontPlain11.drawStringTaggableCenter(ondemand.aString1333, c / 2, i, 0x75a9a9, true);
+			fontPlain11.drawStringTaggableCenter(ondemand.message, c / 2, i, 0x75a9a9, true);
 			i = (c1 / 2) - 20;
 			fontBold12.drawStringTaggableCenter("Welcome to RuneScape", c / 2, i, 0xffff00, true);
 			int l = (c / 2) - 80;
@@ -9465,7 +9472,7 @@ public class Game extends GameShell {
 				if ((super.mousePressButton == 1) && (super.mousePressX >= (i1 - 75)) && (super.mousePressX <= (i1 + 75)) && (super.mousePressY >= (k1 - 20)) && (super.mousePressY <= (k1 + 20))) {
 					anInt1038 = 0;
 					method84(aString1173, aString1174, false);
-					if (aBoolean1157) {
+					if (ingame) {
 						return;
 					}
 				}

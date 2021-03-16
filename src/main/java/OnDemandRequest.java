@@ -1,13 +1,20 @@
+import java.util.Arrays;
+
 public class OnDemandRequest extends DoublyLinkedList.Node {
 
 	public int store;
-	public byte[] data;
 	public int file;
-	public boolean aBoolean1422;
-	public int anInt1423;
+	public boolean important;
+	public int cycle;
+	public byte[] data;
 
 	public OnDemandRequest() {
-		aBoolean1422 = true;
+		important = true;
+	}
+
+	@Override
+	public String toString() {
+		return "OnDemandRequest{" + "store=" + store + ", file=" + file + ", priority=" + important + ", cycle=" + cycle + ", data=" + Arrays.toString(data) + '}';
 	}
 
 }

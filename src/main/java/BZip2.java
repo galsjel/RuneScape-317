@@ -1,4 +1,5 @@
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,19 +31,12 @@ public class BZip2 extends InputStream {
 			tmp = new ByteArrayOutputStream();
 		}
 
-		BZip2CompressorInputStream in = new BZip2CompressorInputStream(new BZip2(src, off, len));
-
-		byte[] buf = new byte[2048];
-		int read;
-		int written = 0;
-
-		while ((read = in.read(buf)) != -1) {
+		try(BZip2CompressorInputStream in = new BZip2CompressorInputStream(new BZip2(src, off, len))) {
 			if (tmp != null) {
-				tmp.write(buf, 0, read);
+				IOUtils.copy(in, tmp);
 			} else {
-				System.arraycopy(buf, 0, dst, written, read);
+				IOUtils.readFully(in, dst);
 			}
-			written += read;
 		}
 
 		if (tmp != null) {
