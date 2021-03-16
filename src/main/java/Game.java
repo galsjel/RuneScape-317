@@ -7130,6 +7130,8 @@ public class Game extends GameShell {
 
 		int seq = entity.seqTurnAround;
 
+		// Since the game uses a left-handed coordinate system, an increasing angle goes clockwise.
+
 		// yaw >= -45 deg && yaw <= 45 deg
 		if ((remainingYaw >= -256) && (remainingYaw <= 256)) {
 			seq = entity.seqWalk;
