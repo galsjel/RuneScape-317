@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class IDKType {
 
 	public static int anInt655;
@@ -16,8 +18,8 @@ public class IDKType {
 	public IDKType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("idk.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("idk.dat"));
 		anInt655 = buffer.get2U();
 		if (instances == null) {
 			instances = new IDKType[anInt655];

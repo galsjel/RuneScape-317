@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class NPCType {
 
 	public static int anInt56;
@@ -30,9 +32,9 @@ public class NPCType {
 		return type;
 	}
 
-	public static void unpack(FileArchive archive) {
-		aBuffer_60 = new Buffer(archive.read("npc.dat", null));
-		Buffer buffer = new Buffer(archive.read("npc.idx", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		aBuffer_60 = new Buffer(archive.read("npc.dat"));
+		Buffer buffer = new Buffer(archive.read("npc.idx"));
 		anInt62 = buffer.get2U();
 		anIntArray72 = new int[anInt62];
 		int i = 2;

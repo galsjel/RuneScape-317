@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class Component {
 
 	public static Component[] instances;
@@ -72,9 +74,9 @@ public class Component {
 	public Component() {
 	}
 
-	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
+	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) throws IOException {
 		aCache_238 = new LRUCache(50000);
-		Buffer buffer = new Buffer(archive.read("data", null));
+		Buffer buffer = new Buffer(archive.read("data"));
 		int i = -1;
 		int j = buffer.get2U();
 		instances = new Component[j];

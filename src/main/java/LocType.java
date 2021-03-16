@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class LocType {
 
 	public static final Model[] A_MODEL_ARRAY_741 = new Model[4];
@@ -79,9 +81,9 @@ public class LocType {
 		aBuffer_753 = null;
 	}
 
-	public static void unpack(FileArchive archive) {
-		aBuffer_753 = new Buffer(archive.read("loc.dat", null));
-		Buffer buffer = new Buffer(archive.read("loc.idx", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		aBuffer_753 = new Buffer(archive.read("loc.dat"));
+		Buffer buffer = new Buffer(archive.read("loc.idx"));
 		anInt756 = buffer.get2U();
 		anIntArray755 = new int[anInt756];
 		int i = 2;

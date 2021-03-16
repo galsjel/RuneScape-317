@@ -1,7 +1,3 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,11 +156,11 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public void load(FileArchive versionlist, Game game) {
+	public void load(FileArchive versionlist, Game game) throws IOException {
 		String[] versionFilenames = {"model_version", "anim_version", "midi_version", "map_version"};
 
 		for (int i = 0; i < 4; i++) {
-			byte[] data = versionlist.read(versionFilenames[i], null);
+			byte[] data = versionlist.read(versionFilenames[i]);
 			int count = data.length / 2;
 
 			Buffer buffer = new Buffer(data);
@@ -180,7 +176,7 @@ public class OnDemand implements Runnable {
 		String[] crcFilenames = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 
 		for (int i = 0; i < 4; i++) {
-			byte[] data = versionlist.read(crcFilenames[i], null);
+			byte[] data = versionlist.read(crcFilenames[i]);
 			int count = data.length / 4;
 			Buffer buffer = new Buffer(data);
 			storeFileChecksums[i] = new int[count];
@@ -189,7 +185,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 
-		byte[] data = versionlist.read("model_index", null);
+		byte[] data = versionlist.read("model_index");
 		int count = storeFileVersions[0].length;
 
 		modelIndex = new byte[count];
@@ -202,7 +198,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 
-		data = versionlist.read("map_index", null);
+		data = versionlist.read("map_index");
 		Buffer buffer = new Buffer(data);
 		count = data.length / 7;
 
@@ -218,7 +214,7 @@ public class OnDemand implements Runnable {
 			mapPrefetched[i2] = buffer.get1U();
 		}
 
-		data = versionlist.read("anim_index", null);
+		data = versionlist.read("anim_index");
 		buffer = new Buffer(data);
 		count = data.length / 2;
 		animIndex = new int[count];
@@ -227,7 +223,7 @@ public class OnDemand implements Runnable {
 			animIndex[j2] = buffer.get2U();
 		}
 
-		data = versionlist.read("midi_index", null);
+		data = versionlist.read("midi_index");
 		buffer = new Buffer(data);
 		count = data.length;
 		midiIndex = new int[count];

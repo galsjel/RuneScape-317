@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * A simple file archive format.
  */
@@ -11,11 +13,11 @@ public class FileArchive {
 	public int[] fileOffset;
 	public boolean unpacked;
 
-	public FileArchive(byte[] src) {
+	public FileArchive(byte[] src) throws IOException {
 		load(src);
 	}
 
-	public void load(byte[] src) {
+	public void load(byte[] src) throws IOException {
 		Buffer buffer = new Buffer(src);
 
 		int unpackedSize = buffer.get3();
@@ -23,7 +25,7 @@ public class FileArchive {
 
 		if (packedSize != unpackedSize) {
 			data = new byte[unpackedSize];
-			BZip2.decompress(data, unpackedSize, src, 6, packedSize);
+			BZip2.decompress(data, src, 6, packedSize);
 			buffer = new Buffer(data);
 			unpacked = true;
 		} else {
@@ -48,7 +50,7 @@ public class FileArchive {
 		}
 	}
 
-	public byte[] read(String s, byte[] dst) {
+	public byte[] read(String s) throws IOException {
 		int hash = 0;
 		s = s.toUpperCase();
 		for (int j = 0; j < s.length(); j++) {
@@ -59,18 +61,19 @@ public class FileArchive {
 			if (fileHash[file] != hash) {
 				continue;
 			}
-			if (dst == null) {
-				dst = new byte[fileSizeInflated[file]];
-			}
 
 			if (!unpacked) {
-				BZip2.decompress(dst, fileSizeInflated[file], data, fileOffset[file], fileSizeDeflated[file]);
+				byte[] dst = new byte[fileSizeInflated[file]];
+
+
+
+				BZip2.decompress(dst, data, fileOffset[file], fileSizeDeflated[file]);
+				return dst;
 			} else {
-				for (int i = 0; i < fileSizeInflated[file]; i++) {
-					dst[i] = data[fileOffset[file] + i];
-				}
+				byte[] dst = new byte[fileSizeInflated[file]];
+				System.arraycopy(data, fileOffset[file], dst, 0, fileSizeInflated[file]);
+				return dst;
 			}
-			return dst;
 		}
 		return null;
 	}

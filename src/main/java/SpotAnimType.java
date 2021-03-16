@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class SpotAnimType {
 
 	public static int anInt402;
@@ -22,8 +24,8 @@ public class SpotAnimType {
 	public SpotAnimType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("spotanim.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("spotanim.dat"));
 		anInt402 = buffer.get2U();
 		if (instances == null) {
 			instances = new SpotAnimType[anInt402];

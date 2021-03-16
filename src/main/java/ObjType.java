@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class ObjType {
 
 	public static LRUCache aCache_158 = new LRUCache(100);
@@ -64,9 +66,9 @@ public class ObjType {
 		aBuffer_183 = null;
 	}
 
-	public static void unpack(FileArchive archive) {
-		aBuffer_183 = new Buffer(archive.read("obj.dat", null));
-		Buffer buffer = new Buffer(archive.read("obj.idx", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		aBuffer_183 = new Buffer(archive.read("obj.dat"));
+		Buffer buffer = new Buffer(archive.read("obj.idx"));
 		anInt203 = buffer.get2U();
 		anIntArray195 = new int[anInt203];
 		int i = 2;

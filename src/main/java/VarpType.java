@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class VarpType {
 
 	public static int anInt700;
@@ -24,8 +26,8 @@ public class VarpType {
 	public VarpType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("varp.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("varp.dat"));
 		anInt702 = 0;
 		anInt700 = buffer.get2U();
 		if (instances == null) {

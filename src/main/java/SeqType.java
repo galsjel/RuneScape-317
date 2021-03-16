@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class SeqType {
 
 	public static int anInt350;
@@ -25,8 +27,8 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("seq.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("seq.dat"));
 		anInt350 = buffer.get2U();
 		if (instances == null) {
 			instances = new SeqType[anInt350];

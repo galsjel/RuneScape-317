@@ -1,3 +1,5 @@
+import org.apache.commons.math3.random.ISAACRandom;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
@@ -8,7 +10,7 @@ import java.nio.charset.StandardCharsets;
  * <p>
  * <b>Types:</b><br/>
  * # — the number of bytes<br/>
- * Op — 1 byte which is modified by the {@link #cipher}<br/>
+ * Op — 1 byte which is modified by the {@link #random} number generator.<br/>
  * Smart — 1 or 2 byte value [-16384...16383]<br/>
  * USmart — 1 or 2 byte value [0...32768]<br/>
  * String — {@link StandardCharsets#ISO_8859_1} encoding delimited by a newline character (\n)<br/>
@@ -72,7 +74,7 @@ public class Buffer extends DoublyLinkedList.Node {
 	public byte[] data;
 	public int position;
 	public int bitPosition;
-	public ISAACCipher cipher;
+	public ISAACRandom random;
 
 	public Buffer() {
 	}
@@ -83,7 +85,7 @@ public class Buffer extends DoublyLinkedList.Node {
 	}
 
 	public void putOp(int i) {
-		data[position++] = (byte) (i + cipher.method246());
+		data[position++] = (byte) (i + random.nextInt());
 	}
 
 	public void putSize1(int i) {

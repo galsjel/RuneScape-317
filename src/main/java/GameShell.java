@@ -5,6 +5,7 @@
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public abstract class GameShell extends Applet implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
 
@@ -54,116 +55,121 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 
 	@Override
 	public void run() {
-		getComponent().addMouseListener(this);
-		getComponent().addMouseMotionListener(this);
-		getComponent().addKeyListener(this);
-		getComponent().addFocusListener(this);
+		try {
+			getComponent().addMouseListener(this);
+			getComponent().addMouseMotionListener(this);
+			getComponent().addKeyListener(this);
+			getComponent().addFocusListener(this);
 
-		if (frame != null) {
-			frame.addWindowListener(this);
-		}
-
-		showProgress(0, "Loading...");
-		load();
-
-		int opos = 0;
-		int ratio = 256;
-		int delta = 1;
-		int count = 0;
-		int intex = 0; // interrupt exceptions
-
-		for (int k1 = 0; k1 < 10; k1++) {
-			otim[k1] = System.currentTimeMillis();
-		}
-
-		while (state >= 0) {
-			if (state > 0) {
-				state--;
-				if (state == 0) {
-					shutdown();
-					return;
-				}
+			if (frame != null) {
+				frame.addWindowListener(this);
 			}
 
-			int lastRatio = ratio;
-			int lastDelta = delta;
+			showProgress(0, "Loading...");
+			load();
 
-			ratio = 300;
-			delta = 1;
+			int opos = 0;
+			int ratio = 256;
+			int delta = 1;
+			int count = 0;
+			int intex = 0; // interrupt exceptions
 
-			long ntime = System.currentTimeMillis();
-
-			if (otim[opos] == 0L) {
-				ratio = lastRatio;
-				delta = lastDelta;
-			} else if (ntime > otim[opos]) {
-				ratio = (int) ((long) (2560L * deltime) / (ntime - otim[opos]));
+			for (int k1 = 0; k1 < 10; k1++) {
+				otim[k1] = System.currentTimeMillis();
 			}
 
-			if (ratio < 25) {
-				ratio = 25;
-			}
-
-			if (ratio > 256) {
-				ratio = 256;
-				delta = (int) ((long) deltime - ((ntime - otim[opos]) / 10L));
-			}
-
-			if (delta > deltime) {
-				delta = deltime;
-			}
-
-			otim[opos] = ntime;
-			opos = (opos + 1) % 10;
-
-			if (delta > 1) {
-				for (int k2 = 0; k2 < 10; k2++) {
-					if (otim[k2] != 0L) {
-						otim[k2] += delta;
+			while (state >= 0) {
+				if (state > 0) {
+					state--;
+					if (state == 0) {
+						shutdown();
+						return;
 					}
 				}
-			}
 
-			if (delta < mindel) {
-				delta = mindel;
-			}
+				int lastRatio = ratio;
+				int lastDelta = delta;
 
-			try {
-				Thread.sleep(delta);
-			} catch (InterruptedException e) {
-				intex++;
-			}
+				ratio = 300;
+				delta = 1;
 
-			for (; count < 256; count += ratio) {
-				mousePressButton = lastMousePressButton;
-				mousePressX = lastMousePressX;
-				mousePressY = lastMousePressY;
-				mousePressTime = lastMousePressTime;
-				lastMousePressButton = 0;
-				update();
-				anInt32 = anInt33;
-			}
+				long ntime = System.currentTimeMillis();
 
-			count &= 0xff;
-
-			if (deltime > 0) {
-				fps = (1000 * ratio) / (deltime * 256);
-			}
-
-			draw();
-
-			if (debug) {
-				System.out.println("ntime:" + ntime);
-				for (int i = 0; i < 10; i++) {
-					int o = ((opos - i - 1) + 20) % 10;
-					System.out.println("otim" + o + ":" + otim[o]);
+				if (otim[opos] == 0L) {
+					ratio = lastRatio;
+					delta = lastDelta;
+				} else if (ntime > otim[opos]) {
+					ratio = (int) ((long) (2560L * deltime) / (ntime - otim[opos]));
 				}
-				System.out.println("fps:" + fps + " ratio:" + ratio + " count:" + count);
-				System.out.println("del:" + delta + " deltime:" + deltime + " mindel:" + mindel);
-				System.out.println("intex:" + intex + " opos:" + opos);
-				debug = false;
-				intex = 0;
+
+				if (ratio < 25) {
+					ratio = 25;
+				}
+
+				if (ratio > 256) {
+					ratio = 256;
+					delta = (int) ((long) deltime - ((ntime - otim[opos]) / 10L));
+				}
+
+				if (delta > deltime) {
+					delta = deltime;
+				}
+
+				otim[opos] = ntime;
+				opos = (opos + 1) % 10;
+
+				if (delta > 1) {
+					for (int k2 = 0; k2 < 10; k2++) {
+						if (otim[k2] != 0L) {
+							otim[k2] += delta;
+						}
+					}
+				}
+
+				if (delta < mindel) {
+					delta = mindel;
+				}
+
+				try {
+					Thread.sleep(delta);
+				} catch (InterruptedException e) {
+					intex++;
+				}
+
+				for (; count < 256; count += ratio) {
+					mousePressButton = lastMousePressButton;
+					mousePressX = lastMousePressX;
+					mousePressY = lastMousePressY;
+					mousePressTime = lastMousePressTime;
+					lastMousePressButton = 0;
+					update();
+					anInt32 = anInt33;
+				}
+
+				count &= 0xff;
+
+				if (deltime > 0) {
+					fps = (1000 * ratio) / (deltime * 256);
+				}
+
+				draw();
+
+				if (debug) {
+					System.out.println("ntime:" + ntime);
+					for (int i = 0; i < 10; i++) {
+						int o = ((opos - i - 1) + 20) % 10;
+						System.out.println("otim" + o + ":" + otim[o]);
+					}
+					System.out.println("fps:" + fps + " ratio:" + ratio + " count:" + count);
+					System.out.println("del:" + delta + " deltime:" + deltime + " mindel:" + mindel);
+					System.out.println("intex:" + intex + " opos:" + opos);
+					debug = false;
+					intex = 0;
+				}
 			}
+		} catch (Exception e) {
+			state = -1;
+			e.printStackTrace();
 		}
 
 		if (state == -1) {
@@ -456,7 +462,7 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 	 *
 	 * @see #run()
 	 */
-	public abstract void load();
+	public abstract void load() throws IOException;
 
 	/**
 	 * @see #run()
@@ -471,7 +477,7 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 	/**
 	 * @see #run()
 	 */
-	public abstract void draw();
+	public abstract void draw() throws IOException;
 
 	/**
 	 * Refresh is invoked whenever the shell is expected to potentially lost its display image.
@@ -501,7 +507,7 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 		thread.setPriority(priority);
 	}
 
-	public void showProgress(int percent, String message) {
+	public void showProgress(int percent, String message) throws IOException {
 		while (graphics == null) {
 			graphics = getComponent().getGraphics();
 			try {

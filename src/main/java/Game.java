@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.math3.random.ISAACRandom;
+
 import java.applet.AppletContext;
 import java.awt.*;
 import java.io.DataInputStream;
@@ -21,20 +23,22 @@ public class Game extends GameShell {
 	public static final int[][] anIntArrayArray1003 = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
 	public static final int[] anIntArray1204 = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
 	public static final BigInteger RSA_MODULUS = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
+	public static final int[] levelExperience;
+	public static final BigInteger RSA_PUBLIC_KEY = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
+	public static final String aString1162 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
+	public static final int[] anIntArray1232;
+	public static final int MAX_PLAYER_COUNT = 2048;
+	public static final int LOCAL_PLAYER_INDEX = 2047;
 	public static int nodeId = 10;
 	public static int portOffset;
 	public static boolean members = true;
 	public static boolean lowmem;
 	public static boolean started;
-	public static final int[] levelExperience;
-	public static final BigInteger RSA_PUBLIC_KEY = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
 	public static int drawCycle;
 	public static PlayerEntity aPlayer_1126;
 	public static boolean aBoolean1156;
 	public static int loopCycle;
-	public static final String aString1162 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
 	public static boolean aBoolean1205;
-	public static final int[] anIntArray1232;
 
 	static {
 		levelExperience = new int[99];
@@ -53,7 +57,152 @@ public class Game extends GameShell {
 		}
 	}
 
+	public static String method14(int i) {
+		String s = String.valueOf(i);
+		for (int k = s.length() - 3; k > 0; k -= 3) {
+			s = s.substring(0, k) + "," + s.substring(k);
+		}
+		if (s.length() > 8) {
+			s = "@gre@" + s.substring(0, s.length() - 8) + " million @whi@(" + s + ")";
+		} else if (s.length() > 4) {
+			s = "@cya@" + s.substring(0, s.length() - 4) + "K @whi@(" + s + ")";
+		}
+		return " " + s;
+	}
+
+	public static String method43(int j) {
+		if (j < 0x186a0) {
+			return String.valueOf(j);
+		}
+		if (j < 0x989680) {
+			return (j / 1000) + "K";
+		} else {
+			return (j / 0xf4240) + "M";
+		}
+	}
+
+	public static void setHighmem() {
+		Scene.lowmem = false;
+		Draw3D.lowmem = false;
+		lowmem = false;
+		SceneBuilder.lowmem = false;
+		LocType.lowmem = false;
+	}
+
+	public static void main(String[] args) throws UnknownHostException {
+		System.out.println("RS2 user client - release #" + 317);
+
+		if (args.length != 5) {
+			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
+			return;
+		}
+
+		nodeId = Integer.parseInt(args[0]);
+		portOffset = Integer.parseInt(args[1]);
+
+		if (args[2].equals("lowmem")) {
+			setLowmem();
+		} else if (args[2].equals("highmem")) {
+			setHighmem();
+		} else {
+			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
+			return;
+		}
+
+		if (args[3].equals("free")) {
+			members = false;
+		} else if (args[3].equals("members")) {
+			members = true;
+		} else {
+			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
+			return;
+		}
+
+		Signlink.storeid = Integer.parseInt(args[4]);
+		Signlink.startpriv(InetAddress.getLocalHost());
+
+		Game game = new Game();
+		game.init(765, 503);
+	}
+
+	public static String method110(int i, int j) {
+		int d = i - j;
+		if (d < -9) {
+			return "@red@";
+		} else if (d < -6) {
+			return "@or3@";
+		} else if (d < -3) {
+			return "@or2@";
+		} else if (d < 0) {
+			return "@or1@";
+		} else if (d > 9) {
+			return "@gre@";
+		} else if (d > 6) {
+			return "@gr3@";
+		} else if (d > 3) {
+			return "@gr2@";
+		} else if (d > 0) {
+			return "@gr1@";
+		} else {
+			return "@yel@";
+		}
+	}
+
+	public static void setLowmem() {
+		Scene.lowmem = true;
+		Draw3D.lowmem = true;
+		lowmem = true;
+		SceneBuilder.lowmem = true;
+		LocType.lowmem = true;
+	}
 	public final int[] anIntArray1177 = {0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+	public final int[] anIntArray864 = new int[SkillConstants.anInt733];
+	public final int[] anIntArray873 = new int[5];
+	public final boolean[] aBooleanArray876 = new boolean[5];
+	public final int anInt902 = 0x766654;
+	public final int[] anIntArray922 = new int[SkillConstants.anInt733];
+	public final long[] aLongArray925 = new long[100];
+	public final int anInt927 = 0x332d25;
+	public final int[] anIntArray928 = new int[5];
+	public final CRC32 aCRC32_930 = new CRC32();
+	public final int[] anIntArray942 = new int[100];
+	public final String[] aStringArray943 = new String[100];
+	public final String[] aStringArray944 = new String[100];
+	public final int[] anIntArray965 = {0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff};
+	public final int[] anIntArray968 = new int[33];
+	public final int[] anIntArray969 = new int[256];
+	public final FileStore[] filestores = new FileStore[5];
+	public final int anInt975 = 50;
+	public final int[] anIntArray976 = new int[anInt975];
+	public final int[] anIntArray977 = new int[anInt975];
+	public final int[] anIntArray978 = new int[anInt975];
+	public final int[] anIntArray979 = new int[anInt975];
+	public final int[] anIntArray980 = new int[anInt975];
+	public final int[] anIntArray981 = new int[anInt975];
+	public final int[] anIntArray982 = new int[anInt975];
+	public final String[] aStringArray983 = new String[anInt975];
+	public final int[] anIntArray990 = new int[5];
+	public final int anInt1002 = 0x23201b;
+	public final int[] anIntArray1030 = new int[5];
+	public final int[] anIntArray1044 = new int[SkillConstants.anInt733];
+	public final int[] anIntArray1045 = new int[2000];
+	public final int[] anIntArray1052 = new int[151];
+	public final int[] anIntArray1057 = new int[33];
+	public final Component aComponent_1059 = new Component();
+	public final int anInt1063 = 0x4d4233;
+	public final int[] anIntArray1065 = new int[7];
+	public final int[] archiveChecksum = new int[9];
+	public final String[] aStringArray1127 = new String[5];
+	public final boolean[] aBooleanArray1128 = new boolean[5];
+	public final int[][][] sceneInstancedChunkBitset = new int[4][13][13];
+	public final int[] anIntArray1130 = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	public final int[] anIntArray1203 = new int[5];
+	public final int[] anIntArray1207 = new int[50];
+	public final Image8[] aImageArray1219 = new Image8[2];
+	public final int[] anIntArray1229 = new int[151];
+	public final int[] anIntArray1240 = new int[100];
+	public final int[] anIntArray1241 = new int[50];
+	public final int[] anIntArray1250 = new int[50];
 	public int anInt822;
 	public long sceneLoadStartTime;
 	public int[][] anIntArrayArray825 = new int[104][104];
@@ -89,7 +238,6 @@ public class Game extends GameShell {
 	public int anInt861;
 	public int anInt862;
 	public int anInt863;
-	public final int[] anIntArray864 = new int[SkillConstants.anInt733];
 	public Image8 aImage_865;
 	public Image8 aImage_866;
 	public Image8 aImage_867;
@@ -98,9 +246,7 @@ public class Game extends GameShell {
 	public Image24 imageMapmarker0;
 	public Image24 imageMapmarker1;
 	public boolean aBoolean872 = false;
-	public final int[] anIntArray873 = new int[5];
 	public int anInt874 = -1;
-	public final boolean[] aBooleanArray876 = new boolean[5];
 	public int anInt878;
 	public MouseRecorder aMouseRecorder_879;
 	public volatile boolean aBoolean880 = false;
@@ -109,8 +255,6 @@ public class Game extends GameShell {
 	public boolean aBoolean885 = false;
 	public int anInt886;
 	public String aString887 = "";
-	public static final int MAX_PLAYER_COUNT = 2048;
-	public static final int LOCAL_PLAYER_INDEX = 2047;
 	public PlayerEntity[] players = new PlayerEntity[MAX_PLAYER_COUNT];
 	public int anInt891;
 	public int[] anIntArray892 = new int[MAX_PLAYER_COUNT];
@@ -121,7 +265,6 @@ public class Game extends GameShell {
 	public int anInt899;
 	public int anInt900;
 	public int[][] anIntArrayArray901 = new int[104][104];
-	public final int anInt902 = 0x766654;
 	public DrawArea aArea_903;
 	public DrawArea aArea_904;
 	public DrawArea aArea_905;
@@ -138,13 +281,8 @@ public class Game extends GameShell {
 	public int anInt916;
 	public int anInt917;
 	public int anInt918;
-	public final int[] anIntArray922 = new int[SkillConstants.anInt733];
-	public final long[] aLongArray925 = new long[100];
 	public boolean aBoolean926 = false;
-	public final int anInt927 = 0x332d25;
-	public final int[] anIntArray928 = new int[5];
 	public int[][] anIntArrayArray929 = new int[104][104];
-	public final CRC32 aCRC32_930 = new CRC32();
 	public Image24 aImage_931;
 	public Image24 aImage_932;
 	public int anInt933;
@@ -153,9 +291,6 @@ public class Game extends GameShell {
 	public int anInt936;
 	public int anInt937;
 	public int anInt938;
-	public final int[] anIntArray942 = new int[100];
-	public final String[] aStringArray943 = new String[100];
-	public final String[] aStringArray944 = new String[100];
 	public int anInt945;
 	public Scene scene;
 	public Image8[] imageSideicons = new Image8[13];
@@ -171,38 +306,23 @@ public class Game extends GameShell {
 	public volatile boolean aBoolean962 = false;
 	public int anInt963 = -1;
 	public int anInt964 = -1;
-	public final int[] anIntArray965 = {0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff};
 	public Image8 aImage_966;
 	public Image8 aImage_967;
-	public final int[] anIntArray968 = new int[33];
-	public final int[] anIntArray969 = new int[256];
-	public final FileStore[] filestores = new FileStore[5];
 	public int[] anIntArray971 = new int[2000];
 	public boolean aBoolean972 = false;
 	public int anInt974;
-	public final int anInt975 = 50;
-	public final int[] anIntArray976 = new int[anInt975];
-	public final int[] anIntArray977 = new int[anInt975];
-	public final int[] anIntArray978 = new int[anInt975];
-	public final int[] anIntArray979 = new int[anInt975];
-	public final int[] anIntArray980 = new int[anInt975];
-	public final int[] anIntArray981 = new int[anInt975];
-	public final int[] anIntArray982 = new int[anInt975];
-	public final String[] aStringArray983 = new String[anInt975];
 	public int anInt984;
 	public int anInt985 = -1;
 	public Image24[] imageHitmarks = new Image24[20];
 	public int anInt989;
-	public final int[] anIntArray990 = new int[5];
 	public int anInt992;
 	public int anInt995;
 	public int anInt996;
 	public int anInt997;
 	public int anInt998;
 	public int anInt999;
-	public ISAACCipher aISAACCipher_1000;
+	public ISAACRandom randomIn;
 	public Image24 imageMapedge;
-	public final int anInt1002 = 0x23201b;
 	public String aString1004 = "";
 	public int anInt1006;
 	public int psize;
@@ -225,7 +345,6 @@ public class Game extends GameShell {
 	public Image8 imageBackbase1;
 	public Image8 imageBackbase2;
 	public Image8 imageBackhmid1;
-	public final int[] anIntArray1030 = new int[5];
 	public boolean aBoolean1031 = false;
 	public Image24[] imageMapfunction = new Image24[100];
 	public int sceneBaseTileX;
@@ -237,24 +356,17 @@ public class Game extends GameShell {
 	public int anInt1040;
 	public int anInt1041;
 	public int anInt1042 = -1;
-	public final int[] anIntArray1044 = new int[SkillConstants.anInt733];
-	public final int[] anIntArray1045 = new int[2000];
 	public int anInt1046;
 	public boolean aBoolean1047 = true;
 	public int anInt1048;
 	public String aString1049;
-	public final int[] anIntArray1052 = new int[151];
 	public FileArchive archiveTitle;
 	public int anInt1054 = -1;
 	public int anInt1055;
 	public DoublyLinkedList aList_1056 = new DoublyLinkedList();
-	public final int[] anIntArray1057 = new int[33];
-	public final Component aComponent_1059 = new Component();
 	public Image8[] imageMapscene = new Image8[100];
 	public int anInt1062;
-	public final int anInt1063 = 0x4d4233;
 	public int anInt1064;
-	public final int[] anIntArray1065 = new int[7];
 	public int anInt1066;
 	public int anInt1067;
 	public OnDemand ondemand;
@@ -278,7 +390,6 @@ public class Game extends GameShell {
 	public int anInt1087;
 	public int anInt1088;
 	public int anInt1089;
-	public final int[] archiveChecksum = new int[9];
 	public int[] anIntArray1091 = new int[500];
 	public int[] anIntArray1092 = new int[500];
 	public int[] anIntArray1093 = new int[500];
@@ -306,10 +417,6 @@ public class Game extends GameShell {
 	public DrawArea aArea_1123;
 	public DrawArea aArea_1124;
 	public DrawArea aArea_1125;
-	public final String[] aStringArray1127 = new String[5];
-	public final boolean[] aBooleanArray1128 = new boolean[5];
-	public final int[][][] sceneInstancedChunkBitset = new int[4][13][13];
-	public final int[] anIntArray1130 = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	public int anInt1131;
 	public int anInt1133;
 	public int anInt1136;
@@ -368,8 +475,6 @@ public class Game extends GameShell {
 	public String[] aStringArray1199 = new String[500];
 	public Image24 aImage_1201;
 	public Image24 aImage_1202;
-	public final int[] anIntArray1203 = new int[5];
-	public final int[] anIntArray1207 = new int[50];
 	public int flameCycle;
 	public int anInt1209;
 	public int anInt1211 = 78;
@@ -378,7 +483,6 @@ public class Game extends GameShell {
 	public int[][][] anIntArrayArrayArray1214;
 	public long aLong1215;
 	public int anInt1216;
-	public final Image8[] aImageArray1219 = new Image8[2];
 	public long aLong1220;
 	public int anInt1221 = 3;
 	public int anInt1222;
@@ -386,7 +490,6 @@ public class Game extends GameShell {
 	public int anInt1225;
 	public int music;
 	public boolean musicFade = true;
-	public final int[] anIntArray1229 = new int[151];
 	public SceneCollisionMap[] collisions = new SceneCollisionMap[4];
 	public boolean aBoolean1233 = false;
 	public int[] sceneMapIndex;
@@ -394,8 +497,6 @@ public class Game extends GameShell {
 	public int[] sceneMapLocFile;
 	public int anInt1237;
 	public int anInt1238;
-	public final int[] anIntArray1240 = new int[100];
-	public final int[] anIntArray1241 = new int[50];
 	public boolean aBoolean1242 = false;
 	public int anInt1243;
 	public int anInt1244;
@@ -404,7 +505,6 @@ public class Game extends GameShell {
 	public byte[][] sceneMapLocData;
 	public int anInt1248;
 	public int anInt1249;
-	public final int[] anIntArray1250 = new int[50];
 	public int anInt1251;
 	public boolean errAlreadyStarted = false;
 	public int anInt1253;
@@ -499,7 +599,7 @@ public class Game extends GameShell {
 	}
 
 	@Override
-	public void load() {
+	public void load() throws IOException {
 		showProgress(20, "Starting up");
 
 		if (Signlink.sunjava) {
@@ -870,7 +970,7 @@ public class Game extends GameShell {
 			ObjType.aBoolean182 = members;
 			if (!lowmem) {
 				showProgress(90, "Unpacking sounds");
-				byte[] abyte0 = archiveSounds.read("sounds.dat", null);
+				byte[] abyte0 = archiveSounds.read("sounds.dat");
 				Buffer buffer = new Buffer(abyte0);
 				SoundTrack.method240(buffer);
 			}
@@ -939,6 +1039,7 @@ public class Game extends GameShell {
 			return;
 		} catch (Exception exception) {
 			Signlink.reporterror("loaderror " + aString1049 + " " + anInt1079);
+			exception.printStackTrace();
 		}
 		aBoolean926 = true;
 	}
@@ -970,10 +1071,12 @@ public class Game extends GameShell {
 		method15();
 		if (aMouseRecorder_879 != null) {
 			aMouseRecorder_879.aBoolean808 = false;
-		}
 		aMouseRecorder_879 = null;
-		ondemand.stop();
-		ondemand = null;
+		}
+		if (ondemand != null) {
+			ondemand.stop();
+			ondemand = null;
+		}
 		aBuffer_834 = null;
 		aBuffer_1192 = null;
 		aBuffer_847 = null;
@@ -1090,7 +1193,7 @@ public class Game extends GameShell {
 	}
 
 	@Override
-	public void draw() {
+	public void draw() throws IOException {
 		if (errAlreadyStarted || aBoolean926 || errInvalidHost) {
 			method94();
 			return;
@@ -1134,7 +1237,7 @@ public class Game extends GameShell {
 	}
 
 	@Override
-	public void showProgress(int percent, String message) {
+	public void showProgress(int percent, String message) throws IOException {
 		anInt1079 = percent;
 		aString1049 = message;
 		method64();
@@ -1169,118 +1272,12 @@ public class Game extends GameShell {
 		}
 	}
 
-	public static String method14(int i) {
-		String s = String.valueOf(i);
-		for (int k = s.length() - 3; k > 0; k -= 3) {
-			s = s.substring(0, k) + "," + s.substring(k);
-		}
-		if (s.length() > 8) {
-			s = "@gre@" + s.substring(0, s.length() - 8) + " million @whi@(" + s + ")";
-		} else if (s.length() > 4) {
-			s = "@cya@" + s.substring(0, s.length() - 4) + "K @whi@(" + s + ")";
-		}
-		return " " + s;
-	}
-
-	public static String method43(int j) {
-		if (j < 0x186a0) {
-			return String.valueOf(j);
-		}
-		if (j < 0x989680) {
-			return (j / 1000) + "K";
-		} else {
-			return (j / 0xf4240) + "M";
-		}
-	}
-
-	public static void setHighmem() {
-		Scene.lowmem = false;
-		Draw3D.lowmem = false;
-		lowmem = false;
-		SceneBuilder.lowmem = false;
-		LocType.lowmem = false;
-	}
-
-	public static void main(String[] args) throws UnknownHostException {
-		System.out.println("RS2 user client - release #" + 317);
-
-		if (args.length != 5) {
-			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
-			return;
-		}
-
-		nodeId = Integer.parseInt(args[0]);
-		portOffset = Integer.parseInt(args[1]);
-
-		if (args[2].equals("lowmem")) {
-			setLowmem();
-		} else if (args[2].equals("highmem")) {
-			setHighmem();
-		} else {
-			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
-			return;
-		}
-
-		if (args[3].equals("free")) {
-			members = false;
-		} else if (args[3].equals("members")) {
-			members = true;
-		} else {
-			System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
-			return;
-		}
-
-		Signlink.storeid = Integer.parseInt(args[4]);
-		Signlink.startpriv(InetAddress.getLocalHost());
-
-		Game game = new Game();
-		game.init(765, 503);
-	}
-
-	public static String method110(int i, int j) {
-		int d = i - j;
-		if (d < -9) {
-			return "@red@";
-		} else
-		if (d < -6) {
-			return "@or3@";
-		}else
-		if (d < -3) {
-			return "@or2@";
-		} else
-		if (d < 0) {
-			return "@or1@";
-		} else
-		if (d > 9) {
-			return "@gre@";
-		} else
-		if (d > 6) {
-			return "@gr3@";
-		} else
-		if (d > 3) {
-			return "@gr2@";
-		} else
-		if (d > 0) {
-			return "@gr1@";
-		} else {
-			return "@yel@";
-		}
-	}
-
-	public static void setLowmem() {
-		Scene.lowmem = true;
-		Draw3D.lowmem = true;
-		lowmem = true;
-		SceneBuilder.lowmem = true;
-		LocType.lowmem = true;
-	}
-
 	public void method15() {
 		Signlink.midifade = 0;
 		Signlink.midi = "stop";
 	}
 
-	public void loadArchiveChecksums() {
+	public void loadArchiveChecksums() throws IOException {
 		int j = 5;
 		archiveChecksum[8] = 0;
 		int k = 0;
@@ -1355,7 +1352,7 @@ public class Game extends GameShell {
 		aArea_1166.bind();
 		Draw3D.lineOffset = anIntArray1180;
 		imageChatback.method361(0, 0);
-		
+
 		if (aBoolean1256) {
 			fontBold12.drawStringCenter(aString1121, 239, 40, 0);
 			fontBold12.drawStringCenter(aString1212 + "*", 239, 60, 128);
@@ -3195,7 +3192,7 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method51() {
+	public void method51() throws IOException {
 		aImage_966 = new Image8(archiveTitle, "titlebox", 0);
 		aImage_967 = new Image8(archiveTitle, "titlebutton", 0);
 		aImageArray1152 = new Image8[12];
@@ -3363,8 +3360,8 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method56() {
-		byte[] abyte0 = archiveTitle.read("title.dat", null);
+	public void method56() throws IOException {
+		byte[] abyte0 = archiveTitle.read("title.dat");
 		Image24 image = new Image24(abyte0, this);
 		aArea_1110.bind();
 		image.method346(0, 0);
@@ -3850,7 +3847,7 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method64() {
+	public void method64() throws IOException {
 		if (aArea_1107 != null) {
 			return;
 		}
@@ -3952,7 +3949,7 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public FileArchive loadArchive(int i, String s, String s1, int j, int k) {
+	public FileArchive loadArchive(int i, String s, String s1, int j, int k) throws IOException {
 		byte[] abyte0 = null;
 		int l = 5;
 		try {
@@ -5969,17 +5966,20 @@ public class Game extends GameShell {
 				connection.method270(in.data, 0, 8);
 				in.position = 0;
 				aLong1215 = in.get8();
-				int[] ai = new int[4];
-				ai[0] = (int) (Math.random() * 99999999D);
-				ai[1] = (int) (Math.random() * 99999999D);
-				ai[2] = (int) (aLong1215 >> 32);
-				ai[3] = (int) aLong1215;
+
+				// apache math tries to fill the remaining 1008 bytes up with random junk if we don't give it 256 ints.
+				int[] seed = new int[1 << 8];
+
+				seed[0] = (int) (Math.random() * 99999999D);
+				seed[1] = (int) (Math.random() * 99999999D);
+				seed[2] = (int) (aLong1215 >> 32);
+				seed[3] = (int) aLong1215;
 				aBuffer_1192.position = 0;
 				aBuffer_1192.put1(10);
-				aBuffer_1192.put4(ai[0]);
-				aBuffer_1192.put4(ai[1]);
-				aBuffer_1192.put4(ai[2]);
-				aBuffer_1192.put4(ai[3]);
+				aBuffer_1192.put4(seed[0]);
+				aBuffer_1192.put4(seed[1]);
+				aBuffer_1192.put4(seed[2]);
+				aBuffer_1192.put4(seed[3]);
 				aBuffer_1192.put4(Signlink.uid);
 				aBuffer_1192.put(s);
 				aBuffer_1192.put(s1);
@@ -5998,11 +5998,11 @@ public class Game extends GameShell {
 					aBuffer_847.put4(archiveChecksum[l1]);
 				}
 				aBuffer_847.put(aBuffer_1192.data, aBuffer_1192.position, 0);
-				aBuffer_1192.cipher = new ISAACCipher(ai);
+				aBuffer_1192.random = new ISAACRandom(seed);
 				for (int j2 = 0; j2 < 4; j2++) {
-					ai[j2] += 50;
+					seed[j2] += 50;
 				}
-				aISAACCipher_1000 = new ISAACCipher(ai);
+				randomIn = new ISAACRandom(seed);
 				connection.method271(aBuffer_847.position, aBuffer_847.data, 0);
 				k = connection.method268();
 			}
@@ -9002,7 +9002,7 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method135(boolean flag) {
+	public void method135(boolean flag) throws IOException {
 		method64();
 		aArea_1109.bind();
 		aImage_966.method361(0, 0);
@@ -9676,8 +9676,8 @@ public class Game extends GameShell {
 			if (ptype == -1) {
 				connection.method270(in.data, 0, 1);
 				ptype = in.data[0] & 0xff;
-				if (aISAACCipher_1000 != null) {
-					ptype = (ptype - aISAACCipher_1000.method246()) & 0xff;
+				if (randomIn != null) {
+					ptype = (ptype - randomIn.nextInt()) & 0xff;
 				}
 				psize = PacketConstants.SIZE[ptype];
 				available--;
