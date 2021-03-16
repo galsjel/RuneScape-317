@@ -31,7 +31,7 @@ public class BZip2 extends InputStream {
 			tmp = new ByteArrayOutputStream();
 		}
 
-		try(BZip2CompressorInputStream in = new BZip2CompressorInputStream(new BZip2(src, off, len))) {
+		try (BZip2CompressorInputStream in = new BZip2CompressorInputStream(new BZip2(src, off, len))) {
 			if (tmp != null) {
 				IOUtils.copy(in, tmp);
 			} else {

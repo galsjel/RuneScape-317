@@ -13,9 +13,6 @@ public class Draw2D {
 	public static int centerX;
 	public static int centerY;
 
-	public Draw2D() {
-	}
-
 	public static void bind(int[] pixels, int width, int height) {
 		Draw2D.pixels = pixels;
 		Draw2D.width = width;
@@ -241,6 +238,9 @@ public class Draw2D {
 			pixels[offset] = (((r0 + r1) >> 8) << 16) + (((g0 + g1) >> 8) << 8) + ((b0 + b1) >> 8);
 			offset += width;
 		}
+	}
+
+	public Draw2D() {
 	}
 
 }

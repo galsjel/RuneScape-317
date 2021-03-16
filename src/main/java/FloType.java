@@ -8,20 +8,6 @@ public class FloType {
 
 	public static int anInt387;
 	public static FloType[] instances;
-	public String unusedString;
-	public int anInt390;
-	public int anInt391 = -1;
-	public boolean unusedBool = false;
-	public boolean aBoolean393 = true;
-	public int anInt394;
-	public int anInt395;
-	public int anInt396;
-	public int anInt397;
-	public int anInt398;
-	public int anInt399;
-
-	public FloType() {
-	}
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("flo.dat"));
@@ -35,6 +21,20 @@ public class FloType {
 			}
 			instances[j].method261(buffer);
 		}
+	}
+	public String unusedString;
+	public int anInt390;
+	public int anInt391 = -1;
+	public boolean unusedBool = false;
+	public boolean aBoolean393 = true;
+	public int anInt394;
+	public int anInt395;
+	public int anInt396;
+	public int anInt397;
+	public int anInt398;
+	public int anInt399;
+
+	public FloType() {
 	}
 
 	public void method261(Buffer buffer) {

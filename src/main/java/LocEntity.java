@@ -5,7 +5,6 @@
 public class LocEntity extends Entity {
 
 	public static Game aGame1609;
-	public int anInt1599;
 	public final int[] anIntArray1600;
 	public final int anInt1601;
 	public final int anInt1602;
@@ -13,11 +12,12 @@ public class LocEntity extends Entity {
 	public final int anInt1604;
 	public final int anInt1605;
 	public final int anInt1606;
-	public SeqType aType_1607;
-	public int anInt1608;
 	public final int anInt1610;
 	public final int anInt1611;
 	public final int anInt1612;
+	public int anInt1599;
+	public SeqType aType_1607;
+	public int anInt1608;
 
 	public LocEntity(int i, int j, int k, int l, int i1, int j1, int k1, int l1, boolean flag) {
 		anInt1610 = i;

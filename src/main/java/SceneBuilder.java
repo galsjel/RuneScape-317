@@ -13,42 +13,6 @@ public class SceneBuilder {
 	public static int anInt133 = (int) (Math.random() * 33.0) - 16;
 	public static int anInt145 = 99;
 	public static boolean lowmem = true;
-	public final int[] anIntArray124;
-	public final int[] anIntArray125;
-	public final int[] anIntArray126;
-	public final int[] anIntArray127;
-	public final int[] anIntArray128;
-	public final int[][][] anIntArrayArrayArray129;
-	public final byte[][][] aByteArrayArrayArray130;
-	public final byte[][][] aByteArrayArrayArray134;
-	public final int[][][] anIntArrayArrayArray135;
-	public final byte[][][] aByteArrayArrayArray136;
-	public final int[][] anIntArrayArray139;
-	public final byte[][][] aByteArrayArrayArray142;
-	public final int anInt146;
-	public final int anInt147;
-	public final byte[][][] aByteArrayArrayArray148;
-	public final byte[][][] aByteArrayArrayArray149;
-
-	public SceneBuilder(byte[][][] is, int i_0_, int i_1_, int[][][] is_2_) {
-		anInt145 = 99;
-		anInt146 = i_1_;
-		anInt147 = i_0_;
-		anIntArrayArrayArray129 = is_2_;
-		aByteArrayArrayArray149 = is;
-		aByteArrayArrayArray142 = new byte[4][anInt146][anInt147];
-		aByteArrayArrayArray130 = new byte[4][anInt146][anInt147];
-		aByteArrayArrayArray136 = new byte[4][anInt146][anInt147];
-		aByteArrayArrayArray148 = new byte[4][anInt146][anInt147];
-		anIntArrayArrayArray135 = new int[4][anInt146 + 1][anInt147 + 1];
-		aByteArrayArrayArray134 = new byte[4][anInt146 + 1][anInt147 + 1];
-		anIntArrayArray139 = new int[anInt146 + 1][anInt147 + 1];
-		anIntArray124 = new int[anInt147];
-		anIntArray125 = new int[anInt147];
-		anIntArray126 = new int[anInt147];
-		anIntArray127 = new int[anInt147];
-		anIntArray128 = new int[anInt147];
-	}
 
 	public static int method170(int i, int i_3_) {
 		int i_4_ = i + (i_3_ * 57);
@@ -370,6 +334,42 @@ public class SceneBuilder {
 			}
 		}
 		return bool;
+	}
+	public final int[] anIntArray124;
+	public final int[] anIntArray125;
+	public final int[] anIntArray126;
+	public final int[] anIntArray127;
+	public final int[] anIntArray128;
+	public final int[][][] anIntArrayArrayArray129;
+	public final byte[][][] aByteArrayArrayArray130;
+	public final byte[][][] aByteArrayArrayArray134;
+	public final int[][][] anIntArrayArrayArray135;
+	public final byte[][][] aByteArrayArrayArray136;
+	public final int[][] anIntArrayArray139;
+	public final byte[][][] aByteArrayArrayArray142;
+	public final int anInt146;
+	public final int anInt147;
+	public final byte[][][] aByteArrayArrayArray148;
+	public final byte[][][] aByteArrayArrayArray149;
+
+	public SceneBuilder(byte[][][] is, int i_0_, int i_1_, int[][][] is_2_) {
+		anInt145 = 99;
+		anInt146 = i_1_;
+		anInt147 = i_0_;
+		anIntArrayArrayArray129 = is_2_;
+		aByteArrayArrayArray149 = is;
+		aByteArrayArrayArray142 = new byte[4][anInt146][anInt147];
+		aByteArrayArrayArray130 = new byte[4][anInt146][anInt147];
+		aByteArrayArrayArray136 = new byte[4][anInt146][anInt147];
+		aByteArrayArrayArray148 = new byte[4][anInt146][anInt147];
+		anIntArrayArrayArray135 = new int[4][anInt146 + 1][anInt147 + 1];
+		aByteArrayArrayArray134 = new byte[4][anInt146 + 1][anInt147 + 1];
+		anIntArrayArray139 = new int[anInt146 + 1][anInt147 + 1];
+		anIntArray124 = new int[anInt147];
+		anIntArray125 = new int[anInt147];
+		anIntArray126 = new int[anInt147];
+		anIntArray127 = new int[anInt147];
+		anIntArray128 = new int[anInt147];
 	}
 
 	public void method171(SceneCollisionMap[] collisionMaps, Scene scene) {

@@ -4,10 +4,12 @@
 
 public class SceneTile extends DoublyLinkedList.Node {
 
-	public int anInt1307;
 	public final int anInt1308;
 	public final int anInt1309;
 	public final int anInt1310;
+	public final SceneLoc[] aLocArray1318 = new SceneLoc[5];
+	public final int[] anIntArray1319 = new int[5];
+	public int anInt1307;
 	public SceneTileUnderlay aUnderlay_1311;
 	public SceneTileOverlay aOverlay_1312;
 	public SceneWall aWall_1313;
@@ -15,8 +17,6 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public SceneGroundDecoration aGroundDecoration_1315;
 	public SceneObjStack aObjStack_1316;
 	public int anInt1317;
-	public final SceneLoc[] aLocArray1318 = new SceneLoc[5];
-	public final int[] anIntArray1319 = new int[5];
 	public int anInt1320;
 	public int anInt1321;
 	public boolean aBoolean1322;

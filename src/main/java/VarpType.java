@@ -11,21 +11,6 @@ public class VarpType {
 	public static int anInt702;
 	public static int[] anIntArray703;
 
-	public String unusedString;
-	public int unusedInt0;
-	public int unusedInt1;
-	public boolean unusedBool0 = false;
-	public boolean unusedBool1 = true;
-	public int anInt709;
-	public boolean unusedBool2 = false;
-	public int unusedInt2;
-	public int unusedInt3;
-	public boolean unusedBool3 = false;
-	public int unusedInt4 = -1;
-
-	public VarpType() {
-	}
-
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("varp.dat"));
 		anInt702 = 0;
@@ -45,6 +30,20 @@ public class VarpType {
 		if (buffer.position != buffer.data.length) {
 			System.out.println("varptype load mismatch");
 		}
+	}
+	public String unusedString;
+	public int unusedInt0;
+	public int unusedInt1;
+	public boolean unusedBool0 = false;
+	public boolean unusedBool1 = true;
+	public int anInt709;
+	public boolean unusedBool2 = false;
+	public int unusedInt2;
+	public int unusedInt3;
+	public boolean unusedBool3 = false;
+	public int unusedInt4 = -1;
+
+	public VarpType() {
 	}
 
 	public void method547(Buffer buffer, int i) {

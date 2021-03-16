@@ -9,11 +9,11 @@ import java.net.Socket;
 
 public class Connection implements Runnable {
 
+	public final Socket aSocket421;
+	public final GameShell anShell_423;
 	public InputStream anInputStream419;
 	public OutputStream anOutputStream420;
-	public final Socket aSocket421;
 	public boolean closed = false;
-	public final GameShell anShell_423;
 	public byte[] aByteArray424;
 	public int anInt425;
 	public int anInt426;

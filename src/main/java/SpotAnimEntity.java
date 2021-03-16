@@ -9,8 +9,8 @@ public class SpotAnimEntity extends Entity {
 	public final int anInt1562;
 	public final int anInt1563;
 	public final int anInt1564;
-	public boolean aBoolean1567 = false;
 	public final SpotAnimType aType_1568;
+	public boolean aBoolean1567 = false;
 	public int anInt1569;
 	public int anInt1570;
 

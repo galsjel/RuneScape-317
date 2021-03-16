@@ -6,28 +6,28 @@ public class ProjectileEntity extends Entity {
 
 	public final int anInt1571;
 	public final int anInt1572;
+	public final int anInt1580;
+	public final int anInt1581;
+	public final int anInt1582;
+	public final int anInt1583;
+	public final int anInt1588;
+	public final int anInt1589;
+	public final int anInt1590;
+	public final SpotAnimType aType_1592;
+	public final int anInt1597;
 	public double aDouble1574;
 	public double aDouble1575;
 	public double aDouble1576;
 	public double aDouble1577;
 	public double aDouble1578;
 	public boolean aBoolean1579 = false;
-	public final int anInt1580;
-	public final int anInt1581;
-	public final int anInt1582;
-	public final int anInt1583;
 	public double aDouble1585;
 	public double aDouble1586;
 	public double aDouble1587;
-	public final int anInt1588;
-	public final int anInt1589;
-	public final int anInt1590;
-	public final SpotAnimType aType_1592;
 	public int anInt1593;
 	public int anInt1594;
 	public int anInt1595;
 	public int anInt1596;
-	public final int anInt1597;
 
 	public ProjectileEntity(int i, int j, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2) {
 		aType_1592 = SpotAnimType.instances[l2];

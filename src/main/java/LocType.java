@@ -17,8 +17,46 @@ public class LocType {
 	public static int anInt771;
 	public static LRUMap<Long, Model> aCache_780 = new LRUMap(30);
 	public static LocType[] aTypeArray782;
-	public static LRUMap<Long,Model> aCache_785 = new LRUMap(500);
+	public static LRUMap<Long, Model> aCache_785 = new LRUMap(500);
 
+	public static LocType method572(int i) {
+		for (int j = 0; j < 20; j++) {
+			if (aTypeArray782[j].anInt754 == i) {
+				return aTypeArray782[j];
+			}
+		}
+		anInt771 = (anInt771 + 1) % 20;
+		LocType type = aTypeArray782[anInt771];
+		aBuffer_753.position = anIntArray755[i];
+		type.anInt754 = i;
+		type.method573();
+		type.method582(aBuffer_753);
+		return type;
+	}
+
+	public static void unload() {
+		aCache_785 = null;
+		aCache_780 = null;
+		anIntArray755 = null;
+		aTypeArray782 = null;
+		aBuffer_753 = null;
+	}
+
+	public static void unpack(FileArchive archive) throws IOException {
+		aBuffer_753 = new Buffer(archive.read("loc.dat"));
+		Buffer buffer = new Buffer(archive.read("loc.idx"));
+		anInt756 = buffer.get2U();
+		anIntArray755 = new int[anInt756];
+		int i = 2;
+		for (int j = 0; j < anInt756; j++) {
+			anIntArray755[j] = i;
+			i += buffer.get2U();
+		}
+		aTypeArray782 = new LocType[20];
+		for (int k = 0; k < 20; k++) {
+			aTypeArray782[k] = new LocType();
+		}
+	}
 	public boolean aBoolean736;
 	public byte aByte737;
 	public int anInt738;
@@ -58,45 +96,6 @@ public class LocType {
 	public String[] aStringArray786;
 
 	public LocType() {
-	}
-
-	public static LocType method572(int i) {
-		for (int j = 0; j < 20; j++) {
-			if (aTypeArray782[j].anInt754 == i) {
-				return aTypeArray782[j];
-			}
-		}
-		anInt771 = (anInt771 + 1) % 20;
-		LocType type = aTypeArray782[anInt771];
-		aBuffer_753.position = anIntArray755[i];
-		type.anInt754 = i;
-		type.method573();
-		type.method582(aBuffer_753);
-		return type;
-	}
-
-	public static void unload() {
-		aCache_785 = null;
-		aCache_780 = null;
-		anIntArray755 = null;
-		aTypeArray782 = null;
-		aBuffer_753 = null;
-	}
-
-	public static void unpack(FileArchive archive) throws IOException {
-		aBuffer_753 = new Buffer(archive.read("loc.dat"));
-		Buffer buffer = new Buffer(archive.read("loc.idx"));
-		anInt756 = buffer.get2U();
-		anIntArray755 = new int[anInt756];
-		int i = 2;
-		for (int j = 0; j < anInt756; j++) {
-			anIntArray755[j] = i;
-			i += buffer.get2U();
-		}
-		aTypeArray782 = new LocType[20];
-		for (int k = 0; k < 20; k++) {
-			aTypeArray782[k] = new LocType();
-		}
 	}
 
 	public void method573() {
@@ -253,7 +252,7 @@ public class LocType {
 					if (flag1) {
 						model.rotateY180();
 					}
-					aCache_785.put((long)l2, model);
+					aCache_785.put((long) l2, model);
 				}
 				if (k1 > 1) {
 					A_MODEL_ARRAY_741[i2] = model;
@@ -293,7 +292,7 @@ public class LocType {
 				if (flag3) {
 					model.rotateY180();
 				}
-				aCache_785.put((long)j2, model);
+				aCache_785.put((long) j2, model);
 			}
 		}
 		boolean flag;

@@ -6,6 +6,10 @@ public class PathingEntity extends Entity {
 
 	public final int[] moveQueueTileX = new int[10];
 	public final int[] moveQueueTileZ = new int[10];
+	public final int[] anIntArray1514 = new int[4];
+	public final int[] anIntArray1515 = new int[4];
+	public final int[] anIntArray1516 = new int[4];
+	public final boolean[] aBooleanArray1553 = new boolean[10];
 	public int anInt1502 = -1;
 	public int anInt1503;
 	public int anInt1504 = 32;
@@ -16,9 +20,6 @@ public class PathingEntity extends Entity {
 	public int anInt1511 = -1;
 	public int anInt1512 = -1;
 	public int anInt1513;
-	public final int[] anIntArray1514 = new int[4];
-	public final int[] anIntArray1515 = new int[4];
-	public final int[] anIntArray1516 = new int[4];
 	public int anInt1517 = -1;
 	public int anInt1518;
 	public int anInt1519;
@@ -54,7 +55,6 @@ public class PathingEntity extends Entity {
 	public int x;
 	public int z;
 	public int anInt1552;
-	public final boolean[] aBooleanArray1553 = new boolean[10];
 	public int anInt1554 = -1;
 	public int anInt1555 = -1;
 	public int anInt1556 = -1;

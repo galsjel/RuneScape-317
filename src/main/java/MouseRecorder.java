@@ -7,8 +7,8 @@ public class MouseRecorder implements Runnable {
 	public final Object lock = new Object();
 	public final Game aGame805;
 	public final int[] anIntArray807 = new int[500];
-	public boolean aBoolean808 = true;
 	public final int[] anIntArray809 = new int[500];
+	public boolean aBoolean808 = true;
 	public int anInt810;
 
 	public MouseRecorder(Game game1) {

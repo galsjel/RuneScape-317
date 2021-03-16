@@ -11,12 +11,12 @@ import java.net.URL;
 
 public class Signlink implements Runnable {
 
+	public static final RandomAccessFile[] cache_idx = new RandomAccessFile[5];
+	public static final Applet mainapp = null;
 	public static int uid;
 	public static int storeid = 32;
 	public static RandomAccessFile cache_dat = null;
-	public static final RandomAccessFile[] cache_idx = new RandomAccessFile[5];
 	public static boolean sunjava;
-	public static final Applet mainapp = null;
 	public static boolean active;
 	public static int threadliveid;
 	public static InetAddress socketip;
@@ -41,9 +41,6 @@ public class Signlink implements Runnable {
 	public static String wave = null;
 	public static int wavevol;
 	public static boolean reporterror = true;
-
-	public Signlink() {
-	}
 
 	public static void startpriv(InetAddress inetaddress) {
 		threadliveid = (int) (Math.random() * 99999999D);
@@ -202,6 +199,9 @@ public class Signlink implements Runnable {
 			return;
 		}
 		System.out.println("Error: " + s);
+	}
+
+	public Signlink() {
 	}
 
 	@Override

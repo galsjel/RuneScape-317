@@ -3,7 +3,6 @@
 // Decompiler options: packimports(3) 
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public class Scene {
 
@@ -19,6 +18,8 @@ public class Scene {
 	public static final int[] anIntArray483 = {0, 4, 4, 8, 0, 0, 8, 0, 0};
 	public static final int[] anIntArray484 = {1, 1, 0, 0, 0, 8, 0, 0, 8};
 	public static final int[] anIntArray485 = {41, 39248, 41, 4643, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 43086, 41, 41, 41, 41, 41, 41, 41, 8602, 41, 28992, 41, 41, 41, 41, 41, 5056, 41, 41, 41, 7079, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 3131, 41, 41, 41};
+	public static final int anInt472 = 4;
+	public static final SceneOccluder[] A_OCCLUDER_ARRAY_476 = new SceneOccluder[500];
 	public static boolean lowmem = true;
 	public static int anInt446;
 	public static int anInt447;
@@ -42,11 +43,9 @@ public class Scene {
 	public static int anInt469;
 	public static int anInt470 = -1;
 	public static int anInt471 = -1;
-	public static final int anInt472 = 4;
 	public static int[] anIntArray473 = new int[anInt472];
 	public static SceneOccluder[][] aOccluderArrayArray474 = new SceneOccluder[anInt472][500];
 	public static int anInt475;
-	public static final SceneOccluder[] A_OCCLUDER_ARRAY_476 = new SceneOccluder[500];
 	public static DoublyLinkedList aList_477 = new DoublyLinkedList();
 	public static boolean[][][][] aBooleanArrayArrayArrayArray491 = new boolean[8][32][51][51];
 	public static boolean[][] aBooleanArrayArray492;
@@ -56,31 +55,6 @@ public class Scene {
 	public static int anInt496;
 	public static int anInt497;
 	public static int anInt498;
-
-	public final int anInt437;
-	public final int anInt438;
-	public final int anInt439;
-	public final int[][][] anIntArrayArrayArray440;
-	public final SceneTile[][][] aTileArrayArrayArray441;
-	public int anInt442;
-	public int anInt443;
-	public final SceneLoc[] aLocArray444 = new SceneLoc[5000];
-	public final int[][][] anIntArrayArrayArray445;
-	public final int[] anIntArray486 = new int[10000];
-	public final int[] anIntArray487 = new int[10000];
-	public int anInt488;
-	public final int[][] anIntArrayArray489 = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
-	public final int[][] anIntArrayArray490 = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
-
-	public Scene(int i, int j, int[][][] ai, int k) {
-		anInt437 = k;
-		anInt438 = j;
-		anInt439 = i;
-		aTileArrayArrayArray441 = new SceneTile[k][j][i];
-		anIntArrayArrayArray445 = new int[k][j + 1][i + 1];
-		anIntArrayArrayArray440 = ai;
-		method274();
-	}
 
 	public static void unload() {
 		aLocArray462 = null;
@@ -181,6 +155,30 @@ public class Scene {
 		int l1 = anInt493 + ((l << 9) / j1);
 		int i2 = anInt494 + ((k1 << 9) / j1);
 		return (l1 >= anInt495) && (l1 <= anInt497) && (i2 >= anInt496) && (i2 <= anInt498);
+	}
+	public final int anInt437;
+	public final int anInt438;
+	public final int anInt439;
+	public final int[][][] anIntArrayArrayArray440;
+	public final SceneTile[][][] aTileArrayArrayArray441;
+	public final SceneLoc[] aLocArray444 = new SceneLoc[5000];
+	public final int[][][] anIntArrayArrayArray445;
+	public final int[] anIntArray486 = new int[10000];
+	public final int[] anIntArray487 = new int[10000];
+	public final int[][] anIntArrayArray489 = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
+	public final int[][] anIntArrayArray490 = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
+	public int anInt442;
+	public int anInt443;
+	public int anInt488;
+
+	public Scene(int i, int j, int[][][] ai, int k) {
+		anInt437 = k;
+		anInt438 = j;
+		anInt439 = i;
+		aTileArrayArrayArray441 = new SceneTile[k][j][i];
+		anIntArrayArrayArray445 = new int[k][j + 1][i + 1];
+		anIntArrayArrayArray440 = ai;
+		method274();
 	}
 
 	public void method274() {

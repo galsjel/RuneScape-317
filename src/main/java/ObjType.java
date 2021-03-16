@@ -16,49 +16,6 @@ public class ObjType {
 	public static Buffer aBuffer_183;
 	public static int[] anIntArray195;
 	public static int anInt203;
-	public byte aByte154;
-	public int anInt155;
-	public int[] anIntArray156;
-	public int anInt157 = -1;
-	public int[] anIntArray160;
-	public boolean aBoolean161;
-	public int anInt162;
-	public int anInt163;
-	public int anInt164;
-	public int anInt165;
-	public int anInt166;
-	public int anInt167;
-	public String[] aStringArray168;
-	public int anInt169;
-	public String aString170;
-	public int anInt173;
-	public int anInt174;
-	public int anInt175;
-	public boolean aBoolean176;
-	public byte[] aByteArray178;
-	public int anInt179;
-	public int anInt181;
-	public int anInt184;
-	public int anInt185;
-	public int anInt188;
-	public String[] aStringArray189;
-	public int anInt190;
-	public int anInt191;
-	public int anInt192;
-	public int[] anIntArray193;
-	public int anInt194;
-	public int anInt196;
-	public int anInt197;
-	public int anInt198;
-	public int unusedInt;
-	public int anInt200;
-	public int[] anIntArray201;
-	public int anInt202;
-	public int anInt204;
-	public byte aByte205;
-
-	public ObjType() {
-	}
 
 	public static void unload() {
 		modelCache = null;
@@ -236,6 +193,49 @@ public class ObjType {
 		}
 		class30_sub2_sub1_sub1_1.anInt1445 = j;
 		return class30_sub2_sub1_sub1_1;
+	}
+	public byte aByte154;
+	public int anInt155;
+	public int[] anIntArray156;
+	public int anInt157 = -1;
+	public int[] anIntArray160;
+	public boolean aBoolean161;
+	public int anInt162;
+	public int anInt163;
+	public int anInt164;
+	public int anInt165;
+	public int anInt166;
+	public int anInt167;
+	public String[] aStringArray168;
+	public int anInt169;
+	public String aString170;
+	public int anInt173;
+	public int anInt174;
+	public int anInt175;
+	public boolean aBoolean176;
+	public byte[] aByteArray178;
+	public int anInt179;
+	public int anInt181;
+	public int anInt184;
+	public int anInt185;
+	public int anInt188;
+	public String[] aStringArray189;
+	public int anInt190;
+	public int anInt191;
+	public int anInt192;
+	public int[] anIntArray193;
+	public int anInt194;
+	public int anInt196;
+	public int anInt197;
+	public int anInt198;
+	public int unusedInt;
+	public int anInt200;
+	public int[] anIntArray201;
+	public int anInt202;
+	public int anInt204;
+	public byte aByte205;
+
+	public ObjType() {
 	}
 
 	public boolean method192(int j) {

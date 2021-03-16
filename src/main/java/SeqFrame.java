@@ -1,4 +1,3 @@
-
 /**
  * A {@link SeqFrame} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
  *
@@ -8,26 +7,6 @@
 public class SeqFrame {
 
 	private static SeqFrame[] instances;
-	/**
-	 * The skeleton associated to this frame.
-	 */
-	public SeqSkeleton skeleton;
-	/**
-	 * The delay in <code>ticks</code>.
-	 */
-	public int delay;
-	/**
-	 * The number of operations the frame performs.
-	 */
-	public int length;
-	/**
-	 * The list of bases the frame uses.
-	 */
-	public int[] bases;
-	/**
-	 * The frame parameters.
-	 */
-	public int[] x, y, z;
 
 	/**
 	 * Syntax sugar.
@@ -182,5 +161,25 @@ public class SeqFrame {
 			}
 		}
 	}
+	/**
+	 * The skeleton associated to this frame.
+	 */
+	public SeqSkeleton skeleton;
+	/**
+	 * The delay in <code>ticks</code>.
+	 */
+	public int delay;
+	/**
+	 * The number of operations the frame performs.
+	 */
+	public int length;
+	/**
+	 * The list of bases the frame uses.
+	 */
+	public int[] bases;
+	/**
+	 * The frame parameters.
+	 */
+	public int[] x, y, z;
 
 }

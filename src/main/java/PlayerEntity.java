@@ -7,10 +7,11 @@ import org.apache.commons.collections4.map.LRUMap;
 public class PlayerEntity extends PathingEntity {
 
 	public static LRUMap<Long, Model> modelCache = new LRUMap<>(260);
+	public final int[] anIntArray1700 = new int[5];
+	public final int[] anIntArray1717 = new int[12];
 	public long aLong1697 = -1L;
 	public NPCType aType_1698;
 	public boolean aBoolean1699 = false;
-	public final int[] anIntArray1700 = new int[5];
 	public int anInt1701;
 	public int anInt1702;
 	public String aString1703;
@@ -24,7 +25,6 @@ public class PlayerEntity extends PathingEntity {
 	public int anInt1712;
 	public int anInt1713;
 	public Model aModel_1714;
-	public final int[] anIntArray1717 = new int[12];
 	public long aLong1718;
 	public int anInt1719;
 	public int anInt1720;

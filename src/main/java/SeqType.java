@@ -8,6 +8,20 @@ public class SeqType {
 
 	public static int anInt350;
 	public static SeqType[] instances;
+
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("seq.dat"));
+		anInt350 = buffer.get2U();
+		if (instances == null) {
+			instances = new SeqType[anInt350];
+		}
+		for (int j = 0; j < anInt350; j++) {
+			if (instances[j] == null) {
+				instances[j] = new SeqType();
+			}
+			instances[j].method259(buffer);
+		}
+	}
 	public int anInt352;
 	public int[] anIntArray353;
 	public int[] anIntArray354;
@@ -25,20 +39,6 @@ public class SeqType {
 	public int unusedInt;
 
 	public SeqType() {
-	}
-
-	public static void unpack(FileArchive archive) throws IOException {
-		Buffer buffer = new Buffer(archive.read("seq.dat"));
-		anInt350 = buffer.get2U();
-		if (instances == null) {
-			instances = new SeqType[anInt350];
-		}
-		for (int j = 0; j < anInt350; j++) {
-			if (instances[j] == null) {
-				instances[j] = new SeqType();
-			}
-			instances[j].method259(buffer);
-		}
 	}
 
 	public int method258(int i) {

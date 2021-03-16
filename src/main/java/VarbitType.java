@@ -8,16 +8,6 @@ public class VarbitType {
 
 	public static int anInt645;
 	public static VarbitType[] aVarbitArray646;
-	public String unusedString;
-	public int anInt648;
-	public int anInt649;
-	public int anInt650;
-	public boolean aBoolean651 = false;
-	public int unusedInt0 = -1;
-	public int unusedInt1;
-
-	public VarbitType() {
-	}
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("varbit.dat"));
@@ -37,6 +27,16 @@ public class VarbitType {
 		if (buffer.position != buffer.data.length) {
 			System.out.println("varbit load mismatch");
 		}
+	}
+	public String unusedString;
+	public int anInt648;
+	public int anInt649;
+	public int anInt650;
+	public boolean aBoolean651 = false;
+	public int unusedInt0 = -1;
+	public int unusedInt1;
+
+	public VarbitType() {
 	}
 
 	public void method534(Buffer buffer) {

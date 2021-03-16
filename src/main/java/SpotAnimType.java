@@ -11,20 +11,6 @@ public class SpotAnimType {
 	public static int anInt402;
 	public static SpotAnimType[] instances;
 	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(30);
-	public int anInt404;
-	public int anInt405;
-	public int anInt406 = -1;
-	public SeqType aType_407;
-	public final int[] anIntArray408 = new int[6];
-	public final int[] anIntArray409 = new int[6];
-	public int anInt410 = 128;
-	public int anInt411 = 128;
-	public int anInt412;
-	public int anInt413;
-	public int anInt414;
-
-	public SpotAnimType() {
-	}
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("spotanim.dat"));
@@ -39,6 +25,20 @@ public class SpotAnimType {
 			instances[j].anInt404 = j;
 			instances[j].method265(buffer);
 		}
+	}
+	public final int[] anIntArray408 = new int[6];
+	public final int[] anIntArray409 = new int[6];
+	public int anInt404;
+	public int anInt405;
+	public int anInt406 = -1;
+	public SeqType aType_407;
+	public int anInt410 = 128;
+	public int anInt411 = 128;
+	public int anInt412;
+	public int anInt413;
+	public int anInt414;
+
+	public SpotAnimType() {
 	}
 
 	public void method265(Buffer buffer) {

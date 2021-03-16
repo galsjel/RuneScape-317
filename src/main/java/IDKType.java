@@ -8,15 +8,6 @@ public class IDKType {
 
 	public static int anInt655;
 	public static IDKType[] instances;
-	public int anInt657 = -1;
-	public int[] anIntArray658;
-	public final int[] anIntArray659 = new int[6];
-	public final int[] anIntArray660 = new int[6];
-	public final int[] anIntArray661 = {-1, -1, -1, -1, -1};
-	public boolean aBoolean662 = false;
-
-	public IDKType() {
-	}
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("idk.dat"));
@@ -30,6 +21,15 @@ public class IDKType {
 			}
 			instances[j].method536(buffer);
 		}
+	}
+	public final int[] anIntArray659 = new int[6];
+	public final int[] anIntArray660 = new int[6];
+	public final int[] anIntArray661 = {-1, -1, -1, -1, -1};
+	public int anInt657 = -1;
+	public int[] anIntArray658;
+	public boolean aBoolean662 = false;
+
+	public IDKType() {
 	}
 
 	public void method536(Buffer buffer) {
