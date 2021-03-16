@@ -30,7 +30,7 @@ public class FileStore {
 			int size = ((buf[0] & 0xff) << 16) + ((buf[1] & 0xff) << 8) + (buf[2] & 0xff);
 			int sector = ((buf[3] & 0xff) << 16) + ((buf[4] & 0xff) << 8) + (buf[5] & 0xff);
 
-			if ((size < 0) || (size > maxFileSize)) {
+			if (size > maxFileSize) {
 				return null;
 			}
 
