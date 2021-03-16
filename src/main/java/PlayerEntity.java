@@ -218,7 +218,7 @@ public class PlayerEntity extends PathingEntity {
 		} else if (super.anInt1517 >= 0) {
 			k = SeqType.instances[super.anInt1517].anIntArray353[super.anInt1518];
 		}
-		Model model_1 = (Model) modelCache.method222(l);
+		Model model_1 = (Model) modelCache.get(l);
 		if (model_1 == null) {
 			boolean flag = false;
 			for (int i2 = 0; i2 < 12; i2++) {
@@ -238,7 +238,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (flag) {
 				if (aLong1697 != -1L) {
-					model_1 = (Model) modelCache.method222(aLong1697);
+					model_1 = (Model) modelCache.get(aLong1697);
 				}
 				if (model_1 == null) {
 					return null;
@@ -280,7 +280,7 @@ public class PlayerEntity extends PathingEntity {
 			}
 			model_1.createLabelReferences();
 			model_1.calculateNormals(64, 850, -30, -50, -30, true);
-			modelCache.method223(model_1, l);
+			modelCache.put(l, model_1);
 			aLong1697 = l;
 		}
 		if (aBoolean1699) {

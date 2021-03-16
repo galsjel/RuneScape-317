@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class Censor {
 
 	public static final String[] aStringArray626 = {"cook", "cook's", "cooks", "seeks", "sheet", "woop", "woops", "faq", "noob", "noobs"};
@@ -12,11 +14,11 @@ public class Censor {
 	public static char[][] aCharArrayArray624;
 	public static int[] anIntArray625;
 
-	public static void method487(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("fragmentsenc.txt", null));
-		Buffer buffer_1 = new Buffer(archive.read("badenc.txt", null));
-		Buffer class30_sub2_sub2_2 = new Buffer(archive.read("domainenc.txt", null));
-		Buffer buffer_3 = new Buffer(archive.read("tldlist.txt", null));
+	public static void method487(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("fragmentsenc.txt"));
+		Buffer buffer_1 = new Buffer(archive.read("badenc.txt"));
+		Buffer class30_sub2_sub2_2 = new Buffer(archive.read("domainenc.txt"));
+		Buffer buffer_3 = new Buffer(archive.read("tldlist.txt"));
 		method488(buffer, buffer_1, class30_sub2_sub2_2, buffer_3);
 	}
 

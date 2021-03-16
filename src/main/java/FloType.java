@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class FloType {
 
 	public static int anInt387;
@@ -21,8 +23,8 @@ public class FloType {
 	public FloType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("flo.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("flo.dat"));
 		anInt387 = buffer.get2U();
 		if (instances == null) {
 			instances = new FloType[anInt387];

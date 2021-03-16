@@ -1,66 +1,114 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 public class DoublyLinkedList {
 
-	public final DoublyLinkedListNode aNode_43;
-	public DoublyLinkedListNode aNode_44;
+	public static class Node {
+
+		public Node prev;
+		public Node next;
+
+		public void unlink() {
+			if (next != null) {
+				next.prev = prev;
+				prev.next = next;
+				prev = null;
+				next = null;
+			}
+		}
+
+	}
+
+	public final Node head;
+	public Node peeked;
 
 	public DoublyLinkedList() {
-		aNode_43 = new DoublyLinkedListNode();
-		aNode_43.aNode_1303 = aNode_43;
-		aNode_43.aNode_1304 = aNode_43;
+		head = new Node();
+		head.prev = head;
+		head.next = head;
 	}
 
-	public void method150(DoublyLinkedListNode node) {
-		if (node.aNode_1304 != null) {
-			node.method330();
+	public void pushBack(Node node) {
+		if (node.next != null) {
+			node.unlink();
 		}
-		node.aNode_1304 = aNode_43.aNode_1304;
-		node.aNode_1303 = aNode_43;
-		node.aNode_1304.aNode_1303 = node;
-		node.aNode_1303.aNode_1304 = node;
+		node.next = head.next;
+		node.prev = head;
+		node.next.prev = node;
+		node.prev.next = node;
 	}
 
-	public DoublyLinkedListNode method151() {
-		DoublyLinkedListNode node = aNode_43.aNode_1303;
-		if (node == aNode_43) {
+	public void pushFront(Node node) {
+		if (node.next != null) {
+			node.unlink();
+		}
+		node.next = head;
+		node.prev = head.prev;
+		node.next.prev = node;
+		node.prev.next = node;
+	}
+
+	public Node pollFront() {
+		Node node = head.prev;
+		if (node == head) {
 			return null;
 		} else {
-			node.method330();
+			node.unlink();
 			return node;
 		}
 	}
 
-	public DoublyLinkedListNode method152() {
-		DoublyLinkedListNode node = aNode_43.aNode_1303;
-		if (node == aNode_43) {
-			aNode_44 = null;
+	public Node peekFront() {
+		Node node = head.prev;
+		if (node == head) {
+			peeked = null;
 			return null;
 		} else {
-			aNode_44 = node.aNode_1303;
+			peeked = node.prev;
 			return node;
 		}
 	}
 
-	public DoublyLinkedListNode method153() {
-		DoublyLinkedListNode node = aNode_44;
-		if (node == aNode_43) {
-			aNode_44 = null;
+	public Node peekBack() {
+		Node node = head.next;
+		if (node == head) {
+			peeked = null;
 			return null;
 		} else {
-			aNode_44 = node.aNode_1303;
+			peeked = node.next;
 			return node;
 		}
 	}
 
-	public int method154() {
-		int i = 0;
-		for (DoublyLinkedListNode node = aNode_43.aNode_1303; node != aNode_43; node = node.aNode_1303) {
-			i++;
+	public Node prev() {
+		Node node = peeked;
+		if (node == head) {
+			peeked = null;
+			return null;
+		} else {
+			peeked = node.prev;
+			return node;
 		}
-		return i;
+	}
+
+	public Node next() {
+		Node node = peeked;
+		if (node == head) {
+			peeked = null;
+			return null;
+		}
+		peeked = node.next;
+		return node;
+	}
+
+	public void clear() {
+		if (head.prev == head) {
+			return;
+		}
+		do {
+			Node node = head.prev;
+			if (node == head) {
+				return;
+			}
+			node.unlink();
+		} while (true);
 	}
 
 }

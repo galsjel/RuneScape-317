@@ -1,174 +1,189 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 
 public class OnDemand implements Runnable {
 
-	public final LinkedList aList_1331 = new LinkedList();
+	public final DoublyLinkedList pending = new DoublyLinkedList();
 	public final CRC32 crc32 = new CRC32();
-	public final byte[] aByteArray1339 = new byte[500];
-	public final byte[][] storeFilePriority = new byte[4][];
-	public final LinkedList aList_1344 = new LinkedList();
-	public final LinkedList aList_1358 = new LinkedList();
+	public final byte[] bbuf = new byte[500];
+	public final byte[][] storeFilePriorities = new byte[4][];
+	public final DoublyLinkedList aList_1344 = new DoublyLinkedList();
+	public final DoublyLinkedList completed = new DoublyLinkedList();
 	public final byte[] aByteArray1359 = new byte[65000];
-	public final DoublyLinkedList aDoublyLinkedList_1361 = new DoublyLinkedList();
+	public final LinkedList<OnDemandRequest> requests = new LinkedList<>();
 	public final int[][] storeFileVersions = new int[4][];
 	public final int[][] storeFileChecksums = new int[4][];
-	public final LinkedList aList_1368 = new LinkedList();
-	public final LinkedList aList_1370 = new LinkedList();
-	public int anInt1330;
+	public final DoublyLinkedList aList_1368 = new DoublyLinkedList();
+	public final DoublyLinkedList aList_1370 = new DoublyLinkedList();
+	private final Object lock = new Object();
+	public int totalPrefetchFiles;
 	public int topPriority;
-	public String aString1333 = "";
-	public int anInt1334;
-	public long aLong1335;
+	public String message = "";
+	public int heartbeatCycle;
+	public long socketOpenTime;
 	public int[] mapLocFile;
 	public int cycle;
 	public Game game;
-	public int anInt1346;
-	public int anInt1347;
+	public int partOffset;
+	public int partAvailable;
 	public int[] midiIndex;
 	public int anInt1349;
 	public int[] mapLandFile;
-	public int anInt1351;
+	public int loadedPretechFiles;
 	public boolean running = true;
-	public OutputStream anOutputStream1354;
+	public OutputStream out;
 	public int[] mapPrefetched;
 	public boolean aBoolean1357 = false;
 	public int[] animIndex;
-	public InputStream anInputStream1362;
-	public Socket aSocket1363;
-	public int anInt1366;
-	public int anInt1367;
-	public OnDemandRequest aRequest_1369;
+	public InputStream in;
+	public Socket socket;
+	public int importantCount;
+	public int requestCount;
+	public OnDemandRequest current;
 	public int[] mapIndex;
 	public byte[] modelIndex;
-	public int anInt1373;
+	public int waitCycles;
 
 	public OnDemand() {
 	}
 
-	public boolean method549(int i, int j, byte[] abyte0) {
-		if ((abyte0 == null) || (abyte0.length < 2)) {
+	public boolean validate(int version, int crc, byte[] src) {
+		if ((src == null) || (src.length < 2)) {
 			return false;
 		}
-		int k = abyte0.length - 2;
-		int l = ((abyte0[k] & 0xff) << 8) + (abyte0[k + 1] & 0xff);
+		int foot = src.length - 2;
+		int footVersion = ((src[foot] & 0xff) << 8) + (src[foot + 1] & 0xff);
 		crc32.reset();
-		crc32.update(abyte0, 0, k);
-		int i1 = (int) crc32.getValue();
-		if (l != i) {
+		crc32.update(src, 0, foot);
+		int srcCrc = (int) crc32.getValue();
+		if (footVersion != version) {
 			return false;
 		}
-		return i1 == j;
+		return srcCrc == crc;
 	}
 
-	public void method550() {
+	public void read() {
 		try {
-			int j = anInputStream1362.available();
-			if ((anInt1347 == 0) && (j >= 6)) {
+			int available = in.available();
+
+			if ((partAvailable == 0) && (available >= 6)) {
 				aBoolean1357 = true;
-				for (int k = 0; k < 6; k += anInputStream1362.read(aByteArray1339, k, 6 - k)) {
-				}
-				int l = aByteArray1339[0] & 0xff;
-				int j1 = ((aByteArray1339[1] & 0xff) << 8) + (aByteArray1339[2] & 0xff);
-				int l1 = ((aByteArray1339[3] & 0xff) << 8) + (aByteArray1339[4] & 0xff);
-				int i2 = aByteArray1339[5] & 0xff;
-				aRequest_1369 = null;
-				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
-					if ((request.store == l) && (request.file == j1)) {
-						aRequest_1369 = request;
+
+				in.read(bbuf, 0, 6);
+
+				int store = bbuf[0] & 0xff;
+				int file = ((bbuf[1] & 0xff) << 8) + (bbuf[2] & 0xff);
+				int size = ((bbuf[3] & 0xff) << 8) + (bbuf[4] & 0xff);
+				int part = bbuf[5] & 0xff;
+
+				current = null;
+
+				for (OnDemandRequest request = (OnDemandRequest) pending.peekFront(); request != null; request = (OnDemandRequest) pending.prev()) {
+					if ((request.store == store) && (request.file == file)) {
+						current = request;
 					}
-					if (aRequest_1369 != null) {
-						request.anInt1423 = 0;
+					if (current != null) {
+						request.cycle = 0;
 					}
 				}
-				if (aRequest_1369 != null) {
-					anInt1373 = 0;
-					if (l1 == 0) {
-						Signlink.reporterror("Rej: " + l + "," + j1);
-						aRequest_1369.data = null;
-						if (aRequest_1369.aBoolean1422) {
-							synchronized (aList_1358) {
-								aList_1358.method249(aRequest_1369);
+
+				if (current != null) {
+					waitCycles = 0;
+
+					if (size == 0) {
+						Signlink.reporterror("Rej: " + store + "," + file);
+
+						current.data = null;
+
+						if (current.important) {
+							synchronized (completed) {
+								completed.pushBack(current);
 							}
 						} else {
-							aRequest_1369.method329();
+							current.unlink();
 						}
-						aRequest_1369 = null;
+
+						current = null;
 					} else {
-						if ((aRequest_1369.data == null) && (i2 == 0)) {
-							aRequest_1369.data = new byte[l1];
+						if ((current.data == null) && (part == 0)) {
+							current.data = new byte[size];
 						}
-						if ((aRequest_1369.data == null) && (i2 != 0)) {
+
+						if (current.data == null) {
 							throw new IOException("missing start of file");
 						}
 					}
 				}
-				anInt1346 = i2 * 500;
-				anInt1347 = 500;
-				if (anInt1347 > (l1 - (i2 * 500))) {
-					anInt1347 = l1 - (i2 * 500);
+
+				partOffset = part * 500;
+				partAvailable = 500;
+
+				if (partAvailable > (size - (part * 500))) {
+					partAvailable = size - (part * 500);
 				}
 			}
-			if ((anInt1347 > 0) && (j >= anInt1347)) {
+
+			if ((partAvailable > 0) && (available >= partAvailable)) {
 				aBoolean1357 = true;
-				byte[] abyte0 = aByteArray1339;
-				int i1 = 0;
-				if (aRequest_1369 != null) {
-					abyte0 = aRequest_1369.data;
-					i1 = anInt1346;
+				byte[] dst = bbuf;
+				int offset = 0;
+
+				if (current != null) {
+					dst = current.data;
+					offset = partOffset;
 				}
-				for (int k1 = 0; k1 < anInt1347; k1 += anInputStream1362.read(abyte0, k1 + i1, anInt1347 - k1)) {
-				}
-				if (((anInt1347 + anInt1346) >= abyte0.length) && (aRequest_1369 != null)) {
+
+				in.read(dst, offset, partAvailable);
+
+				if (((partAvailable + partOffset) >= dst.length) && (current != null)) {
 					if (game.filestores[0] != null) {
-						game.filestores[aRequest_1369.store + 1].write(abyte0, aRequest_1369.file, abyte0.length);
+						game.filestores[current.store + 1].write(dst, current.file, dst.length);
 					}
-					if (!aRequest_1369.aBoolean1422 && (aRequest_1369.store == 3)) {
-						aRequest_1369.aBoolean1422 = true;
-						aRequest_1369.store = 93;
+
+					if (!current.important && (current.store == 3)) {
+						current.important = true;
+						current.store = 93;
 					}
-					if (aRequest_1369.aBoolean1422) {
-						synchronized (aList_1358) {
-							aList_1358.method249(aRequest_1369);
+
+					if (current.important) {
+						synchronized (completed) {
+							completed.pushBack(current);
 						}
 					} else {
-						aRequest_1369.method329();
+						current.unlink();
 					}
 				}
-				anInt1347 = 0;
+				partAvailable = 0;
 			}
 		} catch (IOException ioexception) {
 			try {
-				aSocket1363.close();
+				socket.close();
 			} catch (Exception ignored) {
 			}
-			aSocket1363 = null;
-			anInputStream1362 = null;
-			anOutputStream1354 = null;
-			anInt1347 = 0;
+			socket = null;
+			in = null;
+			out = null;
+			partAvailable = 0;
 		}
 	}
 
-	public void load(FileArchive versionlist, Game game) {
+	public void load(FileArchive versionlist, Game game) throws IOException {
 		String[] versionFilenames = {"model_version", "anim_version", "midi_version", "map_version"};
 
 		for (int i = 0; i < 4; i++) {
-			byte[] data = versionlist.read(versionFilenames[i], null);
+			byte[] data = versionlist.read(versionFilenames[i]);
 			int count = data.length / 2;
 
 			Buffer buffer = new Buffer(data);
 
 			storeFileVersions[i] = new int[count];
-			storeFilePriority[i] = new byte[count];
+			storeFilePriorities[i] = new byte[count];
 
 			for (int l = 0; l < count; l++) {
 				storeFileVersions[i][l] = buffer.get2U();
@@ -178,7 +193,7 @@ public class OnDemand implements Runnable {
 		String[] crcFilenames = {"model_crc", "anim_crc", "midi_crc", "map_crc"};
 
 		for (int i = 0; i < 4; i++) {
-			byte[] data = versionlist.read(crcFilenames[i], null);
+			byte[] data = versionlist.read(crcFilenames[i]);
 			int count = data.length / 4;
 			Buffer buffer = new Buffer(data);
 			storeFileChecksums[i] = new int[count];
@@ -187,7 +202,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 
-		byte[] data = versionlist.read("model_index", null);
+		byte[] data = versionlist.read("model_index");
 		int count = storeFileVersions[0].length;
 
 		modelIndex = new byte[count];
@@ -200,7 +215,7 @@ public class OnDemand implements Runnable {
 			}
 		}
 
-		data = versionlist.read("map_index", null);
+		data = versionlist.read("map_index");
 		Buffer buffer = new Buffer(data);
 		count = data.length / 7;
 
@@ -216,7 +231,7 @@ public class OnDemand implements Runnable {
 			mapPrefetched[i2] = buffer.get1U();
 		}
 
-		data = versionlist.read("anim_index", null);
+		data = versionlist.read("anim_index");
 		buffer = new Buffer(data);
 		count = data.length / 2;
 		animIndex = new int[count];
@@ -225,7 +240,7 @@ public class OnDemand implements Runnable {
 			animIndex[j2] = buffer.get2U();
 		}
 
-		data = versionlist.read("midi_index", null);
+		data = versionlist.read("midi_index");
 		buffer = new Buffer(data);
 		count = data.length;
 		midiIndex = new int[count];
@@ -240,8 +255,8 @@ public class OnDemand implements Runnable {
 	}
 
 	public int remaining() {
-		synchronized (aDoublyLinkedList_1361) {
-			return aDoublyLinkedList_1361.method154();
+		synchronized (lock) {
+			return requests.size();
 		}
 	}
 
@@ -253,8 +268,8 @@ public class OnDemand implements Runnable {
 		int count = mapIndex.length;
 		for (int i = 0; i < count; i++) {
 			if (members || (mapPrefetched[i] != 0)) {
-				method563((byte) 2, 3, mapLocFile[i]);
-				method563((byte) 2, 3, mapLandFile[i]);
+				prefetch((byte) 2, 3, mapLocFile[i]);
+				prefetch((byte) 2, 3, mapLandFile[i]);
 			}
 		}
 	}
@@ -263,51 +278,55 @@ public class OnDemand implements Runnable {
 		return storeFileVersions[store].length;
 	}
 
-	public void method556(OnDemandRequest request) {
+	public void send(OnDemandRequest request) {
 		try {
-			if (aSocket1363 == null) {
-				long l = System.currentTimeMillis();
-				if ((l - aLong1335) < 4000L) {
+			if (socket == null) {
+				long now = System.currentTimeMillis();
+				if ((now - socketOpenTime) < 4000L) {
 					return;
 				}
-				aLong1335 = l;
-				aSocket1363 = game.method19(43594 + Game.portOffset);
-				anInputStream1362 = aSocket1363.getInputStream();
-				anOutputStream1354 = aSocket1363.getOutputStream();
-				anOutputStream1354.write(15);
+				socketOpenTime = now;
+				socket = game.method19(43594 + Game.portOffset);
+				in = socket.getInputStream();
+				out = socket.getOutputStream();
+				out.write(15);
 				for (int j = 0; j < 8; j++) {
-					anInputStream1362.read();
+					in.read();
 				}
-				anInt1373 = 0;
+				waitCycles = 0;
 			}
-			aByteArray1339[0] = (byte) request.store;
-			aByteArray1339[1] = (byte) (request.file >> 8);
-			aByteArray1339[2] = (byte) request.file;
-			if (request.aBoolean1422) {
-				aByteArray1339[3] = 2;
-			} else if (!game.aBoolean1157) {
-				aByteArray1339[3] = 1;
+
+			bbuf[0] = (byte) request.store;
+			bbuf[1] = (byte) (request.file >> 8);
+			bbuf[2] = (byte) request.file;
+
+			if (request.important) {
+				bbuf[3] = 2;
+			} else if (!game.ingame) {
+				bbuf[3] = 1;
 			} else {
-				aByteArray1339[3] = 0;
+				bbuf[3] = 0;
 			}
-			anOutputStream1354.write(aByteArray1339, 0, 4);
-			anInt1334 = 0;
+
+			out.write(bbuf, 0, 4);
+			heartbeatCycle = 0;
 			anInt1349 = -10000;
 			return;
 		} catch (IOException ignored) {
 		}
+
 		try {
-			aSocket1363.close();
+			socket.close();
 		} catch (Exception ignored) {
 		}
-		aSocket1363 = null;
-		anInputStream1362 = null;
-		anOutputStream1354 = null;
-		anInt1347 = 0;
+		socket = null;
+		in = null;
+		out = null;
+		partAvailable = 0;
 		anInt1349++;
 	}
 
-	public int method557() {
+	public int getSeqFrameCount() {
 		return animIndex.length;
 	}
 
@@ -318,20 +337,21 @@ public class OnDemand implements Runnable {
 		if (storeFileVersions[archive][file] == 0) {
 			return;
 		}
-		synchronized (aDoublyLinkedList_1361) {
-			for (OnDemandRequest request = (OnDemandRequest) aDoublyLinkedList_1361.method152(); request != null; request = (OnDemandRequest) aDoublyLinkedList_1361.method153()) {
-				if ((request.store == archive) && (request.file == file)) {
+
+		synchronized (lock) {
+			for (OnDemandRequest request : requests) {
+				if (request.store == archive && request.file == file) {
 					return;
 				}
 			}
 			OnDemandRequest request = new OnDemandRequest();
 			request.store = archive;
 			request.file = file;
-			request.aBoolean1422 = true;
+			request.important = true;
 			synchronized (aList_1370) {
-				aList_1370.method249(request);
+				aList_1370.pushBack(request);
 			}
-			aDoublyLinkedList_1361.method150(request);
+			requests.addFirst(request);
 		}
 	}
 
@@ -344,79 +364,99 @@ public class OnDemand implements Runnable {
 		try {
 			while (running) {
 				cycle++;
-				int i = 20;
+
+				int del = 20;
+
 				if ((topPriority == 0) && (game.filestores[0] != null)) {
-					i = 50;
+					del = 50;
 				}
+
 				try {
-					Thread.sleep(i);
+					Thread.sleep(del);
 				} catch (Exception ignored) {
 				}
+
 				aBoolean1357 = true;
+
 				for (int j = 0; j < 100; j++) {
 					if (!aBoolean1357) {
 						break;
 					}
+
 					aBoolean1357 = false;
+
 					method567();
 					method565();
-					if ((anInt1366 == 0) && (j >= 5)) {
+
+					if ((importantCount == 0) && (j >= 5)) {
 						break;
 					}
+
 					method568();
-					if (anInputStream1362 != null) {
-						method550();
+
+					if (in != null) {
+						read();
 					}
 				}
-				boolean flag = false;
-				for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
-					if (request.aBoolean1422) {
-						flag = true;
-						request.anInt1423++;
-						if (request.anInt1423 > 50) {
-							request.anInt1423 = 0;
-							method556(request);
+
+				boolean loading = false;
+
+				for (OnDemandRequest request = (OnDemandRequest) pending.peekFront(); request != null; request = (OnDemandRequest) pending.prev()) {
+					if (request.important) {
+						loading = true;
+						request.cycle++;
+
+						if (request.cycle > 50) {
+							request.cycle = 0;
+							send(request);
 						}
 					}
 				}
-				if (!flag) {
-					for (OnDemandRequest request_1 = (OnDemandRequest) aList_1331.method252(); request_1 != null; request_1 = (OnDemandRequest) aList_1331.method254()) {
-						flag = true;
-						request_1.anInt1423++;
-						if (request_1.anInt1423 > 50) {
-							request_1.anInt1423 = 0;
-							method556(request_1);
+
+				if (!loading) {
+					for (OnDemandRequest request = (OnDemandRequest) pending.peekFront(); request != null; request = (OnDemandRequest) pending.prev()) {
+						loading = true;
+						request.cycle++;
+
+						if (request.cycle > 50) {
+							request.cycle = 0;
+							send(request);
 						}
 					}
 				}
-				if (flag) {
-					anInt1373++;
-					if (anInt1373 > 750) {
+
+				if (loading) {
+					waitCycles++;
+
+					if (waitCycles > 750) {
 						try {
-							aSocket1363.close();
+							socket.close();
 						} catch (Exception ignored) {
 						}
-						aSocket1363 = null;
-						anInputStream1362 = null;
-						anOutputStream1354 = null;
-						anInt1347 = 0;
+						socket = null;
+						in = null;
+						out = null;
+						partAvailable = 0;
 					}
 				} else {
-					anInt1373 = 0;
-					aString1333 = "";
+					waitCycles = 0;
+					message = "";
 				}
-				if (game.aBoolean1157 && (aSocket1363 != null) && (anOutputStream1354 != null) && ((topPriority > 0) || (game.filestores[0] == null))) {
-					anInt1334++;
-					if (anInt1334 > 500) {
-						anInt1334 = 0;
-						aByteArray1339[0] = 0;
-						aByteArray1339[1] = 0;
-						aByteArray1339[2] = 0;
-						aByteArray1339[3] = 10;
+
+				if (game.ingame && (socket != null) && (out != null) && ((topPriority > 0) || (game.filestores[0] == null))) {
+					heartbeatCycle++;
+
+					if (heartbeatCycle > 500) {
+						heartbeatCycle = 0;
+						bbuf[0] = 0;
+						bbuf[1] = 0;
+						bbuf[2] = 0;
+						bbuf[3] = 10;
+
 						try {
-							anOutputStream1354.write(aByteArray1339, 0, 4);
+							out.write(bbuf, 0, 4);
 						} catch (IOException _ex) {
-							anInt1373 = 5000;
+							waitCycles = 5000;
 						}
 					}
 				}
@@ -426,42 +466,47 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public void method560(int i, int j) {
+	public void method560(int file, int store) {
 		if (game.filestores[0] == null) {
 			return;
 		}
-		if (storeFileVersions[j][i] == 0) {
+		if (storeFileVersions[store][file] == 0) {
 			return;
 		}
-		if (storeFilePriority[j][i] == 0) {
+		if (storeFilePriorities[store][file] == 0) {
 			return;
 		}
 		if (topPriority == 0) {
 			return;
 		}
 		OnDemandRequest request = new OnDemandRequest();
-		request.store = j;
-		request.file = i;
-		request.aBoolean1422 = false;
+		request.store = store;
+		request.file = file;
+		request.important = false;
 		synchronized (aList_1344) {
-			aList_1344.method249(request);
+			aList_1344.pushBack(request);
 		}
 	}
 
 	public OnDemandRequest poll() {
 		OnDemandRequest request;
-		synchronized (aList_1358) {
-			request = (OnDemandRequest) aList_1358.method251();
+
+		synchronized (completed) {
+			request = (OnDemandRequest) completed.pollFront();
 		}
+
 		if (request == null) {
 			return null;
 		}
-		synchronized (aDoublyLinkedList_1361) {
-			request.method330();
+
+		synchronized (lock) {
+			requests.remove(request);
 		}
+
 		if (request.data == null) {
 			return request;
 		}
+
 		int i = 0;
 		try {
 			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(request.data));
@@ -503,7 +548,7 @@ public class OnDemand implements Runnable {
 		request(0, i);
 	}
 
-	public void method563(byte priority, int archive, int file) {
+	public void prefetch(byte priority, int archive, int file) {
 		if (game.filestores[0] == null) {
 			return;
 		}
@@ -513,17 +558,17 @@ public class OnDemand implements Runnable {
 
 		byte[] data = game.filestores[archive + 1].read(file);
 
-		if (method549(storeFileVersions[archive][file], storeFileChecksums[archive][file], data)) {
+		if (validate(storeFileVersions[archive][file], storeFileChecksums[archive][file], data)) {
 			return;
 		}
 
-		storeFilePriority[archive][file] = priority;
+		storeFilePriorities[archive][file] = priority;
 
 		if (priority > topPriority) {
 			topPriority = priority;
 		}
 
-		anInt1330++;
+		totalPrefetchFiles++;
 	}
 
 	public boolean method564(int i) {
@@ -536,114 +581,132 @@ public class OnDemand implements Runnable {
 	}
 
 	public void method565() {
-		anInt1366 = 0;
-		anInt1367 = 0;
-		for (OnDemandRequest request = (OnDemandRequest) aList_1331.method252(); request != null; request = (OnDemandRequest) aList_1331.method254()) {
-			if (request.aBoolean1422) {
-				anInt1366++;
+		importantCount = 0;
+		requestCount = 0;
+
+		for (OnDemandRequest request = (OnDemandRequest) pending.peekFront(); request != null; request = (OnDemandRequest) pending.prev()) {
+			if (request.important) {
+				importantCount++;
 			} else {
-				anInt1367++;
+				requestCount++;
 			}
 		}
-		while (anInt1366 < 10) {
-			OnDemandRequest request_1 = (OnDemandRequest) aList_1368.method251();
-			if (request_1 == null) {
+
+		while (importantCount < 10) {
+			OnDemandRequest request = (OnDemandRequest) aList_1368.pollFront();
+
+			if (request == null) {
 				break;
 			}
-			if (storeFilePriority[request_1.store][request_1.file] != 0) {
-				anInt1351++;
+
+			if (storeFilePriorities[request.store][request.file] != 0) {
+				loadedPretechFiles++;
 			}
-			storeFilePriority[request_1.store][request_1.file] = 0;
-			aList_1331.method249(request_1);
-			anInt1366++;
-			method556(request_1);
+
+			storeFilePriorities[request.store][request.file] = 0;
+			pending.pushBack(request);
+			importantCount++;
+			send(request);
 			aBoolean1357 = true;
 		}
 	}
 
 	public void method566() {
 		synchronized (aList_1344) {
-			aList_1344.method256();
+			aList_1344.clear();
 		}
 	}
 
 	public void method567() {
 		OnDemandRequest request;
 		synchronized (aList_1370) {
-			request = (OnDemandRequest) aList_1370.method251();
+			request = (OnDemandRequest) aList_1370.pollFront();
 		}
+
 		while (request != null) {
 			aBoolean1357 = true;
-			byte[] abyte0 = null;
+			byte[] data = null;
+
 			if (game.filestores[0] != null) {
-				abyte0 = game.filestores[request.store + 1].read(request.file);
+				data = game.filestores[request.store + 1].read(request.file);
 			}
-			if (!method549(storeFileVersions[request.store][request.file], storeFileChecksums[request.store][request.file], abyte0)) {
-				abyte0 = null;
+
+			if (!validate(storeFileVersions[request.store][request.file], storeFileChecksums[request.store][request.file], data)) {
+				data = null;
 			}
+
 			synchronized (aList_1370) {
-				if (abyte0 == null) {
-					aList_1368.method249(request);
+				if (data == null) {
+					aList_1368.pushBack(request);
 				} else {
-					request.data = abyte0;
-					synchronized (aList_1358) {
-						aList_1358.method249(request);
+					request.data = data;
+					synchronized (completed) {
+						completed.pushBack(request);
 					}
 				}
-				request = (OnDemandRequest) aList_1370.method251();
+				request = (OnDemandRequest) aList_1370.pollFront();
 			}
 		}
 	}
 
 	public void method568() {
-		while ((anInt1366 == 0) && (anInt1367 < 10)) {
+		while ((importantCount == 0) && (requestCount < 10)) {
 			if (topPriority == 0) {
 				break;
 			}
-			OnDemandRequest request;
+
+			OnDemandRequest extra;
+
 			synchronized (aList_1344) {
-				request = (OnDemandRequest) aList_1344.method251();
+				extra = (OnDemandRequest) aList_1344.pollFront();
 			}
-			while (request != null) {
-				if (storeFilePriority[request.store][request.file] != 0) {
-					storeFilePriority[request.store][request.file] = 0;
-					aList_1331.method249(request);
-					method556(request);
+
+			while (extra != null) {
+				if (storeFilePriorities[extra.store][extra.file] != 0) {
+					storeFilePriorities[extra.store][extra.file] = 0;
+					pending.pushBack(extra);
+					send(extra);
 					aBoolean1357 = true;
-					if (anInt1351 < anInt1330) {
-						anInt1351++;
+
+					if (loadedPretechFiles < totalPrefetchFiles) {
+						loadedPretechFiles++;
 					}
-					aString1333 = "Loading extra files - " + (anInt1351 * 100) / anInt1330 + "%";
-					anInt1367++;
-					if (anInt1367 == 10) {
+
+					message = "Loading extra files - " + (loadedPretechFiles * 100) / totalPrefetchFiles + "%";
+					requestCount++;
+
+					if (requestCount == 10) {
 						return;
 					}
 				}
 				synchronized (aList_1344) {
-					request = (OnDemandRequest) aList_1344.method251();
+					extra = (OnDemandRequest) aList_1344.pollFront();
 				}
 			}
-			for (int j = 0; j < 4; j++) {
-				byte[] abyte0 = storeFilePriority[j];
-				int k = abyte0.length;
-				for (int l = 0; l < k; l++) {
-					if (abyte0[l] == topPriority) {
-						abyte0[l] = 0;
-						OnDemandRequest request_1 = new OnDemandRequest();
-						request_1.store = j;
-						request_1.file = l;
-						request_1.aBoolean1422 = false;
-						aList_1331.method249(request_1);
-						method556(request_1);
-						aBoolean1357 = true;
-						if (anInt1351 < anInt1330) {
-							anInt1351++;
-						}
-						aString1333 = "Loading extra files - " + (anInt1351 * 100) / anInt1330 + "%";
-						anInt1367++;
-						if (anInt1367 == 10) {
-							return;
-						}
+
+			for (int store = 0; store < 4; store++) {
+				byte[] priorities = storeFilePriorities[store];
+				for (int file = 0; file < priorities.length; file++) {
+					if (priorities[file] != topPriority) {
+						continue;
+					}
+
+					priorities[file] = 0;
+
+					OnDemandRequest request_1 = new OnDemandRequest();
+					request_1.store = store;
+					request_1.file = file;
+					request_1.important = false;
+					pending.pushBack(request_1);
+					send(request_1);
+					aBoolean1357 = true;
+					if (loadedPretechFiles < totalPrefetchFiles) {
+						loadedPretechFiles++;
+					}
+					message = "Loading extra files - " + (loadedPretechFiles * 100) / totalPrefetchFiles + "%";
+					requestCount++;
+					if (requestCount == 10) {
+						return;
 					}
 				}
 			}

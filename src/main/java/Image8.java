@@ -1,6 +1,4 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+import java.io.IOException;
 
 public class Image8 {
 
@@ -13,9 +11,9 @@ public class Image8 {
 	public int anInt1456;
 	public int anInt1457;
 
-	public Image8(FileArchive archive, String s, int i) {
-		Buffer buffer = new Buffer(archive.read(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(archive.read("index.dat", null));
+	public Image8(FileArchive archive, String s, int i) throws IOException {
+		Buffer buffer = new Buffer(archive.read(s + ".dat"));
+		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
 		buffer_1.position = buffer.get2U();
 		anInt1456 = buffer_1.get2U();
 		anInt1457 = buffer_1.get2U();

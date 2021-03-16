@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class NPCType {
 
 	public static int anInt56;
@@ -30,9 +32,9 @@ public class NPCType {
 		return type;
 	}
 
-	public static void unpack(FileArchive archive) {
-		aBuffer_60 = new Buffer(archive.read("npc.dat", null));
-		Buffer buffer = new Buffer(archive.read("npc.idx", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		aBuffer_60 = new Buffer(archive.read("npc.dat"));
+		Buffer buffer = new Buffer(archive.read("npc.idx"));
 		anInt62 = buffer.get2U();
 		anIntArray72 = new int[anInt62];
 		int i = 2;
@@ -153,7 +155,7 @@ public class NPCType {
 				return type.method164(j, k, ai);
 			}
 		}
-		Model model = (Model) aCache_95.method222(aLong78);
+		Model model = (Model) aCache_95.get(aLong78);
 		if (model == null) {
 			boolean flag = false;
 			for (int value : anIntArray94) {
@@ -180,7 +182,7 @@ public class NPCType {
 			}
 			model.createLabelReferences();
 			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
-			aCache_95.method223(model, aLong78);
+			aCache_95.put(aLong78, model);
 		}
 		Model model_1 = Model.EMPTY;
 		model_1.set(model, SeqFrame.isNull(k) & SeqFrame.isNull(j));

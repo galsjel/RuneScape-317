@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class Component {
 
 	public static Component[] instances;
@@ -72,9 +74,9 @@ public class Component {
 	public Component() {
 	}
 
-	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) {
+	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) throws IOException {
 		aCache_238 = new LRUCache(50000);
-		Buffer buffer = new Buffer(archive.read("data", null));
+		Buffer buffer = new Buffer(archive.read("data"));
 		int i = -1;
 		int j = buffer.get2U();
 		instances = new Component[j];
@@ -279,13 +281,13 @@ public class Component {
 
 	public static Image24 method207(int i, FileArchive archive, String s) {
 		long l = (StringUtil.hashCode(s) << 8) + (long) i;
-		Image24 image = (Image24) aCache_238.method222(l);
+		Image24 image = (Image24) aCache_238.get(l);
 		if (image != null) {
 			return image;
 		}
 		try {
 			image = new Image24(archive, s, i);
-			aCache_238.method223(image, l);
+			aCache_238.put(l, image);
 		} catch (Exception _ex) {
 			return null;
 		}
@@ -293,9 +295,9 @@ public class Component {
 	}
 
 	public static void method208(int i, int j, Model model) {
-		A_CACHE___264.method224();
+		A_CACHE___264.clear();
 		if ((model != null) && (j != 4)) {
-			A_CACHE___264.method223(model, ((long) j << 16) + i);
+			A_CACHE___264.put(((long) j << 16) + i, model);
 		}
 	}
 
@@ -309,7 +311,7 @@ public class Component {
 	}
 
 	public Model method206(int i, int j) {
-		Model model = (Model) A_CACHE___264.method222(((long) i << 16) + j);
+		Model model = (Model) A_CACHE___264.get(((long) i << 16) + j);
 		if (model != null) {
 			return model;
 		}
@@ -329,7 +331,7 @@ public class Component {
 			model = null;
 		}
 		if (model != null) {
-			A_CACHE___264.method223(model, (i << 16) + j);
+			A_CACHE___264.put((i << 16) + j, model);
 		}
 		return model;
 	}

@@ -3,6 +3,7 @@
 // Decompiler options: packimports(3) 
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class Scene {
 
@@ -46,7 +47,7 @@ public class Scene {
 	public static SceneOccluder[][] aOccluderArrayArray474 = new SceneOccluder[anInt472][500];
 	public static int anInt475;
 	public static final SceneOccluder[] A_OCCLUDER_ARRAY_476 = new SceneOccluder[500];
-	public static LinkedList aList_477 = new LinkedList();
+	public static DoublyLinkedList aList_477 = new DoublyLinkedList();
 	public static boolean[][][][] aBooleanArrayArrayArrayArray491 = new boolean[8][32][51][51];
 	public static boolean[][] aBooleanArrayArray492;
 	public static int anInt493;
@@ -1038,11 +1039,11 @@ public class Scene {
 	}
 
 	public void method314(SceneTile tile, boolean flag) {
-		aList_477.method249(tile);
+		aList_477.pushBack(tile);
 		do {
 			SceneTile tile_1;
 			do {
-				tile_1 = (SceneTile) aList_477.method251();
+				tile_1 = (SceneTile) aList_477.pollFront();
 				if (tile_1 == null) {
 					return;
 				}
@@ -1220,25 +1221,25 @@ public class Scene {
 					if ((i < eyeTileX) && ((k4 & 4) != 0)) {
 						SceneTile tile_17 = aclass30_sub3[i + 1][j];
 						if ((tile_17 != null) && tile_17.aBoolean1323) {
-							aList_477.method249(tile_17);
+							aList_477.pushBack(tile_17);
 						}
 					}
 					if ((j < eyeTileZ) && ((k4 & 2) != 0)) {
 						SceneTile tile_18 = aclass30_sub3[i][j + 1];
 						if ((tile_18 != null) && tile_18.aBoolean1323) {
-							aList_477.method249(tile_18);
+							aList_477.pushBack(tile_18);
 						}
 					}
 					if ((i > eyeTileX) && ((k4 & 1) != 0)) {
 						SceneTile tile_19 = aclass30_sub3[i - 1][j];
 						if ((tile_19 != null) && tile_19.aBoolean1323) {
-							aList_477.method249(tile_19);
+							aList_477.pushBack(tile_19);
 						}
 					}
 					if ((j > eyeTileZ) && ((k4 & 8) != 0)) {
 						SceneTile tile_20 = aclass30_sub3[i][j - 1];
 						if ((tile_20 != null) && tile_20.aBoolean1323) {
-							aList_477.method249(tile_20);
+							aList_477.pushBack(tile_20);
 						}
 					}
 				}
@@ -1345,9 +1346,9 @@ public class Scene {
 							for (int l8 = loc_3.anInt525; l8 <= loc_3.anInt526; l8++) {
 								SceneTile tile_22 = aclass30_sub3[k7][l8];
 								if (tile_22.anInt1325 != 0) {
-									aList_477.method249(tile_22);
+									aList_477.pushBack(tile_22);
 								} else if (((k7 != i) || (l8 != j)) && tile_22.aBoolean1323) {
-									aList_477.method249(tile_22);
+									aList_477.pushBack(tile_22);
 								}
 							}
 						}
@@ -1447,31 +1448,31 @@ public class Scene {
 			if (k < (anInt437 - 1)) {
 				SceneTile tile_12 = aTileArrayArrayArray441[k + 1][i][j];
 				if ((tile_12 != null) && tile_12.aBoolean1323) {
-					aList_477.method249(tile_12);
+					aList_477.pushBack(tile_12);
 				}
 			}
 			if (i < eyeTileX) {
 				SceneTile tile_13 = aclass30_sub3[i + 1][j];
 				if ((tile_13 != null) && tile_13.aBoolean1323) {
-					aList_477.method249(tile_13);
+					aList_477.pushBack(tile_13);
 				}
 			}
 			if (j < eyeTileZ) {
 				SceneTile tile_14 = aclass30_sub3[i][j + 1];
 				if ((tile_14 != null) && tile_14.aBoolean1323) {
-					aList_477.method249(tile_14);
+					aList_477.pushBack(tile_14);
 				}
 			}
 			if (i > eyeTileX) {
 				SceneTile tile_15 = aclass30_sub3[i - 1][j];
 				if ((tile_15 != null) && tile_15.aBoolean1323) {
-					aList_477.method249(tile_15);
+					aList_477.pushBack(tile_15);
 				}
 			}
 			if (j > eyeTileZ) {
 				SceneTile tile_16 = aclass30_sub3[i][j - 1];
 				if ((tile_16 != null) && tile_16.aBoolean1323) {
-					aList_477.method249(tile_16);
+					aList_477.pushBack(tile_16);
 				}
 			}
 		} while (true);

@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.IOException;
+
 public class VarbitType {
 
 	public static int anInt645;
@@ -17,8 +19,8 @@ public class VarbitType {
 	public VarbitType() {
 	}
 
-	public static void unpack(FileArchive archive) {
-		Buffer buffer = new Buffer(archive.read("varbit.dat", null));
+	public static void unpack(FileArchive archive) throws IOException {
+		Buffer buffer = new Buffer(archive.read("varbit.dat"));
 		anInt645 = buffer.get2U();
 		if (aVarbitArray646 == null) {
 			aVarbitArray646 = new VarbitType[anInt645];

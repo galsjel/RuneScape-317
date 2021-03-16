@@ -18,7 +18,7 @@ public class Model extends Entity {
 	public static int[] tmpVertexZ = new int[2000];
 	public static int[] tmpFaceAlpha = new int[2000];
 
-	public static ModelHeader[] headers;
+	public static Header[] headers;
 	public static OnDemand ondemand;
 
 	public static boolean[] faceClippedX = new boolean[4096];
@@ -50,6 +50,204 @@ public class Model extends Entity {
 	public static int[] cos = Draw3D.cos;
 	public static int[] palette = Draw3D.palette;
 	public static int[] reciprical16 = Draw3D.reciprical16;
+
+	public static class Header {
+
+		public byte[] data;
+		public int vertexCount;
+		public int faceCount;
+		public int texturedFaceCount;
+		public int obPoint1Position;
+		public int obPoint2Position;
+		public int obPoint3Position;
+		public int obPoint4Position;
+		public int obPoint5Position;
+		public int obVertex1Position;
+		public int obVertex2Position;
+		public int obFace1Position;
+		public int obFace2Position;
+		public int obFace3Position;
+		public int obFace4Position;
+		public int obFace5Position;
+		public int obAxisPosition;
+
+	}
+
+	public static void unload() {
+		headers = null;
+		faceClippedX = null;
+		faceNearClipped = null;
+		vertexScreenX = null;
+		vertexScreenY = null;
+		vertexScreenZ = null;
+		vertexViewSpaceX = null;
+		vertexViewSpaceY = null;
+		vertexViewSpaceZ = null;
+		tmpDepthFaceCount = null;
+		tmpDepthFaces = null;
+		tmpPriorityFaceCount = null;
+		tmpPriorityFaces = null;
+		tmpPriority10FaceDepth = null;
+		tmpPriority11FaceDepth = null;
+		tmpPriorityDepthSum = null;
+		sin = null;
+		cos = null;
+		palette = null;
+		reciprical16 = null;
+	}
+
+	public static void init(int count, OnDemand ondemand) {
+		headers = new Header[count];
+		Model.ondemand = ondemand;
+	}
+
+	public static void unpack(byte[] src, int id) {
+		if (src == null) {
+			Header header = headers[id] = new Header();
+			header.vertexCount = 0;
+			header.faceCount = 0;
+			header.texturedFaceCount = 0;
+			return;
+		}
+		Buffer buffer = new Buffer(src);
+		buffer.position = src.length - 18;
+		Header header = headers[id] = new Header();
+		header.data = src;
+		header.vertexCount = buffer.get2U();
+		header.faceCount = buffer.get2U();
+		header.texturedFaceCount = buffer.get1U();
+		int k = buffer.get1U();
+		int l = buffer.get1U();
+		int i1 = buffer.get1U();
+		int j1 = buffer.get1U();
+		int k1 = buffer.get1U();
+		int l1 = buffer.get2U();
+		int i2 = buffer.get2U();
+		//noinspection unused
+		int j2 = buffer.get2U();
+		int k2 = buffer.get2U();
+		int offset = 0;
+		header.obPoint1Position = offset;
+		offset += header.vertexCount;
+		header.obVertex2Position = offset;
+		offset += header.faceCount;
+		header.obFace3Position = offset;
+		if (l == 255) {
+			offset += header.faceCount;
+		} else {
+			header.obFace3Position = -l - 1;
+		}
+		header.obFace5Position = offset;
+		if (j1 == 1) {
+			offset += header.faceCount;
+		} else {
+			header.obFace5Position = -1;
+		}
+		header.obFace2Position = offset;
+		if (k == 1) {
+			offset += header.faceCount;
+		} else {
+			header.obFace2Position = -1;
+		}
+		header.obPoint5Position = offset;
+		if (k1 == 1) {
+			offset += header.vertexCount;
+		} else {
+			header.obPoint5Position = -1;
+		}
+		header.obFace4Position = offset;
+		if (i1 == 1) {
+			offset += header.faceCount;
+		} else {
+			header.obFace4Position = -1;
+		}
+		header.obVertex1Position = offset;
+		offset += k2;
+		header.obFace1Position = offset;
+		offset += header.faceCount * 2;
+		header.obAxisPosition = offset;
+		offset += header.texturedFaceCount * 6;
+		header.obPoint2Position = offset;
+		offset += l1;
+		header.obPoint3Position = offset;
+		offset += i2;
+		header.obPoint4Position = offset;
+	}
+
+	public static void unload(int id) {
+		headers[id] = null;
+	}
+
+	/**
+	 * Tries to get the model. Sends a request to the ondemand service to load the model if it isn't loaded.
+	 *
+	 * @param id the model id.
+	 * @return the model, or <code>null</code> if not loaded.
+	 */
+	public static Model tryGet(int id) {
+		if (headers == null) {
+			return null;
+		}
+
+		Header header = headers[id];
+
+		if (header != null) {
+			return new Model(id);
+		} else {
+			ondemand.method548(id);
+			return null;
+		}
+	}
+
+	/**
+	 * Validates the provided model id. If the model is not loaded then a request is sent to the ondemand service.
+	 *
+	 * @param id the model id.
+	 * @return <code>true</code> if the model is loaded.
+	 */
+	public static boolean validate(int id) {
+		if (headers == null) {
+			return false;
+		}
+
+		Header header = headers[id];
+
+		if (header != null) {
+			return true;
+		} else {
+			ondemand.method548(id);
+			return false;
+		}
+	}
+
+	/**
+	 * Utility function. Multiplies the input HSL lightness component by the provided <code>scalar</code>.
+	 *
+	 * @param hsl      the color value.
+	 * @param scalar   the scalar. [0...127]
+	 * @param faceInfo Provided face info to determine the type of color to return. Textured triangles (type 2) only have
+	 *                 a lightness component.
+	 * @return the color.
+	 * @see #palette
+	 */
+	public static int mulColorLightness(int hsl, int scalar, int faceInfo) {
+		if ((faceInfo & 2) == 2) {
+			if (scalar < 0) {
+				scalar = 0;
+			} else if (scalar > 127) {
+				scalar = 127;
+			}
+			scalar = 127 - scalar;
+			return scalar;
+		}
+		scalar = (scalar * (hsl & 0x7f)) >> 7;
+		if (scalar < 2) {
+			scalar = 2;
+		} else if (scalar > 126) {
+			scalar = 126;
+		}
+		return (hsl & 0xff80) + scalar;
+	}
 
 	public int vertexCount;
 	public int[] vertexX;
@@ -84,7 +282,6 @@ public class Model extends Entity {
 	public int radius;
 	public int minDepth;
 	public int maxDepth;
-
 	/**
 	 * minDepth = (int) Math.sqrt((radius * radius) + (super.minY * super.minY));
 	 * maxDepth = minDepth + (int) Math.sqrt((radius * radius) + (maxY * maxY));
@@ -112,7 +309,6 @@ public class Model extends Entity {
 	 * @see #draw(int, int, int, int, int, int, int, int, int)
 	 */
 	public boolean pickBounds = false;
-
 	/**
 	 * A storage for the original vertex normals to give {@link Scene#method308(Model, Model, int, int, int, boolean)}
 	 * a reference.
@@ -136,7 +332,7 @@ public class Model extends Entity {
 	public Model(int id) {
 		counter++;
 
-		ModelHeader header = headers[id];
+		Header header = headers[id];
 		vertexCount = header.vertexCount;
 		faceCount = header.faceCount;
 		texturedFaceCount = header.texturedFaceCount;
@@ -774,182 +970,6 @@ public class Model extends Entity {
 		maxZ = model.maxZ;
 		minZ = model.minZ;
 		maxX = model.maxX;
-	}
-
-	public static void unload() {
-		headers = null;
-		faceClippedX = null;
-		faceNearClipped = null;
-		vertexScreenX = null;
-		vertexScreenY = null;
-		vertexScreenZ = null;
-		vertexViewSpaceX = null;
-		vertexViewSpaceY = null;
-		vertexViewSpaceZ = null;
-		tmpDepthFaceCount = null;
-		tmpDepthFaces = null;
-		tmpPriorityFaceCount = null;
-		tmpPriorityFaces = null;
-		tmpPriority10FaceDepth = null;
-		tmpPriority11FaceDepth = null;
-		tmpPriorityDepthSum = null;
-		sin = null;
-		cos = null;
-		palette = null;
-		reciprical16 = null;
-	}
-
-	public static void init(int count, OnDemand ondemand) {
-		headers = new ModelHeader[count];
-		Model.ondemand = ondemand;
-	}
-
-	public static void unpack(byte[] src, int id) {
-		if (src == null) {
-			ModelHeader header = headers[id] = new ModelHeader();
-			header.vertexCount = 0;
-			header.faceCount = 0;
-			header.texturedFaceCount = 0;
-			return;
-		}
-		Buffer buffer = new Buffer(src);
-		buffer.position = src.length - 18;
-		ModelHeader header = headers[id] = new ModelHeader();
-		header.data = src;
-		header.vertexCount = buffer.get2U();
-		header.faceCount = buffer.get2U();
-		header.texturedFaceCount = buffer.get1U();
-		int k = buffer.get1U();
-		int l = buffer.get1U();
-		int i1 = buffer.get1U();
-		int j1 = buffer.get1U();
-		int k1 = buffer.get1U();
-		int l1 = buffer.get2U();
-		int i2 = buffer.get2U();
-		//noinspection unused
-		int j2 = buffer.get2U();
-		int k2 = buffer.get2U();
-		int offset = 0;
-		header.obPoint1Position = offset;
-		offset += header.vertexCount;
-		header.obVertex2Position = offset;
-		offset += header.faceCount;
-		header.obFace3Position = offset;
-		if (l == 255) {
-			offset += header.faceCount;
-		} else {
-			header.obFace3Position = -l - 1;
-		}
-		header.obFace5Position = offset;
-		if (j1 == 1) {
-			offset += header.faceCount;
-		} else {
-			header.obFace5Position = -1;
-		}
-		header.obFace2Position = offset;
-		if (k == 1) {
-			offset += header.faceCount;
-		} else {
-			header.obFace2Position = -1;
-		}
-		header.obPoint5Position = offset;
-		if (k1 == 1) {
-			offset += header.vertexCount;
-		} else {
-			header.obPoint5Position = -1;
-		}
-		header.obFace4Position = offset;
-		if (i1 == 1) {
-			offset += header.faceCount;
-		} else {
-			header.obFace4Position = -1;
-		}
-		header.obVertex1Position = offset;
-		offset += k2;
-		header.obFace1Position = offset;
-		offset += header.faceCount * 2;
-		header.obAxisPosition = offset;
-		offset += header.texturedFaceCount * 6;
-		header.obPoint2Position = offset;
-		offset += l1;
-		header.obPoint3Position = offset;
-		offset += i2;
-		header.obPoint4Position = offset;
-	}
-
-	public static void unload(int id) {
-		headers[id] = null;
-	}
-
-	/**
-	 * Tries to get the model. Sends a request to the ondemand service to load the model if it isn't loaded.
-	 *
-	 * @param id the model id.
-	 * @return the model, or <code>null</code> if not loaded.
-	 */
-	public static Model tryGet(int id) {
-		if (headers == null) {
-			return null;
-		}
-
-		ModelHeader header = headers[id];
-
-		if (header != null) {
-			return new Model(id);
-		} else {
-			ondemand.method548(id);
-			return null;
-		}
-	}
-
-	/**
-	 * Validates the provided model id. If the model is not loaded then a request is sent to the ondemand service.
-	 *
-	 * @param id the model id.
-	 * @return <code>true</code> if the model is loaded.
-	 */
-	public static boolean validate(int id) {
-		if (headers == null) {
-			return false;
-		}
-
-		ModelHeader header = headers[id];
-
-		if (header != null) {
-			return true;
-		} else {
-			ondemand.method548(id);
-			return false;
-		}
-	}
-
-	/**
-	 * Utility function. Multiplies the input HSL lightness component by the provided <code>scalar</code>.
-	 *
-	 * @param hsl      the color value.
-	 * @param scalar   the scalar. [0...127]
-	 * @param faceInfo Provided face info to determine the type of color to return. Textured triangles (type 2) only have
-	 *                 a lightness component.
-	 * @return the color.
-	 * @see #palette
-	 */
-	public static int mulColorLightness(int hsl, int scalar, int faceInfo) {
-		if ((faceInfo & 2) == 2) {
-			if (scalar < 0) {
-				scalar = 0;
-			} else if (scalar > 127) {
-				scalar = 127;
-			}
-			scalar = 127 - scalar;
-			return scalar;
-		}
-		scalar = (scalar * (hsl & 0x7f)) >> 7;
-		if (scalar < 2) {
-			scalar = 2;
-		} else if (scalar > 126) {
-			scalar = 126;
-		}
-		return (hsl & 0xff80) + scalar;
 	}
 
 	/**

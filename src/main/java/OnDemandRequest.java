@@ -1,17 +1,20 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+import java.util.Arrays;
 
-public class OnDemandRequest extends DoublyLinkedListNode {
+public class OnDemandRequest extends DoublyLinkedList.Node {
 
 	public int store;
-	public byte[] data;
 	public int file;
-	public boolean aBoolean1422;
-	public int anInt1423;
+	public boolean important;
+	public int cycle;
+	public byte[] data;
 
 	public OnDemandRequest() {
-		aBoolean1422 = true;
+		important = true;
+	}
+
+	@Override
+	public String toString() {
+		return "OnDemandRequest{" + "store=" + store + ", file=" + file + ", priority=" + important + ", cycle=" + cycle + ", data=" + Arrays.toString(data) + '}';
 	}
 
 }

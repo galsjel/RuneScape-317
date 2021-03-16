@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Random;
 
 public class BitmapFont {
@@ -12,9 +13,9 @@ public class BitmapFont {
 	public int height;
 	public boolean strikethrough = false;
 
-	public BitmapFont(FileArchive archive, String name, boolean quill) {
-		Buffer dat = new Buffer(archive.read(name + ".dat", null));
-		Buffer idx = new Buffer(archive.read("index.dat", null));
+	public BitmapFont(FileArchive archive, String name, boolean quill) throws IOException {
+		Buffer dat = new Buffer(archive.read(name + ".dat"));
+		Buffer idx = new Buffer(archive.read("index.dat"));
 		idx.position = dat.get2U() + 4;
 
 		int k = idx.get1U();

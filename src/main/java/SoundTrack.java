@@ -2,13 +2,13 @@ public class SoundTrack {
 
 	public static final SoundTrack[] tracks = new SoundTrack[5000];
 	public static final int[] delays = new int[5000];
-	public static byte[] buffer;
+	public static byte[] bbuf;
 	public static Buffer buffer;
 
 	public static void method240(Buffer src) {
-		buffer = new byte[441000];
+		bbuf = new byte[441000];
 
-		SoundTrack.buffer = new Buffer(buffer);
+		SoundTrack.buffer = new Buffer(bbuf);
 		SoundTone.init();
 
 		do {
@@ -128,7 +128,7 @@ public class SoundTrack {
 		int totalSampleCount = sampleCount + ((loopStop - loopStart) * (loopCount - 1));
 
 		for (int sample = 44; sample < (totalSampleCount + 44); sample++) {
-			buffer[sample] = -128;
+			bbuf[sample] = -128;
 		}
 
 		for (int tone = 0; tone < 10; tone++) {
@@ -141,7 +141,7 @@ public class SoundTrack {
 			int[] samples = tones[tone].generate(toneSampleCount, tones[tone].length);
 
 			for (int sample = 0; sample < toneSampleCount; sample++) {
-				buffer[sample + start + 44] += (byte) (samples[sample] >> 8);
+				bbuf[sample + start + 44] += (byte) (samples[sample] >> 8);
 			}
 		}
 
@@ -154,14 +154,14 @@ public class SoundTrack {
 			// Moves the end of the sound (after the loops) to the true end of the buffer.
 			int endOffset = (totalSampleCount += 44) - sampleCount;
 			for (int sample = sampleCount - 1; sample >= loopStop; sample--) {
-				buffer[sample + endOffset] = buffer[sample];
+				bbuf[sample + endOffset] = bbuf[sample];
 			}
 
 			// Duplicates loop area.
 			for (int loop = 1; loop < loopCount; loop++) {
 				int offset = (loopStop - loopStart) * loop;
 				for (int sample = loopStart; sample < loopStop; sample++) {
-					buffer[sample + offset] = buffer[sample];
+					bbuf[sample + offset] = bbuf[sample];
 				}
 			}
 

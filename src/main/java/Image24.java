@@ -1,11 +1,8 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-
 import java.awt.*;
 import java.awt.image.PixelGrabber;
+import java.io.IOException;
 
-public class Image24 extends Draw2D {
+public class Image24 extends DoublyLinkedList.Node {
 
 	public int[] anIntArray1439;
 	public int anInt1440;
@@ -42,9 +39,9 @@ public class Image24 extends Draw2D {
 		}
 	}
 
-	public Image24(FileArchive archive, String s, int i) {
-		Buffer buffer = new Buffer(archive.read(s + ".dat", null));
-		Buffer buffer_1 = new Buffer(archive.read("index.dat", null));
+	public Image24(FileArchive archive, String s, int i) throws IOException {
+		Buffer buffer = new Buffer(archive.read(s + ".dat"));
+		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
 		buffer_1.position = buffer.get2U();
 		anInt1444 = buffer_1.get2U();
 		anInt1445 = buffer_1.get2U();

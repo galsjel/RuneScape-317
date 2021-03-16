@@ -1,61 +1,31 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
-public class LRUCache {
+public class LRUCache<T> {
 
-	public int anInt298;
-	public int anInt299;
-	public final DoublyLinkedListNode aNode_300 = new DoublyLinkedListNode();
-	public final int anInt301;
-	public int anInt302;
-	public final Hashtable aHashtable_303 = new Hashtable(1024);
-	public final DoublyLinkedList aDoublyLinkedList_304 = new DoublyLinkedList();
+	private final int capacity;
+	private final LinkedHashMap<Long, T> map;
 
-	public LRUCache(int i) {
-		anInt301 = i;
-		anInt302 = i;
+	public LRUCache(int capacity) {
+		this.capacity = capacity;
+		this.map = new LinkedHashMap<>(capacity);
 	}
 
-	public DoublyLinkedListNode method222(long l) {
-		DoublyLinkedListNode node = (DoublyLinkedListNode) aHashtable_303.method148(l);
-		if (node != null) {
-			aDoublyLinkedList_304.method150(node);
-			anInt299++;
-		} else {
-			anInt298++;
+	public T get(long key) {
+		return map.get(key);
+	}
+
+	public void put(long key, T value) {
+		if (map.containsKey(key) && map.size() == capacity) {
+			Iterator<Long> iter = map.keySet().iterator();
+			iter.next();
+			iter.remove();
 		}
-		return node;
+		map.put(key, value);
 	}
 
-	public void method223(DoublyLinkedListNode node, long l) {
-		if (anInt302 == 0) {
-			DoublyLinkedListNode node_1 = aDoublyLinkedList_304.method151();
-			node_1.method329();
-			node_1.method330();
-			if (node_1 == aNode_300) {
-				DoublyLinkedListNode node_2 = aDoublyLinkedList_304.method151();
-				node_2.method329();
-				node_2.method330();
-			}
-		} else {
-			anInt302--;
-		}
-		aHashtable_303.method149(node, l);
-		aDoublyLinkedList_304.method150(node);
-	}
-
-	public void method224() {
-		do {
-			DoublyLinkedListNode node = aDoublyLinkedList_304.method151();
-			if (node != null) {
-				node.method329();
-				node.method330();
-			} else {
-				anInt302 = anInt301;
-				return;
-			}
-		} while (true);
+	public void clear() {
+		map.clear();
 	}
 
 }

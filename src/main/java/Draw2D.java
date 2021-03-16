@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class Draw2D extends DoublyLinkedListNode {
+public class Draw2D {
 
 	public static int[] pixels;
 	public static int width;

@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="317:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/317_jar</output-path>
+    <root id="archive" name="317.jar">
+      <element id="module-output" name="317" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
