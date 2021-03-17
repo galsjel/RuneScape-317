@@ -355,7 +355,7 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public int getModelIndex(int id) {
+	public int getModelFlags(int id) {
 		return modelIndex[id] & 0xff;
 	}
 

@@ -274,9 +274,9 @@ public class PlayerEntity extends PathingEntity {
 			model_1 = new Model(j2, aclass30_sub2_sub4_sub6);
 			for (int j3 = 0; j3 < 5; j3++) {
 				if (anIntArray1700[j3] != 0) {
-					model_1.replaceColor(Game.anIntArrayArray1003[j3][0], Game.anIntArrayArray1003[j3][anIntArray1700[j3]]);
+					model_1.recolor(Game.anIntArrayArray1003[j3][0], Game.anIntArrayArray1003[j3][anIntArray1700[j3]]);
 					if (j3 == 1) {
-						model_1.replaceColor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j3]]);
+						model_1.recolor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j3]]);
 					}
 				}
 			}
@@ -346,9 +346,9 @@ public class PlayerEntity extends PathingEntity {
 		Model model = new Model(k, aclass30_sub2_sub4_sub6);
 		for (int j1 = 0; j1 < 5; j1++) {
 			if (anIntArray1700[j1] != 0) {
-				model.replaceColor(Game.anIntArrayArray1003[j1][0], Game.anIntArrayArray1003[j1][anIntArray1700[j1]]);
+				model.recolor(Game.anIntArrayArray1003[j1][0], Game.anIntArrayArray1003[j1][anIntArray1700[j1]]);
 				if (j1 == 1) {
-					model.replaceColor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j1]]);
+					model.recolor(Game.anIntArray1204[0], Game.anIntArray1204[anIntArray1700[j1]]);
 				}
 			}
 		}

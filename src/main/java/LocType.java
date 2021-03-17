@@ -311,7 +311,7 @@ public class LocType {
 		}
 		if (anIntArray784 != null) {
 			for (int k2 = 0; k2 < anIntArray784.length; k2++) {
-				model_3.replaceColor(anIntArray784[k2], anIntArray747[k2]);
+				model_3.recolor(anIntArray784[k2], anIntArray747[k2]);
 			}
 		}
 		if (flag) {

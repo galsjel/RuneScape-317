@@ -8,27 +8,26 @@ import java.io.IOException;
 
 public class SpotAnimType {
 
-	public static int anInt402;
 	public static SpotAnimType[] instances;
 	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(30);
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("spotanim.dat"));
-		anInt402 = buffer.get2U();
+		int count = buffer.get2U();
 		if (instances == null) {
-			instances = new SpotAnimType[anInt402];
+			instances = new SpotAnimType[count];
 		}
-		for (int j = 0; j < anInt402; j++) {
-			if (instances[j] == null) {
-				instances[j] = new SpotAnimType();
+		for (int i = 0; i < count; i++) {
+			if (instances[i] == null) {
+				instances[i] = new SpotAnimType();
 			}
-			instances[j].anInt404 = j;
-			instances[j].method265(buffer);
+			instances[i].index = i;
+			instances[i].method265(buffer);
 		}
 	}
 	public final int[] anIntArray408 = new int[6];
 	public final int[] anIntArray409 = new int[6];
-	public int anInt404;
+	public int index;
 	public int anInt405;
 	public int anInt406 = -1;
 	public SeqType seq;
@@ -75,7 +74,7 @@ public class SpotAnimType {
 	}
 
 	public Model method266() {
-		Model model = modelCache.get(anInt404);
+		Model model = modelCache.get(index);
 		if (model != null) {
 			return model;
 		}
@@ -85,10 +84,10 @@ public class SpotAnimType {
 		}
 		for (int i = 0; i < 6; i++) {
 			if (anIntArray408[0] != 0) {
-				model.replaceColor(anIntArray408[i], anIntArray409[i]);
+				model.recolor(anIntArray408[i], anIntArray409[i]);
 			}
 		}
-		modelCache.put(anInt404, model);
+		modelCache.put(index, model);
 		return model;
 	}
 

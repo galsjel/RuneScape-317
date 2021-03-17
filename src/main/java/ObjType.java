@@ -194,6 +194,7 @@ public class ObjType {
 		class30_sub2_sub1_sub1_1.cropH = j;
 		return class30_sub2_sub1_sub1_1;
 	}
+
 	public byte aByte154;
 	public int anInt155;
 	public int[] anIntArray156;
@@ -276,7 +277,7 @@ public class ObjType {
 		}
 		if (anIntArray156 != null) {
 			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.replaceColor(anIntArray156[i1], anIntArray160[i1]);
+				model.recolor(anIntArray156[i1], anIntArray160[i1]);
 			}
 		}
 		return model;
@@ -340,7 +341,7 @@ public class ObjType {
 		}
 		if (anIntArray156 != null) {
 			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.replaceColor(anIntArray156[i1], anIntArray160[i1]);
+				model.recolor(anIntArray156[i1], anIntArray160[i1]);
 			}
 		}
 		return model;
@@ -437,7 +438,7 @@ public class ObjType {
 		}
 		if (anIntArray156 != null) {
 			for (int l = 0; l < anIntArray156.length; l++) {
-				model.replaceColor(anIntArray156[l], anIntArray160[l]);
+				model.recolor(anIntArray156[l], anIntArray160[l]);
 			}
 		}
 		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
@@ -464,7 +465,7 @@ public class ObjType {
 		}
 		if (anIntArray156 != null) {
 			for (int l = 0; l < anIntArray156.length; l++) {
-				model.replaceColor(anIntArray156[l], anIntArray160[l]);
+				model.recolor(anIntArray156[l], anIntArray160[l]);
 			}
 		}
 		return model;

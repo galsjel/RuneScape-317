@@ -16,6 +16,20 @@ public class BZip2 extends InputStream {
 	private static final byte[] MAGIC = {'B', 'Z', 'h', '1'};
 
 	/**
+	 * @see #decompress(byte[], int, int, byte[])
+	 */
+	public static byte[] decompress(byte[] src) throws IOException {
+		return decompress(src, 0, src.length, null);
+	}
+
+	/**
+	 * @see #decompress(byte[], int, int, byte[])
+	 */
+	public static byte[] decompress(byte[] src, int off, int len) throws IOException {
+		return decompress(src, off, len, null);
+	}
+
+	/**
 	 * Decompresses the source.
 	 *
 	 * @param src the source data.

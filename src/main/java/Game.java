@@ -2,21 +2,21 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.math3.random.ISAACRandom;
 
 import java.applet.AppletContext;
 import java.awt.*;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.List;
+import java.util.*;
 import java.util.zip.CRC32;
+import java.util.zip.GZIPInputStream;
 
 public class Game extends GameShell {
 
@@ -746,14 +746,55 @@ public class Game extends GameShell {
 				}
 			}
 
+			{
+				CRC32 crc32 = new CRC32();
+
+				Map<Long, List<Integer>> skeletonGroups = new HashMap<>();
+
+				for (int file = 0; file < filestores[2].getFileCount(); file++) {
+						byte[] data = filestores[2].read(file);
+						try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+							IOUtils.copy(new GZIPInputStream(new ByteArrayInputStream(data)), baos);
+
+							data = baos.toByteArray();
+
+							Buffer buffer = new Buffer(data);
+							buffer.position = data.length - 8;
+
+							int off = buffer.get2U() + 2; // header
+							off += buffer.get2U(); // tran1
+							off += buffer.get2U(); // tran2
+							off += buffer.get2U(); // del
+
+							int len = data.length - 8 - off;
+
+							crc32.reset();
+							crc32.update(data, off, len); // get skeleton crc32
+
+							long crc = crc32.getValue();
+
+							List<Integer> list;
+
+							if (!skeletonGroups.containsKey(crc)) {
+								list = new ArrayList<>();
+								skeletonGroups.put(crc, list);
+							} else {
+								list = skeletonGroups.get(crc);
+							}
+
+							list.add(file);
+						}
+				}
+
+				skeletonGroups.forEach((key, value) -> System.out.printf("%s: %s%n", key, Arrays.toString(value.toArray())));
+			}
+
 			showProgress(70, "Requesting models");
 
 			total = ondemand.getFileCount(0);
 
 			for (int i = 0; i < total; i++) {
-				int index = ondemand.getModelIndex(i);
-
-				if ((index & 1) != 0) {
+				if ((ondemand.getModelFlags(i) & 1) != 0) {
 					ondemand.request(0, i);
 				}
 			}
@@ -810,29 +851,29 @@ public class Game extends GameShell {
 			}
 
 			total = ondemand.getFileCount(0);
-			for (int k2 = 0; k2 < total; k2++) {
-				int l2 = ondemand.getModelIndex(k2);
-				byte byte0 = 0;
-				if ((l2 & 8) != 0) {
-					byte0 = 10;
-				} else if ((l2 & 0x20) != 0) {
-					byte0 = 9;
-				} else if ((l2 & 0x10) != 0) {
-					byte0 = 8;
-				} else if ((l2 & 0x40) != 0) {
-					byte0 = 7;
-				} else if ((l2 & 0x80) != 0) {
-					byte0 = 6;
-				} else if ((l2 & 2) != 0) {
-					byte0 = 5;
-				} else if ((l2 & 4) != 0) {
-					byte0 = 4;
+			for (int i = 0; i < total; i++) {
+				int flags = ondemand.getModelFlags(i);
+				byte priority = 0;
+				if ((flags & 8) != 0) {
+					priority = 10;
+				} else if ((flags & 0x20) != 0) {
+					priority = 9;
+				} else if ((flags & 0x10) != 0) {
+					priority = 8;
+				} else if ((flags & 0x40) != 0) {
+					priority = 7;
+				} else if ((flags & 0x80) != 0) {
+					priority = 6;
+				} else if ((flags & 2) != 0) {
+					priority = 5;
+				} else if ((flags & 4) != 0) {
+					priority = 4;
 				}
-				if ((l2 & 1) != 0) {
-					byte0 = 3;
+				if ((flags & 1) != 0) {
+					priority = 3;
 				}
-				if (byte0 != 0) {
-					ondemand.prefetch(byte0, 0, k2);
+				if (priority != 0) {
+					ondemand.prefetch(priority, 0, i);
 				}
 			}
 			ondemand.prefetchMaps(members);
@@ -1724,17 +1765,19 @@ public class Game extends GameShell {
 			method63();
 		} catch (Exception ignored) {
 		}
+
 		LocType.aCache_785.clear();
+
 		if (super.frame != null) {
 			aBuffer_1192.putOp(210);
 			aBuffer_1192.put4(0x3f008edd);
 		}
+
 		if (lowmem && (Signlink.cache_dat != null)) {
-			int j = ondemand.getFileCount(0);
-			for (int i1 = 0; i1 < j; i1++) {
-				int l1 = ondemand.getModelIndex(i1);
-				if ((l1 & 0x79) == 0) {
-					Model.unload(i1);
+			int count = ondemand.getFileCount(0);
+			for (int i = 0; i < count; i++) {
+				if ((ondemand.getModelFlags(i) & 0x79) == 0) {
+					Model.unload(i);
 				}
 			}
 		}
@@ -1784,7 +1827,7 @@ public class Game extends GameShell {
 	public void createMinimap(int plane) {
 		int[] pixels = imageMinimap.pixels;
 
-		Arrays.fill(pixels,0);
+		Arrays.fill(pixels, 0);
 
 		for (int z = 1; z < 103; z++) {
 			int offset = 24628 + ((103 - z) * 512 * 4);
@@ -3488,7 +3531,7 @@ public class Game extends GameShell {
 
 				if (request.store == 0) {
 					Model.unpack(request.data, request.file);
-					if ((ondemand.getModelIndex(request.file) & 0x62) != 0) {
+					if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
 						aBoolean1153 = true;
 						if (anInt1276 != -1) {
 							aBoolean1223 = true;
@@ -5597,9 +5640,9 @@ public class Game extends GameShell {
 				Model model = new Model(i2, aclass30_sub2_sub4_sub6);
 				for (int l2 = 0; l2 < 5; l2++) {
 					if (anIntArray990[l2] != 0) {
-						model.replaceColor(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
+						model.recolor(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
 						if (l2 == 1) {
-							model.replaceColor(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
+							model.recolor(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
 						}
 					}
 				}
@@ -7131,6 +7174,7 @@ public class Game extends GameShell {
 		int seq = entity.seqTurnAround;
 
 		// Since the game uses a left-handed coordinate system, an increasing angle goes clockwise.
+		// See PreviewSinCos2D
 
 		// yaw >= -45 deg && yaw <= 45 deg
 		if ((remainingYaw >= -256) && (remainingYaw <= 256)) {
@@ -9236,20 +9280,20 @@ public class Game extends GameShell {
 	public void method136() {
 		flameThread = true;
 
-			while (flameActive) {
-				flameCycle++;
+		while (flameActive) {
+			flameCycle++;
 
-				updateFlames();
-				drawFlames();
+			updateFlames();
+			drawFlames();
 
-				// the code here originally was some sort of lag detection code. It's not very useful anymore, and
-				// made the flames look choppier.
+			// the code here originally was some sort of lag detection code. It's not very useful anymore, and
+			// made the flames look choppier.
 
-				try {
-					Thread.sleep(20); // 50fps seems fine
-				} catch (Exception ignored) {
-				}
+			try {
+				Thread.sleep(20); // 50fps seems fine
+			} catch (Exception ignored) {
 			}
+		}
 
 		flameThread = false;
 	}

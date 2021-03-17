@@ -61,24 +61,25 @@ public class SeqFrame {
 		Buffer offsets = new Buffer(src);
 		offsets.position = src.length - 8;
 
-		int offset = 0;
 		Buffer header = new Buffer(src);
+		Buffer tran1 = new Buffer(src);
+		Buffer tran2 = new Buffer(src);
+		Buffer del = new Buffer(src);
+		Buffer skel = new Buffer(src);
+
+		int offset = 0;
 		header.position = offset;
 		offset += offsets.get2U() + 2;
 
-		Buffer tran1 = new Buffer(src);
 		tran1.position = offset;
 		offset += offsets.get2U();
 
-		Buffer tran2 = new Buffer(src);
 		tran2.position = offset;
 		offset += offsets.get2U();
 
-		Buffer del = new Buffer(src);
 		del.position = offset;
 		offset += offsets.get2U();
 
-		Buffer skel = new Buffer(src);
 		skel.position = offset;
 
 		SeqSkeleton skeleton = new SeqSkeleton(skel);

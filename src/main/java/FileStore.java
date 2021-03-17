@@ -21,6 +21,10 @@ public class FileStore {
 		this.maxFileSize = maxFileSize;
 	}
 
+	public synchronized long getFileCount() throws IOException {
+		return idx.length() / 6L;
+	}
+
 	public synchronized byte[] read(int file) {
 		try {
 			idx.seek(file * 6L);

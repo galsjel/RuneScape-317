@@ -803,43 +803,59 @@ public class Scene {
 		for (int j1 = 0; j1 < model.vertexCount; j1++) {
 			VertexNormal normal = model.vertexNormal[j1];
 			VertexNormal normal_1 = model.vertexNormalOriginal[j1];
-			if (normal_1.w != 0) {
-				int i2 = model.vertexY[j1] - j;
-				if (i2 <= model_1.maxY) {
-					int j2 = model.vertexX[j1] - i;
-					if ((j2 >= model_1.minX) && (j2 <= model_1.maxX)) {
-						int k2 = model.vertexZ[j1] - k;
-						if ((k2 >= model_1.minZ) && (k2 <= model_1.maxZ)) {
-							for (int l2 = 0; l2 < i1; l2++) {
-								VertexNormal normal_2 = model_1.vertexNormal[l2];
-								VertexNormal normal_3 = model_1.vertexNormalOriginal[l2];
-								if ((j2 == ai[l2]) && (k2 == model_1.vertexZ[l2]) && (i2 == model_1.vertexY[l2]) && (normal_3.w != 0)) {
-									normal.x += normal_3.x;
-									normal.y += normal_3.y;
-									normal.z += normal_3.z;
-									normal.w += normal_3.w;
-									normal_2.x += normal_1.x;
-									normal_2.y += normal_1.y;
-									normal_2.z += normal_1.z;
-									normal_2.w += normal_1.w;
-									l++;
-									anIntArray486[j1] = anInt488;
-									anIntArray487[l2] = anInt488;
-								}
-							}
-						}
-					}
+
+			if (normal_1.w == 0) {
+				continue;
+			}
+
+			int i2 = model.vertexY[j1] - j;
+
+			if (i2 > model_1.maxY) {
+				continue;
+			}
+
+			int j2 = model.vertexX[j1] - i;
+
+			if ((j2 < model_1.minX) || (j2 > model_1.maxX)) {
+				continue;
+			}
+
+			int k2 = model.vertexZ[j1] - k;
+
+			if ((k2 < model_1.minZ) || (k2 > model_1.maxZ)) {
+				continue;
+			}
+
+			for (int l2 = 0; l2 < i1; l2++) {
+				VertexNormal normal_2 = model_1.vertexNormal[l2];
+				VertexNormal normal_3 = model_1.vertexNormalOriginal[l2];
+
+				if ((j2 == ai[l2]) && (k2 == model_1.vertexZ[l2]) && (i2 == model_1.vertexY[l2]) && (normal_3.w != 0)) {
+					normal.x += normal_3.x;
+					normal.y += normal_3.y;
+					normal.z += normal_3.z;
+					normal.w += normal_3.w;
+					normal_2.x += normal_1.x;
+					normal_2.y += normal_1.y;
+					normal_2.z += normal_1.z;
+					normal_2.w += normal_1.w;
+					l++;
+					anIntArray486[j1] = anInt488;
+					anIntArray487[l2] = anInt488;
 				}
 			}
 		}
+
 		if ((l < 3) || !flag) {
 			return;
 		}
+
 		for (int k1 = 0; k1 < model.faceCount; k1++) {
 			if ((anIntArray486[model.faceVertexA[k1]] == anInt488) && (anIntArray486[model.faceVertexB[k1]] == anInt488) && (anIntArray486[model.faceVertexC[k1]] == anInt488)) {
 				model.faceInfo[k1] = -1;
 			}
 		}
+
 		for (int l1 = 0; l1 < model_1.faceCount; l1++) {
 			if ((anIntArray487[model_1.faceVertexA[l1]] == anInt488) && (anIntArray487[model_1.faceVertexB[l1]] == anInt488) && (anIntArray487[model_1.faceVertexC[l1]] == anInt488)) {
 				model_1.faceInfo[l1] = -1;

@@ -1512,7 +1512,7 @@ public class Model extends Entity {
 	 * @param src the source texture id.
 	 * @param dst the destination texture id.
 	 */
-	public void replaceColor(int src, int dst) {
+	public void recolor(int src, int dst) {
 		for (int k = 0; k < faceCount; k++) {
 			if (faceColor[k] == src) {
 				faceColor[k] = dst;
@@ -1584,9 +1584,11 @@ public class Model extends Entity {
 			int a = faceVertexA[f];
 			int b = faceVertexB[f];
 			int c = faceVertexC[f];
+
 			int dxAB = vertexX[b] - vertexX[a];
 			int dyAB = vertexY[b] - vertexY[a];
 			int dzAB = vertexZ[b] - vertexZ[a];
+
 			int dxAC = vertexX[c] - vertexX[a];
 			int dyAC = vertexY[c] - vertexY[a];
 			int dzAC = vertexZ[c] - vertexZ[a];

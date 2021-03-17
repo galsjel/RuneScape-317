@@ -125,7 +125,7 @@ public class NPCType {
 		}
 		if (anIntArray76 != null) {
 			for (int k = 0; k < anIntArray76.length; k++) {
-				model.replaceColor(anIntArray76[k], anIntArray70[k]);
+				model.recolor(anIntArray76[k], anIntArray70[k]);
 			}
 		}
 		return model;
@@ -185,7 +185,7 @@ public class NPCType {
 			}
 			if (anIntArray76 != null) {
 				for (int k1 = 0; k1 < anIntArray76.length; k1++) {
-					model.replaceColor(anIntArray76[k1], anIntArray70[k1]);
+					model.recolor(anIntArray76[k1], anIntArray70[k1]);
 				}
 			}
 			model.createLabelReferences();
