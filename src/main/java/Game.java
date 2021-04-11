@@ -2,21 +2,21 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.math3.random.ISAACRandom;
 
 import java.applet.AppletContext;
 import java.awt.*;
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.*;
+import java.util.Arrays;
 import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
 
 public class Game extends GameShell {
 
@@ -70,14 +70,14 @@ public class Game extends GameShell {
 		return " " + s;
 	}
 
-	public static String method43(int j) {
-		if (j < 0x186a0) {
-			return String.valueOf(j);
+	public static String formatObjAmount(int amount) {
+		if (amount < 100000) {
+			return String.valueOf(amount);
 		}
-		if (j < 0x989680) {
-			return (j / 1000) + "K";
+		if (amount < 10000000) {
+			return (amount / 1000) + "K";
 		} else {
-			return (j / 0xf4240) + "M";
+			return (amount / 1000000) + "M";
 		}
 	}
 
@@ -196,7 +196,7 @@ public class Game extends GameShell {
 	public final String[] aStringArray1127 = new String[5];
 	public final boolean[] aBooleanArray1128 = new boolean[5];
 	public final int[][][] sceneInstancedChunkBitset = new int[4][13][13];
-	public final int[] anIntArray1130 = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	public final int[] tabComponentId = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	public final int[] anIntArray1203 = new int[5];
 	public final int[] anIntArray1207 = new int[50];
 	public final Image8[] aImageArray1219 = new Image8[2];
@@ -223,7 +223,7 @@ public class Game extends GameShell {
 	public int anInt841;
 	public int anInt842;
 	public int anInt843;
-	public String aString844;
+	public String chatbackMessage;
 	public int anInt845;
 	public Buffer aBuffer_847 = Buffer.create(1);
 	public boolean aBoolean848 = true;
@@ -232,7 +232,10 @@ public class Game extends GameShell {
 	public int[] flameGradient1;
 	public int[] flameGradient2;
 	public int anInt855;
-	public int anInt857 = -1;
+	/**
+	 * The active viewport component id which is affected by input.
+	 */
+	public int viewportComponentId = -1;
 	public int anInt858;
 	public int anInt859;
 	public int anInt860;
@@ -264,7 +267,7 @@ public class Game extends GameShell {
 	public Buffer[] aBufferArray895 = new Buffer[MAX_PLAYER_COUNT];
 	public int anInt896;
 	public int anInt899;
-	public int anInt900;
+	public int socialState;
 	public int[][] anIntArrayArray901 = new int[104][104];
 	public DrawArea aArea_903;
 	public DrawArea aArea_904;
@@ -276,11 +279,11 @@ public class Game extends GameShell {
 	public DrawArea aArea_910;
 	public DrawArea aArea_911;
 	public byte[] aByteArray912 = new byte[16384];
-	public int anInt913;
-	public int anInt914;
-	public int anInt915;
-	public int anInt916;
-	public int anInt917;
+	public int bankArrangeMode;
+	public int crossX;
+	public int crossY;
+	public int crossCycle;
+	public int crossMode;
 	public int currentPlane;
 	public boolean aBoolean926 = false;
 	public int[][] anIntArrayArray929 = new int[104][104];
@@ -292,10 +295,10 @@ public class Game extends GameShell {
 	public int anInt936;
 	public int anInt937;
 	public int anInt938;
-	public int anInt945;
+	public int delta;
 	public Scene scene;
 	public Image8[] imageSideicons = new Image8[13];
-	public int anInt948;
+	public int mouseArea;
 	public int anInt949;
 	public int anInt950;
 	public int anInt951;
@@ -315,7 +318,7 @@ public class Game extends GameShell {
 	public int anInt984;
 	public int minimapPlane = -1;
 	public Image24[] imageHitmarks = new Image24[20];
-	public int anInt989;
+	public int objDragCycles;
 	public int anInt992;
 	public int anInt995;
 	public int anInt996;
@@ -324,7 +327,7 @@ public class Game extends GameShell {
 	public int anInt999;
 	public ISAACRandom randomIn;
 	public Image24 imageMapedge;
-	public String aString1004 = "";
+	public String chatbackInput = "";
 	public int anInt1006;
 	public int psize;
 	public int ptype;
@@ -336,7 +339,10 @@ public class Game extends GameShell {
 	public int anInt1015;
 	public int anInt1016;
 	public boolean aBoolean1017 = false;
-	public int anInt1018 = -1;
+	/**
+	 * A sticky component which does not leave on input.
+	 */
+	public int stickyViewportComponentId = -1;
 	public int minimapState;
 	public int anInt1022;
 	public int sceneState;
@@ -356,7 +362,7 @@ public class Game extends GameShell {
 	public int anInt1039;
 	public int flameGradientCycle0;
 	public int flameGradientCycle1;
-	public int anInt1042 = -1;
+	public int stickyChatbackComponentId = -1;
 	public int anInt1046;
 	public boolean aBoolean1047 = true;
 	public int anInt1048;
@@ -367,9 +373,18 @@ public class Game extends GameShell {
 	public DoublyLinkedList aList_1056 = new DoublyLinkedList();
 	public Image8[] imageMapscene = new Image8[100];
 	public int anInt1062;
-	public int anInt1064;
-	public int anInt1066;
-	public int anInt1067;
+	/**
+	 * Used for adding/removing friends/ignores and sending private messages.
+	 */
+	public int socialAction;
+	/**
+	 * The current container slot id the mouse is hovered over that belongs to {@link #hoveredSlotParentId}.
+	 */
+	public int hoveredSlot;
+	/**
+	 * The current component id the mouse is hovered over that the {@link #hoveredSlot} belongs to.
+	 */
+	public int hoveredSlotParentId;
 	public OnDemand ondemand;
 	public int sceneCenterZoneX;
 	public int sceneCenterZoneZ;
@@ -385,11 +400,29 @@ public class Game extends GameShell {
 	public boolean aBoolean1080 = false;
 	public String[] aStringArray1082 = new String[200];
 	public Buffer in = Buffer.create(1);
-	public int anInt1084;
-	public int anInt1085;
-	public int anInt1086;
-	public int anInt1087;
-	public int anInt1088;
+	/**
+	 * The component id of the container that the obj being dragged belongs to.
+	 */
+	public int objDragComponentId;
+	/**
+	 * The slot the obj being dragged resides.
+	 */
+	public int objDragSlot;
+	/**
+	 * The area the object being dragged resides.
+	 * 1 = Viewport
+	 * 2 = Invback
+	 * 3 = Chatback
+	 */
+	public int objDragArea;
+	/**
+	 * The mouse x when an obj was pressed in a container.
+	 */
+	public int objGrabX;
+	/**
+	 * The mouse y when an obj was pressed in a container.
+	 */
+	public int objGrabY;
 	public int anInt1089;
 	public int[] anIntArray1091 = new int[500];
 	public int[] anIntArray1092 = new int[500];
@@ -413,7 +446,7 @@ public class Game extends GameShell {
 	public DrawArea imageTitle7;
 	public DrawArea imageTitle8;
 	public int anInt1120;
-	public String aString1121 = "";
+	public String socialMessage = "";
 	public Image24 imageCompass;
 	public DrawArea aArea_1123;
 	public DrawArea aArea_1124;
@@ -436,16 +469,16 @@ public class Game extends GameShell {
 	public Image24[] imageCrosses = new Image24[8];
 	public boolean aBoolean1151 = true;
 	public Image8[] imageRunes;
-	public boolean aBoolean1153 = false;
+	public boolean redrawInvback = false;
 	public int anInt1154;
 	public boolean ingame = false;
 	public boolean aBoolean1158 = false;
 	public boolean sceneInstanced = false;
 	public boolean aBoolean1160 = false;
-	public DrawArea aArea_1163;
+	public DrawArea areaInvback;
 	public DrawArea aArea_1164;
 	public DrawArea areaViewport;
-	public DrawArea aArea_1166;
+	public DrawArea areaChatback;
 	public int anInt1167;
 	public Connection connection;
 	public int anInt1169;
@@ -457,14 +490,14 @@ public class Game extends GameShell {
 	public int anInt1178 = -1;
 	public DoublyLinkedList listTemporaryLocs = new DoublyLinkedList();
 	public int[] anIntArray1180;
-	public int[] anIntArray1181;
+	public int[] offsetsInvback;
 	public int[] anIntArray1182;
 	public byte[][] sceneMapLandData;
 	public int anInt1184 = 128;
 	public int anInt1185;
 	public int anInt1186;
 	public int anInt1187;
-	public int anInt1189 = -1;
+	public int invbackComponentId = -1;
 	public int[] flameBuffer0;
 	public int[] flameBuffer1;
 	public Buffer aBuffer_1192 = Buffer.create(1);
@@ -479,16 +512,16 @@ public class Game extends GameShell {
 	public int flameCycle;
 	public int anInt1209;
 	public int anInt1211 = 78;
-	public String aString1212 = "";
+	public String socialInput = "";
 	public int anInt1213;
 	public int[][][] anIntArrayArrayArray1214;
 	public long aLong1215;
 	public int anInt1216;
 	public long aLong1220;
-	public int anInt1221 = 3;
+	public int selectedTab = 3;
 	public int anInt1222;
-	public boolean aBoolean1223 = false;
-	public int anInt1225;
+	public boolean redrawChatback = false;
+	public int chatbackInputType;
 	public int music;
 	public boolean musicFade = true;
 	public SceneCollisionMap[] collisions = new SceneCollisionMap[4];
@@ -498,7 +531,7 @@ public class Game extends GameShell {
 	public int[] sceneMapLocFile;
 	public int anInt1237;
 	public int anInt1238;
-	public boolean aBoolean1242 = false;
+	public boolean objGrabThreshold = false;
 	public int anInt1243;
 	public int anInt1244;
 	public int anInt1245;
@@ -510,7 +543,7 @@ public class Game extends GameShell {
 	public boolean errAlreadyStarted = false;
 	public int anInt1253;
 	public boolean aBoolean1255 = false;
-	public boolean aBoolean1256 = false;
+	public boolean showSocialInput = false;
 	public int anInt1257;
 	public byte[][][] planeTileFlags;
 	public int anInt1259;
@@ -528,7 +561,7 @@ public class Game extends GameShell {
 	public BitmapFont fontBold12;
 	public BitmapFont fontQuill8;
 	public int flameCycle0;
-	public int anInt1276 = -1;
+	public int chatbackComponentId = -1;
 	public int anInt1278;
 	public int[] anIntArray1280 = new int[4000];
 	public int[] anIntArray1281 = new int[4000];
@@ -966,7 +999,6 @@ public class Game extends GameShell {
 			SpotAnimType.unpack(archiveConfig);
 			VarpType.unpack(archiveConfig);
 			VarbitType.unpack(archiveConfig);
-			ObjType.aBoolean182 = members;
 			if (!lowmem) {
 				showProgress(90, "Unpacking sounds");
 				byte[] abyte0 = archiveSounds.read("sounds.dat");
@@ -1018,7 +1050,7 @@ public class Game extends GameShell {
 			Draw3D.init3D(479, 96);
 			anIntArray1180 = Draw3D.lineOffset;
 			Draw3D.init3D(190, 261);
-			anIntArray1181 = Draw3D.lineOffset;
+			offsetsInvback = Draw3D.lineOffset;
 			Draw3D.init3D(512, 334);
 			anIntArray1182 = Draw3D.lineOffset;
 			int[] ai = new int[9];
@@ -1094,10 +1126,10 @@ public class Game extends GameShell {
 		anIntArray1280 = null;
 		anIntArray1281 = null;
 		aByteArray912 = null;
-		aArea_1163 = null;
+		areaInvback = null;
 		aArea_1164 = null;
 		areaViewport = null;
-		aArea_1166 = null;
+		areaChatback = null;
 		aArea_1123 = null;
 		aArea_1124 = null;
 		aArea_1125 = null;
@@ -1347,31 +1379,31 @@ public class Game extends GameShell {
 		return k == 337;
 	}
 
-	public void method18() {
-		aArea_1166.bind();
+	public void drawChatback() {
+		areaChatback.bind();
 		Draw3D.lineOffset = anIntArray1180;
 		imageChatback.blit(0, 0);
 
-		if (aBoolean1256) {
-			fontBold12.drawStringCenter(aString1121, 239, 40, 0);
-			fontBold12.drawStringCenter(aString1212 + "*", 239, 60, 128);
-		} else if (anInt1225 == 1) {
+		if (showSocialInput) {
+			fontBold12.drawStringCenter(socialMessage, 239, 40, 0);
+			fontBold12.drawStringCenter(socialInput + "*", 239, 60, 128);
+		} else if (chatbackInputType == 1) {
 			fontBold12.drawStringCenter("Enter amount:", 239, 40, 0);
-			fontBold12.drawStringCenter(aString1004 + "*", 239, 60, 128);
-		} else if (anInt1225 == 2) {
+			fontBold12.drawStringCenter(chatbackInput + "*", 239, 60, 128);
+		} else if (chatbackInputType == 2) {
 			fontBold12.drawStringCenter("Enter name:", 239, 40, 0);
-			fontBold12.drawStringCenter(aString1004 + "*", 239, 60, 128);
-		} else if (aString844 != null) {
-			fontBold12.drawStringCenter(aString844, 239, 40, 0);
+			fontBold12.drawStringCenter(chatbackInput + "*", 239, 60, 128);
+		} else if (chatbackMessage != null) {
+			fontBold12.drawStringCenter(chatbackMessage, 239, 40, 0);
 			fontBold12.drawStringCenter("Click to continue", 239, 60, 128);
-		} else if (anInt1276 != -1) {
-			method105(0, 0, Component.instances[anInt1276], 0);
-		} else if (anInt1042 != -1) {
-			method105(0, 0, Component.instances[anInt1042], 0);
+		} else if (chatbackComponentId != -1) {
+			drawParentComponent(Component.instances[chatbackComponentId], 0, 0, 0);
+		} else if (stickyChatbackComponentId != -1) {
+			drawParentComponent(Component.instances[stickyChatbackComponentId], 0, 0, 0);
 		} else {
 			BitmapFont font = fontPlain12;
 			int j = 0;
-			Draw2D.setBounds(77, 0, 463, 0);
+			Draw2D.setBounds(0, 0, 463, 77);
 			for (int k = 0; k < 100; k++) {
 				if (aStringArray944[k] != null) {
 					int l = anIntArray942[k];
@@ -1460,7 +1492,7 @@ public class Game extends GameShell {
 			if (anInt1211 < 78) {
 				anInt1211 = 78;
 			}
-			method30(77, anInt1211 - anInt1089 - 77, 0, 463, anInt1211);
+			drawScrollbar(463, 0, 77, anInt1211, anInt1211 - anInt1089 - 77);
 			String s;
 			if ((self != null) && (self.aString1703 != null)) {
 				s = self.aString1703;
@@ -1471,10 +1503,10 @@ public class Game extends GameShell {
 			font.drawString(aString887 + "*", 6 + font.stringWidthTaggable(s + ": "), 90, 255);
 			Draw2D.drawLineX(0, 77, 479, 0);
 		}
-		if (aBoolean885 && (anInt948 == 2)) {
+		if (aBoolean885 && (mouseArea == 2)) {
 			method40();
 		}
-		aArea_1166.draw(super.graphics, 17, 357);
+		areaChatback.draw(super.graphics, 17, 357);
 		areaViewport.bind();
 		Draw3D.lineOffset = anIntArray1182;
 	}
@@ -1487,62 +1519,62 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method20() {
-		if (anInt1086 != 0) {
+	public void updateMouseInput() {
+		if (objDragArea != 0) {
 			return;
 		}
-		int j = super.mousePressButton;
+
+		int button = super.mousePressButton;
+
 		if ((anInt1136 == 1) && (super.mousePressX >= 516) && (super.mousePressY >= 160) && (super.mousePressX <= 765) && (super.mousePressY <= 205)) {
-			j = 0;
+			button = 0;
 		}
+
 		if (aBoolean885) {
-			if (j != 1) {
-				int k = super.anInt20;
-				int j1 = super.anInt21;
-				if (anInt948 == 0) {
-					k -= 4;
-					j1 -= 4;
+			if (button != 1) {
+				int x = super.mouseX;
+				int y = super.mouseY;
+				if (mouseArea == 0) {
+					x -= 4;
+					y -= 4;
+				} else if (mouseArea == 1) {
+					x -= 553;
+					y -= 205;
+				} else if (mouseArea == 2) {
+					x -= 17;
+					y -= 357;
 				}
-				if (anInt948 == 1) {
-					k -= 553;
-					j1 -= 205;
-				}
-				if (anInt948 == 2) {
-					k -= 17;
-					j1 -= 357;
-				}
-				if ((k < (anInt949 - 10)) || (k > (anInt949 + anInt951 + 10)) || (j1 < (anInt950 - 10)) || (j1 > (anInt950 + anInt952 + 10))) {
+				if ((x < (anInt949 - 10)) || (x > (anInt949 + anInt951 + 10)) || (y < (anInt950 - 10)) || (y > (anInt950 + anInt952 + 10))) {
 					aBoolean885 = false;
-					if (anInt948 == 1) {
-						aBoolean1153 = true;
+					if (mouseArea == 1) {
+						redrawInvback = true;
 					}
-					if (anInt948 == 2) {
-						aBoolean1223 = true;
+					if (mouseArea == 2) {
+						redrawChatback = true;
 					}
 				}
 			}
-			if (j == 1) {
+
+			if (button == 1) {
 				int l = anInt949;
 				int k1 = anInt950;
 				int i2 = anInt951;
-				int k2 = super.mousePressX;
-				int l2 = super.mousePressY;
-				if (anInt948 == 0) {
-					k2 -= 4;
-					l2 -= 4;
-				}
-				if (anInt948 == 1) {
-					k2 -= 553;
-					l2 -= 205;
-				}
-				if (anInt948 == 2) {
-					k2 -= 17;
-					l2 -= 357;
+				int x = super.mousePressX;
+				int y = super.mousePressY;
+				if (mouseArea == 0) {
+					x -= 4;
+					y -= 4;
+				} else if (mouseArea == 1) {
+					x -= 553;
+					y -= 205;
+				} else if (mouseArea == 2) {
+					x -= 17;
+					y -= 357;
 				}
 				int i3 = -1;
 				for (int j3 = 0; j3 < anInt1133; j3++) {
 					int k3 = k1 + 31 + ((anInt1133 - 1 - j3) * 15);
-					if ((k2 > l) && (k2 < (l + i2)) && (l2 > (k3 - 13)) && (l2 < (k3 + 3))) {
+					if ((x > l) && (x < (l + i2)) && (y > (k3 - 13)) && (y < (k3 + 3))) {
 						i3 = j3;
 					}
 				}
@@ -1550,45 +1582,48 @@ public class Game extends GameShell {
 					method69(i3);
 				}
 				aBoolean885 = false;
-				if (anInt948 == 1) {
-					aBoolean1153 = true;
+				if (mouseArea == 1) {
+					redrawInvback = true;
 				}
-				if (anInt948 == 2) {
-					aBoolean1223 = true;
+				if (mouseArea == 2) {
+					redrawChatback = true;
 				}
 			}
 		} else {
-			if ((j == 1) && (anInt1133 > 0)) {
+			if ((button == 1) && (anInt1133 > 0)) {
 				int i1 = anIntArray1093[anInt1133 - 1];
 				if ((i1 == 632) || (i1 == 78) || (i1 == 867) || (i1 == 431) || (i1 == 53) || (i1 == 74) || (i1 == 454) || (i1 == 539) || (i1 == 493) || (i1 == 847) || (i1 == 447) || (i1 == 1125)) {
-					int l1 = anIntArray1091[anInt1133 - 1];
-					int j2 = anIntArray1092[anInt1133 - 1];
-					Component component = Component.instances[j2];
-					if (component.aBoolean259 || component.aBoolean235) {
-						aBoolean1242 = false;
-						anInt989 = 0;
-						anInt1084 = j2;
-						anInt1085 = l1;
-						anInt1086 = 2;
-						anInt1087 = super.mousePressX;
-						anInt1088 = super.mousePressY;
-						if (Component.instances[j2].anInt236 == anInt857) {
-							anInt1086 = 1;
+					int objSlot = anIntArray1091[anInt1133 - 1];
+					int componentId = anIntArray1092[anInt1133 - 1];
+					Component component = Component.instances[componentId];
+					if (component.aBoolean259 || component.objMoveReplaces) {
+						objGrabThreshold = false;
+						objDragCycles = 0;
+						objDragComponentId = componentId;
+						objDragSlot = objSlot;
+						objDragArea = 2;
+						objGrabX = super.mousePressX;
+						objGrabY = super.mousePressY;
+						if (Component.instances[componentId].parentId == viewportComponentId) {
+							objDragArea = 1;
 						}
-						if (Component.instances[j2].anInt236 == anInt1276) {
-							anInt1086 = 3;
+						if (Component.instances[componentId].parentId == chatbackComponentId) {
+							objDragArea = 3;
 						}
 						return;
 					}
 				}
 			}
-			if ((j == 1) && ((anInt1253 == 1) || method17(anInt1133 - 1)) && (anInt1133 > 2)) {
-				j = 2;
+
+			if ((button == 1) && ((anInt1253 == 1) || method17(anInt1133 - 1)) && (anInt1133 > 2)) {
+				button = 2;
 			}
-			if ((j == 1) && (anInt1133 > 0)) {
+
+			if ((button == 1) && (anInt1133 > 0)) {
 				method69(anInt1133 - 1);
 			}
-			if ((j == 2) && (anInt1133 > 0)) {
+
+			if ((button == 2) && (anInt1133 > 0)) {
 				method116();
 			}
 		}
@@ -1883,7 +1918,7 @@ public class Game extends GameShell {
 		ObjStackEntity stack2 = null;
 
 		for (ObjStackEntity stack = (ObjStackEntity) list.peekFront(); stack != null; stack = (ObjStackEntity) list.prev()) {
-			ObjType type = ObjType.method198(stack.anInt1558);
+			ObjType type = ObjType.get(stack.anInt1558);
 
 			int l = type.anInt155;
 
@@ -1957,149 +1992,156 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method29(int i, Component component, int k, int l, int i1, int j1) {
-		if ((component.anInt262 != 0) || (component.anIntArray240 == null) || component.aBoolean266) {
+	public void handleParentComponentInput(int x, Component parent, int mouseX, int y, int mouseY, int scrollY) {
+		if ((parent.type != 0) || (parent.children == null) || parent.aBoolean266) {
 			return;
 		}
-		if ((k < i) || (i1 < l) || (k > (i + component.anInt220)) || (i1 > (l + component.anInt267))) {
+
+		if ((mouseX < x) || (mouseY < y) || (mouseX > (x + parent.width)) || (mouseY > (y + parent.height))) {
 			return;
 		}
-		int k1 = component.anIntArray240.length;
-		for (int l1 = 0; l1 < k1; l1++) {
-			int i2 = component.anIntArray241[l1] + i;
-			int j2 = (component.anIntArray272[l1] + l) - j1;
-			Component component_1 = Component.instances[component.anIntArray240[l1]];
-			i2 += component_1.anInt263;
-			j2 += component_1.anInt265;
-			if (((component_1.anInt230 >= 0) || (component_1.anInt216 != 0)) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
-				if (component_1.anInt230 >= 0) {
-					anInt886 = component_1.anInt230;
+
+		int childCount = parent.children.length;
+
+		for (int childIndex = 0; childIndex < childCount; childIndex++) {
+			int cx = parent.childX[childIndex] + x;
+			int cy = (parent.childY[childIndex] + y) - scrollY;
+			Component child = Component.instances[parent.children[childIndex]];
+
+			cx += child.x;
+			cy += child.y;
+
+			if (((child.anInt230 >= 0) || (child.anInt216 != 0)) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+				if (child.anInt230 >= 0) {
+					anInt886 = child.anInt230;
 				} else {
-					anInt886 = component_1.anInt250;
+					anInt886 = child.id;
 				}
 			}
-			if (component_1.anInt262 == 0) {
-				method29(i2, component_1, k, j2, i1, component_1.anInt224);
-				if (component_1.anInt261 > component_1.anInt267) {
-					method65(i2 + component_1.anInt220, component_1.anInt267, k, i1, component_1, j2, true, component_1.anInt261);
+
+			if (child.type == 0) {
+				handleParentComponentInput(cx, child, mouseX, cy, mouseY, child.scrollY);
+
+				if (child.innerHeight > child.height) {
+					method65(cx + child.width, child.height, mouseX, mouseY, child, cy, true, child.innerHeight);
 				}
 			} else {
-				if ((component_1.anInt217 == 1) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
+				if ((child.optionType == 1) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
 					boolean flag = false;
-					if (component_1.anInt214 != 0) {
-						flag = method103(component_1);
+					if (child.contentType != 0) {
+						flag = method103(child);
 					}
 					if (!flag) {
-						aStringArray1199[anInt1133] = component_1.aString221;
+						aStringArray1199[anInt1133] = child.aString221;
 						anIntArray1093[anInt1133] = 315;
-						anIntArray1092[anInt1133] = component_1.anInt250;
+						anIntArray1092[anInt1133] = child.id;
 						anInt1133++;
 					}
 				}
-				if ((component_1.anInt217 == 2) && (anInt1136 == 0) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
-					String s = component_1.aString222;
+				if ((child.optionType == 2) && (anInt1136 == 0) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+					String s = child.aString222;
 					if (s.contains(" ")) {
 						s = s.substring(0, s.indexOf(" "));
 					}
-					aStringArray1199[anInt1133] = s + " @gre@" + component_1.aString218;
+					aStringArray1199[anInt1133] = s + " @gre@" + child.aString218;
 					anIntArray1093[anInt1133] = 626;
-					anIntArray1092[anInt1133] = component_1.anInt250;
+					anIntArray1092[anInt1133] = child.id;
 					anInt1133++;
 				}
-				if ((component_1.anInt217 == 3) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
+				if ((child.optionType == 3) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
 					aStringArray1199[anInt1133] = "Close";
 					anIntArray1093[anInt1133] = 200;
-					anIntArray1092[anInt1133] = component_1.anInt250;
+					anIntArray1092[anInt1133] = child.id;
 					anInt1133++;
 				}
-				if ((component_1.anInt217 == 4) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
-					aStringArray1199[anInt1133] = component_1.aString221;
+				if ((child.optionType == 4) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+					aStringArray1199[anInt1133] = child.aString221;
 					anIntArray1093[anInt1133] = 169;
-					anIntArray1092[anInt1133] = component_1.anInt250;
+					anIntArray1092[anInt1133] = child.id;
 					anInt1133++;
 				}
-				if ((component_1.anInt217 == 5) && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
-					aStringArray1199[anInt1133] = component_1.aString221;
+				if ((child.optionType == 5) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+					aStringArray1199[anInt1133] = child.aString221;
 					anIntArray1093[anInt1133] = 646;
-					anIntArray1092[anInt1133] = component_1.anInt250;
+					anIntArray1092[anInt1133] = child.id;
 					anInt1133++;
 				}
-				if ((component_1.anInt217 == 6) && !aBoolean1149 && (k >= i2) && (i1 >= j2) && (k < (i2 + component_1.anInt220)) && (i1 < (j2 + component_1.anInt267))) {
-					aStringArray1199[anInt1133] = component_1.aString221;
+				if ((child.optionType == 6) && !aBoolean1149 && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+					aStringArray1199[anInt1133] = child.aString221;
 					anIntArray1093[anInt1133] = 679;
-					anIntArray1092[anInt1133] = component_1.anInt250;
+					anIntArray1092[anInt1133] = child.id;
 					anInt1133++;
 				}
-				if (component_1.anInt262 == 2) {
+				if (child.type == 2) {
 					int k2 = 0;
-					for (int l2 = 0; l2 < component_1.anInt267; l2++) {
-						for (int i3 = 0; i3 < component_1.anInt220; i3++) {
-							int j3 = i2 + (i3 * (32 + component_1.anInt231));
-							int k3 = j2 + (l2 * (32 + component_1.anInt244));
+					for (int l2 = 0; l2 < child.height; l2++) {
+						for (int i3 = 0; i3 < child.width; i3++) {
+							int j3 = cx + (i3 * (32 + child.slotMarginX));
+							int k3 = cy + (l2 * (32 + child.slotMarginY));
 							if (k2 < 20) {
-								j3 += component_1.anIntArray215[k2];
-								k3 += component_1.anIntArray247[k2];
+								j3 += child.slotX[k2];
+								k3 += child.slotY[k2];
 							}
-							if ((k >= j3) && (i1 >= k3) && (k < (j3 + 32)) && (i1 < (k3 + 32))) {
-								anInt1066 = k2;
-								anInt1067 = component_1.anInt250;
-								if (component_1.anIntArray253[k2] > 0) {
-									ObjType type = ObjType.method198(component_1.anIntArray253[k2] - 1);
-									if ((anInt1282 == 1) && component_1.aBoolean249) {
-										if ((component_1.anInt250 != anInt1284) || (k2 != anInt1283)) {
-											aStringArray1199[anInt1133] = "Use " + aString1286 + " with @lre@" + type.aString170;
+							if ((mouseX >= j3) && (mouseY >= k3) && (mouseX < (j3 + 32)) && (mouseY < (k3 + 32))) {
+								hoveredSlot = k2;
+								hoveredSlotParentId = child.id;
+								if (child.slotObjId[k2] > 0) {
+									ObjType type = ObjType.get(child.slotObjId[k2] - 1);
+									if ((anInt1282 == 1) && child.aBoolean249) {
+										if ((child.id != anInt1284) || (k2 != anInt1283)) {
+											aStringArray1199[anInt1133] = "Use " + aString1286 + " with @lre@" + type.name;
 											anIntArray1093[anInt1133] = 870;
-											anIntArray1094[anInt1133] = type.anInt157;
+											anIntArray1094[anInt1133] = type.id;
 											anIntArray1091[anInt1133] = k2;
-											anIntArray1092[anInt1133] = component_1.anInt250;
+											anIntArray1092[anInt1133] = child.id;
 											anInt1133++;
 										}
-									} else if ((anInt1136 == 1) && component_1.aBoolean249) {
+									} else if ((anInt1136 == 1) && child.aBoolean249) {
 										if ((anInt1138 & 0x10) == 16) {
-											aStringArray1199[anInt1133] = aString1139 + " @lre@" + type.aString170;
+											aStringArray1199[anInt1133] = aString1139 + " @lre@" + type.name;
 											anIntArray1093[anInt1133] = 543;
-											anIntArray1094[anInt1133] = type.anInt157;
+											anIntArray1094[anInt1133] = type.id;
 											anIntArray1091[anInt1133] = k2;
-											anIntArray1092[anInt1133] = component_1.anInt250;
+											anIntArray1092[anInt1133] = child.id;
 											anInt1133++;
 										}
 									} else {
-										if (component_1.aBoolean249) {
+										if (child.aBoolean249) {
 											for (int l3 = 4; l3 >= 3; l3--) {
 												if ((type.aStringArray189 != null) && (type.aStringArray189[l3] != null)) {
-													aStringArray1199[anInt1133] = type.aStringArray189[l3] + " @lre@" + type.aString170;
+													aStringArray1199[anInt1133] = type.aStringArray189[l3] + " @lre@" + type.name;
 													if (l3 == 3) {
 														anIntArray1093[anInt1133] = 493;
 													}
 													if (l3 == 4) {
 														anIntArray1093[anInt1133] = 847;
 													}
-													anIntArray1094[anInt1133] = type.anInt157;
+													anIntArray1094[anInt1133] = type.id;
 													anIntArray1091[anInt1133] = k2;
-													anIntArray1092[anInt1133] = component_1.anInt250;
+													anIntArray1092[anInt1133] = child.id;
 													anInt1133++;
 												} else if (l3 == 4) {
-													aStringArray1199[anInt1133] = "Drop @lre@" + type.aString170;
+													aStringArray1199[anInt1133] = "Drop @lre@" + type.name;
 													anIntArray1093[anInt1133] = 847;
-													anIntArray1094[anInt1133] = type.anInt157;
+													anIntArray1094[anInt1133] = type.id;
 													anIntArray1091[anInt1133] = k2;
-													anIntArray1092[anInt1133] = component_1.anInt250;
+													anIntArray1092[anInt1133] = child.id;
 													anInt1133++;
 												}
 											}
 										}
-										if (component_1.aBoolean242) {
-											aStringArray1199[anInt1133] = "Use @lre@" + type.aString170;
+										if (child.aBoolean242) {
+											aStringArray1199[anInt1133] = "Use @lre@" + type.name;
 											anIntArray1093[anInt1133] = 447;
-											anIntArray1094[anInt1133] = type.anInt157;
+											anIntArray1094[anInt1133] = type.id;
 											anIntArray1091[anInt1133] = k2;
-											anIntArray1092[anInt1133] = component_1.anInt250;
+											anIntArray1092[anInt1133] = child.id;
 											anInt1133++;
 										}
-										if (component_1.aBoolean249 && (type.aStringArray189 != null)) {
+										if (child.aBoolean249 && (type.aStringArray189 != null)) {
 											for (int i4 = 2; i4 >= 0; i4--) {
 												if (type.aStringArray189[i4] != null) {
-													aStringArray1199[anInt1133] = type.aStringArray189[i4] + " @lre@" + type.aString170;
+													aStringArray1199[anInt1133] = type.aStringArray189[i4] + " @lre@" + type.name;
 													if (i4 == 0) {
 														anIntArray1093[anInt1133] = 74;
 													}
@@ -2109,17 +2151,17 @@ public class Game extends GameShell {
 													if (i4 == 2) {
 														anIntArray1093[anInt1133] = 539;
 													}
-													anIntArray1094[anInt1133] = type.anInt157;
+													anIntArray1094[anInt1133] = type.id;
 													anIntArray1091[anInt1133] = k2;
-													anIntArray1092[anInt1133] = component_1.anInt250;
+													anIntArray1092[anInt1133] = child.id;
 													anInt1133++;
 												}
 											}
 										}
-										if (component_1.aStringArray225 != null) {
+										if (child.aStringArray225 != null) {
 											for (int j4 = 4; j4 >= 0; j4--) {
-												if (component_1.aStringArray225[j4] != null) {
-													aStringArray1199[anInt1133] = component_1.aStringArray225[j4] + " @lre@" + type.aString170;
+												if (child.aStringArray225[j4] != null) {
+													aStringArray1199[anInt1133] = child.aStringArray225[j4] + " @lre@" + type.name;
 													if (j4 == 0) {
 														anIntArray1093[anInt1133] = 632;
 													}
@@ -2135,18 +2177,18 @@ public class Game extends GameShell {
 													if (j4 == 4) {
 														anIntArray1093[anInt1133] = 53;
 													}
-													anIntArray1094[anInt1133] = type.anInt157;
+													anIntArray1094[anInt1133] = type.id;
 													anIntArray1091[anInt1133] = k2;
-													anIntArray1092[anInt1133] = component_1.anInt250;
+													anIntArray1092[anInt1133] = child.id;
 													anInt1133++;
 												}
 											}
 										}
-										aStringArray1199[anInt1133] = "Examine @lre@" + type.aString170;
+										aStringArray1199[anInt1133] = "Examine @lre@" + type.name;
 										anIntArray1093[anInt1133] = 1125;
-										anIntArray1094[anInt1133] = type.anInt157;
+										anIntArray1094[anInt1133] = type.id;
 										anIntArray1091[anInt1133] = k2;
-										anIntArray1092[anInt1133] = component_1.anInt250;
+										anIntArray1092[anInt1133] = child.id;
 										anInt1133++;
 									}
 								}
@@ -2159,24 +2201,24 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method30(int j, int k, int l, int i1, int j1) {
-		imageScrollbar0.blit(i1, l);
-		imageScrollbar1.blit(i1, (l + j) - 16);
-		Draw2D.fillRect(i1, l + 16, 16, j - 32, anInt1002);
-		int k1 = ((j - 32) * j) / j1;
-		if (k1 < 8) {
-			k1 = 8;
+	public void drawScrollbar(int x, int y, int height, int innerHeight, int scrollY) {
+		imageScrollbar0.blit(x, y);
+		imageScrollbar1.blit(x, (y + height) - 16);
+		Draw2D.fillRect(x, y + 16, 16, height - 32, anInt1002);
+		int gripSize = ((height - 32) * height) / innerHeight;
+		if (gripSize < 8) {
+			gripSize = 8;
 		}
-		int l1 = ((j - 32 - k1) * k) / (j1 - j);
-		Draw2D.fillRect(i1, l + 16 + l1, 16, k1, anInt1063);
-		Draw2D.drawLineY(l + 16 + l1, anInt902, k1, i1);
-		Draw2D.drawLineY(l + 16 + l1, anInt902, k1, i1 + 1);
-		Draw2D.drawLineX(i1, l + 16 + l1, 16, anInt902);
-		Draw2D.drawLineX(i1, l + 17 + l1, 16, anInt902);
-		Draw2D.drawLineY(l + 16 + l1, anInt927, k1, i1 + 15);
-		Draw2D.drawLineY(l + 17 + l1, anInt927, k1 - 1, i1 + 14);
-		Draw2D.drawLineX(i1, l + 15 + l1 + k1, 16, anInt927);
-		Draw2D.drawLineX(i1 + 1, l + 14 + l1 + k1, 15, anInt927);
+		int gripY = ((height - 32 - gripSize) * scrollY) / (innerHeight - height);
+		Draw2D.fillRect(x, y + 16 + gripY, 16, gripSize, anInt1063);
+		Draw2D.drawLineY(x, y + 16 + gripY, gripSize, anInt902);
+		Draw2D.drawLineY(x + 1, y + 16 + gripY, gripSize, anInt902);
+		Draw2D.drawLineX(x, y + 16 + gripY, 16, anInt902);
+		Draw2D.drawLineX(x, y + 17 + gripY, 16, anInt902);
+		Draw2D.drawLineY(x + 15, y + 16 + gripY, gripSize, anInt927);
+		Draw2D.drawLineY(x + 14, y + 17 + gripY, gripSize - 1, anInt927);
+		Draw2D.drawLineX(x, y + 15 + gripY + gripSize, 16, anInt927);
+		Draw2D.drawLineX(x + 1, y + 14 + gripY + gripSize, 15, anInt927);
 	}
 
 	public void method31(Buffer buffer, int i) {
@@ -2209,7 +2251,7 @@ public class Game extends GameShell {
 			if ((super.mousePressX >= 6) && (super.mousePressX <= 106) && (super.mousePressY >= 467) && (super.mousePressY <= 499)) {
 				anInt1287 = (anInt1287 + 1) % 4;
 				aBoolean1233 = true;
-				aBoolean1223 = true;
+				redrawChatback = true;
 				aBuffer_1192.putOp(95);
 				aBuffer_1192.put1(anInt1287);
 				aBuffer_1192.put1(anInt845);
@@ -2218,7 +2260,7 @@ public class Game extends GameShell {
 			if ((super.mousePressX >= 135) && (super.mousePressX <= 235) && (super.mousePressY >= 467) && (super.mousePressY <= 499)) {
 				anInt845 = (anInt845 + 1) % 3;
 				aBoolean1233 = true;
-				aBoolean1223 = true;
+				redrawChatback = true;
 				aBuffer_1192.putOp(95);
 				aBuffer_1192.put1(anInt1287);
 				aBuffer_1192.put1(anInt845);
@@ -2227,22 +2269,22 @@ public class Game extends GameShell {
 			if ((super.mousePressX >= 273) && (super.mousePressX <= 373) && (super.mousePressY >= 467) && (super.mousePressY <= 499)) {
 				anInt1248 = (anInt1248 + 1) % 3;
 				aBoolean1233 = true;
-				aBoolean1223 = true;
+				redrawChatback = true;
 				aBuffer_1192.putOp(95);
 				aBuffer_1192.put1(anInt1287);
 				aBuffer_1192.put1(anInt845);
 				aBuffer_1192.put1(anInt1248);
 			}
 			if ((super.mousePressX >= 412) && (super.mousePressX <= 512) && (super.mousePressY >= 467) && (super.mousePressY <= 499)) {
-				if (anInt857 == -1) {
+				if (viewportComponentId == -1) {
 					method147();
 					aString881 = "";
 					aBoolean1158 = false;
 					for (int i = 0; i < Component.instances.length; i++) {
-						if ((Component.instances[i] == null) || (Component.instances[i].anInt214 != 600)) {
+						if ((Component.instances[i] == null) || (Component.instances[i].contentType != 600)) {
 							continue;
 						}
-						anInt1178 = anInt857 = Component.instances[i].anInt236;
+						anInt1178 = viewportComponentId = Component.instances[i].parentId;
 						break;
 					}
 				} else {
@@ -2252,47 +2294,50 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method33(int i) {
-		int j = VarpType.instances[i].anInt709;
-		if (j == 0) {
+	public void updateVarp(int varp) {
+		int key = VarpType.instances[varp].anInt709;
+
+		if (key == 0) {
 			return;
 		}
-		int k = anIntArray971[i];
-		if (j == 1) {
-			if (k == 1) {
+
+		int value = anIntArray971[varp];
+
+		if (key == 1) {
+			if (value == 1) {
 				Draw3D.setBrightness(0.90000000000000002D);
 			}
-			if (k == 2) {
+			if (value == 2) {
 				Draw3D.setBrightness(0.80000000000000004D);
 			}
-			if (k == 3) {
+			if (value == 3) {
 				Draw3D.setBrightness(0.69999999999999996D);
 			}
-			if (k == 4) {
+			if (value == 4) {
 				Draw3D.setBrightness(0.59999999999999998D);
 			}
 			ObjType.iconCache.clear();
 			aBoolean1255 = true;
 		}
-		if (j == 3) {
+		if (key == 3) {
 			boolean flag1 = aBoolean1151;
-			if (k == 0) {
+			if (value == 0) {
 				method123(aBoolean1151, 0);
 				aBoolean1151 = true;
 			}
-			if (k == 1) {
+			if (value == 1) {
 				method123(aBoolean1151, -400);
 				aBoolean1151 = true;
 			}
-			if (k == 2) {
+			if (value == 2) {
 				method123(aBoolean1151, -800);
 				aBoolean1151 = true;
 			}
-			if (k == 3) {
+			if (value == 3) {
 				method123(aBoolean1151, -1200);
 				aBoolean1151 = true;
 			}
-			if (k == 4) {
+			if (value == 4) {
 				aBoolean1151 = false;
 			}
 			if ((aBoolean1151 != flag1) && !lowmem) {
@@ -2306,39 +2351,39 @@ public class Game extends GameShell {
 				anInt1259 = 0;
 			}
 		}
-		if (j == 4) {
-			if (k == 0) {
+		if (key == 4) {
+			if (value == 0) {
 				aBoolean848 = true;
 				method111(0);
 			}
-			if (k == 1) {
+			if (value == 1) {
 				aBoolean848 = true;
 				method111(-400);
 			}
-			if (k == 2) {
+			if (value == 2) {
 				aBoolean848 = true;
 				method111(-800);
 			}
-			if (k == 3) {
+			if (value == 3) {
 				aBoolean848 = true;
 				method111(-1200);
 			}
-			if (k == 4) {
+			if (value == 4) {
 				aBoolean848 = false;
 			}
 		}
-		if (j == 5) {
-			anInt1253 = k;
+		if (key == 5) {
+			anInt1253 = value;
 		}
-		if (j == 6) {
-			anInt1249 = k;
+		if (key == 6) {
+			anInt1249 = value;
 		}
-		if (j == 8) {
-			anInt1195 = k;
-			aBoolean1223 = true;
+		if (key == 8) {
+			anInt1195 = value;
+			redrawChatback = true;
 		}
-		if (j == 9) {
-			anInt913 = k;
+		if (key == 9) {
+			bankArrangeMode = value;
 		}
 	}
 
@@ -2537,7 +2582,7 @@ public class Game extends GameShell {
 				if (anIntArray981[k] == 4) {
 					int i4 = fontBold12.stringWidth(s);
 					int k4 = ((150 - anIntArray982[k]) * (i4 + 100)) / 150;
-					Draw2D.setBounds(334, anInt963 - 50, anInt963 + 50, 0);
+					Draw2D.setBounds(anInt963 - 50, 0, anInt963 + 50, 334);
 					fontBold12.drawString(s, (anInt963 + 50) - k4, anInt964 + 1, 0);
 					fontBold12.drawString(s, (anInt963 + 50) - k4, anInt964, i3);
 					Draw2D.resetBounds();
@@ -2550,7 +2595,7 @@ public class Game extends GameShell {
 					} else if (j4 > 125) {
 						l4 = j4 - 125;
 					}
-					Draw2D.setBounds(anInt964 + 5, 0, 512, anInt964 - fontBold12.height - 1);
+					Draw2D.setBounds(0, anInt964 - fontBold12.height - 1, 512, anInt964 + 5);
 					fontBold12.drawStringCenter(s, anInt963, anInt964 + 1 + l4, 0);
 					fontBold12.drawStringCenter(s, anInt963, anInt964 + l4, i3);
 					Draw2D.resetBounds();
@@ -2571,7 +2616,7 @@ public class Game extends GameShell {
 				continue;
 			}
 			anInt899--;
-			aBoolean1153 = true;
+			redrawInvback = true;
 			for (int j = i; j < anInt899; j++) {
 				aStringArray1082[j] = aStringArray1082[j + 1];
 				anIntArray826[j] = anIntArray826[j + 1];
@@ -2583,19 +2628,22 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method36() {
-		aArea_1163.bind();
-		Draw3D.lineOffset = anIntArray1181;
+	public void drawInvback() {
+		areaInvback.bind();
+		Draw3D.lineOffset = offsetsInvback;
 		imageInvback.blit(0, 0);
-		if (anInt1189 != -1) {
-			method105(0, 0, Component.instances[anInt1189], 0);
-		} else if (anIntArray1130[anInt1221] != -1) {
-			method105(0, 0, Component.instances[anIntArray1130[anInt1221]], 0);
+
+		if (invbackComponentId != -1) {
+			drawParentComponent(Component.instances[invbackComponentId], 0, 0, 0);
+		} else if (tabComponentId[selectedTab] != -1) {
+			drawParentComponent(Component.instances[tabComponentId[selectedTab]], 0, 0, 0);
 		}
-		if (aBoolean885 && (anInt948 == 1)) {
+
+		if (aBoolean885 && (mouseArea == 1)) {
 			method40();
 		}
-		aArea_1163.draw(super.graphics, 553, 205);
+
+		areaInvback.draw(super.graphics, 553, 205);
 		areaViewport.bind();
 		Draw3D.lineOffset = anIntArray1182;
 	}
@@ -2605,7 +2653,7 @@ public class Game extends GameShell {
 			if (Draw3D.textureCycle[17] >= j) {
 				Image8 image = Draw3D.textures[17];
 				int k = (image.width * image.height) - 1;
-				int j1 = image.width * anInt945 * 2;
+				int j1 = image.width * delta * 2;
 				byte[] abyte0 = image.pixels;
 				byte[] abyte3 = aByteArray912;
 				for (int i2 = 0; i2 <= k; i2++) {
@@ -2618,7 +2666,7 @@ public class Game extends GameShell {
 			if (Draw3D.textureCycle[24] >= j) {
 				Image8 class30_sub2_sub1_sub2_1 = Draw3D.textures[24];
 				int l = (class30_sub2_sub1_sub2_1.width * class30_sub2_sub1_sub2_1.height) - 1;
-				int k1 = class30_sub2_sub1_sub2_1.width * anInt945 * 2;
+				int k1 = class30_sub2_sub1_sub2_1.width * delta * 2;
 				byte[] abyte1 = class30_sub2_sub1_sub2_1.pixels;
 				byte[] abyte4 = aByteArray912;
 				for (int j2 = 0; j2 <= l; j2++) {
@@ -2631,7 +2679,7 @@ public class Game extends GameShell {
 			if (Draw3D.textureCycle[34] >= j) {
 				Image8 class30_sub2_sub1_sub2_2 = Draw3D.textures[34];
 				int i1 = (class30_sub2_sub1_sub2_2.width * class30_sub2_sub1_sub2_2.height) - 1;
-				int l1 = class30_sub2_sub1_sub2_2.width * anInt945 * 2;
+				int l1 = class30_sub2_sub1_sub2_2.width * delta * 2;
 				byte[] abyte2 = class30_sub2_sub1_sub2_2.pixels;
 				byte[] abyte5 = aByteArray912;
 				for (int k2 = 0; k2 <= i1; k2++) {
@@ -2776,17 +2824,17 @@ public class Game extends GameShell {
 		Draw2D.fillRect(i + 1, j + 1, k - 2, 16, 0);
 		Draw2D.drawRect(i + 1, j + 18, k - 2, l - 19, 0);
 		fontBold12.drawString("Choose Option", i + 3, j + 14, i1);
-		int j1 = super.anInt20;
-		int k1 = super.anInt21;
-		if (anInt948 == 0) {
+		int j1 = super.mouseX;
+		int k1 = super.mouseY;
+		if (mouseArea == 0) {
 			j1 -= 4;
 			k1 -= 4;
 		}
-		if (anInt948 == 1) {
+		if (mouseArea == 1) {
 			j1 -= 553;
 			k1 -= 205;
 		}
-		if (anInt948 == 2) {
+		if (mouseArea == 2) {
 			j1 -= 17;
 			k1 -= 357;
 		}
@@ -2830,7 +2878,7 @@ public class Game extends GameShell {
 			aLongArray955[anInt899] = l;
 			anIntArray826[anInt899] = 0;
 			anInt899++;
-			aBoolean1153 = true;
+			redrawInvback = true;
 			aBuffer_1192.putOp(188);
 			aBuffer_1192.put8(l);
 		}
@@ -2984,49 +3032,56 @@ public class Game extends GameShell {
 		}
 	}
 
-	public boolean method48(Component component) {
-		int j = component.anInt214;
-		if (anInt900 == 2) {
-			if (j == 201) {
-				aBoolean1223 = true;
-				anInt1225 = 0;
-				aBoolean1256 = true;
-				aString1212 = "";
-				anInt1064 = 1;
-				aString1121 = "Enter name of friend to add to list";
+	/**
+	 * Handles a components action.
+	 *
+	 * @param component the component.
+	 * @return <code>false</code> to suppress packet 185.
+	 */
+	public boolean handleComponentAction(Component component) {
+		int type = component.contentType;
+
+		if (socialState == 2) {
+			if (type == 201) {
+				redrawChatback = true;
+				chatbackInputType = 0;
+				showSocialInput = true;
+				socialInput = "";
+				socialAction = 1;
+				socialMessage = "Enter name of friend to add to list";
 			}
-			if (j == 202) {
-				aBoolean1223 = true;
-				anInt1225 = 0;
-				aBoolean1256 = true;
-				aString1212 = "";
-				anInt1064 = 2;
-				aString1121 = "Enter name of friend to delete from list";
+			if (type == 202) {
+				redrawChatback = true;
+				chatbackInputType = 0;
+				showSocialInput = true;
+				socialInput = "";
+				socialAction = 2;
+				socialMessage = "Enter name of friend to delete from list";
 			}
 		}
-		if (j == 205) {
+		if (type == 205) {
 			anInt1011 = 250;
 			return true;
 		}
-		if (j == 501) {
-			aBoolean1223 = true;
-			anInt1225 = 0;
-			aBoolean1256 = true;
-			aString1212 = "";
-			anInt1064 = 4;
-			aString1121 = "Enter name of player to add to list";
+		if (type == 501) {
+			redrawChatback = true;
+			chatbackInputType = 0;
+			showSocialInput = true;
+			socialInput = "";
+			socialAction = 4;
+			socialMessage = "Enter name of player to add to list";
 		}
-		if (j == 502) {
-			aBoolean1223 = true;
-			anInt1225 = 0;
-			aBoolean1256 = true;
-			aString1212 = "";
-			anInt1064 = 5;
-			aString1121 = "Enter name of player to delete from list";
+		if (type == 502) {
+			redrawChatback = true;
+			chatbackInputType = 0;
+			showSocialInput = true;
+			socialInput = "";
+			socialAction = 5;
+			socialMessage = "Enter name of player to delete from list";
 		}
-		if ((j >= 300) && (j <= 313)) {
-			int k = (j - 300) / 2;
-			int j1 = j & 1;
+		if ((type >= 300) && (type <= 313)) {
+			int k = (type - 300) / 2;
+			int j1 = type & 1;
 			int i2 = anIntArray1065[k];
 			if (i2 != -1) {
 				do {
@@ -3041,9 +3096,9 @@ public class Game extends GameShell {
 				aBoolean1031 = true;
 			}
 		}
-		if ((j >= 314) && (j <= 323)) {
-			int l = (j - 314) / 2;
-			int k1 = j & 1;
+		if ((type >= 314) && (type <= 323)) {
+			int l = (type - 314) / 2;
+			int k1 = type & 1;
 			int j2 = anIntArray990[l];
 			if ((k1 == 0) && (--j2 < 0)) {
 				j2 = anIntArrayArray1003[l].length - 1;
@@ -3054,15 +3109,15 @@ public class Game extends GameShell {
 			anIntArray990[l] = j2;
 			aBoolean1031 = true;
 		}
-		if ((j == 324) && !aBoolean1047) {
+		if ((type == 324) && !aBoolean1047) {
 			aBoolean1047 = true;
 			method45();
 		}
-		if ((j == 325) && aBoolean1047) {
+		if ((type == 325) && aBoolean1047) {
 			aBoolean1047 = false;
 			method45();
 		}
-		if (j == 326) {
+		if (type == 326) {
 			aBuffer_1192.putOp(101);
 			aBuffer_1192.put1(aBoolean1047 ? 0 : 1);
 			for (int i1 = 0; i1 < 7; i1++) {
@@ -3073,12 +3128,12 @@ public class Game extends GameShell {
 			}
 			return true;
 		}
-		if ((j >= 601) && (j <= 612)) {
+		if ((type >= 601) && (type <= 612)) {
 			method147();
 			if (aString881.length() > 0) {
 				aBuffer_1192.putOp(218);
 				aBuffer_1192.put8(StringUtil.toBase37(aString881));
-				aBuffer_1192.put1(j - 601);
+				aBuffer_1192.put1(type - 601);
 				aBuffer_1192.put1(aBoolean1158 ? 1 : 0);
 			}
 		}
@@ -3397,7 +3452,7 @@ public class Game extends GameShell {
 						projectile.method455(loopCycle, player.z, getHeightmapY(projectile.anInt1597, player.x, player.z) - projectile.anInt1583, player.x);
 					}
 				}
-				projectile.method456(anInt945);
+				projectile.method456(delta);
 				scene.addTemporary(projectile, currentPlane, (int) projectile.aDouble1585, (int) projectile.aDouble1586, (int) projectile.aDouble1587, projectile.anInt1595, -1, false, 60);
 			}
 		}
@@ -3489,9 +3544,9 @@ public class Game extends GameShell {
 				if (request.store == 0) {
 					Model.unpack(request.data, request.file);
 					if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
-						aBoolean1153 = true;
-						if (anInt1276 != -1) {
-							aBoolean1223 = true;
+						redrawInvback = true;
+						if (chatbackComponentId != -1) {
+							redrawChatback = true;
 						}
 					}
 				}
@@ -3607,16 +3662,16 @@ public class Game extends GameShell {
 
 	public void method60(int i) {
 		Component component = Component.instances[i];
-		for (int j = 0; j < component.anIntArray240.length; j++) {
-			if (component.anIntArray240[j] == -1) {
+		for (int j = 0; j < component.children.length; j++) {
+			if (component.children[j] == -1) {
 				break;
 			}
-			Component component_1 = Component.instances[component.anIntArray240[j]];
-			if (component_1.anInt262 == 1) {
-				method60(component_1.anInt250);
+			Component component_1 = Component.instances[component.children[j]];
+			if (component_1.type == 1) {
+				method60(component_1.id);
 			}
-			component_1.anInt246 = 0;
-			component_1.anInt208 = 0;
+			component_1.seqFrame = 0;
+			component_1.seqCycle = 0;
 		}
 	}
 
@@ -3773,76 +3828,90 @@ public class Game extends GameShell {
 		method114();
 		method95();
 		method38();
-		anInt945++;
-		if (anInt917 != 0) {
-			anInt916 += 20;
-			if (anInt916 >= 400) {
-				anInt917 = 0;
+		delta++;
+		if (crossMode != 0) {
+			crossCycle += 20;
+			if (crossCycle >= 400) {
+				crossMode = 0;
 			}
 		}
 		if (anInt1246 != 0) {
 			anInt1243++;
 			if (anInt1243 >= 15) {
 				if (anInt1246 == 2) {
-					aBoolean1153 = true;
+					redrawInvback = true;
 				}
 				if (anInt1246 == 3) {
-					aBoolean1223 = true;
+					redrawChatback = true;
 				}
 				anInt1246 = 0;
 			}
 		}
-		if (anInt1086 != 0) {
-			anInt989++;
-			if ((super.anInt20 > (anInt1087 + 5)) || (super.anInt20 < (anInt1087 - 5)) || (super.anInt21 > (anInt1088 + 5)) || (super.anInt21 < (anInt1088 - 5))) {
-				aBoolean1242 = true;
+		if (objDragArea != 0) {
+			objDragCycles++;
+
+			// mouse is greater than 5px from grab point in any direction, trigger treshold
+			if ((super.mouseX > (objGrabX + 5)) || (super.mouseX < (objGrabX - 5)) || (super.mouseY > (objGrabY + 5)) || (super.mouseY < (objGrabY - 5))) {
+				objGrabThreshold = true;
 			}
+
 			if (super.mouseButton == 0) {
-				if (anInt1086 == 2) {
-					aBoolean1153 = true;
+				if (objDragArea == 2) {
+					redrawInvback = true;
 				}
-				if (anInt1086 == 3) {
-					aBoolean1223 = true;
+
+				if (objDragArea == 3) {
+					redrawChatback = true;
 				}
-				anInt1086 = 0;
-				if (aBoolean1242 && (anInt989 >= 5)) {
-					anInt1067 = -1;
+
+				objDragArea = 0;
+
+				// mouse moved at least 5px and have been holding obj for 100ms or longer
+				if (objGrabThreshold && (objDragCycles >= 5)) {
+					hoveredSlotParentId = -1;
 					method82();
-					if ((anInt1067 == anInt1084) && (anInt1066 != anInt1085)) {
-						Component component = Component.instances[anInt1084];
-						int j1 = 0;
-						if ((anInt913 == 1) && (component.anInt214 == 206)) {
-							j1 = 1;
+
+					if ((hoveredSlotParentId == objDragComponentId) && (hoveredSlot != objDragSlot)) {
+						Component component = Component.instances[objDragComponentId];
+
+						// mode 0 = swap
+						// mode 1 = insert
+						int mode = 0;
+
+						if ((bankArrangeMode == 1) && (component.contentType == 206)) {
+							mode = 1;
 						}
-						if (component.anIntArray253[anInt1066] <= 0) {
-							j1 = 0;
+
+						if (component.slotObjId[hoveredSlot] <= 0) {
+							mode = 0;
 						}
-						if (component.aBoolean235) {
-							int l2 = anInt1085;
-							int l3 = anInt1066;
-							component.anIntArray253[l3] = component.anIntArray253[l2];
-							component.anIntArray252[l3] = component.anIntArray252[l2];
-							component.anIntArray253[l2] = -1;
-							component.anIntArray252[l2] = 0;
-						} else if (j1 == 1) {
-							int i3 = anInt1085;
-							for (int i4 = anInt1066; i3 != i4; ) {
-								if (i3 > i4) {
-									component.method204(i3, i3 - 1);
-									i3--;
-								} else if (i3 < i4) {
-									component.method204(i3, i3 + 1);
-									i3++;
+
+						if (component.objMoveReplaces) {
+							int src = objDragSlot;
+							int dst = hoveredSlot;
+							component.slotObjId[dst] = component.slotObjId[src];
+							component.slotAmount[dst] = component.slotAmount[src];
+							component.slotObjId[src] = -1;
+							component.slotAmount[src] = 0;
+						} else if (mode == 1) {
+							int src = objDragSlot;
+							for (int dst = hoveredSlot; src != dst; ) {
+								if (src > dst) {
+									component.swapSlots(src, src - 1);
+									src--;
+								} else {
+									component.swapSlots(src, src + 1);
+									src++;
 								}
 							}
 						} else {
-							component.method204(anInt1085, anInt1066);
+							component.swapSlots(objDragSlot, hoveredSlot);
 						}
 						aBuffer_1192.putOp(214);
-						aBuffer_1192.put2LEA(anInt1084);
-						aBuffer_1192.put1C(j1);
-						aBuffer_1192.put2LEA(anInt1085);
-						aBuffer_1192.put2LE(anInt1066);
+						aBuffer_1192.put2LEA(objDragComponentId);
+						aBuffer_1192.put1C(mode);
+						aBuffer_1192.put2LEA(objDragSlot);
+						aBuffer_1192.put2LE(hoveredSlot);
 					}
 				} else if (((anInt1253 == 1) || method17(anInt1133 - 1)) && (anInt1133 > 2)) {
 					method116();
@@ -3859,18 +3928,18 @@ public class Game extends GameShell {
 			boolean flag = method85(0, 0, 0, 0, self.pathTileZ[0], 0, 0, k1, self.pathTileX[0], true, k);
 			Scene.anInt470 = -1;
 			if (flag) {
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 1;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 1;
+				crossCycle = 0;
 			}
 		}
-		if ((super.mousePressButton == 1) && (aString844 != null)) {
-			aString844 = null;
-			aBoolean1223 = true;
+		if ((super.mousePressButton == 1) && (chatbackMessage != null)) {
+			chatbackMessage = null;
+			redrawChatback = true;
 			super.mousePressButton = 0;
 		}
-		method20();
+		updateMouseInput();
 		method92();
 		method78();
 		method32();
@@ -3926,9 +3995,9 @@ public class Game extends GameShell {
 		if (imageTitle2 != null) {
 			return;
 		}
-		aArea_1166 = null;
+		areaChatback = null;
 		aArea_1164 = null;
-		aArea_1163 = null;
+		areaInvback = null;
 		areaViewport = null;
 		aArea_1123 = null;
 		aArea_1124 = null;
@@ -3964,16 +4033,18 @@ public class Game extends GameShell {
 		} else {
 			anInt992 = 0;
 		}
+
 		aBoolean972 = false;
+
 		if ((k >= i) && (k < (i + 16)) && (l >= i1) && (l < (i1 + 16))) {
-			component.anInt224 -= anInt1213 * 4;
+			component.scrollY -= anInt1213 * 4;
 			if (flag) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 			}
 		} else if ((k >= i) && (k < (i + 16)) && (l >= ((i1 + j) - 16)) && (l < (i1 + j))) {
-			component.anInt224 += anInt1213 * 4;
+			component.scrollY += anInt1213 * 4;
 			if (flag) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 			}
 		} else if ((k >= (i - anInt992)) && (k < (i + 16 + anInt992)) && (l >= (i1 + 16)) && (l < ((i1 + j) - 16)) && (anInt1213 > 0)) {
 			int l1 = ((j - 32) * j) / j1;
@@ -3982,9 +4053,9 @@ public class Game extends GameShell {
 			}
 			int i2 = l - i1 - 16 - (l1 / 2);
 			int j2 = j - 32 - l1;
-			component.anInt224 = ((j1 - j) * i2) / j2;
+			component.scrollY = ((j1 - j) * i2) / j2;
 			if (flag) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 			}
 			aBoolean972 = true;
 		}
@@ -4017,10 +4088,10 @@ public class Game extends GameShell {
 		} else {
 			method85(2, l1, 0, k1 + 1, self.pathTileZ[0], 0, 0, j, self.pathTileX[0], false, k);
 		}
-		anInt914 = super.mousePressX;
-		anInt915 = super.mousePressY;
-		anInt917 = 2;
-		anInt916 = 0;
+		crossX = super.mousePressX;
+		crossY = super.mousePressY;
+		crossMode = 2;
+		crossCycle = 0;
 		return true;
 	}
 
@@ -4173,9 +4244,9 @@ public class Game extends GameShell {
 		if (i < 0) {
 			return;
 		}
-		if (anInt1225 != 0) {
-			anInt1225 = 0;
-			aBoolean1223 = true;
+		if (chatbackInputType != 0) {
+			chatbackInputType = 0;
+			redrawChatback = true;
 		}
 		int j = anIntArray1091[i];
 		int k = anIntArray1092[i];
@@ -4188,10 +4259,10 @@ public class Game extends GameShell {
 			NPCEntity npc = npcs[i1];
 			if (npc != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, npc.pathTileZ[0], self.pathTileX[0], false, npc.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(57);
 				aBuffer_1192.put2A(anInt1285);
 				aBuffer_1192.put2A(i1);
@@ -4204,10 +4275,10 @@ public class Game extends GameShell {
 			if (!flag1) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(236);
 			aBuffer_1192.put2LE(k + sceneBaseTileZ);
 			aBuffer_1192.put2(i1);
@@ -4227,10 +4298,10 @@ public class Game extends GameShell {
 			if (!flag2) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(25);
 			aBuffer_1192.put2LE(anInt1284);
 			aBuffer_1192.put2A(anInt1285);
@@ -4248,20 +4319,20 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
 		if (l == 315) {
 			Component component = Component.instances[k];
-			boolean flag8 = true;
-			if (component.anInt214 > 0) {
-				flag8 = method48(component);
+			boolean notify = true;
+			if (component.contentType > 0) {
+				notify = handleComponentAction(component);
 			}
-			if (flag8) {
+			if (notify) {
 				aBuffer_1192.putOp(185);
 				aBuffer_1192.put2(k);
 			}
@@ -4270,10 +4341,10 @@ public class Game extends GameShell {
 			PlayerEntity player = players[i1];
 			if (player != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, player.pathTileZ[0], self.pathTileX[0], false, player.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(128);
 				aBuffer_1192.put2(i1);
 			}
@@ -4282,10 +4353,10 @@ public class Game extends GameShell {
 			NPCEntity class30_sub2_sub4_sub1_sub1_1 = npcs[i1];
 			if (class30_sub2_sub4_sub1_sub1_1 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub1_1.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub1_1.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(155);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4294,10 +4365,10 @@ public class Game extends GameShell {
 			PlayerEntity class30_sub2_sub4_sub1_sub2_1 = players[i1];
 			if (class30_sub2_sub4_sub1_sub2_1 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub2_1.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub2_1.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(153);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4330,10 +4401,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4365,10 +4436,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4381,10 +4452,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4429,10 +4500,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4445,10 +4516,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4458,7 +4529,7 @@ public class Game extends GameShell {
 			anInt1137 = k;
 			anInt1138 = component_1.anInt237;
 			anInt1282 = 0;
-			aBoolean1153 = true;
+			redrawInvback = true;
 			String s4 = component_1.aString222;
 			if (s4.contains(" ")) {
 				s4 = s4.substring(0, s4.indexOf(" "));
@@ -4469,8 +4540,8 @@ public class Game extends GameShell {
 			}
 			aString1139 = s4 + " " + component_1.aString218 + " " + s8;
 			if (anInt1138 == 16) {
-				aBoolean1153 = true;
-				anInt1221 = 3;
+				redrawInvback = true;
+				selectedTab = 3;
 				aBoolean1103 = true;
 			}
 			return;
@@ -4484,10 +4555,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4495,10 +4566,10 @@ public class Game extends GameShell {
 			PlayerEntity class30_sub2_sub4_sub1_sub2_2 = players[i1];
 			if (class30_sub2_sub4_sub1_sub2_2 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub2_2.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub2_2.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(73);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4508,10 +4579,10 @@ public class Game extends GameShell {
 			if (!flag3) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(79);
 			aBuffer_1192.put2LE(k + sceneBaseTileZ);
 			aBuffer_1192.put2(i1);
@@ -4526,10 +4597,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4542,10 +4613,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4554,10 +4625,10 @@ public class Game extends GameShell {
 			if (!flag4) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(156);
 			aBuffer_1192.put2A(j + sceneBaseTileX);
 			aBuffer_1192.put2LE(k + sceneBaseTileZ);
@@ -4568,10 +4639,10 @@ public class Game extends GameShell {
 			if (!flag5) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(181);
 			aBuffer_1192.put2LE(k + sceneBaseTileZ);
 			aBuffer_1192.put2(i1);
@@ -4586,8 +4657,8 @@ public class Game extends GameShell {
 				int i2 = component_2.anIntArrayArray226[0][1];
 				if (anIntArray971[i2] != component_2.anIntArray212[0]) {
 					anIntArray971[i2] = component_2.anIntArray212[0];
-					method33(i2);
-					aBoolean1153 = true;
+					updateVarp(i2);
+					redrawInvback = true;
 				}
 			}
 		}
@@ -4595,10 +4666,10 @@ public class Game extends GameShell {
 			NPCEntity class30_sub2_sub4_sub1_sub1_2 = npcs[i1];
 			if (class30_sub2_sub4_sub1_sub1_2 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub1_2.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub1_2.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(17);
 				aBuffer_1192.put2LEA(i1);
 			}
@@ -4607,10 +4678,10 @@ public class Game extends GameShell {
 			NPCEntity npc_3 = npcs[i1];
 			if (npc_3 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, npc_3.pathTileZ[0], self.pathTileX[0], false, npc_3.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(21);
 				aBuffer_1192.put2(i1);
 			}
@@ -4619,10 +4690,10 @@ public class Game extends GameShell {
 			NPCEntity class30_sub2_sub4_sub1_sub1_4 = npcs[i1];
 			if (class30_sub2_sub4_sub1_sub1_4 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub1_4.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub1_4.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(131);
 				aBuffer_1192.put2LEA(i1);
 				aBuffer_1192.put2A(anInt1137);
@@ -4660,10 +4731,10 @@ public class Game extends GameShell {
 			NPCEntity npc_6 = npcs[i1];
 			if (npc_6 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, npc_6.pathTileZ[0], self.pathTileX[0], false, npc_6.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(72);
 				aBuffer_1192.put2A(i1);
 			}
@@ -4672,10 +4743,10 @@ public class Game extends GameShell {
 			PlayerEntity player_3 = players[i1];
 			if (player_3 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, player_3.pathTileZ[0], self.pathTileX[0], false, player_3.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(249);
 				aBuffer_1192.put2A(i1);
 				aBuffer_1192.put2LE(anInt1137);
@@ -4685,10 +4756,10 @@ public class Game extends GameShell {
 			PlayerEntity class30_sub2_sub4_sub1_sub2_4 = players[i1];
 			if (class30_sub2_sub4_sub1_sub2_4 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, class30_sub2_sub4_sub1_sub2_4.pathTileZ[0], self.pathTileX[0], false, class30_sub2_sub4_sub1_sub2_4.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(39);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4697,10 +4768,10 @@ public class Game extends GameShell {
 			PlayerEntity player_5 = players[i1];
 			if (player_5 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, player_5.pathTileZ[0], self.pathTileX[0], false, player_5.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(139);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4717,10 +4788,10 @@ public class Game extends GameShell {
 			if (!flag6) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(23);
 			aBuffer_1192.put2LE(k + sceneBaseTileZ);
 			aBuffer_1192.put2LE(i1);
@@ -4735,10 +4806,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4752,10 +4823,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4763,15 +4834,15 @@ public class Game extends GameShell {
 			String s2 = aStringArray1199[i];
 			int j2 = s2.indexOf("@whi@");
 			if (j2 != -1) {
-				if (anInt857 == -1) {
+				if (viewportComponentId == -1) {
 					method147();
 					aString881 = s2.substring(j2 + 5).trim();
 					aBoolean1158 = false;
 					for (int i3 = 0; i3 < Component.instances.length; i3++) {
-						if ((Component.instances[i3] == null) || (Component.instances[i3].anInt214 != 600)) {
+						if ((Component.instances[i3] == null) || (Component.instances[i3].contentType != 600)) {
 							continue;
 						}
-						anInt1178 = anInt857 = Component.instances[i3].anInt236;
+						anInt1178 = viewportComponentId = Component.instances[i3].parentId;
 						break;
 					}
 				} else {
@@ -4783,10 +4854,10 @@ public class Game extends GameShell {
 			PlayerEntity player_6 = players[i1];
 			if (player_6 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, player_6.pathTileZ[0], self.pathTileX[0], false, player_6.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(14);
 				aBuffer_1192.put2A(anInt1284);
 				aBuffer_1192.put2(i1);
@@ -4808,13 +4879,13 @@ public class Game extends GameShell {
 					break;
 				}
 				if ((k3 != -1) && (anIntArray826[k3] > 0)) {
-					aBoolean1223 = true;
-					anInt1225 = 0;
-					aBoolean1256 = true;
-					aString1212 = "";
-					anInt1064 = 3;
+					redrawChatback = true;
+					chatbackInputType = 0;
+					showSocialInput = true;
+					socialInput = "";
+					socialAction = 3;
 					aLong953 = aLongArray955[k3];
-					aString1121 = "Enter message to send to " + aStringArray1082[k3];
+					socialMessage = "Enter message to send to " + aStringArray1082[k3];
 				}
 			}
 		}
@@ -4827,10 +4898,10 @@ public class Game extends GameShell {
 			anInt1244 = k;
 			anInt1245 = j;
 			anInt1246 = 2;
-			if (Component.instances[k].anInt236 == anInt857) {
+			if (Component.instances[k].parentId == viewportComponentId) {
 				anInt1246 = 1;
 			}
-			if (Component.instances[k].anInt236 == anInt1276) {
+			if (Component.instances[k].parentId == chatbackComponentId) {
 				anInt1246 = 3;
 			}
 		}
@@ -4838,10 +4909,10 @@ public class Game extends GameShell {
 			NPCEntity npc_7 = npcs[i1];
 			if (npc_7 != null) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, npc_7.pathTileZ[0], self.pathTileX[0], false, npc_7.pathTileX[0]);
-				anInt914 = super.mousePressX;
-				anInt915 = super.mousePressY;
-				anInt917 = 2;
-				anInt916 = 0;
+				crossX = super.mousePressX;
+				crossY = super.mousePressY;
+				crossMode = 2;
+				crossCycle = 0;
 				aBuffer_1192.putOp(18);
 				aBuffer_1192.put2LE(i1);
 			}
@@ -4868,15 +4939,15 @@ public class Game extends GameShell {
 			aBuffer_1192.put2A(k + sceneBaseTileZ);
 		}
 		if (l == 1125) {
-			ObjType type = ObjType.method198(i1);
+			ObjType type = ObjType.get(i1);
 			Component component_4 = Component.instances[k];
 			String s5;
-			if ((component_4 != null) && (component_4.anIntArray252[j] >= 0x186a0)) {
-				s5 = component_4.anIntArray252[j] + " x " + type.aString170;
-			} else if (type.aByteArray178 != null) {
-				s5 = new String(type.aByteArray178);
+			if ((component_4 != null) && (component_4.slotAmount[j] >= 0x186a0)) {
+				s5 = component_4.slotAmount[j] + " x " + type.name;
+			} else if (type.description != null) {
+				s5 = new String(type.description);
 			} else {
-				s5 = "It's a " + type.aString170 + ".";
+				s5 = "It's a " + type.name + ".";
 			}
 			method77(0, "", s5);
 		}
@@ -4887,8 +4958,8 @@ public class Game extends GameShell {
 			if ((component_3.anIntArrayArray226 != null) && (component_3.anIntArrayArray226[0][0] == 5)) {
 				int l2 = component_3.anIntArrayArray226[0][1];
 				anIntArray971[l2] = 1 - anIntArray971[l2];
-				method33(l2);
-				aBoolean1153 = true;
+				updateVarp(l2);
+				redrawInvback = true;
 			}
 		}
 		if (l == 447) {
@@ -4896,9 +4967,9 @@ public class Game extends GameShell {
 			anInt1283 = j;
 			anInt1284 = k;
 			anInt1285 = i1;
-			aString1286 = ObjType.method198(i1).aString170;
+			aString1286 = ObjType.get(i1).name;
 			anInt1136 = 0;
-			aBoolean1153 = true;
+			redrawInvback = true;
 			return;
 		}
 		if (l == 1226) {
@@ -4917,28 +4988,28 @@ public class Game extends GameShell {
 			if (!flag7) {
 				method85(2, 0, 1, 0, self.pathTileZ[0], 1, 0, k, self.pathTileX[0], false, j);
 			}
-			anInt914 = super.mousePressX;
-			anInt915 = super.mousePressY;
-			anInt917 = 2;
-			anInt916 = 0;
+			crossX = super.mousePressX;
+			crossY = super.mousePressY;
+			crossMode = 2;
+			crossCycle = 0;
 			aBuffer_1192.putOp(253);
 			aBuffer_1192.put2LE(j + sceneBaseTileX);
 			aBuffer_1192.put2LEA(k + sceneBaseTileZ);
 			aBuffer_1192.put2A(i1);
 		}
 		if (l == 1448) {
-			ObjType type_1 = ObjType.method198(i1);
+			ObjType type_1 = ObjType.get(i1);
 			String s6;
-			if (type_1.aByteArray178 != null) {
-				s6 = new String(type_1.aByteArray178);
+			if (type_1.description != null) {
+				s6 = new String(type_1.description);
 			} else {
-				s6 = "It's a " + type_1.aString170 + ".";
+				s6 = "It's a " + type_1.name + ".";
 			}
 			method77(0, "", s6);
 		}
 		anInt1282 = 0;
 		anInt1136 = 0;
-		aBoolean1153 = true;
+		redrawInvback = true;
 	}
 
 	public void method70() {
@@ -4960,8 +5031,8 @@ public class Game extends GameShell {
 		if ((anInt1282 == 0) && (anInt1136 == 0)) {
 			aStringArray1199[anInt1133] = "Walk here";
 			anIntArray1093[anInt1133] = 516;
-			anIntArray1091[anInt1133] = super.anInt20;
-			anIntArray1092[anInt1133] = super.anInt21;
+			anIntArray1091[anInt1133] = super.mouseX;
+			anIntArray1092[anInt1133] = super.mouseY;
 			anInt1133++;
 		}
 		int j = -1;
@@ -5074,9 +5145,9 @@ public class Game extends GameShell {
 				DoublyLinkedList list = aListArrayArrayArray827[currentPlane][i1][j1];
 				if (list != null) {
 					for (ObjStackEntity objStack = (ObjStackEntity) list.peekBack(); objStack != null; objStack = (ObjStackEntity) list.next()) {
-						ObjType type = ObjType.method198(objStack.anInt1558);
+						ObjType type = ObjType.get(objStack.anInt1558);
 						if (anInt1282 == 1) {
-							aStringArray1199[anInt1133] = "Use " + aString1286 + " with @lre@" + type.aString170;
+							aStringArray1199[anInt1133] = "Use " + aString1286 + " with @lre@" + type.name;
 							anIntArray1093[anInt1133] = 511;
 							anIntArray1094[anInt1133] = objStack.anInt1558;
 							anIntArray1091[anInt1133] = i1;
@@ -5084,7 +5155,7 @@ public class Game extends GameShell {
 							anInt1133++;
 						} else if (anInt1136 == 1) {
 							if ((anInt1138 & 1) == 1) {
-								aStringArray1199[anInt1133] = aString1139 + " @lre@" + type.aString170;
+								aStringArray1199[anInt1133] = aString1139 + " @lre@" + type.name;
 								anIntArray1093[anInt1133] = 94;
 								anIntArray1094[anInt1133] = objStack.anInt1558;
 								anIntArray1091[anInt1133] = i1;
@@ -5094,7 +5165,7 @@ public class Game extends GameShell {
 						} else {
 							for (int j3 = 4; j3 >= 0; j3--) {
 								if ((type.aStringArray168 != null) && (type.aStringArray168[j3] != null)) {
-									aStringArray1199[anInt1133] = type.aStringArray168[j3] + " @lre@" + type.aString170;
+									aStringArray1199[anInt1133] = type.aStringArray168[j3] + " @lre@" + type.name;
 									if (j3 == 0) {
 										anIntArray1093[anInt1133] = 652;
 									}
@@ -5115,7 +5186,7 @@ public class Game extends GameShell {
 									anIntArray1092[anInt1133] = j1;
 									anInt1133++;
 								} else if (j3 == 2) {
-									aStringArray1199[anInt1133] = "Take @lre@" + type.aString170;
+									aStringArray1199[anInt1133] = "Take @lre@" + type.name;
 									anIntArray1093[anInt1133] = 234;
 									anIntArray1094[anInt1133] = objStack.anInt1558;
 									anIntArray1091[anInt1133] = i1;
@@ -5123,7 +5194,7 @@ public class Game extends GameShell {
 									anInt1133++;
 								}
 							}
-							aStringArray1199[anInt1133] = "Examine @lre@" + type.aString170;
+							aStringArray1199[anInt1133] = "Examine @lre@" + type.name;
 							anIntArray1093[anInt1133] = 1448;
 							anIntArray1094[anInt1133] = objStack.anInt1558;
 							anIntArray1091[anInt1133] = i1;
@@ -5165,43 +5236,43 @@ public class Game extends GameShell {
 			if (j == -1) {
 				break;
 			}
-			if ((anInt857 != -1) && (anInt857 == anInt1178)) {
+			if ((viewportComponentId != -1) && (viewportComponentId == anInt1178)) {
 				if ((j == 8) && (aString881.length() > 0)) {
 					aString881 = aString881.substring(0, aString881.length() - 1);
 				}
 				if ((((j >= 97) && (j <= 122)) || ((j >= 65) && (j <= 90)) || ((j >= 48) && (j <= 57)) || (j == 32)) && (aString881.length() < 12)) {
 					aString881 += (char) j;
 				}
-			} else if (aBoolean1256) {
-				if ((j >= 32) && (j <= 122) && (aString1212.length() < 80)) {
-					aString1212 += (char) j;
-					aBoolean1223 = true;
+			} else if (showSocialInput) {
+				if ((j >= 32) && (j <= 122) && (socialInput.length() < 80)) {
+					socialInput += (char) j;
+					redrawChatback = true;
 				}
-				if ((j == 8) && (aString1212.length() > 0)) {
-					aString1212 = aString1212.substring(0, aString1212.length() - 1);
-					aBoolean1223 = true;
+				if ((j == 8) && (socialInput.length() > 0)) {
+					socialInput = socialInput.substring(0, socialInput.length() - 1);
+					redrawChatback = true;
 				}
 				if ((j == 13) || (j == 10)) {
-					aBoolean1256 = false;
-					aBoolean1223 = true;
-					if (anInt1064 == 1) {
-						long l = StringUtil.toBase37(aString1212);
+					showSocialInput = false;
+					redrawChatback = true;
+					if (socialAction == 1) {
+						long l = StringUtil.toBase37(socialInput);
 						method41(l);
 					}
-					if ((anInt1064 == 2) && (anInt899 > 0)) {
-						long l1 = StringUtil.toBase37(aString1212);
+					if ((socialAction == 2) && (anInt899 > 0)) {
+						long l1 = StringUtil.toBase37(socialInput);
 						method35(l1);
 					}
-					if ((anInt1064 == 3) && (aString1212.length() > 0)) {
+					if ((socialAction == 3) && (socialInput.length() > 0)) {
 						aBuffer_1192.putOp(126);
 						aBuffer_1192.put1(0);
 						int k = aBuffer_1192.position;
 						aBuffer_1192.put8(aLong953);
-						ChatCompression.pack(aString1212, aBuffer_1192);
+						ChatCompression.pack(socialInput, aBuffer_1192);
 						aBuffer_1192.putSize1(aBuffer_1192.position - k);
-						aString1212 = ChatCompression.method527(aString1212);
-						aString1212 = Censor.method497(aString1212, 0);
-						method77(6, StringUtil.formatName(StringUtil.fromBase37(aLong953)), aString1212);
+						socialInput = ChatCompression.method527(socialInput);
+						socialInput = Censor.method497(socialInput, 0);
+						method77(6, StringUtil.formatName(StringUtil.fromBase37(aLong953)), socialInput);
 						if (anInt845 == 2) {
 							anInt845 = 1;
 							aBoolean1233 = true;
@@ -5211,62 +5282,62 @@ public class Game extends GameShell {
 							aBuffer_1192.put1(anInt1248);
 						}
 					}
-					if ((anInt1064 == 4) && (anInt822 < 100)) {
-						long l2 = StringUtil.toBase37(aString1212);
+					if ((socialAction == 4) && (anInt822 < 100)) {
+						long l2 = StringUtil.toBase37(socialInput);
 						method113(l2);
 					}
-					if ((anInt1064 == 5) && (anInt822 > 0)) {
-						long l3 = StringUtil.toBase37(aString1212);
+					if ((socialAction == 5) && (anInt822 > 0)) {
+						long l3 = StringUtil.toBase37(socialInput);
 						method122(l3);
 					}
 				}
-			} else if (anInt1225 == 1) {
-				if ((j >= 48) && (j <= 57) && (aString1004.length() < 10)) {
-					aString1004 += (char) j;
-					aBoolean1223 = true;
+			} else if (chatbackInputType == 1) {
+				if ((j >= 48) && (j <= 57) && (chatbackInput.length() < 10)) {
+					chatbackInput += (char) j;
+					redrawChatback = true;
 				}
-				if ((j == 8) && (aString1004.length() > 0)) {
-					aString1004 = aString1004.substring(0, aString1004.length() - 1);
-					aBoolean1223 = true;
+				if ((j == 8) && (chatbackInput.length() > 0)) {
+					chatbackInput = chatbackInput.substring(0, chatbackInput.length() - 1);
+					redrawChatback = true;
 				}
 				if ((j == 13) || (j == 10)) {
-					if (aString1004.length() > 0) {
+					if (chatbackInput.length() > 0) {
 						int i1 = 0;
 						try {
-							i1 = Integer.parseInt(aString1004);
+							i1 = Integer.parseInt(chatbackInput);
 						} catch (Exception ignored) {
 						}
 						aBuffer_1192.putOp(208);
 						aBuffer_1192.put4(i1);
 					}
-					anInt1225 = 0;
-					aBoolean1223 = true;
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-			} else if (anInt1225 == 2) {
-				if ((j >= 32) && (j <= 122) && (aString1004.length() < 12)) {
-					aString1004 += (char) j;
-					aBoolean1223 = true;
+			} else if (chatbackInputType == 2) {
+				if ((j >= 32) && (j <= 122) && (chatbackInput.length() < 12)) {
+					chatbackInput += (char) j;
+					redrawChatback = true;
 				}
-				if ((j == 8) && (aString1004.length() > 0)) {
-					aString1004 = aString1004.substring(0, aString1004.length() - 1);
-					aBoolean1223 = true;
+				if ((j == 8) && (chatbackInput.length() > 0)) {
+					chatbackInput = chatbackInput.substring(0, chatbackInput.length() - 1);
+					redrawChatback = true;
 				}
 				if ((j == 13) || (j == 10)) {
-					if (aString1004.length() > 0) {
+					if (chatbackInput.length() > 0) {
 						aBuffer_1192.putOp(60);
-						aBuffer_1192.put8(StringUtil.toBase37(aString1004));
+						aBuffer_1192.put8(StringUtil.toBase37(chatbackInput));
 					}
-					anInt1225 = 0;
-					aBoolean1223 = true;
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-			} else if (anInt1276 == -1) {
+			} else if (chatbackComponentId == -1) {
 				if ((j >= 32) && (j <= 122) && (aString887.length() < 80)) {
 					aString887 += (char) j;
-					aBoolean1223 = true;
+					redrawChatback = true;
 				}
 				if ((j == 8) && (aString887.length() > 0)) {
 					aString887 = aString887.substring(0, aString887.length() - 1);
-					aBoolean1223 = true;
+					redrawChatback = true;
 				}
 				if (((j == 13) || (j == 10)) && (aString887.length() > 0)) {
 					if (rights == 0) {
@@ -5391,7 +5462,7 @@ public class Game extends GameShell {
 						}
 					}
 					aString887 = "";
-					aBoolean1223 = true;
+					redrawChatback = true;
 				}
 			}
 		} while (true);
@@ -5472,110 +5543,116 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method75(Component component) {
-		int j = component.anInt214;
-		if (((j >= 1) && (j <= 100)) || ((j >= 701) && (j <= 800))) {
-			if ((j == 1) && (anInt900 == 0)) {
+	public void updateComponentContent(Component component) {
+		int type = component.contentType;
+
+		if (((type >= 1) && (type <= 100)) || ((type >= 701) && (type <= 800))) {
+			if ((type == 1) && (socialState == 0)) {
 				component.aString248 = "Loading friend list";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
-			if ((j == 1) && (anInt900 == 1)) {
+			if ((type == 1) && (socialState == 1)) {
 				component.aString248 = "Connecting to friendserver";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
-			if ((j == 2) && (anInt900 != 2)) {
+			if ((type == 2) && (socialState != 2)) {
 				component.aString248 = "Please wait...";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
 			int k = anInt899;
-			if (anInt900 != 2) {
+			if (socialState != 2) {
 				k = 0;
 			}
-			if (j > 700) {
-				j -= 601;
+			if (type > 700) {
+				type -= 601;
 			} else {
-				j--;
+				type--;
 			}
-			if (j >= k) {
+			if (type >= k) {
 				component.aString248 = "";
-				component.anInt217 = 0;
+				component.optionType = 0;
 			} else {
-				component.aString248 = aStringArray1082[j];
-				component.anInt217 = 1;
+				component.aString248 = aStringArray1082[type];
+				component.optionType = 1;
 			}
 			return;
 		}
-		if (((j >= 101) && (j <= 200)) || ((j >= 801) && (j <= 900))) {
+
+		if (((type >= 101) && (type <= 200)) || ((type >= 801) && (type <= 900))) {
 			int l = anInt899;
-			if (anInt900 != 2) {
+			if (socialState != 2) {
 				l = 0;
 			}
-			if (j > 800) {
-				j -= 701;
+			if (type > 800) {
+				type -= 701;
 			} else {
-				j -= 101;
+				type -= 101;
 			}
-			if (j >= l) {
+			if (type >= l) {
 				component.aString248 = "";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
-			if (anIntArray826[j] == 0) {
+			if (anIntArray826[type] == 0) {
 				component.aString248 = "@red@Offline";
-			} else if (anIntArray826[j] == nodeId) {
-				component.aString248 = "@gre@World-" + (anIntArray826[j] - 9);
+			} else if (anIntArray826[type] == nodeId) {
+				component.aString248 = "@gre@World-" + (anIntArray826[type] - 9);
 			} else {
-				component.aString248 = "@yel@World-" + (anIntArray826[j] - 9);
+				component.aString248 = "@yel@World-" + (anIntArray826[type] - 9);
 			}
-			component.anInt217 = 1;
+			component.optionType = 1;
 			return;
 		}
-		if (j == 203) {
+
+		if (type == 203) {
 			int i1 = anInt899;
-			if (anInt900 != 2) {
+			if (socialState != 2) {
 				i1 = 0;
 			}
-			component.anInt261 = (i1 * 15) + 20;
-			if (component.anInt261 <= component.anInt267) {
-				component.anInt261 = component.anInt267 + 1;
+			component.innerHeight = (i1 * 15) + 20;
+			if (component.innerHeight <= component.height) {
+				component.innerHeight = component.height + 1;
 			}
 			return;
 		}
-		if ((j >= 401) && (j <= 500)) {
-			if ((((j -= 401)) == 0) && (anInt900 == 0)) {
+
+		if ((type >= 401) && (type <= 500)) {
+			if ((((type -= 401)) == 0) && (socialState == 0)) {
 				component.aString248 = "Loading ignore list";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
-			if ((j == 1) && (anInt900 == 0)) {
+			if ((type == 1) && (socialState == 0)) {
 				component.aString248 = "Please wait...";
-				component.anInt217 = 0;
+				component.optionType = 0;
 				return;
 			}
 			int j1 = anInt822;
-			if (anInt900 == 0) {
+			if (socialState == 0) {
 				j1 = 0;
 			}
-			if (j >= j1) {
+			if (type >= j1) {
 				component.aString248 = "";
-				component.anInt217 = 0;
+				component.optionType = 0;
 			} else {
-				component.aString248 = StringUtil.formatName(StringUtil.fromBase37(aLongArray925[j]));
-				component.anInt217 = 1;
+				component.aString248 = StringUtil.formatName(StringUtil.fromBase37(aLongArray925[type]));
+				component.optionType = 1;
 			}
 			return;
 		}
-		if (j == 503) {
-			component.anInt261 = (anInt822 * 15) + 20;
-			if (component.anInt261 <= component.anInt267) {
-				component.anInt261 = component.anInt267 + 1;
+
+		if (type == 503) {
+			component.innerHeight = (anInt822 * 15) + 20;
+			if (component.innerHeight <= component.height) {
+				component.innerHeight = component.height + 1;
 			}
 			return;
 		}
-		if (j == 327) {
+
+		if (type == 327) {
 			component.anInt270 = 150;
 			component.anInt271 = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
 			if (aBoolean1031) {
@@ -5612,7 +5689,7 @@ public class Game extends GameShell {
 			}
 			return;
 		}
-		if (j == 324) {
+		if (type == 324) {
 			if (aImage_931 == null) {
 				aImage_931 = component.aImage_207;
 				aImage_932 = component.aImage_260;
@@ -5624,7 +5701,7 @@ public class Game extends GameShell {
 			}
 			return;
 		}
-		if (j == 325) {
+		if (type == 325) {
 			if (aImage_931 == null) {
 				aImage_931 = component.aImage_207;
 				aImage_932 = component.aImage_260;
@@ -5636,7 +5713,7 @@ public class Game extends GameShell {
 			}
 			return;
 		}
-		if (j == 600) {
+		if (type == 600) {
 			component.aString248 = aString881;
 			if ((loopCycle % 20) < 10) {
 				component.aString248 += "|";
@@ -5645,7 +5722,7 @@ public class Game extends GameShell {
 			}
 			return;
 		}
-		if (j == 613) {
+		if (type == 613) {
 			if (rights >= 1) {
 				if (aBoolean1158) {
 					component.anInt232 = 0xff0000;
@@ -5658,7 +5735,7 @@ public class Game extends GameShell {
 				component.aString248 = "";
 			}
 		}
-		if ((j == 650) || (j == 655)) {
+		if ((type == 650) || (type == 655)) {
 			if (anInt1193 != 0) {
 				String s;
 				if (anInt1006 == 0) {
@@ -5673,7 +5750,7 @@ public class Game extends GameShell {
 				component.aString248 = "";
 			}
 		}
-		if (j == 651) {
+		if (type == 651) {
 			if (anInt1154 == 0) {
 				component.aString248 = "0 unread messages";
 				component.anInt232 = 0xffff00;
@@ -5687,7 +5764,7 @@ public class Game extends GameShell {
 				component.anInt232 = 65280;
 			}
 		}
-		if (j == 652) {
+		if (type == 652) {
 			if (anInt1167 == 201) {
 				if (anInt1120 == 1) {
 					component.aString248 = "@yel@This is a non-members world: @whi@Since you are a member we";
@@ -5708,7 +5785,7 @@ public class Game extends GameShell {
 				component.aString248 = s1 + " you changed your recovery questions";
 			}
 		}
-		if (j == 653) {
+		if (type == 653) {
 			if (anInt1167 == 201) {
 				if (anInt1120 == 1) {
 					component.aString248 = "@whi@recommend you use a members world instead. You may use";
@@ -5721,7 +5798,7 @@ public class Game extends GameShell {
 				component.aString248 = "If you do not remember making this change then cancel it immediately";
 			}
 		}
-		if (j == 654) {
+		if (type == 654) {
 			if (anInt1167 == 201) {
 				if (anInt1120 == 1) {
 					component.aString248 = "@whi@this world but member benefits are unavailable whilst here.";
@@ -5801,12 +5878,12 @@ public class Game extends GameShell {
 	}
 
 	public void method77(int type, String prefix, String message) {
-		if ((type == 0) && (anInt1042 != -1)) {
-			aString844 = message;
+		if ((type == 0) && (stickyChatbackComponentId != -1)) {
+			chatbackMessage = message;
 			super.mousePressButton = 0;
 		}
-		if (anInt1276 == -1) {
-			aBoolean1223 = true;
+		if (chatbackComponentId == -1) {
+			redrawChatback = true;
 		}
 		for (int j = 99; j > 0; j--) {
 			anIntArray942[j] = anIntArray942[j - 1];
@@ -5820,81 +5897,81 @@ public class Game extends GameShell {
 
 	public void method78() {
 		if (super.mousePressButton == 1) {
-			if ((super.mousePressX >= 539) && (super.mousePressX <= 573) && (super.mousePressY >= 169) && (super.mousePressY < 205) && (anIntArray1130[0] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 0;
+			if ((super.mousePressX >= 539) && (super.mousePressX <= 573) && (super.mousePressY >= 169) && (super.mousePressY < 205) && (tabComponentId[0] != -1)) {
+				redrawInvback = true;
+				selectedTab = 0;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 569) && (super.mousePressX <= 599) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (anIntArray1130[1] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 1;
+			if ((super.mousePressX >= 569) && (super.mousePressX <= 599) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (tabComponentId[1] != -1)) {
+				redrawInvback = true;
+				selectedTab = 1;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 597) && (super.mousePressX <= 627) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (anIntArray1130[2] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 2;
+			if ((super.mousePressX >= 597) && (super.mousePressX <= 627) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (tabComponentId[2] != -1)) {
+				redrawInvback = true;
+				selectedTab = 2;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 625) && (super.mousePressX <= 669) && (super.mousePressY >= 168) && (super.mousePressY < 203) && (anIntArray1130[3] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 3;
+			if ((super.mousePressX >= 625) && (super.mousePressX <= 669) && (super.mousePressY >= 168) && (super.mousePressY < 203) && (tabComponentId[3] != -1)) {
+				redrawInvback = true;
+				selectedTab = 3;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 666) && (super.mousePressX <= 696) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (anIntArray1130[4] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 4;
+			if ((super.mousePressX >= 666) && (super.mousePressX <= 696) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (tabComponentId[4] != -1)) {
+				redrawInvback = true;
+				selectedTab = 4;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 694) && (super.mousePressX <= 724) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (anIntArray1130[5] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 5;
+			if ((super.mousePressX >= 694) && (super.mousePressX <= 724) && (super.mousePressY >= 168) && (super.mousePressY < 205) && (tabComponentId[5] != -1)) {
+				redrawInvback = true;
+				selectedTab = 5;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 722) && (super.mousePressX <= 756) && (super.mousePressY >= 169) && (super.mousePressY < 205) && (anIntArray1130[6] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 6;
+			if ((super.mousePressX >= 722) && (super.mousePressX <= 756) && (super.mousePressY >= 169) && (super.mousePressY < 205) && (tabComponentId[6] != -1)) {
+				redrawInvback = true;
+				selectedTab = 6;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 540) && (super.mousePressX <= 574) && (super.mousePressY >= 466) && (super.mousePressY < 502) && (anIntArray1130[7] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 7;
+			if ((super.mousePressX >= 540) && (super.mousePressX <= 574) && (super.mousePressY >= 466) && (super.mousePressY < 502) && (tabComponentId[7] != -1)) {
+				redrawInvback = true;
+				selectedTab = 7;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 572) && (super.mousePressX <= 602) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (anIntArray1130[8] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 8;
+			if ((super.mousePressX >= 572) && (super.mousePressX <= 602) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (tabComponentId[8] != -1)) {
+				redrawInvback = true;
+				selectedTab = 8;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 599) && (super.mousePressX <= 629) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (anIntArray1130[9] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 9;
+			if ((super.mousePressX >= 599) && (super.mousePressX <= 629) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (tabComponentId[9] != -1)) {
+				redrawInvback = true;
+				selectedTab = 9;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 627) && (super.mousePressX <= 671) && (super.mousePressY >= 467) && (super.mousePressY < 502) && (anIntArray1130[10] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 10;
+			if ((super.mousePressX >= 627) && (super.mousePressX <= 671) && (super.mousePressY >= 467) && (super.mousePressY < 502) && (tabComponentId[10] != -1)) {
+				redrawInvback = true;
+				selectedTab = 10;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 669) && (super.mousePressX <= 699) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (anIntArray1130[11] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 11;
+			if ((super.mousePressX >= 669) && (super.mousePressX <= 699) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (tabComponentId[11] != -1)) {
+				redrawInvback = true;
+				selectedTab = 11;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 696) && (super.mousePressX <= 726) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (anIntArray1130[12] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 12;
+			if ((super.mousePressX >= 696) && (super.mousePressX <= 726) && (super.mousePressY >= 466) && (super.mousePressY < 503) && (tabComponentId[12] != -1)) {
+				redrawInvback = true;
+				selectedTab = 12;
 				aBoolean1103 = true;
 			}
-			if ((super.mousePressX >= 724) && (super.mousePressX <= 758) && (super.mousePressY >= 466) && (super.mousePressY < 502) && (anIntArray1130[13] != -1)) {
-				aBoolean1153 = true;
-				anInt1221 = 13;
+			if ((super.mousePressX >= 724) && (super.mousePressX <= 758) && (super.mousePressY >= 466) && (super.mousePressY < 502) && (tabComponentId[13] != -1)) {
+				redrawInvback = true;
+				selectedTab = 13;
 				aBoolean1103 = true;
 			}
 		}
 	}
 
 	public void method79() {
-		if (aArea_1166 != null) {
+		if (areaChatback != null) {
 			return;
 		}
 		method118();
@@ -5907,11 +5984,11 @@ public class Game extends GameShell {
 		imageTitle6 = null;
 		imageTitle7 = null;
 		imageTitle8 = null;
-		aArea_1166 = new DrawArea(479, 96, getComponent());
+		areaChatback = new DrawArea(479, 96, getComponent());
 		aArea_1164 = new DrawArea(172, 156, getComponent());
 		Draw2D.clear();
 		imageMapback.blit(0, 0);
-		aArea_1163 = new DrawArea(190, 261, getComponent());
+		areaInvback = new DrawArea(190, 261, getComponent());
 		areaViewport = new DrawArea(512, 334, getComponent());
 		Draw2D.clear();
 		aArea_1123 = new DrawArea(496, 50, getComponent());
@@ -5951,7 +6028,7 @@ public class Game extends GameShell {
 	}
 
 	public void method82() {
-		if (anInt1086 != 0) {
+		if (objDragArea != 0) {
 			return;
 		}
 		aStringArray1199[0] = "Cancel";
@@ -5959,9 +6036,9 @@ public class Game extends GameShell {
 		anInt1133 = 1;
 		method129();
 		anInt886 = 0;
-		if ((super.anInt20 > 4) && (super.anInt21 > 4) && (super.anInt20 < 516) && (super.anInt21 < 338)) {
-			if (anInt857 != -1) {
-				method29(4, Component.instances[anInt857], super.anInt20, 4, super.anInt21, 0);
+		if ((super.mouseX > 4) && (super.mouseY > 4) && (super.mouseX < 516) && (super.mouseY < 338)) {
+			if (viewportComponentId != -1) {
+				handleParentComponentInput(4, Component.instances[viewportComponentId], super.mouseX, 4, super.mouseY, 0);
 			} else {
 				method71();
 			}
@@ -5970,27 +6047,27 @@ public class Game extends GameShell {
 			anInt1026 = anInt886;
 		}
 		anInt886 = 0;
-		if ((super.anInt20 > 553) && (super.anInt21 > 205) && (super.anInt20 < 743) && (super.anInt21 < 466)) {
-			if (anInt1189 != -1) {
-				method29(553, Component.instances[anInt1189], super.anInt20, 205, super.anInt21, 0);
-			} else if (anIntArray1130[anInt1221] != -1) {
-				method29(553, Component.instances[anIntArray1130[anInt1221]], super.anInt20, 205, super.anInt21, 0);
+		if ((super.mouseX > 553) && (super.mouseY > 205) && (super.mouseX < 743) && (super.mouseY < 466)) {
+			if (invbackComponentId != -1) {
+				handleParentComponentInput(553, Component.instances[invbackComponentId], super.mouseX, 205, super.mouseY, 0);
+			} else if (tabComponentId[selectedTab] != -1) {
+				handleParentComponentInput(553, Component.instances[tabComponentId[selectedTab]], super.mouseX, 205, super.mouseY, 0);
 			}
 		}
 		if (anInt886 != anInt1048) {
-			aBoolean1153 = true;
+			redrawInvback = true;
 			anInt1048 = anInt886;
 		}
 		anInt886 = 0;
-		if ((super.anInt20 > 17) && (super.anInt21 > 357) && (super.anInt20 < 496) && (super.anInt21 < 453)) {
-			if (anInt1276 != -1) {
-				method29(17, Component.instances[anInt1276], super.anInt20, 357, super.anInt21, 0);
-			} else if ((super.anInt21 < 434) && (super.anInt20 < 426)) {
-				method74(super.anInt21 - 357);
+		if ((super.mouseX > 17) && (super.mouseY > 357) && (super.mouseX < 496) && (super.mouseY < 453)) {
+			if (chatbackComponentId != -1) {
+				handleParentComponentInput(17, Component.instances[chatbackComponentId], super.mouseX, 357, super.mouseY, 0);
+			} else if ((super.mouseY < 434) && (super.mouseX < 426)) {
+				method74(super.mouseY - 357);
 			}
 		}
-		if ((anInt1276 != -1) && (anInt886 != anInt1039)) {
-			aBoolean1223 = true;
+		if ((chatbackComponentId != -1) && (anInt886 != anInt1039)) {
+			redrawChatback = true;
 			anInt1039 = anInt886;
 		}
 		boolean flag = false;
@@ -6155,19 +6232,19 @@ public class Game extends GameShell {
 					}
 				}
 				listTemporaryLocs = new DoublyLinkedList();
-				anInt900 = 0;
+				socialState = 0;
 				anInt899 = 0;
-				anInt1042 = -1;
-				anInt1276 = -1;
-				anInt857 = -1;
-				anInt1189 = -1;
-				anInt1018 = -1;
+				stickyChatbackComponentId = -1;
+				chatbackComponentId = -1;
+				viewportComponentId = -1;
+				invbackComponentId = -1;
+				stickyViewportComponentId = -1;
 				aBoolean1149 = false;
-				anInt1221 = 3;
-				anInt1225 = 0;
+				selectedTab = 3;
+				chatbackInputType = 0;
 				aBoolean885 = false;
-				aBoolean1256 = false;
-				aString844 = null;
+				showSocialInput = false;
+				chatbackMessage = null;
 				anInt1055 = 0;
 				anInt1054 = -1;
 				aBoolean1047 = true;
@@ -7362,8 +7439,8 @@ public class Game extends GameShell {
 			aArea_909.draw(super.graphics, 516, 205);
 			aArea_910.draw(super.graphics, 496, 357);
 			aArea_911.draw(super.graphics, 0, 338);
-			aBoolean1153 = true;
-			aBoolean1223 = true;
+			redrawInvback = true;
+			redrawChatback = true;
 			aBoolean1103 = true;
 			aBoolean1233 = true;
 			if (sceneState != 2) {
@@ -7374,31 +7451,30 @@ public class Game extends GameShell {
 		if (sceneState == 2) {
 			method146();
 		}
-		if (aBoolean885 && (anInt948 == 1)) {
-			aBoolean1153 = true;
+		if (aBoolean885 && (mouseArea == 1)) {
+			redrawInvback = true;
 		}
-		if (anInt1189 != -1) {
-			boolean flag1 = method119(anInt945, anInt1189);
-			if (flag1) {
-				aBoolean1153 = true;
+		if (invbackComponentId != -1) {
+			if (updateParentComponentSeq(delta, invbackComponentId)) {
+				redrawInvback = true;
 			}
 		}
 		if (anInt1246 == 2) {
-			aBoolean1153 = true;
+			redrawInvback = true;
 		}
-		if (anInt1086 == 2) {
-			aBoolean1153 = true;
+		if (objDragArea == 2) {
+			redrawInvback = true;
 		}
-		if (aBoolean1153) {
-			method36();
-			aBoolean1153 = false;
+		if (redrawInvback) {
+			drawInvback();
+			redrawInvback = false;
 		}
-		if (anInt1276 == -1) {
-			aComponent_1059.anInt224 = anInt1211 - anInt1089 - 77;
-			if ((super.anInt20 > 448) && (super.anInt20 < 560) && (super.anInt21 > 332)) {
-				method65(463, 77, super.anInt20 - 17, super.anInt21 - 357, aComponent_1059, 0, false, anInt1211);
+		if (chatbackComponentId == -1) {
+			aComponent_1059.scrollY = anInt1211 - anInt1089 - 77;
+			if ((super.mouseX > 448) && (super.mouseX < 560) && (super.mouseY > 332)) {
+				method65(463, 77, super.mouseX - 17, super.mouseY - 357, aComponent_1059, 0, false, anInt1211);
 			}
-			int i = anInt1211 - 77 - aComponent_1059.anInt224;
+			int i = anInt1211 - 77 - aComponent_1059.scrollY;
 			if (i < 0) {
 				i = 0;
 			}
@@ -7407,30 +7483,29 @@ public class Game extends GameShell {
 			}
 			if (anInt1089 != i) {
 				anInt1089 = i;
-				aBoolean1223 = true;
+				redrawChatback = true;
 			}
 		}
-		if (anInt1276 != -1) {
-			boolean flag2 = method119(anInt945, anInt1276);
-			if (flag2) {
-				aBoolean1223 = true;
+		if (chatbackComponentId != -1) {
+			if (updateParentComponentSeq(delta, chatbackComponentId)) {
+				redrawChatback = true;
 			}
 		}
 		if (anInt1246 == 3) {
-			aBoolean1223 = true;
+			redrawChatback = true;
 		}
-		if (anInt1086 == 3) {
-			aBoolean1223 = true;
+		if (objDragArea == 3) {
+			redrawChatback = true;
 		}
-		if (aString844 != null) {
-			aBoolean1223 = true;
+		if (chatbackMessage != null) {
+			redrawChatback = true;
 		}
-		if (aBoolean885 && (anInt948 == 2)) {
-			aBoolean1223 = true;
+		if (aBoolean885 && (mouseArea == 2)) {
+			redrawChatback = true;
 		}
-		if (aBoolean1223) {
-			method18();
-			aBoolean1223 = false;
+		if (redrawChatback) {
+			drawChatback();
+			redrawChatback = false;
 		}
 		if (sceneState == 2) {
 			method126();
@@ -7440,103 +7515,103 @@ public class Game extends GameShell {
 			aBoolean1103 = true;
 		}
 		if (aBoolean1103) {
-			if ((anInt1054 != -1) && (anInt1054 == anInt1221)) {
+			if ((anInt1054 != -1) && (anInt1054 == selectedTab)) {
 				anInt1054 = -1;
 				aBuffer_1192.putOp(120);
-				aBuffer_1192.put1(anInt1221);
+				aBuffer_1192.put1(selectedTab);
 			}
 			aBoolean1103 = false;
 			aArea_1125.bind();
 			imageBackhmid1.blit(0, 0);
-			if (anInt1189 == -1) {
-				if (anIntArray1130[anInt1221] != -1) {
-					if (anInt1221 == 0) {
+			if (invbackComponentId == -1) {
+				if (tabComponentId[selectedTab] != -1) {
+					if (selectedTab == 0) {
 						imageRedstone1.blit(22, 10);
 					}
-					if (anInt1221 == 1) {
+					if (selectedTab == 1) {
 						imageRedstone2.blit(54, 8);
 					}
-					if (anInt1221 == 2) {
+					if (selectedTab == 2) {
 						imageRedstone2.blit(82, 8);
 					}
-					if (anInt1221 == 3) {
+					if (selectedTab == 3) {
 						imageRedstone3.blit(110, 8);
 					}
-					if (anInt1221 == 4) {
+					if (selectedTab == 4) {
 						aImage_1147.blit(153, 8);
 					}
-					if (anInt1221 == 5) {
+					if (selectedTab == 5) {
 						aImage_1147.blit(181, 8);
 					}
-					if (anInt1221 == 6) {
+					if (selectedTab == 6) {
 						aImage_1146.blit(209, 9);
 					}
 				}
-				if ((anIntArray1130[0] != -1) && ((anInt1054 != 0) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[0] != -1) && ((anInt1054 != 0) || ((loopCycle % 20) < 10))) {
 					imageSideicons[0].blit(29, 13);
 				}
-				if ((anIntArray1130[1] != -1) && ((anInt1054 != 1) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[1] != -1) && ((anInt1054 != 1) || ((loopCycle % 20) < 10))) {
 					imageSideicons[1].blit(53, 11);
 				}
-				if ((anIntArray1130[2] != -1) && ((anInt1054 != 2) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[2] != -1) && ((anInt1054 != 2) || ((loopCycle % 20) < 10))) {
 					imageSideicons[2].blit(82, 11);
 				}
-				if ((anIntArray1130[3] != -1) && ((anInt1054 != 3) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[3] != -1) && ((anInt1054 != 3) || ((loopCycle % 20) < 10))) {
 					imageSideicons[3].blit(115, 12);
 				}
-				if ((anIntArray1130[4] != -1) && ((anInt1054 != 4) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[4] != -1) && ((anInt1054 != 4) || ((loopCycle % 20) < 10))) {
 					imageSideicons[4].blit(153, 13);
 				}
-				if ((anIntArray1130[5] != -1) && ((anInt1054 != 5) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[5] != -1) && ((anInt1054 != 5) || ((loopCycle % 20) < 10))) {
 					imageSideicons[5].blit(180, 11);
 				}
-				if ((anIntArray1130[6] != -1) && ((anInt1054 != 6) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[6] != -1) && ((anInt1054 != 6) || ((loopCycle % 20) < 10))) {
 					imageSideicons[6].blit(208, 13);
 				}
 			}
 			aArea_1125.draw(super.graphics, 516, 160);
 			aArea_1124.bind();
 			imageBackbase2.blit(0, 0);
-			if (anInt1189 == -1) {
-				if (anIntArray1130[anInt1221] != -1) {
-					if (anInt1221 == 7) {
+			if (invbackComponentId == -1) {
+				if (tabComponentId[selectedTab] != -1) {
+					if (selectedTab == 7) {
 						aImage_865.blit(42, 0);
 					}
-					if (anInt1221 == 8) {
+					if (selectedTab == 8) {
 						aImage_866.blit(74, 0);
 					}
-					if (anInt1221 == 9) {
+					if (selectedTab == 9) {
 						aImage_866.blit(102, 0);
 					}
-					if (anInt1221 == 10) {
+					if (selectedTab == 10) {
 						aImage_867.blit(130, 1);
 					}
-					if (anInt1221 == 11) {
+					if (selectedTab == 11) {
 						aImage_869.blit(173, 0);
 					}
-					if (anInt1221 == 12) {
+					if (selectedTab == 12) {
 						aImage_869.blit(201, 0);
 					}
-					if (anInt1221 == 13) {
+					if (selectedTab == 13) {
 						aImage_868.blit(229, 0);
 					}
 				}
-				if ((anIntArray1130[8] != -1) && ((anInt1054 != 8) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[8] != -1) && ((anInt1054 != 8) || ((loopCycle % 20) < 10))) {
 					imageSideicons[7].blit(74, 2);
 				}
-				if ((anIntArray1130[9] != -1) && ((anInt1054 != 9) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[9] != -1) && ((anInt1054 != 9) || ((loopCycle % 20) < 10))) {
 					imageSideicons[8].blit(102, 3);
 				}
-				if ((anIntArray1130[10] != -1) && ((anInt1054 != 10) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[10] != -1) && ((anInt1054 != 10) || ((loopCycle % 20) < 10))) {
 					imageSideicons[9].blit(137, 4);
 				}
-				if ((anIntArray1130[11] != -1) && ((anInt1054 != 11) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[11] != -1) && ((anInt1054 != 11) || ((loopCycle % 20) < 10))) {
 					imageSideicons[10].blit(174, 2);
 				}
-				if ((anIntArray1130[12] != -1) && ((anInt1054 != 12) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[12] != -1) && ((anInt1054 != 12) || ((loopCycle % 20) < 10))) {
 					imageSideicons[11].blit(201, 2);
 				}
-				if ((anIntArray1130[13] != -1) && ((anInt1054 != 13) || ((loopCycle % 20) < 10))) {
+				if ((tabComponentId[13] != -1) && ((anInt1054 != 13) || ((loopCycle % 20) < 10))) {
 					imageSideicons[12].blit(226, 2);
 				}
 			}
@@ -7584,11 +7659,11 @@ public class Game extends GameShell {
 			aArea_1123.draw(super.graphics, 0, 453);
 			areaViewport.bind();
 		}
-		anInt945 = 0;
+		delta = 0;
 	}
 
 	public boolean method103(Component component) {
-		int i = component.anInt214;
+		int i = component.contentType;
 		if (((i >= 1) && (i <= 200)) || ((i >= 701) && (i <= 900))) {
 			if (i >= 801) {
 				i -= 701;
@@ -7623,7 +7698,7 @@ public class Game extends GameShell {
 			if ((spotAnim.anInt1560 != currentPlane) || spotAnim.aBoolean1567) {
 				spotAnim.unlink();
 			} else if (loopCycle >= spotAnim.anInt1564) {
-				spotAnim.method454(anInt945);
+				spotAnim.method454(delta);
 				if (spotAnim.aBoolean1567) {
 					spotAnim.unlink();
 				} else {
@@ -7633,295 +7708,326 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method105(int j, int k, Component component, int l) {
-		if ((component.anInt262 != 0) || (component.anIntArray240 == null)) {
+	public void drawParentComponent(Component component, int x, int y, int scrollY) {
+		if ((component.type != 0) || (component.children == null)) {
 			return;
 		}
-		if (component.aBoolean266 && (anInt1026 != component.anInt250) && (anInt1048 != component.anInt250) && (anInt1039 != component.anInt250)) {
+
+		if (component.aBoolean266 && (anInt1026 != component.id) && (anInt1048 != component.id) && (anInt1039 != component.id)) {
 			return;
 		}
-		int i1 = Draw2D.left;
-		int j1 = Draw2D.top;
-		int k1 = Draw2D.right;
-		int l1 = Draw2D.bottom;
-		Draw2D.setBounds(l + component.anInt267, k, k + component.anInt220, l);
-		int i2 = component.anIntArray240.length;
-		for (int j2 = 0; j2 < i2; j2++) {
-			int k2 = component.anIntArray241[j2] + k;
-			int l2 = (component.anIntArray272[j2] + l) - j;
-			Component component_1 = Component.instances[component.anIntArray240[j2]];
-			k2 += component_1.anInt263;
-			l2 += component_1.anInt265;
-			if (component_1.anInt214 > 0) {
-				method75(component_1);
+
+		int left = Draw2D.left;
+		int top = Draw2D.top;
+		int right = Draw2D.right;
+		int bottom = Draw2D.bottom;
+
+		Draw2D.setBounds(x, y, x + component.width, y + component.height);
+		int childCount = component.children.length;
+
+		for (int i = 0; i < childCount; i++) {
+			int cx = component.childX[i] + x;
+			int cy = (component.childY[i] + y) - scrollY;
+
+			Component child = Component.instances[component.children[i]];
+
+			cx += child.x;
+			cy += child.y;
+
+			if (child.contentType > 0) {
+				updateComponentContent(child);
 			}
-			if (component_1.anInt262 == 0) {
-				if (component_1.anInt224 > (component_1.anInt261 - component_1.anInt267)) {
-					component_1.anInt224 = component_1.anInt261 - component_1.anInt267;
+
+			if (child.type == 0) {
+				if (child.scrollY > (child.innerHeight - child.height)) {
+					child.scrollY = child.innerHeight - child.height;
 				}
-				if (component_1.anInt224 < 0) {
-					component_1.anInt224 = 0;
+
+				if (child.scrollY < 0) {
+					child.scrollY = 0;
 				}
-				method105(component_1.anInt224, k2, component_1, l2);
-				if (component_1.anInt261 > component_1.anInt267) {
-					method30(component_1.anInt267, component_1.anInt224, l2, k2 + component_1.anInt220, component_1.anInt261);
+
+				drawParentComponent(child, cx, cy, child.scrollY);
+
+				if (child.innerHeight > child.height) {
+					drawScrollbar(cx + child.width, cy, child.height, child.innerHeight, child.scrollY);
 				}
-			} else if (component_1.anInt262 != 1) {
-				if (component_1.anInt262 == 2) {
-					int i3 = 0;
-					for (int l3 = 0; l3 < component_1.anInt267; l3++) {
-						for (int l4 = 0; l4 < component_1.anInt220; l4++) {
-							int k5 = k2 + (l4 * (32 + component_1.anInt231));
-							int j6 = l2 + (l3 * (32 + component_1.anInt244));
-							if (i3 < 20) {
-								k5 += component_1.anIntArray215[i3];
-								j6 += component_1.anIntArray247[i3];
-							}
-							if (component_1.anIntArray253[i3] > 0) {
-								int k6 = 0;
-								int j7 = 0;
-								int j9 = component_1.anIntArray253[i3] - 1;
-								if (((k5 > (Draw2D.left - 32)) && (k5 < Draw2D.right) && (j6 > (Draw2D.top - 32)) && (j6 < Draw2D.bottom)) || ((anInt1086 != 0) && (anInt1085 == i3))) {
-									int l9 = 0;
-									if ((anInt1282 == 1) && (anInt1283 == i3) && (anInt1284 == component_1.anInt250)) {
-										l9 = 0xffffff;
-									}
-									Image24 class30_sub2_sub1_sub1_2 = ObjType.method200(j9, component_1.anIntArray252[i3], l9);
-									if (class30_sub2_sub1_sub1_2 != null) {
-										if ((anInt1086 != 0) && (anInt1085 == i3) && (anInt1084 == component_1.anInt250)) {
-											k6 = super.anInt20 - anInt1087;
-											j7 = super.anInt21 - anInt1088;
-											if ((k6 < 5) && (k6 > -5)) {
-												k6 = 0;
-											}
-											if ((j7 < 5) && (j7 > -5)) {
-												j7 = 0;
-											}
-											if (anInt989 < 5) {
-												k6 = 0;
-												j7 = 0;
-											}
-											class30_sub2_sub1_sub1_2.draw(k5 + k6, j6 + j7, 128);
-											if (((j6 + j7) < Draw2D.top) && (component.anInt224 > 0)) {
-												int i10 = (anInt945 * (Draw2D.top - j6 - j7)) / 3;
-												if (i10 > (anInt945 * 10)) {
-													i10 = anInt945 * 10;
-												}
-												if (i10 > component.anInt224) {
-													i10 = component.anInt224;
-												}
-												component.anInt224 -= i10;
-												anInt1088 += i10;
-											}
-											if (((j6 + j7 + 32) > Draw2D.bottom) && (component.anInt224 < (component.anInt261 - component.anInt267))) {
-												int j10 = (anInt945 * ((j6 + j7 + 32) - Draw2D.bottom)) / 3;
-												if (j10 > (anInt945 * 10)) {
-													j10 = anInt945 * 10;
-												}
-												if (j10 > (component.anInt261 - component.anInt267 - component.anInt224)) {
-													j10 = component.anInt261 - component.anInt267 - component.anInt224;
-												}
-												component.anInt224 += j10;
-												anInt1088 -= j10;
-											}
-										} else if ((anInt1246 != 0) && (anInt1245 == i3) && (anInt1244 == component_1.anInt250)) {
-											class30_sub2_sub1_sub1_2.draw(k5, j6, 128);
-										} else {
-											class30_sub2_sub1_sub1_2.draw(k5, j6);
+			} else if (child.type == 1) {
+				// unused
+			} else if (child.type == 2) {
+				int slot = 0;
+				for (int row = 0; row < child.height; row++) {
+					for (int column = 0; column < child.width; column++) {
+						int slotX = cx + (column * (32 + child.slotMarginX));
+						int slotY = cy + (row * (32 + child.slotMarginY));
+
+						if (slot < 20) {
+							slotX += child.slotX[slot];
+							slotY += child.slotY[slot];
+						}
+
+						if (child.slotObjId[slot] > 0) {
+							int dx = 0;
+							int dy = 0;
+							int objId = child.slotObjId[slot] - 1;
+
+							if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((objDragArea != 0) && (objDragSlot == slot))) {
+								int outlineColor = 0;
+
+								if ((anInt1282 == 1) && (anInt1283 == slot) && (anInt1284 == child.id)) {
+									outlineColor = 0xffffff;
+								}
+
+								Image24 itemIcon = ObjType.getIcon(objId, child.slotAmount[slot], outlineColor);
+
+								if (itemIcon != null) {
+									if ((objDragArea != 0) && (objDragSlot == slot) && (objDragComponentId == child.id)) {
+										dx = super.mouseX - objGrabX;
+										dy = super.mouseY - objGrabY;
+
+										if ((dx < 5) && (dx > -5)) {
+											dx = 0;
 										}
-										if ((class30_sub2_sub1_sub1_2.cropW == 33) || (component_1.anIntArray252[i3] != 1)) {
-											int k10 = component_1.anIntArray252[i3];
-											fontPlain11.drawString(method43(k10), k5 + 1 + k6, j6 + 10 + j7, 0);
-											fontPlain11.drawString(method43(k10), k5 + k6, j6 + 9 + j7, 0xffff00);
+
+										if ((dy < 5) && (dy > -5)) {
+											dy = 0;
 										}
+
+										if (objDragCycles < 5) {
+											dx = 0;
+											dy = 0;
+										}
+
+										itemIcon.draw(slotX + dx, slotY + dy, 128);
+
+										// scroll component up if dragging obj near the top
+										if (((slotY + dy) < Draw2D.top) && (component.scrollY > 0)) {
+											int scroll = (delta * (Draw2D.top - slotY - dy)) / 3;
+
+											if (scroll > (delta * 10)) {
+												scroll = delta * 10;
+											}
+
+											if (scroll > component.scrollY) {
+												scroll = component.scrollY;
+											}
+											component.scrollY -= scroll;
+											objGrabY += scroll;
+										}
+
+										// scroll component down if dragging obj near the bottom
+										if (((slotY + dy + 32) > Draw2D.bottom) && (component.scrollY < (component.innerHeight - component.height))) {
+											int scroll = (delta * ((slotY + dy + 32) - Draw2D.bottom)) / 3;
+
+											if (scroll > (delta * 10)) {
+												scroll = delta * 10;
+											}
+
+											if (scroll > (component.innerHeight - component.height - component.scrollY)) {
+												scroll = component.innerHeight - component.height - component.scrollY;
+											}
+											component.scrollY += scroll;
+											objGrabY -= scroll;
+										}
+									} else if ((anInt1246 != 0) && (anInt1245 == slot) && (anInt1244 == child.id)) {
+										itemIcon.draw(slotX, slotY, 128);
+									} else {
+										itemIcon.draw(slotX, slotY);
+									}
+
+									// draw item amount
+									if ((itemIcon.cropW == 33) || (child.slotAmount[slot] != 1)) {
+										int amount = child.slotAmount[slot];
+										fontPlain11.drawString(formatObjAmount(amount), slotX + 1 + dx, slotY + 10 + dy, 0);
+										fontPlain11.drawString(formatObjAmount(amount), slotX + dx, slotY + 9 + dy, 0xffff00);
 									}
 								}
-							} else if ((component_1.aImageArray209 != null) && (i3 < 20)) {
-								Image24 class30_sub2_sub1_sub1_1 = component_1.aImageArray209[i3];
-								if (class30_sub2_sub1_sub1_1 != null) {
-									class30_sub2_sub1_sub1_1.draw(k5, j6);
-								}
 							}
-							i3++;
-						}
-					}
-				} else if (component_1.anInt262 == 3) {
-					boolean flag = false;
-					if ((anInt1039 == component_1.anInt250) || (anInt1048 == component_1.anInt250) || (anInt1026 == component_1.anInt250)) {
-						flag = true;
-					}
-					int j3;
-					if (method131(component_1)) {
-						j3 = component_1.anInt219;
-						if (flag && (component_1.anInt239 != 0)) {
-							j3 = component_1.anInt239;
-						}
-					} else {
-						j3 = component_1.anInt232;
-						if (flag && (component_1.anInt216 != 0)) {
-							j3 = component_1.anInt216;
-						}
-					}
-					if (component_1.aByte254 == 0) {
-						if (component_1.aBoolean227) {
-							Draw2D.fillRect(k2, l2, component_1.anInt220, component_1.anInt267, j3);
-						} else {
-							Draw2D.drawRect(k2, l2, component_1.anInt220, component_1.anInt267, j3);
-						}
-					} else if (component_1.aBoolean227) {
-						Draw2D.fillRect(k2, l2, component_1.anInt220, component_1.anInt267, j3, 256 - (component_1.aByte254 & 0xff));
-					} else {
-						Draw2D.drawRect(k2, l2, component_1.anInt220, component_1.anInt267, j3, 256 - (component_1.aByte254 & 0xff));
-					}
-				} else if (component_1.anInt262 == 4) {
-					BitmapFont font = component_1.aFont_243;
-					String s = component_1.aString248;
-					boolean flag1 = false;
-					if ((anInt1039 == component_1.anInt250) || (anInt1048 == component_1.anInt250) || (anInt1026 == component_1.anInt250)) {
-						flag1 = true;
-					}
-					int i4;
-					if (method131(component_1)) {
-						i4 = component_1.anInt219;
-						if (flag1 && (component_1.anInt239 != 0)) {
-							i4 = component_1.anInt239;
-						}
-						if (component_1.aString228.length() > 0) {
-							s = component_1.aString228;
-						}
-					} else {
-						i4 = component_1.anInt232;
-						if (flag1 && (component_1.anInt216 != 0)) {
-							i4 = component_1.anInt216;
-						}
-					}
-					if ((component_1.anInt217 == 6) && aBoolean1149) {
-						s = "Please wait...";
-						i4 = component_1.anInt232;
-					}
-					if (Draw2D.width == 479) {
-						if (i4 == 0xffff00) {
-							i4 = 255;
-						}
-						if (i4 == 49152) {
-							i4 = 0xffffff;
-						}
-					}
-					for (int l6 = l2 + font.height; s.length() > 0; l6 += font.height) {
-						if (s.contains("%")) {
-							do {
-								int k7 = s.indexOf("%1");
-								if (k7 == -1) {
-									break;
-								}
-								s = s.substring(0, k7) + method93(method124(component_1, 0)) + s.substring(k7 + 2);
-							} while (true);
-							do {
-								int l7 = s.indexOf("%2");
-								if (l7 == -1) {
-									break;
-								}
-								s = s.substring(0, l7) + method93(method124(component_1, 1)) + s.substring(l7 + 2);
-							} while (true);
-							do {
-								int i8 = s.indexOf("%3");
-								if (i8 == -1) {
-									break;
-								}
-								s = s.substring(0, i8) + method93(method124(component_1, 2)) + s.substring(i8 + 2);
-							} while (true);
-							do {
-								int j8 = s.indexOf("%4");
-								if (j8 == -1) {
-									break;
-								}
-								s = s.substring(0, j8) + method93(method124(component_1, 3)) + s.substring(j8 + 2);
-							} while (true);
-							do {
-								int k8 = s.indexOf("%5");
-								if (k8 == -1) {
-									break;
-								}
-								s = s.substring(0, k8) + method93(method124(component_1, 4)) + s.substring(k8 + 2);
-							} while (true);
-						}
-						int l8 = s.indexOf("\\n");
-						String s1;
-						if (l8 != -1) {
-							s1 = s.substring(0, l8);
-							s = s.substring(l8 + 2);
-						} else {
-							s1 = s;
-							s = "";
-						}
-						if (component_1.aBoolean223) {
-							font.drawStringTaggableCenter(s1, k2 + (component_1.anInt220 / 2), l6, i4, component_1.aBoolean268);
-						} else {
-							font.drawStringTaggable(s1, k2, l6, i4, component_1.aBoolean268);
-						}
-					}
-				} else if (component_1.anInt262 == 5) {
-					Image24 image;
-					if (method131(component_1)) {
-						image = component_1.aImage_260;
-					} else {
-						image = component_1.aImage_207;
-					}
-					if (image != null) {
-						image.draw(k2, l2);
-					}
-				} else if (component_1.anInt262 == 6) {
-					int k3 = Draw3D.centerX;
-					int j4 = Draw3D.centerY;
-					Draw3D.centerX = k2 + (component_1.anInt220 / 2);
-					Draw3D.centerY = l2 + (component_1.anInt267 / 2);
-					int i5 = (Draw3D.sin[component_1.anInt270] * component_1.anInt269) >> 16;
-					int l5 = (Draw3D.cos[component_1.anInt270] * component_1.anInt269) >> 16;
-					boolean flag2 = method131(component_1);
-					int i7;
-					if (flag2) {
-						i7 = component_1.anInt258;
-					} else {
-						i7 = component_1.anInt257;
-					}
-					Model model;
-					if (i7 == -1) {
-						model = component_1.method209(-1, -1, flag2);
-					} else {
-						SeqType type = SeqType.instances[i7];
-						model = component_1.method209(type.secondaryFrames[component_1.anInt246], type.primaryFrames[component_1.anInt246], flag2);
-					}
-					if (model != null) {
-						model.drawSimple(0, component_1.anInt271, 0, component_1.anInt270, 0, i5, l5);
-					}
-					Draw3D.centerX = k3;
-					Draw3D.centerY = j4;
-				} else if (component_1.anInt262 == 7) {
-					BitmapFont class30_sub2_sub1_sub4_1 = component_1.aFont_243;
-					int k4 = 0;
-					for (int j5 = 0; j5 < component_1.anInt267; j5++) {
-						for (int i6 = 0; i6 < component_1.anInt220; i6++) {
-							if (component_1.anIntArray253[k4] > 0) {
-								ObjType type = ObjType.method198(component_1.anIntArray253[k4] - 1);
-								String s2 = type.aString170;
-								if (type.aBoolean176 || (component_1.anIntArray252[k4] != 1)) {
-									s2 = s2 + " x" + method14(component_1.anIntArray252[k4]);
-								}
-								int i9 = k2 + (i6 * (115 + component_1.anInt231));
-								int k9 = l2 + (j5 * (12 + component_1.anInt244));
-								if (component_1.aBoolean223) {
-									class30_sub2_sub1_sub4_1.drawStringTaggableCenter(s2, i9 + (component_1.anInt220 / 2), k9, component_1.anInt232, component_1.aBoolean268);
-								} else {
-									class30_sub2_sub1_sub4_1.drawStringTaggable(s2, i9, k9, component_1.anInt232, component_1.aBoolean268);
-								}
+						} else if ((child.aImageArray209 != null) && (slot < 20)) {
+							Image24 class30_sub2_sub1_sub1_1 = child.aImageArray209[slot];
+							if (class30_sub2_sub1_sub1_1 != null) {
+								class30_sub2_sub1_sub1_1.draw(slotX, slotY);
 							}
-							k4++;
 						}
+						slot++;
+					}
+				}
+			} else if (child.type == 3) {
+				boolean flag = false;
+				if ((anInt1039 == child.id) || (anInt1048 == child.id) || (anInt1026 == child.id)) {
+					flag = true;
+				}
+				int j3;
+				if (getComponentScriptState(child)) {
+					j3 = child.anInt219;
+					if (flag && (child.anInt239 != 0)) {
+						j3 = child.anInt239;
+					}
+				} else {
+					j3 = child.anInt232;
+					if (flag && (child.anInt216 != 0)) {
+						j3 = child.anInt216;
+					}
+				}
+				if (child.aByte254 == 0) {
+					if (child.aBoolean227) {
+						Draw2D.fillRect(cx, cy, child.width, child.height, j3);
+					} else {
+						Draw2D.drawRect(cx, cy, child.width, child.height, j3);
+					}
+				} else if (child.aBoolean227) {
+					Draw2D.fillRect(cx, cy, child.width, child.height, j3, 256 - (child.aByte254 & 0xff));
+				} else {
+					Draw2D.drawRect(cx, cy, child.width, child.height, j3, 256 - (child.aByte254 & 0xff));
+				}
+			} else if (child.type == 4) {
+				BitmapFont font = child.aFont_243;
+				String s = child.aString248;
+				boolean flag1 = false;
+				if ((anInt1039 == child.id) || (anInt1048 == child.id) || (anInt1026 == child.id)) {
+					flag1 = true;
+				}
+				int i4;
+				if (getComponentScriptState(child)) {
+					i4 = child.anInt219;
+					if (flag1 && (child.anInt239 != 0)) {
+						i4 = child.anInt239;
+					}
+					if (child.aString228.length() > 0) {
+						s = child.aString228;
+					}
+				} else {
+					i4 = child.anInt232;
+					if (flag1 && (child.anInt216 != 0)) {
+						i4 = child.anInt216;
+					}
+				}
+				if ((child.optionType == 6) && aBoolean1149) {
+					s = "Please wait...";
+					i4 = child.anInt232;
+				}
+				if (Draw2D.width == 479) {
+					if (i4 == 0xffff00) {
+						i4 = 255;
+					}
+					if (i4 == 49152) {
+						i4 = 0xffffff;
+					}
+				}
+				for (int l6 = cy + font.height; s.length() > 0; l6 += font.height) {
+					if (s.contains("%")) {
+						do {
+							int k7 = s.indexOf("%1");
+							if (k7 == -1) {
+								break;
+							}
+							s = s.substring(0, k7) + method93(method124(child, 0)) + s.substring(k7 + 2);
+						} while (true);
+						do {
+							int l7 = s.indexOf("%2");
+							if (l7 == -1) {
+								break;
+							}
+							s = s.substring(0, l7) + method93(method124(child, 1)) + s.substring(l7 + 2);
+						} while (true);
+						do {
+							int i8 = s.indexOf("%3");
+							if (i8 == -1) {
+								break;
+							}
+							s = s.substring(0, i8) + method93(method124(child, 2)) + s.substring(i8 + 2);
+						} while (true);
+						do {
+							int j8 = s.indexOf("%4");
+							if (j8 == -1) {
+								break;
+							}
+							s = s.substring(0, j8) + method93(method124(child, 3)) + s.substring(j8 + 2);
+						} while (true);
+						do {
+							int k8 = s.indexOf("%5");
+							if (k8 == -1) {
+								break;
+							}
+							s = s.substring(0, k8) + method93(method124(child, 4)) + s.substring(k8 + 2);
+						} while (true);
+					}
+					int l8 = s.indexOf("\\n");
+					String s1;
+					if (l8 != -1) {
+						s1 = s.substring(0, l8);
+						s = s.substring(l8 + 2);
+					} else {
+						s1 = s;
+						s = "";
+					}
+					if (child.aBoolean223) {
+						font.drawStringTaggableCenter(s1, cx + (child.width / 2), l6, i4, child.aBoolean268);
+					} else {
+						font.drawStringTaggable(s1, cx, l6, i4, child.aBoolean268);
+					}
+				}
+			} else if (child.type == 5) {
+				Image24 image;
+				if (getComponentScriptState(child)) {
+					image = child.aImage_260;
+				} else {
+					image = child.aImage_207;
+				}
+				if (image != null) {
+					image.draw(cx, cy);
+				}
+			} else if (child.type == 6) {
+				int k3 = Draw3D.centerX;
+				int j4 = Draw3D.centerY;
+				Draw3D.centerX = cx + (child.width / 2);
+				Draw3D.centerY = cy + (child.height / 2);
+				int i5 = (Draw3D.sin[child.anInt270] * child.anInt269) >> 16;
+				int l5 = (Draw3D.cos[child.anInt270] * child.anInt269) >> 16;
+				boolean flag2 = getComponentScriptState(child);
+				int i7;
+				if (flag2) {
+					i7 = child.scriptSeqId;
+				} else {
+					i7 = child.seqId;
+				}
+				Model model;
+				if (i7 == -1) {
+					model = child.method209(-1, -1, flag2);
+				} else {
+					SeqType type = SeqType.instances[i7];
+					model = child.method209(type.secondaryFrames[child.seqFrame], type.primaryFrames[child.seqFrame], flag2);
+				}
+				if (model != null) {
+					model.drawSimple(0, child.anInt271, 0, child.anInt270, 0, i5, l5);
+				}
+				Draw3D.centerX = k3;
+				Draw3D.centerY = j4;
+			} else if (child.type == 7) {
+				BitmapFont class30_sub2_sub1_sub4_1 = child.aFont_243;
+				int k4 = 0;
+				for (int j5 = 0; j5 < child.height; j5++) {
+					for (int i6 = 0; i6 < child.width; i6++) {
+						if (child.slotObjId[k4] > 0) {
+							ObjType type = ObjType.get(child.slotObjId[k4] - 1);
+							String s2 = type.name;
+							if (type.aBoolean176 || (child.slotAmount[k4] != 1)) {
+								s2 = s2 + " x" + method14(child.slotAmount[k4]);
+							}
+							int i9 = cx + (i6 * (115 + child.slotMarginX));
+							int k9 = cy + (j5 * (12 + child.slotMarginY));
+							if (child.aBoolean223) {
+								class30_sub2_sub1_sub4_1.drawStringTaggableCenter(s2, i9 + (child.width / 2), k9, child.anInt232, child.aBoolean268);
+							} else {
+								class30_sub2_sub1_sub4_1.drawStringTaggable(s2, i9, k9, child.anInt232, child.aBoolean268);
+							}
+						}
+						k4++;
 					}
 				}
 			}
 		}
-		Draw2D.setBounds(l1, i1, k1, j1);
+		Draw2D.setBounds(left, top, right, bottom);
 	}
 
 	public void method106(Image8 image) {
@@ -8186,25 +8292,29 @@ public class Game extends GameShell {
 
 	public void method112() {
 		method76();
-		if (anInt917 == 1) {
-			imageCrosses[anInt916 / 100].draw(anInt914 - 8 - 4, anInt915 - 8 - 4);
+
+		if (crossMode == 1) {
+			imageCrosses[crossCycle / 100].draw(crossX - 8 - 4, crossY - 8 - 4);
 		}
-		if (anInt917 == 2) {
-			imageCrosses[4 + (anInt916 / 100)].draw(anInt914 - 8 - 4, anInt915 - 8 - 4);
+
+		if (crossMode == 2) {
+			imageCrosses[4 + (crossCycle / 100)].draw(crossX - 8 - 4, crossY - 8 - 4);
 		}
-		if (anInt1018 != -1) {
-			method119(anInt945, anInt1018);
-			method105(0, 0, Component.instances[anInt1018], 0);
+
+		if (stickyViewportComponentId != -1) {
+			updateParentComponentSeq(delta, stickyViewportComponentId);
+			drawParentComponent(Component.instances[stickyViewportComponentId], 0, 0, 0);
 		}
-		if (anInt857 != -1) {
-			method119(anInt945, anInt857);
-			method105(0, 0, Component.instances[anInt857], 0);
+
+		if (viewportComponentId != -1) {
+			updateParentComponentSeq(delta, viewportComponentId);
+			drawParentComponent(Component.instances[viewportComponentId], 0, 0, 0);
 		}
 		method70();
 		if (!aBoolean885) {
 			method82();
 			method125();
-		} else if (anInt948 == 0) {
+		} else if (mouseArea == 0) {
 			method40();
 		}
 		if (anInt1055 == 1) {
@@ -8259,7 +8369,7 @@ public class Game extends GameShell {
 			}
 		}
 		aLongArray925[anInt822++] = l;
-		aBoolean1153 = true;
+		redrawInvback = true;
 		aBuffer_1192.putOp(133);
 		aBuffer_1192.put8(l);
 	}
@@ -8334,7 +8444,7 @@ public class Game extends GameShell {
 				l1 = 0;
 			}
 			aBoolean885 = true;
-			anInt948 = 0;
+			mouseArea = 0;
 			anInt949 = i1;
 			anInt950 = l1;
 			anInt951 = i;
@@ -8354,7 +8464,7 @@ public class Game extends GameShell {
 				i2 = 261 - l;
 			}
 			aBoolean885 = true;
-			anInt948 = 1;
+			mouseArea = 1;
 			anInt949 = j1;
 			anInt950 = i2;
 			anInt951 = i;
@@ -8374,7 +8484,7 @@ public class Game extends GameShell {
 				j2 = 96 - l;
 			}
 			aBoolean885 = true;
-			anInt948 = 2;
+			mouseArea = 2;
 			anInt949 = k1;
 			anInt950 = j2;
 			anInt951 = i;
@@ -8450,42 +8560,55 @@ public class Game extends GameShell {
 		imageFlamesRight = null;
 	}
 
-	public boolean method119(int i, int j) {
-		boolean flag1 = false;
-		Component component = Component.instances[j];
-		for (int k = 0; k < component.anIntArray240.length; k++) {
-			if (component.anIntArray240[k] == -1) {
+	/**
+	 * Updates the components sequences if there are any. This method requires that the initial <code>id</code> belong
+	 * to a component of type <code>1</code> (PARENT).
+	 * @param delta the delta.
+	 * @param id the parent component id.
+	 * @return <code>true</code> if there was a sequence which updated.
+	 */
+	public boolean updateParentComponentSeq(int delta, int id) {
+		boolean updated = false;
+		Component parent = Component.instances[id];
+
+		for (int k = 0; k < parent.children.length; k++) {
+			if (parent.children[k] == -1) {
 				break;
 			}
-			Component component_1 = Component.instances[component.anIntArray240[k]];
-			if (component_1.anInt262 == 1) {
-				flag1 |= method119(i, component_1.anInt250);
+
+			Component child = Component.instances[parent.children[k]];
+
+			if (child.type == 1) {
+				updated |= updateParentComponentSeq(delta, child.id);
 			}
-			if ((component_1.anInt262 == 6) && ((component_1.anInt257 != -1) || (component_1.anInt258 != -1))) {
-				boolean flag2 = method131(component_1);
-				int l;
-				if (flag2) {
-					l = component_1.anInt258;
+
+			if ((child.type == 6) && ((child.seqId != -1) || (child.scriptSeqId != -1))) {
+				boolean enabled = getComponentScriptState(child);
+				int seqId;
+
+				if (enabled) {
+					seqId = child.scriptSeqId;
 				} else {
-					l = component_1.anInt257;
+					seqId = child.seqId;
 				}
-				if (l != -1) {
-					SeqType type = SeqType.instances[l];
-					for (component_1.anInt208 += i; component_1.anInt208 > type.getFrameDelay(component_1.anInt246); ) {
-						component_1.anInt208 -= type.getFrameDelay(component_1.anInt246) + 1;
-						component_1.anInt246++;
-						if (component_1.anInt246 >= type.frameCount) {
-							component_1.anInt246 -= type.anInt356;
-							if ((component_1.anInt246 < 0) || (component_1.anInt246 >= type.frameCount)) {
-								component_1.anInt246 = 0;
+
+				if (seqId != -1) {
+					SeqType type = SeqType.instances[seqId];
+					for (child.seqCycle += delta; child.seqCycle > type.getFrameDelay(child.seqFrame); ) {
+						child.seqCycle -= type.getFrameDelay(child.seqFrame) + 1;
+						child.seqFrame++;
+						if (child.seqFrame >= type.frameCount) {
+							child.seqFrame -= type.anInt356;
+							if ((child.seqFrame < 0) || (child.seqFrame >= type.frameCount)) {
+								child.seqFrame = 0;
 							}
 						}
-						flag1 = true;
+						updated = true;
 					}
 				}
 			}
 		}
-		return flag1;
+		return updated;
 	}
 
 	public int method120() {
@@ -8584,7 +8707,7 @@ public class Game extends GameShell {
 		for (int j = 0; j < anInt822; j++) {
 			if (aLongArray925[j] == l) {
 				anInt822--;
-				aBoolean1153 = true;
+				redrawInvback = true;
 				for (int k = j; k < anInt822; k++) {
 					aLongArray925[k] = aLongArray925[k + 1];
 				}
@@ -8630,10 +8753,10 @@ public class Game extends GameShell {
 				if (j1 == 4) {
 					Component component_1 = Component.instances[ai[l++]];
 					int k2 = ai[l++];
-					if ((k2 >= 0) && (k2 < ObjType.anInt203) && (!ObjType.method198(k2).aBoolean161 || members)) {
-						for (int j3 = 0; j3 < component_1.anIntArray253.length; j3++) {
-							if (component_1.anIntArray253[j3] == (k2 + 1)) {
-								k1 += component_1.anIntArray252[j3];
+					if ((k2 >= 0) && (k2 < ObjType.anInt203) && (!ObjType.get(k2).members || members)) {
+						for (int j3 = 0; j3 < component_1.slotObjId.length; j3++) {
+							if (component_1.slotObjId[j3] == (k2 + 1)) {
+								k1 += component_1.slotAmount[j3];
 							}
 						}
 					}
@@ -8660,9 +8783,9 @@ public class Game extends GameShell {
 				if (j1 == 10) {
 					Component component_2 = Component.instances[ai[l++]];
 					int l2 = ai[l++] + 1;
-					if ((l2 >= 0) && (l2 < ObjType.anInt203) && (!ObjType.method198(l2).aBoolean161 || members)) {
-						for (int k3 = 0; k3 < component_2.anIntArray253.length; k3++) {
-							if (component_2.anIntArray253[k3] != l2) {
+					if ((l2 >= 0) && (l2 < ObjType.anInt203) && (!ObjType.get(l2).members || members)) {
+						for (int k3 = 0; k3 < component_2.slotObjId.length; k3++) {
+							if (component_2.slotObjId[k3] != l2) {
 								continue;
 							}
 							k1 = 0x3b9ac9ff;
@@ -8914,12 +9037,12 @@ public class Game extends GameShell {
 				}
 				if (((k == 3) || (k == 7)) && ((k == 7) || (anInt845 == 0) || ((anInt845 == 1) && method109(s)))) {
 					int l = 329 - (i * 13);
-					if ((super.anInt20 > 4) && ((super.anInt21 - 4) > (l - 10)) && ((super.anInt21 - 4) <= (l + 3))) {
+					if ((super.mouseX > 4) && ((super.mouseY - 4) > (l - 10)) && ((super.mouseY - 4) <= (l + 3))) {
 						int i1 = fontPlain12.stringWidthTaggable("From:  " + s + aStringArray944[j]) + 25;
 						if (i1 > 450) {
 							i1 = 450;
 						}
-						if (super.anInt20 < (4 + i1)) {
+						if (super.mouseX < (4 + i1)) {
 							if (rights >= 1) {
 								aStringArray1199[anInt1133] = "Report abuse @whi@" + s;
 								anIntArray1093[anInt1133] = 2606;
@@ -8969,7 +9092,12 @@ public class Game extends GameShell {
 		loc.anInt1294 = j;
 	}
 
-	public boolean method131(Component component) {
+	/**
+	 * Executes ClientScript 1 and returns a state value.
+	 * @param component the component.
+	 * @return the state.
+	 */
+	public boolean getComponentScriptState(Component component) {
 		if (component.anIntArray245 == null) {
 			return false;
 		}
@@ -9881,7 +10009,7 @@ public class Game extends GameShell {
 				anInt1120 = in.get1U();
 				anInt1193 = in.get4ME();
 				anInt1006 = in.get2U();
-				if ((anInt1193 != 0) && (anInt857 == -1)) {
+				if ((anInt1193 != 0) && (viewportComponentId == -1)) {
 					Signlink.dnslookup(StringUtil.formatIPv4(anInt1193));
 					method147();
 					char c = '\u028A';
@@ -9891,10 +10019,10 @@ public class Game extends GameShell {
 					aString881 = "";
 					aBoolean1158 = false;
 					for (int k9 = 0; k9 < Component.instances.length; k9++) {
-						if ((Component.instances[k9] == null) || (Component.instances[k9].anInt214 != c)) {
+						if ((Component.instances[k9] == null) || (Component.instances[k9].contentType != c)) {
 							continue;
 						}
-						anInt857 = Component.instances[k9].anInt236;
+						viewportComponentId = Component.instances[k9].parentId;
 						break;
 					}
 				}
@@ -9942,9 +10070,9 @@ public class Game extends GameShell {
 			if (ptype == 72) {
 				int i1 = in.get2ULE();
 				Component component = Component.instances[i1];
-				for (int k15 = 0; k15 < component.anIntArray253.length; k15++) {
-					component.anIntArray253[k15] = -1;
-					component.anIntArray253[k15] = 0;
+				for (int k15 = 0; k15 < component.slotObjId.length; k15++) {
+					component.slotObjId[k15] = -1;
+					component.slotObjId[k15] = 0;
 				}
 				ptype = -1;
 				return true;
@@ -9973,7 +10101,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 134) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 				int k1 = in.get1U();
 				int i10 = in.get4RME();
 				int l15 = in.get1U();
@@ -9994,8 +10122,8 @@ public class Game extends GameShell {
 				if (l1 == 65535) {
 					l1 = -1;
 				}
-				anIntArray1130[j10] = l1;
-				aBoolean1153 = true;
+				tabComponentId[j10] = l1;
+				redrawInvback = true;
 				aBoolean1103 = true;
 				ptype = -1;
 				return true;
@@ -10037,8 +10165,8 @@ public class Game extends GameShell {
 				int l10 = in.get2LE();
 				int i16 = in.get2ULE();
 				Component component_5 = Component.instances[i16];
-				component_5.anInt263 = k2;
-				component_5.anInt265 = l10;
+				component_5.x = k2;
+				component_5.y = l10;
 				ptype = -1;
 				return true;
 			}
@@ -10285,7 +10413,7 @@ public class Game extends GameShell {
 				if (i3 >= 0) {
 					method60(i3);
 				}
-				anInt1018 = i3;
+				stickyViewportComponentId = i3;
 				ptype = -1;
 				return true;
 			}
@@ -10437,7 +10565,7 @@ public class Game extends GameShell {
 					}
 					if (anIntArray826[k24] != i18) {
 						anIntArray826[k24] = i18;
-						aBoolean1153 = true;
+						redrawInvback = true;
 						if (i18 > 0) {
 							method77(5, "", s7 + " has logged in.");
 						}
@@ -10453,7 +10581,7 @@ public class Game extends GameShell {
 					aStringArray1082[anInt899] = s7;
 					anIntArray826[anInt899] = i18;
 					anInt899++;
-					aBoolean1153 = true;
+					redrawInvback = true;
 				}
 				for (boolean flag6 = false; !flag6; ) {
 					flag6 = true;
@@ -10468,7 +10596,7 @@ public class Game extends GameShell {
 							long l32 = aLongArray955[k29];
 							aLongArray955[k29] = aLongArray955[k29 + 1];
 							aLongArray955[k29 + 1] = l32;
-							aBoolean1153 = true;
+							redrawInvback = true;
 							flag6 = false;
 						}
 					}
@@ -10477,8 +10605,8 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 110) {
-				if (anInt1221 == 12) {
-					aBoolean1153 = true;
+				if (selectedTab == 12) {
+					redrawInvback = true;
 				}
 				anInt1148 = in.get1U();
 				ptype = -1;
@@ -10524,17 +10652,17 @@ public class Game extends GameShell {
 			if (ptype == 248) {
 				int i5 = in.get2UA();
 				int k12 = in.get2U();
-				if (anInt1276 != -1) {
-					anInt1276 = -1;
-					aBoolean1223 = true;
+				if (chatbackComponentId != -1) {
+					chatbackComponentId = -1;
+					redrawChatback = true;
 				}
-				if (anInt1225 != 0) {
-					anInt1225 = 0;
-					aBoolean1223 = true;
+				if (chatbackInputType != 0) {
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-				anInt857 = i5;
-				anInt1189 = k12;
-				aBoolean1153 = true;
+				viewportComponentId = i5;
+				invbackComponentId = k12;
+				redrawInvback = true;
 				aBoolean1103 = true;
 				aBoolean1149 = false;
 				ptype = -1;
@@ -10544,14 +10672,14 @@ public class Game extends GameShell {
 				int j5 = in.get2ULE();
 				int l12 = in.get2UA();
 				Component component_3 = Component.instances[j5];
-				if ((component_3 != null) && (component_3.anInt262 == 0)) {
+				if ((component_3 != null) && (component_3.type == 0)) {
 					if (l12 < 0) {
 						l12 = 0;
 					}
-					if (l12 > (component_3.anInt261 - component_3.anInt267)) {
-						l12 = component_3.anInt261 - component_3.anInt267;
+					if (l12 > (component_3.innerHeight - component_3.height)) {
+						l12 = component_3.innerHeight - component_3.height;
 					}
-					component_3.anInt224 = l12;
+					component_3.scrollY = l12;
 				}
 				ptype = -1;
 				return true;
@@ -10560,8 +10688,8 @@ public class Game extends GameShell {
 				for (int k5 = 0; k5 < anIntArray971.length; k5++) {
 					if (anIntArray971[k5] != anIntArray1045[k5]) {
 						anIntArray971[k5] = anIntArray1045[k5];
-						method33(k5);
-						aBoolean1153 = true;
+						updateVarp(k5);
+						redrawInvback = true;
 					}
 				}
 				ptype = -1;
@@ -10618,13 +10746,13 @@ public class Game extends GameShell {
 			}
 			if (ptype == 24) {
 				anInt1054 = in.get1US();
-				if (anInt1054 == anInt1221) {
+				if (anInt1054 == selectedTab) {
 					if (anInt1054 == 3) {
-						anInt1221 = 1;
+						selectedTab = 1;
 					} else {
-						anInt1221 = 3;
+						selectedTab = 3;
 					}
-					aBoolean1153 = true;
+					redrawInvback = true;
 				}
 				ptype = -1;
 				return true;
@@ -10636,12 +10764,12 @@ public class Game extends GameShell {
 				if (k18 == 65535) {
 					Component.instances[i6].anInt233 = 0;
 				} else {
-					ObjType type = ObjType.method198(k18);
+					ObjType type = ObjType.get(k18);
 					Component.instances[i6].anInt233 = 4;
 					Component.instances[i6].anInt234 = k18;
-					Component.instances[i6].anInt270 = type.anInt190;
-					Component.instances[i6].anInt271 = type.anInt198;
-					Component.instances[i6].anInt269 = (type.anInt181 * 100) / i13;
+					Component.instances[i6].anInt270 = type.iconPitch;
+					Component.instances[i6].anInt271 = type.iconYaw;
+					Component.instances[i6].anInt269 = (type.iconZoom * 100) / i13;
 				}
 				ptype = -1;
 				return true;
@@ -10656,18 +10784,18 @@ public class Game extends GameShell {
 			if (ptype == 142) {
 				int j6 = in.get2ULE();
 				method60(j6);
-				if (anInt1276 != -1) {
-					anInt1276 = -1;
-					aBoolean1223 = true;
+				if (chatbackComponentId != -1) {
+					chatbackComponentId = -1;
+					redrawChatback = true;
 				}
-				if (anInt1225 != 0) {
-					anInt1225 = 0;
-					aBoolean1223 = true;
+				if (chatbackInputType != 0) {
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-				anInt1189 = j6;
-				aBoolean1153 = true;
+				invbackComponentId = j6;
+				redrawInvback = true;
 				aBoolean1103 = true;
-				anInt857 = -1;
+				viewportComponentId = -1;
 				aBoolean1149 = false;
 				ptype = -1;
 				return true;
@@ -10679,8 +10807,8 @@ public class Game extends GameShell {
 					Component component = Component.instances[k13];
 					if (component != null) {
 						component.aString248 = s1;
-						if (component.anInt236 == anIntArray1130[anInt1221]) {
-							aBoolean1153 = true;
+						if (component.parentId == tabComponentId[selectedTab]) {
+							redrawInvback = true;
 						}
 					}
 				}
@@ -10692,13 +10820,13 @@ public class Game extends GameShell {
 				anInt845 = in.get1U();
 				anInt1248 = in.get1U();
 				aBoolean1233 = true;
-				aBoolean1223 = true;
+				redrawChatback = true;
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 240) {
-				if (anInt1221 == 12) {
-					aBoolean1153 = true;
+				if (selectedTab == 12) {
+					redrawInvback = true;
 				}
 				anInt878 = in.get2();
 				ptype = -1;
@@ -10723,7 +10851,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 53) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 				int i7 = in.get2U();
 				Component component_1 = Component.instances[i7];
 				int j19 = in.get2U();
@@ -10732,16 +10860,16 @@ public class Game extends GameShell {
 					if (i25 == 255) {
 						i25 = in.get4ME();
 					}
-					if (j22 >= component_1.anIntArray253.length) {
+					if (j22 >= component_1.slotObjId.length) {
 						in.get2ULEA();
 					} else {
-						component_1.anIntArray253[j22] = in.get2ULEA();
-						component_1.anIntArray252[j22] = i25;
+						component_1.slotObjId[j22] = in.get2ULEA();
+						component_1.slotAmount[j22] = i25;
 					}
 				}
-				for (int j25 = j19; j25 < component_1.anIntArray253.length; j25++) {
-					component_1.anIntArray253[j25] = 0;
-					component_1.anIntArray252[j25] = 0;
+				for (int j25 = j19; j25 < component_1.slotObjId.length; j25++) {
+					component_1.slotObjId[j25] = 0;
+					component_1.slotAmount[j25] = 0;
 				}
 				ptype = -1;
 				return true;
@@ -10758,8 +10886,8 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 221) {
-				anInt900 = in.get1U();
-				aBoolean1153 = true;
+				socialState = in.get1U();
+				redrawInvback = true;
 				ptype = -1;
 				return true;
 			}
@@ -10802,45 +10930,45 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 27) {
-				aBoolean1256 = false;
-				anInt1225 = 1;
-				aString1004 = "";
-				aBoolean1223 = true;
+				showSocialInput = false;
+				chatbackInputType = 1;
+				chatbackInput = "";
+				redrawChatback = true;
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 187) {
-				aBoolean1256 = false;
-				anInt1225 = 2;
-				aString1004 = "";
-				aBoolean1223 = true;
+				showSocialInput = false;
+				chatbackInputType = 2;
+				chatbackInput = "";
+				redrawChatback = true;
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 97) {
 				int l7 = in.get2U();
 				method60(l7);
-				if (anInt1189 != -1) {
-					anInt1189 = -1;
-					aBoolean1153 = true;
+				if (invbackComponentId != -1) {
+					invbackComponentId = -1;
+					redrawInvback = true;
 					aBoolean1103 = true;
 				}
-				if (anInt1276 != -1) {
-					anInt1276 = -1;
-					aBoolean1223 = true;
+				if (chatbackComponentId != -1) {
+					chatbackComponentId = -1;
+					redrawChatback = true;
 				}
-				if (anInt1225 != 0) {
-					anInt1225 = 0;
-					aBoolean1223 = true;
+				if (chatbackInputType != 0) {
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-				anInt857 = l7;
+				viewportComponentId = l7;
 				aBoolean1149 = false;
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 218) {
-				anInt1042 = in.get2LEA();
-				aBoolean1223 = true;
+				stickyChatbackComponentId = in.get2LEA();
+				redrawChatback = true;
 				ptype = -1;
 				return true;
 			}
@@ -10850,10 +10978,10 @@ public class Game extends GameShell {
 				anIntArray1045[j8] = l14;
 				if (anIntArray971[j8] != l14) {
 					anIntArray971[j8] = l14;
-					method33(j8);
-					aBoolean1153 = true;
-					if (anInt1042 != -1) {
-						aBoolean1223 = true;
+					updateVarp(j8);
+					redrawInvback = true;
+					if (stickyChatbackComponentId != -1) {
+						redrawChatback = true;
 					}
 				}
 				ptype = -1;
@@ -10865,10 +10993,10 @@ public class Game extends GameShell {
 				anIntArray1045[k8] = byte0;
 				if (anIntArray971[k8] != byte0) {
 					anIntArray971[k8] = byte0;
-					method33(k8);
-					aBoolean1153 = true;
-					if (anInt1042 != -1) {
-						aBoolean1223 = true;
+					updateVarp(k8);
+					redrawInvback = true;
+					if (stickyChatbackComponentId != -1) {
+						redrawChatback = true;
 					}
 				}
 				ptype = -1;
@@ -10883,35 +11011,35 @@ public class Game extends GameShell {
 				int l8 = in.get2U();
 				int i15 = in.get2();
 				Component component_4 = Component.instances[l8];
-				component_4.anInt257 = i15;
+				component_4.seqId = i15;
 				if (i15 == -1) {
-					component_4.anInt246 = 0;
-					component_4.anInt208 = 0;
+					component_4.seqFrame = 0;
+					component_4.seqCycle = 0;
 				}
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 219) {
-				if (anInt1189 != -1) {
-					anInt1189 = -1;
-					aBoolean1153 = true;
+				if (invbackComponentId != -1) {
+					invbackComponentId = -1;
+					redrawInvback = true;
 					aBoolean1103 = true;
 				}
-				if (anInt1276 != -1) {
-					anInt1276 = -1;
-					aBoolean1223 = true;
+				if (chatbackComponentId != -1) {
+					chatbackComponentId = -1;
+					redrawChatback = true;
 				}
-				if (anInt1225 != 0) {
-					anInt1225 = 0;
-					aBoolean1223 = true;
+				if (chatbackInputType != 0) {
+					chatbackInputType = 0;
+					redrawChatback = true;
 				}
-				anInt857 = -1;
+				viewportComponentId = -1;
 				aBoolean1149 = false;
 				ptype = -1;
 				return true;
 			}
 			if (ptype == 34) {
-				aBoolean1153 = true;
+				redrawInvback = true;
 				int i9 = in.get2U();
 				Component component_2 = Component.instances[i9];
 				while (in.position < psize) {
@@ -10921,9 +11049,9 @@ public class Game extends GameShell {
 					if (l25 == 255) {
 						l25 = in.get4();
 					}
-					if ((j20 >= 0) && (j20 < component_2.anIntArray253.length)) {
-						component_2.anIntArray253[j20] = i23;
-						component_2.anIntArray252[j20] = l25;
+					if ((j20 >= 0) && (j20 < component_2.slotObjId.length)) {
+						component_2.slotObjId[j20] = i23;
+						component_2.slotAmount[j20] = l25;
 					}
 				}
 				ptype = -1;
@@ -10935,8 +11063,8 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (ptype == 106) {
-				anInt1221 = in.get1UC();
-				aBoolean1153 = true;
+				selectedTab = in.get1UC();
+				redrawInvback = true;
 				aBoolean1103 = true;
 				ptype = -1;
 				return true;
@@ -10944,14 +11072,14 @@ public class Game extends GameShell {
 			if (ptype == 164) {
 				int j9 = in.get2ULE();
 				method60(j9);
-				if (anInt1189 != -1) {
-					anInt1189 = -1;
-					aBoolean1153 = true;
+				if (invbackComponentId != -1) {
+					invbackComponentId = -1;
+					redrawInvback = true;
 					aBoolean1103 = true;
 				}
-				anInt1276 = j9;
-				aBoolean1223 = true;
-				anInt857 = -1;
+				chatbackComponentId = j9;
+				redrawChatback = true;
+				viewportComponentId = -1;
 				aBoolean1149 = false;
 				ptype = -1;
 				return true;
@@ -11031,8 +11159,8 @@ public class Game extends GameShell {
 		int k2 = Draw3D.cycle;
 		Model.checkHover = true;
 		Model.pickedCount = 0;
-		Model.mouseX = super.anInt20 - 4;
-		Model.mouseY = super.anInt21 - 4;
+		Model.mouseX = super.mouseX - 4;
+		Model.mouseY = super.mouseY - 4;
 		Draw2D.clear();
 		scene.method313(anInt858, anInt860, anInt862, anInt859, j, anInt861);
 		scene.clearTemporaryLocs();
@@ -11050,18 +11178,18 @@ public class Game extends GameShell {
 
 	public void method147() {
 		aBuffer_1192.putOp(130);
-		if (anInt1189 != -1) {
-			anInt1189 = -1;
-			aBoolean1153 = true;
+		if (invbackComponentId != -1) {
+			invbackComponentId = -1;
+			redrawInvback = true;
 			aBoolean1149 = false;
 			aBoolean1103 = true;
 		}
-		if (anInt1276 != -1) {
-			anInt1276 = -1;
-			aBoolean1223 = true;
+		if (chatbackComponentId != -1) {
+			chatbackComponentId = -1;
+			redrawChatback = true;
 			aBoolean1149 = false;
 		}
-		anInt857 = -1;
+		viewportComponentId = -1;
 	}
 
 }

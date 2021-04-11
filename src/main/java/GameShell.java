@@ -25,8 +25,8 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 	public boolean aBoolean17 = true;
 	public int idleCycles;
 	public int mouseButton;
-	public int anInt20;
-	public int anInt21;
+	public int mouseX;
+	public int mouseY;
 	public int lastMousePressButton;
 	public int lastMousePressX;
 	public int lastMousePressY;
@@ -284,34 +284,34 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 	@Override
 	public void mouseExited(MouseEvent e) {
 		idleCycles = 0;
-		anInt20 = -1;
-		anInt21 = -1;
+		mouseX = -1;
+		mouseY = -1;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		int i = e.getX();
-		int j = e.getY();
+		int x = e.getX();
+		int y = e.getY();
 		if (frame != null) {
-			i -= 4;
-			j -= 22;
+			x -= 4;
+			y -= 22;
 		}
 		idleCycles = 0;
-		anInt20 = i;
-		anInt21 = j;
+		mouseX = x;
+		mouseY = y;
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		int i = e.getX();
-		int j = e.getY();
+		int x = e.getX();
+		int y = e.getY();
 		if (frame != null) {
-			i -= 4;
-			j -= 22;
+			x -= 4;
+			y -= 22;
 		}
 		idleCycles = 0;
-		anInt20 = i;
-		anInt21 = j;
+		mouseX = x;
+		mouseY = y;
 	}
 
 	@Override

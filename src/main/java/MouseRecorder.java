@@ -20,8 +20,8 @@ public class MouseRecorder implements Runnable {
 		while (aBoolean808) {
 			synchronized (lock) {
 				if (anInt810 < 500) {
-					anIntArray809[anInt810] = aGame805.anInt20;
-					anIntArray807[anInt810] = aGame805.anInt21;
+					anIntArray809[anInt810] = aGame805.mouseX;
+					anIntArray807[anInt810] = aGame805.mouseY;
 					anInt810++;
 				}
 			}

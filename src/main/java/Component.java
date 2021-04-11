@@ -15,23 +15,23 @@ public class Component {
 	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) throws IOException {
 		imageCache = new LRUMap<>(500);
 		Buffer buffer = new Buffer(archive.read("data"));
-		int i = -1;
+		int parentId = -1;
 		int j = buffer.get2U();
 		instances = new Component[j];
 		while (buffer.position < buffer.data.length) {
-			int k = buffer.get2U();
-			if (k == 65535) {
-				i = buffer.get2U();
-				k = buffer.get2U();
+			int id = buffer.get2U();
+			if (id == 65535) {
+				parentId = buffer.get2U();
+				id = buffer.get2U();
 			}
-			Component component = instances[k] = new Component();
-			component.anInt250 = k;
-			component.anInt236 = i;
-			component.anInt262 = buffer.get1U();
-			component.anInt217 = buffer.get1U();
-			component.anInt214 = buffer.get2U();
-			component.anInt220 = buffer.get2U();
-			component.anInt267 = buffer.get2U();
+			Component component = instances[id] = new Component();
+			component.id = id;
+			component.parentId = parentId;
+			component.type = buffer.get1U();
+			component.optionType = buffer.get1U();
+			component.contentType = buffer.get2U();
+			component.width = buffer.get2U();
+			component.height = buffer.get2U();
 			component.aByte254 = (byte) buffer.get1U();
 			component.anInt230 = buffer.get1U();
 			if (component.anInt230 != 0) {
@@ -59,40 +59,40 @@ public class Component {
 					}
 				}
 			}
-			if (component.anInt262 == 0) {
-				component.anInt261 = buffer.get2U();
+			if (component.type == 0) {
+				component.innerHeight = buffer.get2U();
 				component.aBoolean266 = buffer.get1U() == 1;
 				int i2 = buffer.get2U();
-				component.anIntArray240 = new int[i2];
-				component.anIntArray241 = new int[i2];
-				component.anIntArray272 = new int[i2];
+				component.children = new int[i2];
+				component.childX = new int[i2];
+				component.childY = new int[i2];
 				for (int j3 = 0; j3 < i2; j3++) {
-					component.anIntArray240[j3] = buffer.get2U();
-					component.anIntArray241[j3] = buffer.get2();
-					component.anIntArray272[j3] = buffer.get2();
+					component.children[j3] = buffer.get2U();
+					component.childX[j3] = buffer.get2();
+					component.childY[j3] = buffer.get2();
 				}
 			}
-			if (component.anInt262 == 1) {
+			if (component.type == 1) {
 				component.unusedInt = buffer.get2U();
 				component.unusedBool = buffer.get1U() == 1;
 			}
-			if (component.anInt262 == 2) {
-				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
-				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
+			if (component.type == 2) {
+				component.slotObjId = new int[component.width * component.height];
+				component.slotAmount = new int[component.width * component.height];
 				component.aBoolean259 = buffer.get1U() == 1;
 				component.aBoolean249 = buffer.get1U() == 1;
 				component.aBoolean242 = buffer.get1U() == 1;
-				component.aBoolean235 = buffer.get1U() == 1;
-				component.anInt231 = buffer.get1U();
-				component.anInt244 = buffer.get1U();
-				component.anIntArray215 = new int[20];
-				component.anIntArray247 = new int[20];
+				component.objMoveReplaces = buffer.get1U() == 1;
+				component.slotMarginX = buffer.get1U();
+				component.slotMarginY = buffer.get1U();
+				component.slotX = new int[20];
+				component.slotY = new int[20];
 				component.aImageArray209 = new Image24[20];
 				for (int j2 = 0; j2 < 20; j2++) {
 					int k3 = buffer.get1U();
 					if (k3 == 1) {
-						component.anIntArray215[j2] = buffer.get2();
-						component.anIntArray247[j2] = buffer.get2();
+						component.slotX[j2] = buffer.get2();
+						component.slotY[j2] = buffer.get2();
 						String s1 = buffer.getString();
 						if ((archive_1 != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
@@ -108,10 +108,10 @@ public class Component {
 					}
 				}
 			}
-			if (component.anInt262 == 3) {
+			if (component.type == 3) {
 				component.aBoolean227 = buffer.get1U() == 1;
 			}
-			if ((component.anInt262 == 4) || (component.anInt262 == 1)) {
+			if ((component.type == 4) || (component.type == 1)) {
 				component.aBoolean223 = buffer.get1U() == 1;
 				int k2 = buffer.get1U();
 				if (aclass30_sub2_sub1_sub4 != null) {
@@ -119,19 +119,19 @@ public class Component {
 				}
 				component.aBoolean268 = buffer.get1U() == 1;
 			}
-			if (component.anInt262 == 4) {
+			if (component.type == 4) {
 				component.aString248 = buffer.getString();
 				component.aString228 = buffer.getString();
 			}
-			if ((component.anInt262 == 1) || (component.anInt262 == 3) || (component.anInt262 == 4)) {
+			if ((component.type == 1) || (component.type == 3) || (component.type == 4)) {
 				component.anInt232 = buffer.get4();
 			}
-			if ((component.anInt262 == 3) || (component.anInt262 == 4)) {
+			if ((component.type == 3) || (component.type == 4)) {
 				component.anInt219 = buffer.get4();
 				component.anInt216 = buffer.get4();
 				component.anInt239 = buffer.get4();
 			}
-			if (component.anInt262 == 5) {
+			if (component.type == 5) {
 				String s = buffer.getString();
 				if ((archive_1 != null) && (s.length() > 0)) {
 					int i4 = s.lastIndexOf(",");
@@ -143,7 +143,7 @@ public class Component {
 					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), archive_1, s.substring(0, j4));
 				}
 			}
-			if (component.anInt262 == 6) {
+			if (component.type == 6) {
 				int l = buffer.get1U();
 				if (l != 0) {
 					component.anInt233 = 1;
@@ -156,23 +156,23 @@ public class Component {
 				}
 				l = buffer.get1U();
 				if (l != 0) {
-					component.anInt257 = ((l - 1) << 8) + buffer.get1U();
+					component.seqId = ((l - 1) << 8) + buffer.get1U();
 				} else {
-					component.anInt257 = -1;
+					component.seqId = -1;
 				}
 				l = buffer.get1U();
 				if (l != 0) {
-					component.anInt258 = ((l - 1) << 8) + buffer.get1U();
+					component.scriptSeqId = ((l - 1) << 8) + buffer.get1U();
 				} else {
-					component.anInt258 = -1;
+					component.scriptSeqId = -1;
 				}
 				component.anInt269 = buffer.get2U();
 				component.anInt270 = buffer.get2U();
 				component.anInt271 = buffer.get2U();
 			}
-			if (component.anInt262 == 7) {
-				component.anIntArray253 = new int[component.anInt220 * component.anInt267];
-				component.anIntArray252 = new int[component.anInt220 * component.anInt267];
+			if (component.type == 7) {
+				component.slotObjId = new int[component.width * component.height];
+				component.slotAmount = new int[component.width * component.height];
 				component.aBoolean223 = buffer.get1U() == 1;
 				int l2 = buffer.get1U();
 				if (aclass30_sub2_sub1_sub4 != null) {
@@ -180,8 +180,8 @@ public class Component {
 				}
 				component.aBoolean268 = buffer.get1U() == 1;
 				component.anInt232 = buffer.get4();
-				component.anInt231 = buffer.get2();
-				component.anInt244 = buffer.get2();
+				component.slotMarginX = buffer.get2();
+				component.slotMarginY = buffer.get2();
 				component.aBoolean249 = buffer.get1U() == 1;
 				component.aStringArray225 = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
@@ -191,24 +191,24 @@ public class Component {
 					}
 				}
 			}
-			if ((component.anInt217 == 2) || (component.anInt262 == 2)) {
+			if ((component.optionType == 2) || (component.type == 2)) {
 				component.aString222 = buffer.getString();
 				component.aString218 = buffer.getString();
 				component.anInt237 = buffer.get2U();
 			}
-			if ((component.anInt217 == 1) || (component.anInt217 == 4) || (component.anInt217 == 5) || (component.anInt217 == 6)) {
+			if ((component.optionType == 1) || (component.optionType == 4) || (component.optionType == 5) || (component.optionType == 6)) {
 				component.aString221 = buffer.getString();
 				if (component.aString221.length() == 0) {
-					if (component.anInt217 == 1) {
+					if (component.optionType == 1) {
 						component.aString221 = "Ok";
 					}
-					if (component.anInt217 == 4) {
+					if (component.optionType == 4) {
 						component.aString221 = "Select";
 					}
-					if (component.anInt217 == 5) {
+					if (component.optionType == 5) {
 						component.aString221 = "Select";
 					}
-					if (component.anInt217 == 6) {
+					if (component.optionType == 6) {
 						component.aString221 = "Continue";
 					}
 				}
@@ -240,77 +240,82 @@ public class Component {
 	}
 
 	public Image24 aImage_207;
-	public int anInt208;
+	public int seqCycle;
 	public Image24[] aImageArray209;
 	public int unusedInt;
 	public int[] anIntArray212;
-	public int anInt214;
-	public int[] anIntArray215;
+	public int contentType;
+	public int[] slotX;
 	public int anInt216;
-	public int anInt217;
+	public int optionType;
 	public String aString218;
 	public int anInt219;
-	public int anInt220;
+	public int width;
 	public String aString221;
 	public String aString222;
 	public boolean aBoolean223;
-	public int anInt224;
+	public int scrollY;
 	public String[] aStringArray225;
 	public int[][] anIntArrayArray226;
 	public boolean aBoolean227;
 	public String aString228;
 	public int anInt230;
-	public int anInt231;
+	public int slotMarginX;
 	public int anInt232;
 	public int anInt233;
 	public int anInt234;
-	public boolean aBoolean235;
-	public int anInt236;
+	/**
+	 * When <code>true</code> moving an <code>Obj</code> from one slot to another will simply erase the item from the
+	 * destination slot.
+	 */
+	public boolean objMoveReplaces;
+	public int parentId;
 	public int anInt237;
 	public int anInt239;
-	public int[] anIntArray240;
-	public int[] anIntArray241;
+	public int[] children;
+	public int[] childX;
 	public boolean aBoolean242;
 	public BitmapFont aFont_243;
-	public int anInt244;
+	public int slotMarginY;
 	public int[] anIntArray245;
-	public int anInt246;
-	public int[] anIntArray247;
+	public int seqFrame;
+	public int[] slotY;
 	public String aString248;
 	public boolean aBoolean249;
-	public int anInt250;
+	public int id;
 	public boolean unusedBool;
-	public int[] anIntArray252;
-	public int[] anIntArray253;
+	public int[] slotAmount;
+	public int[] slotObjId;
 	public byte aByte254;
 	public int anInt255;
 	public int anInt256;
-	public int anInt257;
-	public int anInt258;
+	public int seqId;
+	public int scriptSeqId;
 	public boolean aBoolean259;
 	public Image24 aImage_260;
-	public int anInt261;
-	public int anInt262;
-	public int anInt263;
-	public int anInt265;
+	public int innerHeight;
+	public int type;
+	public int x;
+	public int y;
 	public boolean aBoolean266;
-	public int anInt267;
+	public int height;
 	public boolean aBoolean268;
 	public int anInt269;
 	public int anInt270;
 	public int anInt271;
-	public int[] anIntArray272;
+	public int[] childY;
 
 	public Component() {
 	}
 
-	public void method204(int i, int j) {
-		int k = anIntArray253[i];
-		anIntArray253[i] = anIntArray253[j];
-		anIntArray253[j] = k;
-		k = anIntArray252[i];
-		anIntArray252[i] = anIntArray252[j];
-		anIntArray252[j] = k;
+	public void swapSlots(int src, int dst) {
+		int tmp = slotObjId[src];
+		slotObjId[src] = slotObjId[dst];
+		slotObjId[dst] = tmp;
+
+		tmp = slotAmount[src];
+		slotAmount[src] = slotAmount[dst];
+		slotAmount[dst] = tmp;
 	}
 
 	public Model method206(int i, int j) {
@@ -328,7 +333,7 @@ public class Component {
 			model = Game.self.method453();
 		}
 		if (i == 4) {
-			model = ObjType.method198(j).method202(50);
+			model = ObjType.get(j).method202(50);
 		}
 		if (i == 5) {
 			model = null;

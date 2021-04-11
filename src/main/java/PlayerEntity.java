@@ -122,7 +122,7 @@ public class PlayerEntity extends PathingEntity {
 				break;
 			}
 			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
-				int l1 = ObjType.method198(anIntArray1717[j] - 512).anInt202;
+				int l1 = ObjType.get(anIntArray1717[j] - 512).anInt202;
 				if (l1 != 0) {
 					anInt1701 = l1;
 				}
@@ -234,7 +234,7 @@ public class PlayerEntity extends PathingEntity {
 				if ((k2 >= 256) && (k2 < 512) && !IDKType.instances[k2 - 256].method537()) {
 					flag = true;
 				}
-				if ((k2 >= 512) && !ObjType.method198(k2 - 512).method195(anInt1702)) {
+				if ((k2 >= 512) && !ObjType.get(k2 - 512).method195(anInt1702)) {
 					flag = true;
 				}
 			}
@@ -265,7 +265,7 @@ public class PlayerEntity extends PathingEntity {
 					}
 				}
 				if (i3 >= 512) {
-					Model class30_sub2_sub4_sub6_4 = ObjType.method198(i3 - 512).method196(anInt1702);
+					Model class30_sub2_sub4_sub6_4 = ObjType.get(i3 - 512).method196(anInt1702);
 					if (class30_sub2_sub4_sub6_4 != null) {
 						aclass30_sub2_sub4_sub6[j2++] = class30_sub2_sub4_sub6_4;
 					}
@@ -319,7 +319,7 @@ public class PlayerEntity extends PathingEntity {
 			if ((j >= 256) && (j < 512) && !IDKType.instances[j - 256].method539()) {
 				flag = true;
 			}
-			if ((j >= 512) && !ObjType.method198(j - 512).method192(anInt1702)) {
+			if ((j >= 512) && !ObjType.get(j - 512).method192(anInt1702)) {
 				flag = true;
 			}
 		}
@@ -337,7 +337,7 @@ public class PlayerEntity extends PathingEntity {
 				}
 			}
 			if (i1 >= 512) {
-				Model class30_sub2_sub4_sub6_2 = ObjType.method198(i1 - 512).method194(anInt1702);
+				Model class30_sub2_sub4_sub6_2 = ObjType.get(i1 - 512).method194(anInt1702);
 				if (class30_sub2_sub4_sub6_2 != null) {
 					aclass30_sub2_sub4_sub6[k++] = class30_sub2_sub4_sub6_2;
 				}

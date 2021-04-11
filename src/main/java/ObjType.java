@@ -10,55 +10,54 @@ public class ObjType {
 
 	public static LRUMap<Integer, Image24> iconCache = new LRUMap<>(100);
 	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(50);
-	public static ObjType[] aTypeArray172;
-	public static int anInt180;
-	public static boolean aBoolean182 = true;
-	public static Buffer aBuffer_183;
-	public static int[] anIntArray195;
+	public static ObjType[] cached;
+	public static int cachePos;
+	public static Buffer buf;
+	public static int[] typeOffset;
 	public static int anInt203;
 
 	public static void unload() {
 		modelCache = null;
 		iconCache = null;
-		anIntArray195 = null;
-		aTypeArray172 = null;
-		aBuffer_183 = null;
+		typeOffset = null;
+		cached = null;
+		buf = null;
 	}
 
 	public static void unpack(FileArchive archive) throws IOException {
-		aBuffer_183 = new Buffer(archive.read("obj.dat"));
+		buf = new Buffer(archive.read("obj.dat"));
 		Buffer buffer = new Buffer(archive.read("obj.idx"));
 		anInt203 = buffer.get2U();
-		anIntArray195 = new int[anInt203];
+		typeOffset = new int[anInt203];
 		int i = 2;
 		for (int j = 0; j < anInt203; j++) {
-			anIntArray195[j] = i;
+			typeOffset[j] = i;
 			i += buffer.get2U();
 		}
-		aTypeArray172 = new ObjType[10];
+		cached = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
-			aTypeArray172[k] = new ObjType();
+			cached[k] = new ObjType();
 		}
 	}
 
-	public static ObjType method198(int i) {
+	public static ObjType get(int id) {
 		for (int j = 0; j < 10; j++) {
-			if (aTypeArray172[j].anInt157 == i) {
-				return aTypeArray172[j];
+			if (cached[j].id == id) {
+				return cached[j];
 			}
 		}
-		anInt180 = (anInt180 + 1) % 10;
-		ObjType type = aTypeArray172[anInt180];
-		aBuffer_183.position = anIntArray195[i];
-		type.anInt157 = i;
-		type.method197();
-		type.method203(aBuffer_183);
-		if (type.anInt163 != -1) {
-			type.method199();
+		cachePos = (cachePos + 1) % 10;
+		ObjType type = cached[cachePos];
+		buf.position = typeOffset[id];
+		type.id = id;
+		type.reset();
+		type.read(buf);
+		if (type.linkedId != -1) {
+			type.link();
 		}
-		if (!aBoolean182 && type.aBoolean161) {
-			type.aString170 = "Members Object";
-			type.aByteArray178 = "Login to a members' server to use this object.".getBytes();
+		if (!Game.members && type.members) {
+			type.name = "Members Object";
+			type.description = "Login to a members' server to use this object.".getBytes();
 			type.aStringArray168 = null;
 			type.aStringArray189 = null;
 			type.anInt202 = 0;
@@ -66,174 +65,208 @@ public class ObjType {
 		return type;
 	}
 
-	public static Image24 method200(int i, int j, int k) {
-		if (k == 0) {
-			Image24 image = iconCache.get(i);
-			if ((image != null) && (image.cropH != j) && (image.cropH != -1)) {
-				image.unlink();
-				image = null;
+	public static Image24 getIcon(int id, int amount, int outlineColor) {
+		if (outlineColor == 0) {
+			Image24 icon = iconCache.get(id);
+
+			if ((icon != null) && (icon.cropH != amount) && (icon.cropH != -1)) {
+				icon.unlink();
+				icon = null;
 			}
-			if (image != null) {
-				return image;
+
+			if (icon != null) {
+				return icon;
 			}
 		}
-		ObjType type = method198(i);
-		if (type.anIntArray193 == null) {
-			j = -1;
+
+		ObjType type = get(id);
+
+		if (type.stackId == null) {
+			amount = -1;
 		}
-		if (j > 1) {
-			int i1 = -1;
+
+		if (amount > 1) {
+			int newId = -1;
 			for (int j1 = 0; j1 < 10; j1++) {
-				if ((j >= type.anIntArray201[j1]) && (type.anIntArray201[j1] != 0)) {
-					i1 = type.anIntArray193[j1];
+				if ((amount >= type.stackAmount[j1]) && (type.stackAmount[j1] != 0)) {
+					newId = type.stackId[j1];
 				}
 			}
-			if (i1 != -1) {
-				type = method198(i1);
+			if (newId != -1) {
+				type = get(newId);
 			}
 		}
-		Model model = type.method201(1);
+
+		Model model = type.getModel(1);
+
 		if (model == null) {
 			return null;
 		}
-		Image24 class30_sub2_sub1_sub1_2 = null;
-		if (type.anInt163 != -1) {
-			class30_sub2_sub1_sub1_2 = method200(type.anInt179, 10, -1);
-			if (class30_sub2_sub1_sub1_2 == null) {
+
+		// this will typically be the certificate item for noted stuff
+		Image24 linkedIcon = null;
+
+		if (type.linkedId != -1) {
+			linkedIcon = getIcon(type.anInt179, 10, -1);
+
+			if (linkedIcon == null) {
 				return null;
 			}
 		}
-		Image24 class30_sub2_sub1_sub1_1 = new Image24(32, 32);
-		int k1 = Draw3D.centerX;
-		int l1 = Draw3D.centerY;
-		int[] ai = Draw3D.lineOffset;
-		int[] ai1 = Draw2D.pixels;
-		int i2 = Draw2D.width;
-		int j2 = Draw2D.height;
-		int k2 = Draw2D.left;
-		int l2 = Draw2D.right;
-		int i3 = Draw2D.top;
-		int j3 = Draw2D.bottom;
+
+		Image24 icon = new Image24(32, 32);
+
+		// store state
+		int _cx = Draw3D.centerX;
+		int _cy = Draw3D.centerY;
+		int[] _loff = Draw3D.lineOffset;
+		int[] _pix = Draw2D.pixels;
+		int _w = Draw2D.width;
+		int _h = Draw2D.height;
+		int _l = Draw2D.left;
+		int _r = Draw2D.right;
+		int _t = Draw2D.top;
+		int _b = Draw2D.bottom;
+
+		// set up drawing area
 		Draw3D.jagged = false;
-		Draw2D.bind(class30_sub2_sub1_sub1_1.pixels, 32, 32);
+		Draw2D.bind(icon.pixels, 32, 32);
 		Draw2D.fillRect(0, 0, 32, 32, 0);
 		Draw3D.init2D();
-		int k3 = type.anInt181;
-		if (k == -1) {
-			k3 = (int) ((double) k3 * 1.5D);
+
+		int zoom = type.iconZoom;
+
+		if (outlineColor == -1) {
+			zoom = (int) ((double) zoom * 1.5D);
 		}
-		if (k > 0) {
-			k3 = (int) ((double) k3 * 1.04D);
+
+		if (outlineColor > 0) {
+			zoom = (int) ((double) zoom * 1.04D);
 		}
-		int l3 = (Draw3D.sin[type.anInt190] * k3) >> 16;
-		int i4 = (Draw3D.cos[type.anInt190] * k3) >> 16;
-		model.drawSimple(0, type.anInt198, type.anInt204, type.anInt190, type.anInt169, l3 + (model.minY / 2) + type.anInt194, i4 + type.anInt194);
-		for (int i5 = 31; i5 >= 0; i5--) {
-			for (int j4 = 31; j4 >= 0; j4--) {
-				if (class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] == 0) {
-					if ((i5 > 0) && (class30_sub2_sub1_sub1_1.pixels[(i5 - 1) + (j4 * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
-					} else if ((j4 > 0) && (class30_sub2_sub1_sub1_1.pixels[i5 + ((j4 - 1) * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
-					} else if ((i5 < 31) && (class30_sub2_sub1_sub1_1.pixels[i5 + 1 + (j4 * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
-					} else if ((j4 < 31) && (class30_sub2_sub1_sub1_1.pixels[i5 + ((j4 + 1) * 32)] > 1)) {
-						class30_sub2_sub1_sub1_1.pixels[i5 + (j4 * 32)] = 1;
-					}
+
+		int sinPitch = (Draw3D.sin[type.iconPitch] * zoom) >> 16;
+		int cosPitch = (Draw3D.cos[type.iconPitch] * zoom) >> 16;
+
+		model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
+
+		// define outline
+		for (int x = 31; x >= 0; x--) {
+			for (int y = 31; y >= 0; y--) {
+				if (icon.pixels[x + (y * 32)] != 0) {
+					continue;
+				}
+				if ((x > 0) && (icon.pixels[(x - 1) + (y * 32)] > 1)) {
+					icon.pixels[x + (y * 32)] = 1;
+				} else if ((y > 0) && (icon.pixels[x + ((y - 1) * 32)] > 1)) {
+					icon.pixels[x + (y * 32)] = 1;
+				} else if ((x < 31) && (icon.pixels[x + 1 + (y * 32)] > 1)) {
+					icon.pixels[x + (y * 32)] = 1;
+				} else if ((y < 31) && (icon.pixels[x + ((y + 1) * 32)] > 1)) {
+					icon.pixels[x + (y * 32)] = 1;
 				}
 			}
 		}
-		if (k > 0) {
-			for (int j5 = 31; j5 >= 0; j5--) {
-				for (int k4 = 31; k4 >= 0; k4--) {
-					if (class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] == 0) {
-						if ((j5 > 0) && (class30_sub2_sub1_sub1_1.pixels[(j5 - 1) + (k4 * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
-						} else if ((k4 > 0) && (class30_sub2_sub1_sub1_1.pixels[j5 + ((k4 - 1) * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
-						} else if ((j5 < 31) && (class30_sub2_sub1_sub1_1.pixels[j5 + 1 + (k4 * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
-						} else if ((k4 < 31) && (class30_sub2_sub1_sub1_1.pixels[j5 + ((k4 + 1) * 32)] == 1)) {
-							class30_sub2_sub1_sub1_1.pixels[j5 + (k4 * 32)] = k;
+
+		// color outline
+		if (outlineColor > 0) {
+			for (int x = 31; x >= 0; x--) {
+				for (int y = 31; y >= 0; y--) {
+					if (icon.pixels[x + (y * 32)] == 0) {
+						if ((x > 0) && (icon.pixels[(x - 1) + (y * 32)] == 1)) {
+							icon.pixels[x + (y * 32)] = outlineColor;
+						} else if ((y > 0) && (icon.pixels[x + ((y - 1) * 32)] == 1)) {
+							icon.pixels[x + (y * 32)] = outlineColor;
+						} else if ((x < 31) && (icon.pixels[x + 1 + (y * 32)] == 1)) {
+							icon.pixels[x + (y * 32)] = outlineColor;
+						} else if ((y < 31) && (icon.pixels[x + ((y + 1) * 32)] == 1)) {
+							icon.pixels[x + (y * 32)] = outlineColor;
 						}
 					}
 				}
 			}
-		} else if (k == 0) {
-			for (int k5 = 31; k5 >= 0; k5--) {
-				for (int l4 = 31; l4 >= 0; l4--) {
-					if ((class30_sub2_sub1_sub1_1.pixels[k5 + (l4 * 32)] == 0) && (k5 > 0) && (l4 > 0) && (class30_sub2_sub1_sub1_1.pixels[(k5 - 1) + ((l4 - 1) * 32)] > 0)) {
-						class30_sub2_sub1_sub1_1.pixels[k5 + (l4 * 32)] = 0x302020;
+		}
+		// default outline color
+		else if (outlineColor == 0) {
+			for (int x = 31; x >= 0; x--) {
+				for (int y = 31; y >= 0; y--) {
+					if ((icon.pixels[x + (y * 32)] == 0) && (x > 0) && (y > 0) && (icon.pixels[(x - 1) + ((y - 1) * 32)] > 0)) {
+						icon.pixels[x + (y * 32)] = 0x302020;
 					}
 				}
 			}
 		}
-		if (type.anInt163 != -1) {
-			int l5 = class30_sub2_sub1_sub1_2.cropW;
-			int j6 = class30_sub2_sub1_sub1_2.cropH;
-			class30_sub2_sub1_sub1_2.cropW = 32;
-			class30_sub2_sub1_sub1_2.cropH = 32;
-			class30_sub2_sub1_sub1_2.draw(0, 0);
-			class30_sub2_sub1_sub1_2.cropW = l5;
-			class30_sub2_sub1_sub1_2.cropH = j6;
+
+		if (type.linkedId != -1) {
+			int w = linkedIcon.cropW;
+			int h = linkedIcon.cropH;
+			linkedIcon.cropW = 32;
+			linkedIcon.cropH = 32;
+			linkedIcon.draw(0, 0);
+			linkedIcon.cropW = w;
+			linkedIcon.cropH = h;
 		}
-		if (k == 0) {
-			iconCache.put(i, class30_sub2_sub1_sub1_1);
+
+		if (outlineColor == 0) {
+			iconCache.put(id, icon);
 		}
-		Draw2D.bind(ai1, i2, j2);
-		Draw2D.setBounds(j3, k2, l2, i3);
-		Draw3D.centerX = k1;
-		Draw3D.centerY = l1;
-		Draw3D.lineOffset = ai;
+
+		// restore state
+		Draw2D.bind(_pix, _w, _h);
+		Draw2D.setBounds(_l, _t, _r, _b);
+		Draw3D.centerX = _cx;
+		Draw3D.centerY = _cy;
+		Draw3D.lineOffset = _loff;
 		Draw3D.jagged = true;
+
 		if (type.aBoolean176) {
-			class30_sub2_sub1_sub1_1.cropW = 33;
+			icon.cropW = 33;
 		} else {
-			class30_sub2_sub1_sub1_1.cropW = 32;
+			icon.cropW = 32;
 		}
-		class30_sub2_sub1_sub1_1.cropH = j;
-		return class30_sub2_sub1_sub1_1;
+
+		icon.cropH = amount;
+		return icon;
 	}
 
 	public byte aByte154;
 	public int anInt155;
-	public int[] anIntArray156;
-	public int anInt157 = -1;
-	public int[] anIntArray160;
-	public boolean aBoolean161;
+	public int[] srcColor;
+	public int id = -1;
+	public int[] dstColor;
+	public boolean members;
 	public int anInt162;
-	public int anInt163;
+	public int linkedId;
 	public int anInt164;
 	public int anInt165;
 	public int anInt166;
-	public int anInt167;
+	public int scaleX;
 	public String[] aStringArray168;
-	public int anInt169;
-	public String aString170;
+	public int iconOffsetX;
+	public String name;
 	public int anInt173;
 	public int anInt174;
 	public int anInt175;
 	public boolean aBoolean176;
-	public byte[] aByteArray178;
+	public byte[] description;
 	public int anInt179;
-	public int anInt181;
+	public int iconZoom;
 	public int anInt184;
 	public int anInt185;
 	public int anInt188;
 	public String[] aStringArray189;
-	public int anInt190;
-	public int anInt191;
-	public int anInt192;
-	public int[] anIntArray193;
-	public int anInt194;
+	public int iconPitch;
+	public int scaleY;
+	public int scaleZ;
+	public int[] stackId;
+	public int iconOffsetY;
 	public int anInt196;
 	public int anInt197;
-	public int anInt198;
+	public int iconYaw;
 	public int unusedInt;
 	public int anInt200;
-	public int[] anIntArray201;
+	public int[] stackAmount;
 	public int anInt202;
-	public int anInt204;
+	public int iconRoll;
 	public byte aByte205;
 
 	public ObjType() {
@@ -275,9 +308,9 @@ public class ObjType {
 			Model[] aclass30_sub2_sub4_sub6 = {model, model_1};
 			model = new Model(2, aclass30_sub2_sub4_sub6);
 		}
-		if (anIntArray156 != null) {
-			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.recolor(anIntArray156[i1], anIntArray160[i1]);
+		if (srcColor != null) {
+			for (int i1 = 0; i1 < srcColor.length; i1++) {
+				model.recolor(srcColor[i1], dstColor[i1]);
 			}
 		}
 		return model;
@@ -339,30 +372,30 @@ public class ObjType {
 		if ((i == 1) && (aByte154 != 0)) {
 			model.translate(0, aByte154, 0);
 		}
-		if (anIntArray156 != null) {
-			for (int i1 = 0; i1 < anIntArray156.length; i1++) {
-				model.recolor(anIntArray156[i1], anIntArray160[i1]);
+		if (srcColor != null) {
+			for (int i1 = 0; i1 < srcColor.length; i1++) {
+				model.recolor(srcColor[i1], dstColor[i1]);
 			}
 		}
 		return model;
 	}
 
-	public void method197() {
+	public void reset() {
 		anInt174 = 0;
-		aString170 = null;
-		aByteArray178 = null;
-		anIntArray156 = null;
-		anIntArray160 = null;
-		anInt181 = 2000;
-		anInt190 = 0;
-		anInt198 = 0;
-		anInt204 = 0;
-		anInt169 = 0;
-		anInt194 = 0;
+		name = null;
+		description = null;
+		srcColor = null;
+		dstColor = null;
+		iconZoom = 2000;
+		iconPitch = 0;
+		iconYaw = 0;
+		iconRoll = 0;
+		iconOffsetX = 0;
+		iconOffsetY = 0;
 		unusedInt = -1;
 		aBoolean176 = false;
 		anInt155 = 1;
-		aBoolean161 = false;
+		members = false;
 		aStringArray168 = null;
 		aStringArray189 = null;
 		anInt165 = -1;
@@ -377,101 +410,108 @@ public class ObjType {
 		anInt166 = -1;
 		anInt197 = -1;
 		anInt173 = -1;
-		anIntArray193 = null;
-		anIntArray201 = null;
+		stackId = null;
+		stackAmount = null;
 		anInt179 = -1;
-		anInt163 = -1;
-		anInt167 = 128;
-		anInt192 = 128;
-		anInt191 = 128;
+		linkedId = -1;
+		scaleX = 128;
+		scaleZ = 128;
+		scaleY = 128;
 		anInt196 = 0;
 		anInt184 = 0;
 		anInt202 = 0;
 	}
 
-	public void method199() {
-		ObjType type = method198(anInt163);
+	public void link() {
+		ObjType type = get(linkedId);
 		anInt174 = type.anInt174;
-		anInt181 = type.anInt181;
-		anInt190 = type.anInt190;
-		anInt198 = type.anInt198;
-		anInt204 = type.anInt204;
-		anInt169 = type.anInt169;
-		anInt194 = type.anInt194;
-		anIntArray156 = type.anIntArray156;
-		anIntArray160 = type.anIntArray160;
-		ObjType type_1 = method198(anInt179);
-		aString170 = type_1.aString170;
-		aBoolean161 = type_1.aBoolean161;
+		iconZoom = type.iconZoom;
+		iconPitch = type.iconPitch;
+		iconYaw = type.iconYaw;
+		iconRoll = type.iconRoll;
+		iconOffsetX = type.iconOffsetX;
+		iconOffsetY = type.iconOffsetY;
+		srcColor = type.srcColor;
+		dstColor = type.dstColor;
+		ObjType type_1 = get(anInt179);
+		name = type_1.name;
+		members = type_1.members;
 		anInt155 = type_1.anInt155;
 		String s = "a";
-		char c = type_1.aString170.charAt(0);
+		char c = type_1.name.charAt(0);
 		if ((c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U')) {
 			s = "an";
 		}
-		aByteArray178 = ("Swap this note at any bank for " + s + " " + type_1.aString170 + ".").getBytes();
+		description = ("Swap this note at any bank for " + s + " " + type_1.name + ".").getBytes();
 		aBoolean176 = true;
 	}
 
-	public Model method201(int i) {
-		if ((anIntArray193 != null) && (i > 1)) {
-			int j = -1;
+	public Model getModel(int amount) {
+		if ((stackId != null) && (amount > 1)) {
+			int newId = -1;
 			for (int k = 0; k < 10; k++) {
-				if ((i >= anIntArray201[k]) && (anIntArray201[k] != 0)) {
-					j = anIntArray193[k];
+				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
+					newId = stackId[k];
 				}
 			}
-			if (j != -1) {
-				return method198(j).method201(1);
+			if (newId != -1) {
+				return get(newId).getModel(1);
 			}
 		}
-		Model model = modelCache.get(anInt157);
+
+		Model model = modelCache.get(id);
+
 		if (model != null) {
 			return model;
 		}
+
 		model = Model.tryGet(anInt174);
+
 		if (model == null) {
 			return null;
 		}
-		if ((anInt167 != 128) || (anInt192 != 128) || (anInt191 != 128)) {
-			model.scale(anInt167, anInt191, anInt192);
+
+		if ((scaleX != 128) || (scaleZ != 128) || (scaleY != 128)) {
+			model.scale(scaleX, scaleY, scaleZ);
 		}
-		if (anIntArray156 != null) {
-			for (int l = 0; l < anIntArray156.length; l++) {
-				model.recolor(anIntArray156[l], anIntArray160[l]);
+
+		if (srcColor != null) {
+			for (int l = 0; l < srcColor.length; l++) {
+				model.recolor(srcColor[l], dstColor[l]);
 			}
 		}
+
 		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
 		model.pickBounds = true;
-		modelCache.put(anInt157, model);
+		modelCache.put(id, model);
 		return model;
 	}
 
 	public Model method202(int i) {
-		if ((anIntArray193 != null) && (i > 1)) {
+		if ((stackId != null) && (i > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
-				if ((i >= anIntArray201[k]) && (anIntArray201[k] != 0)) {
-					j = anIntArray193[k];
+				if ((i >= stackAmount[k]) && (stackAmount[k] != 0)) {
+					j = stackId[k];
 				}
 			}
 			if (j != -1) {
-				return method198(j).method202(1);
+				return get(j).method202(1);
 			}
 		}
 		Model model = Model.tryGet(anInt174);
 		if (model == null) {
 			return null;
 		}
-		if (anIntArray156 != null) {
-			for (int l = 0; l < anIntArray156.length; l++) {
-				model.recolor(anIntArray156[l], anIntArray160[l]);
+		if (srcColor != null) {
+			for (int l = 0; l < srcColor.length; l++) {
+				model.recolor(srcColor[l], dstColor[l]);
 			}
 		}
 		return model;
 	}
 
-	public void method203(Buffer buffer) {
+	public void read(Buffer buffer) {
 		do {
 			int i = buffer.get1U();
 			if (i == 0) {
@@ -480,24 +520,24 @@ public class ObjType {
 			if (i == 1) {
 				anInt174 = buffer.get2U();
 			} else if (i == 2) {
-				aString170 = buffer.getString();
+				name = buffer.getString();
 			} else if (i == 3) {
-				aByteArray178 = buffer.getStringRaw();
+				description = buffer.getStringRaw();
 			} else if (i == 4) {
-				anInt181 = buffer.get2U();
+				iconZoom = buffer.get2U();
 			} else if (i == 5) {
-				anInt190 = buffer.get2U();
+				iconPitch = buffer.get2U();
 			} else if (i == 6) {
-				anInt198 = buffer.get2U();
+				iconYaw = buffer.get2U();
 			} else if (i == 7) {
-				anInt169 = buffer.get2U();
-				if (anInt169 > 32767) {
-					anInt169 -= 0x10000;
+				iconOffsetX = buffer.get2U();
+				if (iconOffsetX > 32767) {
+					iconOffsetX -= 0x10000;
 				}
 			} else if (i == 8) {
-				anInt194 = buffer.get2U();
-				if (anInt194 > 32767) {
-					anInt194 -= 0x10000;
+				iconOffsetY = buffer.get2U();
+				if (iconOffsetY > 32767) {
+					iconOffsetY -= 0x10000;
 				}
 			} else if (i == 10) {
 				unusedInt = buffer.get2U();
@@ -506,7 +546,7 @@ public class ObjType {
 			} else if (i == 12) {
 				anInt155 = buffer.get4();
 			} else if (i == 16) {
-				aBoolean161 = true;
+				members = true;
 			} else if (i == 23) {
 				anInt165 = buffer.get2U();
 				aByte205 = buffer.get1();
@@ -532,11 +572,11 @@ public class ObjType {
 				aStringArray189[i - 35] = buffer.getString();
 			} else if (i == 40) {
 				int j = buffer.get1U();
-				anIntArray156 = new int[j];
-				anIntArray160 = new int[j];
+				srcColor = new int[j];
+				dstColor = new int[j];
 				for (int k = 0; k < j; k++) {
-					anIntArray156[k] = buffer.get2U();
-					anIntArray160[k] = buffer.get2U();
+					srcColor[k] = buffer.get2U();
+					dstColor[k] = buffer.get2U();
 				}
 			} else if (i == 78) {
 				anInt185 = buffer.get2U();
@@ -551,24 +591,24 @@ public class ObjType {
 			} else if (i == 93) {
 				anInt173 = buffer.get2U();
 			} else if (i == 95) {
-				anInt204 = buffer.get2U();
+				iconRoll = buffer.get2U();
 			} else if (i == 97) {
 				anInt179 = buffer.get2U();
 			} else if (i == 98) {
-				anInt163 = buffer.get2U();
+				linkedId = buffer.get2U();
 			} else if ((i >= 100) && (i < 110)) {
-				if (anIntArray193 == null) {
-					anIntArray193 = new int[10];
-					anIntArray201 = new int[10];
+				if (stackId == null) {
+					stackId = new int[10];
+					stackAmount = new int[10];
 				}
-				anIntArray193[i - 100] = buffer.get2U();
-				anIntArray201[i - 100] = buffer.get2U();
+				stackId[i - 100] = buffer.get2U();
+				stackAmount[i - 100] = buffer.get2U();
 			} else if (i == 110) {
-				anInt167 = buffer.get2U();
+				scaleX = buffer.get2U();
 			} else if (i == 111) {
-				anInt192 = buffer.get2U();
+				scaleZ = buffer.get2U();
 			} else if (i == 112) {
-				anInt191 = buffer.get2U();
+				scaleY = buffer.get2U();
 			} else if (i == 113) {
 				anInt196 = buffer.get1();
 			} else if (i == 114) {

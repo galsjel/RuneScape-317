@@ -12,8 +12,8 @@ public class ObjStackEntity extends Entity {
 
 	@Override
 	public Model getModel() {
-		ObjType type = ObjType.method198(anInt1558);
-		return type.method201(anInt1559);
+		ObjType type = ObjType.get(anInt1558);
+		return type.getModel(anInt1559);
 	}
 
 }

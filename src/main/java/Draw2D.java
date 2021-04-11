@@ -17,7 +17,7 @@ public class Draw2D {
 		Draw2D.pixels = pixels;
 		Draw2D.width = width;
 		Draw2D.height = height;
-		setBounds(height, 0, width, 0);
+		setBounds(0, 0, width, height);
 	}
 
 	public static void resetBounds() {
@@ -29,7 +29,7 @@ public class Draw2D {
 		centerX = right / 2;
 	}
 
-	public static void setBounds(int bottom, int left, int right, int top) {
+	public static void setBounds(int left, int top, int right, int bottom) {
 		if (left < 0) {
 			left = 0;
 		}
@@ -126,8 +126,8 @@ public class Draw2D {
 	public static void drawRect(int x, int y, int width, int height, int rgb) {
 		drawLineX(x, y, width, rgb);
 		drawLineX(x, (y + height) - 1, width, rgb);
-		drawLineY(y, rgb, height, x);
-		drawLineY(y, rgb, height, (x + width) - 1);
+		drawLineY(x, y, height, rgb);
+		drawLineY((x + width) - 1, y, height, rgb);
 	}
 
 	public static void drawRect(int x, int y, int width, int height, int rgb, int alpha) {
@@ -189,7 +189,7 @@ public class Draw2D {
 		}
 	}
 
-	public static void drawLineY(int y, int rgb, int length, int x) {
+	public static void drawLineY(int x, int y, int length, int rgb) {
 		if ((x < left) || (x >= right)) {
 			return;
 		}
