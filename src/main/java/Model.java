@@ -194,7 +194,7 @@ public class Model extends Entity {
 		if (header != null) {
 			return new Model(id);
 		} else {
-			ondemand.method548(id);
+			ondemand.requestModel(id);
 			return null;
 		}
 	}
@@ -215,7 +215,7 @@ public class Model extends Entity {
 		if (header != null) {
 			return true;
 		} else {
-			ondemand.method548(id);
+			ondemand.requestModel(id);
 			return false;
 		}
 	}

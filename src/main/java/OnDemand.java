@@ -544,8 +544,8 @@ public class OnDemand implements Runnable {
 		return -1;
 	}
 
-	public void method548(int i) {
-		request(0, i);
+	public void requestModel(int id) {
+		request(0, id);
 	}
 
 	public void prefetch(byte priority, int archive, int file) {
