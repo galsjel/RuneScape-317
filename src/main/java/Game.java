@@ -746,49 +746,6 @@ public class Game extends GameShell {
 				}
 			}
 
-			{
-				CRC32 crc32 = new CRC32();
-
-				Map<Long, List<Integer>> skeletonGroups = new HashMap<>();
-
-				for (int file = 0; file < filestores[2].getFileCount(); file++) {
-						byte[] data = filestores[2].read(file);
-						try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-							IOUtils.copy(new GZIPInputStream(new ByteArrayInputStream(data)), baos);
-
-							data = baos.toByteArray();
-
-							Buffer buffer = new Buffer(data);
-							buffer.position = data.length - 8;
-
-							int off = buffer.get2U() + 2; // header
-							off += buffer.get2U(); // tran1
-							off += buffer.get2U(); // tran2
-							off += buffer.get2U(); // del
-
-							int len = data.length - 8 - off;
-
-							crc32.reset();
-							crc32.update(data, off, len); // get skeleton crc32
-
-							long crc = crc32.getValue();
-
-							List<Integer> list;
-
-							if (!skeletonGroups.containsKey(crc)) {
-								list = new ArrayList<>();
-								skeletonGroups.put(crc, list);
-							} else {
-								list = skeletonGroups.get(crc);
-							}
-
-							list.add(file);
-						}
-				}
-
-				skeletonGroups.forEach((key, value) -> System.out.printf("%s: %s%n", key, Arrays.toString(value.toArray())));
-			}
-
 			showProgress(70, "Requesting models");
 
 			total = ondemand.getFileCount(0);
