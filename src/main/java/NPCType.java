@@ -140,9 +140,9 @@ public class NPCType {
 			int lsb = vb.lsb;
 			int msb = vb.msb;
 			int mask = Game.BITMASK[msb - lsb];
-			value = (game.anIntArray971[varp] >> lsb) & mask;
+			value = (game.variables[varp] >> lsb) & mask;
 		} else if (varp != -1) {
-			value = game.anIntArray971[varp];
+			value = game.variables[varp];
 		}
 
 		if ((value < 0) || (value >= overrides.length) || (overrides[value] == -1)) {

@@ -314,7 +314,7 @@ public class Scene {
 				if (!(tile.locs[l].entity instanceof Model)) {
 					continue;
 				}
-				int height = ((Model) tile.locs[l].entity).anInt1654;
+				int height = ((Model) tile.locs[l].entity).objRaise;
 				if (height > stackOffset) {
 					stackOffset = height;
 				}

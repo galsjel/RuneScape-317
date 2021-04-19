@@ -286,7 +286,7 @@ public class Model extends Entity {
 	 * minDepth = (int) Math.sqrt((radius * radius) + (super.minY * super.minY));
 	 * maxDepth = minDepth + (int) Math.sqrt((radius * radius) + (maxY * maxY));
 	 */
-	public int anInt1654;
+	public int objRaise;
 	/**
 	 * The label the vertex belongs to.
 	 */

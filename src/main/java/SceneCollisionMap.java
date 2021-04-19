@@ -308,31 +308,31 @@ public class SceneCollisionMap {
 		}
 	}
 
-	public void method216(int i, int j, int k, int l, int i1, boolean flag) {
-		int j1 = 256;
+	public void method216(int rotation, int sizeX, int x0, int z0, int sizeZ, boolean flag) {
+		int flags = 256;
 		if (flag) {
-			j1 += 0x20000;
+			flags += 0x20000;
 		}
-		k -= anInt290;
-		l -= anInt291;
-		if ((i == 1) || (i == 3)) {
-			int k1 = j;
-			j = i1;
-			i1 = k1;
+		x0 -= anInt290;
+		z0 -= anInt291;
+		if ((rotation == 1) || (rotation == 3)) {
+			int tmp = sizeX;
+			sizeX = sizeZ;
+			sizeZ = tmp;
 		}
-		for (int l1 = k; l1 < (k + j); l1++) {
-			if ((l1 >= 0) && (l1 < anInt292)) {
-				for (int i2 = l; i2 < (l + i1); i2++) {
-					if ((i2 >= 0) && (i2 < anInt293)) {
-						method217(j1, l1, i2);
+		for (int x = x0; x < (x0 + sizeX); x++) {
+			if ((x >= 0) && (x < anInt292)) {
+				for (int z = z0; z < (z0 + sizeZ); z++) {
+					if ((z >= 0) && (z < anInt293)) {
+						method217(flags, x, z);
 					}
 				}
 			}
 		}
 	}
 
-	public void method217(int i, int j, int k) {
-		flags[j][k] &= 0xffffff - i;
+	public void method217(int flag, int x, int z) {
+		flags[x][z] &= 0xffffff - flag;
 	}
 
 	public void method218(int j, int k) {

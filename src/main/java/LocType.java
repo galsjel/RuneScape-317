@@ -8,161 +8,167 @@ import java.io.IOException;
 
 public class LocType {
 
-	public static final Model[] A_MODEL_ARRAY_741 = new Model[4];
+	public static final Model[] TMP_MODELS = new Model[4];
 	public static boolean lowmem;
-	public static Buffer aBuffer_753;
-	public static int[] anIntArray755;
-	public static int anInt756;
+	public static Buffer dat;
+	public static int[] offsets;
+	public static int count;
 	public static Game game;
 	public static int anInt771;
 	public static LRUMap<Long, Model> aCache_780 = new LRUMap(30);
-	public static LocType[] aTypeArray782;
-	public static LRUMap<Long, Model> aCache_785 = new LRUMap(500);
+	public static LocType[] cache;
+	public static LRUMap<Long, Model> modelCache = new LRUMap(500);
 
-	public static LocType method572(int i) {
+	public static LocType get(int i) {
 		for (int j = 0; j < 20; j++) {
-			if (aTypeArray782[j].anInt754 == i) {
-				return aTypeArray782[j];
+			if (cache[j].index == i) {
+				return cache[j];
 			}
 		}
 		anInt771 = (anInt771 + 1) % 20;
-		LocType type = aTypeArray782[anInt771];
-		aBuffer_753.position = anIntArray755[i];
-		type.anInt754 = i;
-		type.method573();
-		type.method582(aBuffer_753);
+		LocType type = cache[anInt771];
+		dat.position = offsets[i];
+		type.index = i;
+		type.reset();
+		type.method582(dat);
 		return type;
 	}
 
 	public static void unload() {
-		aCache_785 = null;
+		modelCache = null;
 		aCache_780 = null;
-		anIntArray755 = null;
-		aTypeArray782 = null;
-		aBuffer_753 = null;
+		offsets = null;
+		cache = null;
+		dat = null;
 	}
 
 	public static void unpack(FileArchive archive) throws IOException {
-		aBuffer_753 = new Buffer(archive.read("loc.dat"));
+		dat = new Buffer(archive.read("loc.dat"));
 		Buffer buffer = new Buffer(archive.read("loc.idx"));
-		anInt756 = buffer.get2U();
-		anIntArray755 = new int[anInt756];
+		count = buffer.get2U();
+		offsets = new int[count];
 		int i = 2;
-		for (int j = 0; j < anInt756; j++) {
-			anIntArray755[j] = i;
+		for (int j = 0; j < count; j++) {
+			offsets[j] = i;
 			i += buffer.get2U();
 		}
-		aTypeArray782 = new LocType[20];
+		cache = new LocType[20];
 		for (int k = 0; k < 20; k++) {
-			aTypeArray782[k] = new LocType();
+			cache[k] = new LocType();
 		}
 	}
-	public boolean aBoolean736;
-	public byte aByte737;
-	public int anInt738;
-	public String aString739;
-	public int anInt740;
-	public byte aByte742;
-	public int anInt744;
-	public int anInt745;
-	public int anInt746;
-	public int[] anIntArray747;
-	public int anInt748;
-	public int anInt749;
-	public boolean aBoolean751;
-	public int anInt754 = -1;
-	public boolean aBoolean757;
-	public int anInt758;
-	public int[] anIntArray759;
-	public int anInt760;
-	public int anInt761;
-	public boolean aBoolean762;
-	public boolean aBoolean764;
-	public boolean aBoolean766;
-	public boolean aBoolean767;
-	public int anInt768;
-	public boolean aBoolean769;
-	public int anInt772;
-	public int[] anIntArray773;
-	public int anInt774;
-	public int anInt775;
-	public int[] anIntArray776;
-	public byte[] aByteArray777;
-	public boolean aBoolean778;
-	public boolean aBoolean779;
-	public int anInt781;
-	public int anInt783;
-	public int[] anIntArray784;
-	public String[] aStringArray786;
+
+	public boolean important;
+	public byte lightAmbient;
+	public int translateX;
+	public String name;
+	public int scaleY;
+	public byte lightAttenuation;
+	public int sizeX;
+	public int translateY;
+	public int mapfunctionIcon;
+	public int[] dstColor;
+	public int scaleX;
+	public int varp;
+	public boolean invert;
+	public int index = -1;
+	public boolean blocksProjectiles;
+	public int mapsceneIcon;
+	public int[] overrideIds;
+	public int supportsObj;
+	public int sizeZ;
+	public boolean adjustToTerrain;
+	public boolean occludes;
+	public boolean decorative;
+	public boolean solid;
+	public int interactionSideFlags;
+	/**
+	 * Models flagged as <code>dynamic</code> will <b>always</b> copy their models face information by making <code>copyFaces</code>
+	 * equal <code>true</code>.
+	 * @see Model#Model(boolean, boolean, Model)
+	 */
+	public boolean dynamic;
+	public int scaleZ;
+	public int[] modelIds;
+	public int varbit;
+	public int decorationPadding;
+	public int[] modelTypes;
+	public String description;
+	public boolean interactable;
+	public boolean castShadow;
+	public int seqId;
+	public int translateZ;
+	public int[] srcColor;
+	public String[] actions;
 
 	public LocType() {
 	}
 
-	public void method573() {
-		anIntArray773 = null;
-		anIntArray776 = null;
-		aString739 = null;
-		aByteArray777 = null;
-		anIntArray784 = null;
-		anIntArray747 = null;
-		anInt744 = 1;
-		anInt761 = 1;
-		aBoolean767 = true;
-		aBoolean757 = true;
-		aBoolean778 = false;
-		aBoolean762 = false;
-		aBoolean769 = false;
-		aBoolean764 = false;
-		anInt781 = -1;
-		anInt775 = 16;
-		aByte737 = 0;
-		aByte742 = 0;
-		aStringArray786 = null;
-		anInt746 = -1;
-		anInt758 = -1;
-		aBoolean751 = false;
-		aBoolean779 = true;
-		anInt748 = 128;
-		anInt772 = 128;
-		anInt740 = 128;
-		anInt768 = 0;
-		anInt738 = 0;
-		anInt745 = 0;
-		anInt783 = 0;
-		aBoolean736 = false;
-		aBoolean766 = false;
-		anInt760 = -1;
-		anInt774 = -1;
-		anInt749 = -1;
-		anIntArray759 = null;
+	public void reset() {
+		modelIds = null;
+		modelTypes = null;
+		name = null;
+		description = null;
+		srcColor = null;
+		dstColor = null;
+		sizeX = 1;
+		sizeZ = 1;
+		solid = true;
+		blocksProjectiles = true;
+		interactable = false;
+		adjustToTerrain = false;
+		dynamic = false;
+		occludes = false;
+		seqId = -1;
+		decorationPadding = 16;
+		lightAmbient = 0;
+		lightAttenuation = 0;
+		actions = null;
+		mapfunctionIcon = -1;
+		mapsceneIcon = -1;
+		invert = false;
+		castShadow = true;
+		scaleX = 128;
+		scaleZ = 128;
+		scaleY = 128;
+		interactionSideFlags = 0;
+		translateX = 0;
+		translateY = 0;
+		translateZ = 0;
+		important = false;
+		decorative = false;
+		supportsObj = -1;
+		varbit = -1;
+		varp = -1;
+		overrideIds = null;
 	}
 
 	public void method574(OnDemand onDemand) {
-		if (anIntArray773 == null) {
+		if (modelIds == null) {
 			return;
 		}
-		for (int k : anIntArray773) {
+		for (int k : modelIds) {
 			onDemand.method560(k & 0xffff, 0);
 		}
 	}
 
 	public boolean method577(int i) {
-		if (anIntArray776 == null) {
-			if (anIntArray773 == null) {
+		if (modelTypes == null) {
+			if (modelIds == null) {
 				return true;
 			}
 			if (i != 10) {
 				return true;
 			}
 			boolean flag1 = true;
-			for (int j : anIntArray773) {
+			for (int j : modelIds) {
 				flag1 &= Model.validate(j & 0xffff);
 			}
 			return flag1;
 		}
-		for (int j = 0; j < anIntArray776.length; j++) {
-			if (anIntArray776[j] == i) {
-				return Model.validate(anIntArray773[j] & 0xffff);
+		for (int j = 0; j < modelTypes.length; j++) {
+			if (modelTypes[j] == i) {
+				return Model.validate(modelIds[j] & 0xffff);
 			}
 		}
 		return true;
@@ -173,10 +179,10 @@ public class LocType {
 		if (model == null) {
 			return null;
 		}
-		if (aBoolean762 || aBoolean769) {
-			model = new Model(aBoolean762, aBoolean769, model);
+		if (adjustToTerrain || dynamic) {
+			model = new Model(adjustToTerrain, dynamic, model);
 		}
-		if (aBoolean762) {
+		if (adjustToTerrain) {
 			int l1 = (k + l + i1 + j1) / 4;
 			for (int i2 = 0; i2 < model.vertexCount; i2++) {
 				int j2 = model.vertexX[i2];
@@ -192,11 +198,11 @@ public class LocType {
 	}
 
 	public boolean method579() {
-		if (anIntArray773 == null) {
+		if (modelIds == null) {
 			return true;
 		}
 		boolean flag1 = true;
-		for (int j : anIntArray773) {
+		for (int j : modelIds) {
 			flag1 &= Model.validate(j & 0xffff);
 		}
 		return flag1;
@@ -204,86 +210,94 @@ public class LocType {
 
 	public LocType method580() {
 		int i = -1;
-		if (anInt774 != -1) {
-			VarbitType varbit = VarbitType.instances[anInt774];
+		if (varbit != -1) {
+			VarbitType varbit = VarbitType.instances[this.varbit];
 			int j = varbit.varp;
 			int k = varbit.lsb;
 			int l = varbit.msb;
 			int i1 = Game.BITMASK[l - k];
-			i = (game.anIntArray971[j] >> k) & i1;
-		} else if (anInt749 != -1) {
-			i = game.anIntArray971[anInt749];
+			i = (game.variables[j] >> k) & i1;
+		} else if (varp != -1) {
+			i = game.variables[varp];
 		}
-		if ((i < 0) || (i >= anIntArray759.length) || (anIntArray759[i] == -1)) {
+		if ((i < 0) || (i >= overrideIds.length) || (overrideIds[i] == -1)) {
 			return null;
 		} else {
-			return method572(anIntArray759[i]);
+			return get(overrideIds[i]);
 		}
 	}
 
-	public Model method581(int j, int k, int l) {
+	public Model method581(int type, int seqFrame, int rotation) {
 		Model model = null;
-		long l1;
-		if (anIntArray776 == null) {
-			if (j != 10) {
+		long bitset;
+		if (modelTypes == null) {
+			if (type != 10) {
 				return null;
 			}
-			l1 = ((long) anInt754 << 6) + l + ((long) (k + 1) << 32);
-			Model model_1 = aCache_780.get(l1);
+			bitset = ((long) index << 6) + rotation + ((long) (seqFrame + 1) << 32);
+			Model model_1 = aCache_780.get(bitset);
 			if (model_1 != null) {
 				return model_1;
 			}
-			if (anIntArray773 == null) {
+			if (modelIds == null) {
 				return null;
 			}
-			boolean flag1 = aBoolean751 ^ (l > 3);
-			int k1 = anIntArray773.length;
-			for (int i2 = 0; i2 < k1; i2++) {
-				int l2 = anIntArray773[i2];
-				if (flag1) {
-					l2 += 0x10000;
+			boolean flip = invert ^ (rotation > 3);
+			int modelCount = modelIds.length;
+
+			for (int i = 0; i < modelCount; i++) {
+				int modelId = modelIds[i];
+
+				if (flip) {
+					modelId += 0x10000;
 				}
-				model = aCache_785.get(l2);
+
+				model = modelCache.get(modelId);
 				if (model == null) {
-					model = Model.tryGet(l2 & 0xffff);
+					model = Model.tryGet(modelId & 0xffff);
 					if (model == null) {
 						return null;
 					}
-					if (flag1) {
+					if (flip) {
 						model.rotateY180();
 					}
-					aCache_785.put((long) l2, model);
+					modelCache.put((long) modelId, model);
 				}
-				if (k1 > 1) {
-					A_MODEL_ARRAY_741[i2] = model;
+
+				if (modelCount > 1) {
+					TMP_MODELS[i] = model;
 				}
 			}
-			if (k1 > 1) {
-				model = new Model(k1, A_MODEL_ARRAY_741);
+
+			if (modelCount > 1) {
+				model = new Model(modelCount, TMP_MODELS);
 			}
 		} else {
-			int i1 = -1;
-			for (int j1 = 0; j1 < anIntArray776.length; j1++) {
-				if (anIntArray776[j1] != j) {
+			int typeId = -1;
+			for (int i = 0; i < modelTypes.length; i++) {
+				if (modelTypes[i] != type) {
 					continue;
 				}
-				i1 = j1;
+				typeId = i;
 				break;
 			}
-			if (i1 == -1) {
+
+			if (typeId == -1) {
 				return null;
 			}
-			l1 = ((long) anInt754 << 6) + ((long) i1 << 3) + l + ((long) (k + 1) << 32);
-			Model class30_sub2_sub4_sub6_2 = aCache_780.get(l1);
+
+			bitset = ((long) index << 6) + ((long) typeId << 3) + rotation + ((long) (seqFrame + 1) << 32);
+
+			Model class30_sub2_sub4_sub6_2 = aCache_780.get(bitset);
 			if (class30_sub2_sub4_sub6_2 != null) {
 				return class30_sub2_sub4_sub6_2;
 			}
-			int j2 = anIntArray773[i1];
-			boolean flag3 = aBoolean751 ^ (l > 3);
+			int j2 = modelIds[typeId];
+			boolean flag3 = invert ^ (rotation > 3);
 			if (flag3) {
 				j2 += 0x10000;
 			}
-			model = aCache_785.get(j2);
+			model = modelCache.get(j2);
 			if (model == null) {
 				model = Model.tryGet(j2 & 0xffff);
 				if (model == null) {
@@ -292,39 +306,41 @@ public class LocType {
 				if (flag3) {
 					model.rotateY180();
 				}
-				aCache_785.put((long) j2, model);
+				modelCache.put((long) j2, model);
 			}
 		}
-		boolean flag;
-		flag = (anInt748 != 128) || (anInt772 != 128) || (anInt740 != 128);
-		boolean flag2;
-		flag2 = (anInt738 != 0) || (anInt745 != 0) || (anInt783 != 0);
-		Model model_3 = new Model(anIntArray784 == null, SeqFrame.isNull(k), (l == 0) && (k == -1) && !flag && !flag2, model);
-		if (k != -1) {
+
+		boolean scaled = (scaleX != 128) || (scaleZ != 128) || (scaleY != 128);
+		boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
+
+		Model model_3 = new Model(srcColor == null, SeqFrame.isNull(seqFrame), (rotation == 0) && (seqFrame == -1) && !scaled && !translated, model);
+
+		if (seqFrame != -1) {
 			model_3.createLabelReferences();
-			model_3.applySequenceFrame(k);
+			model_3.applySequenceFrame(seqFrame);
 			model_3.labelFaces = null;
 			model_3.labelVertices = null;
 		}
-		while (l-- > 0) {
+
+		while (rotation-- > 0) {
 			model_3.rotateY90();
 		}
-		if (anIntArray784 != null) {
-			for (int k2 = 0; k2 < anIntArray784.length; k2++) {
-				model_3.recolor(anIntArray784[k2], anIntArray747[k2]);
+		if (srcColor != null) {
+			for (int k2 = 0; k2 < srcColor.length; k2++) {
+				model_3.recolor(srcColor[k2], dstColor[k2]);
 			}
 		}
-		if (flag) {
-			model_3.scale(anInt748, anInt740, anInt772);
+		if (scaled) {
+			model_3.scale(scaleX, scaleY, scaleZ);
 		}
-		if (flag2) {
-			model_3.translate(anInt738, anInt745, anInt783);
+		if (translated) {
+			model_3.translate(translateX, translateY, translateZ);
 		}
-		model_3.calculateNormals(64 + aByte737, 768 + (aByte742 * 5), -50, -10, -50, !aBoolean769);
-		if (anInt760 == 1) {
-			model_3.anInt1654 = model_3.minY;
+		model_3.calculateNormals(64 + lightAmbient, 768 + (lightAttenuation * 5), -50, -10, -50, !dynamic);
+		if (supportsObj == 1) {
+			model_3.objRaise = model_3.minY;
 		}
-		aCache_780.put(l1, model_3);
+		aCache_780.put(bitset, model_3);
 		return model_3;
 	}
 
@@ -341,143 +357,143 @@ public class LocType {
 				if (j == 1) {
 					int k = buffer.get1U();
 					if (k > 0) {
-						if ((anIntArray773 == null) || lowmem) {
-							anIntArray776 = new int[k];
-							anIntArray773 = new int[k];
+						if ((modelIds == null) || lowmem) {
+							modelTypes = new int[k];
+							modelIds = new int[k];
 							for (int k1 = 0; k1 < k; k1++) {
-								anIntArray773[k1] = buffer.get2U();
-								anIntArray776[k1] = buffer.get1U();
+								modelIds[k1] = buffer.get2U();
+								modelTypes[k1] = buffer.get1U();
 							}
 						} else {
 							buffer.position += k * 3;
 						}
 					}
 				} else if (j == 2) {
-					aString739 = buffer.getString();
+					name = buffer.getString();
 				} else if (j == 3) {
-					aByteArray777 = buffer.getStringRaw();
+					description = buffer.getString();
 				} else if (j == 5) {
 					int l = buffer.get1U();
 					if (l > 0) {
-						if ((anIntArray773 == null) || lowmem) {
-							anIntArray776 = null;
-							anIntArray773 = new int[l];
+						if ((modelIds == null) || lowmem) {
+							modelTypes = null;
+							modelIds = new int[l];
 							for (int l1 = 0; l1 < l; l1++) {
-								anIntArray773[l1] = buffer.get2U();
+								modelIds[l1] = buffer.get2U();
 							}
 						} else {
 							buffer.position += l * 2;
 						}
 					}
 				} else if (j == 14) {
-					anInt744 = buffer.get1U();
+					sizeX = buffer.get1U();
 				} else if (j == 15) {
-					anInt761 = buffer.get1U();
+					sizeZ = buffer.get1U();
 				} else if (j == 17) {
-					aBoolean767 = false;
+					solid = false;
 				} else if (j == 18) {
-					aBoolean757 = false;
+					blocksProjectiles = false;
 				} else if (j == 19) {
 					i = buffer.get1U();
 					if (i == 1) {
-						aBoolean778 = true;
+						interactable = true;
 					}
 				} else if (j == 21) {
-					aBoolean762 = true;
+					adjustToTerrain = true;
 				} else if (j == 22) {
-					aBoolean769 = true;
+					dynamic = true;
 				} else if (j == 23) {
-					aBoolean764 = true;
+					occludes = true;
 				} else if (j == 24) {
-					anInt781 = buffer.get2U();
-					if (anInt781 == 65535) {
-						anInt781 = -1;
+					seqId = buffer.get2U();
+					if (seqId == 65535) {
+						seqId = -1;
 					}
 				} else if (j == 28) {
-					anInt775 = buffer.get1U();
+					decorationPadding = buffer.get1U();
 				} else if (j == 29) {
-					aByte737 = buffer.get1();
+					lightAmbient = buffer.get1();
 				} else if (j == 39) {
-					aByte742 = buffer.get1();
+					lightAttenuation = buffer.get1();
 				} else if ((j >= 30) && (j < 39)) {
-					if (aStringArray786 == null) {
-						aStringArray786 = new String[5];
+					if (actions == null) {
+						actions = new String[5];
 					}
-					aStringArray786[j - 30] = buffer.getString();
-					if (aStringArray786[j - 30].equalsIgnoreCase("hidden")) {
-						aStringArray786[j - 30] = null;
+					actions[j - 30] = buffer.getString();
+					if (actions[j - 30].equalsIgnoreCase("hidden")) {
+						actions[j - 30] = null;
 					}
 				} else if (j == 40) {
 					int i1 = buffer.get1U();
-					anIntArray784 = new int[i1];
-					anIntArray747 = new int[i1];
+					srcColor = new int[i1];
+					dstColor = new int[i1];
 					for (int i2 = 0; i2 < i1; i2++) {
-						anIntArray784[i2] = buffer.get2U();
-						anIntArray747[i2] = buffer.get2U();
+						srcColor[i2] = buffer.get2U();
+						dstColor[i2] = buffer.get2U();
 					}
 				} else if (j == 60) {
-					anInt746 = buffer.get2U();
+					mapfunctionIcon = buffer.get2U();
 				} else if (j == 62) {
-					aBoolean751 = true;
+					invert = true;
 				} else if (j == 64) {
-					aBoolean779 = false;
+					castShadow = false;
 				} else if (j == 65) {
-					anInt748 = buffer.get2U();
+					scaleX = buffer.get2U();
 				} else if (j == 66) {
-					anInt772 = buffer.get2U();
+					scaleZ = buffer.get2U();
 				} else if (j == 67) {
-					anInt740 = buffer.get2U();
+					scaleY = buffer.get2U();
 				} else if (j == 68) {
-					anInt758 = buffer.get2U();
+					mapsceneIcon = buffer.get2U();
 				} else if (j == 69) {
-					anInt768 = buffer.get1U();
+					interactionSideFlags = buffer.get1U();
 				} else if (j == 70) {
-					anInt738 = buffer.get2();
+					translateX = buffer.get2();
 				} else if (j == 71) {
-					anInt745 = buffer.get2();
+					translateY = buffer.get2();
 				} else if (j == 72) {
-					anInt783 = buffer.get2();
+					translateZ = buffer.get2();
 				} else if (j == 73) {
-					aBoolean736 = true;
+					important = true;
 				} else if (j == 74) {
-					aBoolean766 = true;
+					decorative = true;
 				} else {
 					if (j != 75) {
 						continue;
 					}
-					anInt760 = buffer.get1U();
+					supportsObj = buffer.get1U();
 				}
 				continue label0;
 			} while (j != 77);
-			anInt774 = buffer.get2U();
-			if (anInt774 == 65535) {
-				anInt774 = -1;
+			varbit = buffer.get2U();
+			if (varbit == 65535) {
+				varbit = -1;
 			}
-			anInt749 = buffer.get2U();
-			if (anInt749 == 65535) {
-				anInt749 = -1;
+			varp = buffer.get2U();
+			if (varp == 65535) {
+				varp = -1;
 			}
 			int j1 = buffer.get1U();
-			anIntArray759 = new int[j1 + 1];
+			overrideIds = new int[j1 + 1];
 			for (int j2 = 0; j2 <= j1; j2++) {
-				anIntArray759[j2] = buffer.get2U();
-				if (anIntArray759[j2] == 65535) {
-					anIntArray759[j2] = -1;
+				overrideIds[j2] = buffer.get2U();
+				if (overrideIds[j2] == 65535) {
+					overrideIds[j2] = -1;
 				}
 			}
 		} while (true);
 		if (i == -1) {
-			aBoolean778 = (anIntArray773 != null) && ((anIntArray776 == null) || (anIntArray776[0] == 10));
-			if (aStringArray786 != null) {
-				aBoolean778 = true;
+			interactable = (modelIds != null) && ((modelTypes == null) || (modelTypes[0] == 10));
+			if (actions != null) {
+				interactable = true;
 			}
 		}
-		if (aBoolean766) {
-			aBoolean767 = false;
-			aBoolean757 = false;
+		if (decorative) {
+			solid = false;
+			blocksProjectiles = false;
 		}
-		if (anInt760 == -1) {
-			anInt760 = aBoolean767 ? 1 : 0;
+		if (supportsObj == -1) {
+			supportsObj = solid ? 1 : 0;
 		}
 	}
 

@@ -36,10 +36,10 @@ public class LocEntity extends Entity {
 				anInt1608 -= (int) (Math.random() * (double) aType_1607.getFrameDelay(anInt1599));
 			}
 		}
-		LocType type = LocType.method572(anInt1610);
-		anInt1601 = type.anInt774;
-		anInt1602 = type.anInt749;
-		anIntArray1600 = type.anIntArray759;
+		LocType type = LocType.get(anInt1610);
+		anInt1601 = type.varbit;
+		anInt1602 = type.varp;
+		anIntArray1600 = type.overrideIds;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class LocEntity extends Entity {
 		if (anIntArray1600 != null) {
 			type = method457();
 		} else {
-			type = LocType.method572(anInt1610);
+			type = LocType.get(anInt1610);
 		}
 		if (type == null) {
 			return null;
@@ -89,14 +89,14 @@ public class LocEntity extends Entity {
 			int l = varbit.lsb;
 			int i1 = varbit.msb;
 			int j1 = Game.BITMASK[i1 - l];
-			i = (game.anIntArray971[k] >> l) & j1;
+			i = (game.variables[k] >> l) & j1;
 		} else if (anInt1602 != -1) {
-			i = game.anIntArray971[anInt1602];
+			i = game.variables[anInt1602];
 		}
 		if ((i < 0) || (i >= anIntArray1600.length) || (anIntArray1600[i] == -1)) {
 			return null;
 		} else {
-			return LocType.method572(anIntArray1600[i]);
+			return LocType.get(anIntArray1600[i]);
 		}
 	}
 

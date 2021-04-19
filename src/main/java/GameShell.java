@@ -467,7 +467,7 @@ public abstract class GameShell extends Applet implements Runnable, MouseListene
 	/**
 	 * @see #run()
 	 */
-	public abstract void update();
+	public abstract void update() throws IOException;
 
 	/**
 	 * @see #run()

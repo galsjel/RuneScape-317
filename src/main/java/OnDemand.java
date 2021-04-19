@@ -19,8 +19,8 @@ public class OnDemand implements Runnable {
 	public final LinkedList<OnDemandRequest> requests = new LinkedList<>();
 	public final int[][] storeFileVersions = new int[4][];
 	public final int[][] storeFileChecksums = new int[4][];
-	public final DoublyLinkedList aList_1368 = new DoublyLinkedList();
-	public final DoublyLinkedList aList_1370 = new DoublyLinkedList();
+	public final DoublyLinkedList missing = new DoublyLinkedList();
+	public final DoublyLinkedList queue = new DoublyLinkedList();
 	private final Object lock = new Object();
 	public int totalPrefetchFiles;
 	public int topPriority;
@@ -54,6 +54,9 @@ public class OnDemand implements Runnable {
 	}
 
 	public boolean validate(int version, int crc, byte[] src) {
+		if (src != null) {
+			return true;
+		}
 		if ((src == null) || (src.length < 2)) {
 			return false;
 		}
@@ -312,7 +315,8 @@ public class OnDemand implements Runnable {
 			heartbeatCycle = 0;
 			anInt1349 = -10000;
 			return;
-		} catch (IOException ignored) {
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		try {
@@ -348,8 +352,8 @@ public class OnDemand implements Runnable {
 			request.store = archive;
 			request.file = file;
 			request.important = true;
-			synchronized (aList_1370) {
-				aList_1370.pushBack(request);
+			synchronized (queue) {
+				queue.pushBack(request);
 			}
 			requests.addFirst(request);
 		}
@@ -385,7 +389,7 @@ public class OnDemand implements Runnable {
 
 					aBoolean1357 = false;
 
-					method567();
+					handleQueue();
 					method565();
 
 					if ((importantCount == 0) && (j >= 5)) {
@@ -593,7 +597,7 @@ public class OnDemand implements Runnable {
 		}
 
 		while (importantCount < 10) {
-			OnDemandRequest request = (OnDemandRequest) aList_1368.pollFront();
+			OnDemandRequest request = (OnDemandRequest) missing.pollFront();
 
 			if (request == null) {
 				break;
@@ -617,10 +621,10 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public void method567() {
+	public void handleQueue() {
 		OnDemandRequest request;
-		synchronized (aList_1370) {
-			request = (OnDemandRequest) aList_1370.pollFront();
+		synchronized (queue) {
+			request = (OnDemandRequest) queue.pollFront();
 		}
 
 		while (request != null) {
@@ -635,16 +639,16 @@ public class OnDemand implements Runnable {
 				data = null;
 			}
 
-			synchronized (aList_1370) {
+			synchronized (queue) {
 				if (data == null) {
-					aList_1368.pushBack(request);
+					missing.pushBack(request);
 				} else {
 					request.data = data;
 					synchronized (completed) {
 						completed.pushBack(request);
 					}
 				}
-				request = (OnDemandRequest) aList_1370.pollFront();
+				request = (OnDemandRequest) queue.pollFront();
 			}
 		}
 	}
