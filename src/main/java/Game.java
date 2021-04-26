@@ -248,7 +248,7 @@ public class Game extends GameShell {
     public Image8 aImage_869;
     public Image24 imageMapmarker0;
     public Image24 imageMapmarker1;
-    public boolean aBoolean872 = false;
+    public boolean useJaggrab = true; // original value: false
     public int anInt874 = -1;
     public int anInt878;
     public MouseRecorder aMouseRecorder_879;
@@ -591,7 +591,7 @@ public class Game extends GameShell {
 
     public URL getCodeBase() {
         try {
-            return new URL("http://lucas.xenorune.com:" + (80 + portOffset));
+            return new URL("http://" + server + ":" + (80 + portOffset));
         } catch (Exception ignored) {
         }
         return null;
@@ -1305,7 +1305,7 @@ public class Game extends GameShell {
                 if (j > 60) {
                     j = 60;
                 }
-                aBoolean872 = !aBoolean872;
+                useJaggrab = !useJaggrab;
             }
         }
     }
@@ -1453,8 +1453,10 @@ public class Game extends GameShell {
         Draw3D.lineOffset = anIntArray1182;
     }
 
+    static String server = "localhost";
+
     public Socket openSocket(int port) throws IOException {
-        return new Socket(InetAddress.getByName("localhost"), port);
+        return new Socket(InetAddress.getByName(server), port);
     }
 
     public void updateMouseInput() {
@@ -4142,7 +4144,7 @@ public class Game extends GameShell {
                 if (l > 60) {
                     l = 60;
                 }
-                aBoolean872 = !aBoolean872;
+                useJaggrab = !useJaggrab;
             }
         }
         return new FileArchive(abyte0);
@@ -9052,7 +9054,7 @@ public class Game extends GameShell {
     }
 
     public DataInputStream openURL(String s) throws IOException {
-        if (!aBoolean872) {
+        if (!useJaggrab) {
             if (Signlink.mainapp != null) {
                 return Signlink.openurl(s);
             } else {
