@@ -2,36 +2,23 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import javax.swing.*;
 import java.awt.*;
 
-public class GameFrame extends Frame {
+public class GameFrame extends JFrame {
 
 	public final GameShell shell;
 
-	public GameFrame(GameShell shell, int width, int height) {
+	public GameFrame(GameShell shell) {
 		this.shell = shell;
 		setTitle("Jagex");
 		setResizable(false);
-		show();
-		toFront();
-		resize(width + 8, height + 28);
-	}
-
-	@Override
-	public Graphics getGraphics() {
-		Graphics g = super.getGraphics();
-		g.translate(4, 24);
-		return g;
-	}
-
-	@Override
-	public void update(Graphics g) {
-		shell.update(g);
-	}
-
-	@Override
-	public void paint(Graphics g) {
-		shell.paint(g);
+		setLayout(new BorderLayout());
+		add(shell,BorderLayout.CENTER);
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
+		transferFocus();
 	}
 
 }

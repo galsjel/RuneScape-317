@@ -4,7 +4,6 @@
 
 import org.apache.commons.math3.random.ISAACRandom;
 
-import java.applet.AppletContext;
 import java.awt.*;
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -577,21 +576,6 @@ public class Game extends GameShell {
     }
 
     @Override
-    public void init() {
-        nodeId = Integer.parseInt(getParameter("nodeid"));
-        portOffset = Integer.parseInt(getParameter("portoff"));
-        String s = getParameter("lowmem");
-        if ((s != null) && s.equals("1")) {
-            setLowmem();
-        } else {
-            setHighmem();
-        }
-        String s1 = getParameter("free");
-        members = (s1 == null) || !s1.equals("1");
-        initApplet(765, 503);
-    }
-
-    @Override
     public void run() {
         if (aBoolean880) {
             method136();
@@ -600,25 +584,16 @@ public class Game extends GameShell {
         }
     }
 
-    @Override
-    public AppletContext getAppletContext() {
-        return super.getAppletContext();
-    }
-
-    @Override
     public URL getCodeBase() {
         try {
-            if (super.frame != null) {
-                return new URL("http://127.0.0.1:" + (80 + portOffset));
-            }
+            return new URL("http://lucas.xenorune.com:" + (80 + portOffset));
         } catch (Exception ignored) {
         }
-        return super.getCodeBase();
+        return null;
     }
 
-    @Override
     public String getParameter(String s) {
-        return super.getParameter(s);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -921,31 +896,31 @@ public class Game extends GameShell {
                 aImageArray1219[l4] = new Image8(archiveMedia, "mod_icons", l4);
             }
             Image24 image = new Image24(archiveMedia, "backleft1", 0);
-            aArea_903 = new DrawArea(image.width, image.height, getComponent());
+            aArea_903 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backleft2", 0);
-            aArea_904 = new DrawArea(image.width, image.height, getComponent());
+            aArea_904 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backright1", 0);
-            aArea_905 = new DrawArea(image.width, image.height, getComponent());
+            aArea_905 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backright2", 0);
-            aArea_906 = new DrawArea(image.width, image.height, getComponent());
+            aArea_906 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backtop1", 0);
-            aArea_907 = new DrawArea(image.width, image.height, getComponent());
+            aArea_907 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backvmid1", 0);
-            aArea_908 = new DrawArea(image.width, image.height, getComponent());
+            aArea_908 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backvmid2", 0);
-            aArea_909 = new DrawArea(image.width, image.height, getComponent());
+            aArea_909 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backvmid3", 0);
-            aArea_910 = new DrawArea(image.width, image.height, getComponent());
+            aArea_910 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             image = new Image24(archiveMedia, "backhmid2", 0);
-            aArea_911 = new DrawArea(image.width, image.height, getComponent());
+            aArea_911 = new DrawArea(image.width, image.height, this);
             image.blitOpaque(0, 0);
             int i5 = (int) (Math.random() * 21D) - 10;
             int j5 = (int) (Math.random() * 21D) - 10;
@@ -1068,7 +1043,7 @@ public class Game extends GameShell {
         Signlink.reporterror = false;
         try {
             if (connection != null) {
-                connection.method267();
+                connection.close();
             }
         } catch (Exception ignored) {
         }
@@ -1215,18 +1190,6 @@ public class Game extends GameShell {
     @Override
     public void refresh() {
         aBoolean1255 = true;
-    }
-
-    @Override
-    public java.awt.Component getComponent() {
-        if (Signlink.mainapp != null) {
-            return Signlink.mainapp;
-        }
-        if (super.frame != null) {
-            return super.frame;
-        } else {
-            return this;
-        }
     }
 
     @Override
@@ -1948,18 +1911,6 @@ public class Game extends GameShell {
 
     public void method28(String s) {
         System.out.println(s);
-        try {
-            getAppletContext().showDocument(new URL(getCodeBase(), "loaderror_" + s + ".html"));
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            try {
-                Thread.sleep(1000L);
-            } catch (Exception ignored) {
-            }
-        }
     }
 
     public void handleParentComponentInput(int x, Component parent, int mouseX, int y, int mouseY, int scrollY) {
@@ -2874,7 +2825,7 @@ public class Game extends GameShell {
     public void method44() {
         try {
             if (connection != null) {
-                connection.method267();
+                connection.close();
             }
         } catch (Exception ignored) {
         }
@@ -3946,7 +3897,7 @@ public class Game extends GameShell {
         }
         try {
             if ((connection != null) && (aBuffer_1192.position > 0)) {
-                connection.method271(aBuffer_1192.position, aBuffer_1192.data, 0);
+                connection.write(aBuffer_1192.data, 0, aBuffer_1192.position);
                 aBuffer_1192.position = 0;
                 anInt1010 = 0;
             }
@@ -3980,23 +3931,23 @@ public class Game extends GameShell {
         aArea_1123 = null;
         aArea_1124 = null;
         aArea_1125 = null;
-        imageTitle0 = new DrawArea(128, 265, getComponent());
+        imageTitle0 = new DrawArea(128, 265, this);
         Draw2D.clear();
-        imageTitle1 = new DrawArea(128, 265, getComponent());
+        imageTitle1 = new DrawArea(128, 265, this);
         Draw2D.clear();
-        imageTitle2 = new DrawArea(509, 171, getComponent());
+        imageTitle2 = new DrawArea(509, 171, this);
         Draw2D.clear();
-        imageTitle3 = new DrawArea(360, 132, getComponent());
+        imageTitle3 = new DrawArea(360, 132, this);
         Draw2D.clear();
-        imageTitle4 = new DrawArea(360, 200, getComponent());
+        imageTitle4 = new DrawArea(360, 200, this);
         Draw2D.clear();
-        imageTitle5 = new DrawArea(202, 238, getComponent());
+        imageTitle5 = new DrawArea(202, 238, this);
         Draw2D.clear();
-        imageTitle6 = new DrawArea(203, 238, getComponent());
+        imageTitle6 = new DrawArea(203, 238, this);
         Draw2D.clear();
-        imageTitle7 = new DrawArea(74, 94, getComponent());
+        imageTitle7 = new DrawArea(74, 94, this);
         Draw2D.clear();
-        imageTitle8 = new DrawArea(75, 94, getComponent());
+        imageTitle8 = new DrawArea(75, 94, this);
         Draw2D.clear();
         if (archiveTitle != null) {
             createTitleBackground();
@@ -4208,12 +4159,12 @@ public class Game extends GameShell {
         Connection connection = this.connection;
         ingame = false;
         anInt1038 = 0;
-        method84(aString1173, aString1174, true);
+        login(aString1173, aString1174, true);
         if (!ingame) {
             method44();
         }
         try {
-            connection.method267();
+            connection.close();
         } catch (Exception ignored) {
         }
     }
@@ -5202,7 +5153,7 @@ public class Game extends GameShell {
         System.out.println("scene-state:" + sceneState);
         System.out.println("draw-state:" + method54());
         if (connection != null) {
-            connection.method272();
+            connection.debug();
         }
         super.debug = true;
     }
@@ -5962,16 +5913,16 @@ public class Game extends GameShell {
         imageTitle6 = null;
         imageTitle7 = null;
         imageTitle8 = null;
-        areaChatback = new DrawArea(479, 96, getComponent());
-        aArea_1164 = new DrawArea(172, 156, getComponent());
+        areaChatback = new DrawArea(479, 96, this);
+        aArea_1164 = new DrawArea(172, 156, this);
         Draw2D.clear();
         imageMapback.blit(0, 0);
-        areaInvback = new DrawArea(190, 261, getComponent());
-        areaViewport = new DrawArea(512, 334, getComponent());
+        areaInvback = new DrawArea(190, 261, this);
+        areaViewport = new DrawArea(512, 334, this);
         Draw2D.clear();
-        aArea_1123 = new DrawArea(496, 50, getComponent());
-        aArea_1124 = new DrawArea(269, 37, getComponent());
-        aArea_1125 = new DrawArea(249, 45, getComponent());
+        aArea_1123 = new DrawArea(496, 50, this);
+        aArea_1124 = new DrawArea(269, 37, this);
+        aArea_1125 = new DrawArea(249, 45, this);
         aBoolean1255 = true;
     }
 
@@ -6068,27 +6019,27 @@ public class Game extends GameShell {
         return (((((src & 0xff00ff) * invAlpha) + ((dst & 0xff00ff) * alpha)) & 0xff00ff00) + ((((src & 0xff00) * invAlpha) + ((dst & 0xff00) * alpha)) & 0xff0000)) >> 8;
     }
 
-    public void method84(String s, String s1, boolean flag) {
+    public void login(String username, String password, boolean reconnect) {
         try {
-            if (!flag) {
+            if (!reconnect) {
                 aString1266 = "";
                 aString1267 = "Connecting to server...";
                 method135(true);
             }
             connection = new Connection(this, openSocket(43594 + portOffset));
-            long l = StringUtil.toBase37(s);
+            long l = StringUtil.toBase37(username);
             int i = (int) ((l >> 16) & 31L);
             aBuffer_1192.position = 0;
             aBuffer_1192.put1(14);
             aBuffer_1192.put1(i);
-            connection.method271(2, aBuffer_1192.data, 0);
+            connection.write(aBuffer_1192.data, 0, 2);
             for (int j = 0; j < 8; j++) {
-                connection.method268();
+                connection.read();
             }
-            int k = connection.method268();
+            int k = connection.read();
             int i1 = k;
             if (k == 0) {
-                connection.method270(in.data, 0, 8);
+                connection.read(in.data, 0, 8);
                 in.position = 0;
                 aLong1215 = in.get8();
 
@@ -6106,11 +6057,11 @@ public class Game extends GameShell {
                 aBuffer_1192.put4(seed[2]);
                 aBuffer_1192.put4(seed[3]);
                 aBuffer_1192.put4(Signlink.uid);
-                aBuffer_1192.put(s);
-                aBuffer_1192.put(s1);
+                aBuffer_1192.put(username);
+                aBuffer_1192.put(password);
                 aBuffer_1192.encrypt(RSA_PUBLIC_KEY, RSA_MODULUS);
                 aBuffer_847.position = 0;
-                if (flag) {
+                if (reconnect) {
                     aBuffer_847.put1(18);
                 } else {
                     aBuffer_847.put1(16);
@@ -6128,20 +6079,20 @@ public class Game extends GameShell {
                     seed[j2] += 50;
                 }
                 randomIn = new ISAACRandom(seed);
-                connection.method271(aBuffer_847.position, aBuffer_847.data, 0);
-                k = connection.method268();
+                connection.write(aBuffer_847.data, 0, aBuffer_847.position);
+                k = connection.read();
             }
             if (k == 1) {
                 try {
                     Thread.sleep(2000L);
                 } catch (Exception ignored) {
                 }
-                method84(s, s1, flag);
+                login(username, password, reconnect);
                 return;
             }
             if (k == 2) {
-                rights = connection.method268();
-                aBoolean1205 = connection.method268() == 1;
+                rights = connection.read();
+                aBoolean1205 = connection.read() == 1;
                 aLong1220 = 0L;
                 anInt1022 = 0;
                 aMouseRecorder_879.anInt810 = 0;
@@ -6318,7 +6269,7 @@ public class Game extends GameShell {
                 return;
             }
             if (k == 21) {
-                for (int k1 = connection.method268(); k1 >= 0; k1--) {
+                for (int k1 = connection.read(); k1 >= 0; k1--) {
                     aString1266 = "You have only just left another world";
                     aString1267 = "Your profile will be transferred in: " + k1 + " seconds";
                     method135(true);
@@ -6327,7 +6278,7 @@ public class Game extends GameShell {
                     } catch (Exception ignored) {
                     }
                 }
-                method84(s, s1, flag);
+                login(username, password, reconnect);
                 return;
             }
             if (k == -1) {
@@ -6338,7 +6289,7 @@ public class Game extends GameShell {
                         } catch (Exception ignored) {
                         }
                         anInt1038++;
-                        method84(s, s1, flag);
+                        login(username, password, reconnect);
                     } else {
                         aString1266 = "No response from loginserver";
                         aString1267 = "Please wait 1 minute and try again.";
@@ -6967,7 +6918,7 @@ public class Game extends GameShell {
     }
 
     public void method94() {
-        Graphics g = getComponent().getGraphics();
+        Graphics g = this.getGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, 765, 503);
         setFrameRate(1);
@@ -9715,7 +9666,7 @@ public class Game extends GameShell {
                 k1 += 20;
                 if ((super.mousePressButton == 1) && (super.mousePressX >= (i1 - 75)) && (super.mousePressX <= (i1 + 75)) && (super.mousePressY >= (k1 - 20)) && (super.mousePressY <= (k1 + 20))) {
                     anInt1038 = 0;
-                    method84(aString1173, aString1174, false);
+                    login(aString1173, aString1174, false);
                     if (ingame) {
                         return;
                     }
@@ -9925,7 +9876,7 @@ public class Game extends GameShell {
             }
 
             if (ptype == -1) {
-                connection.method270(in.data, 0, 1);
+                connection.read(in.data, 0, 1);
                 ptype = in.data[0] & 0xff;
                 if (randomIn != null) {
                     ptype = (ptype - randomIn.nextInt()) & 0xff;
@@ -9936,7 +9887,7 @@ public class Game extends GameShell {
 
             if (psize == -1) {
                 if (available > 0) {
-                    connection.method270(in.data, 0, 1);
+                    connection.read(in.data, 0, 1);
                     psize = in.data[0] & 0xff;
                     available--;
                 } else {
@@ -9946,7 +9897,7 @@ public class Game extends GameShell {
 
             if (psize == -2) {
                 if (available > 1) {
-                    connection.method270(in.data, 0, 2);
+                    connection.read(in.data, 0, 2);
                     in.position = 0;
                     psize = in.get2U();
                     available -= 2;
@@ -9960,7 +9911,7 @@ public class Game extends GameShell {
             }
 
             in.position = 0;
-            connection.method270(in.data, 0, psize);
+            connection.read(in.data, 0, psize);
             anInt1009 = 0;
             anInt843 = anInt842;
             anInt842 = anInt841;
