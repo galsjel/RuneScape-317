@@ -289,7 +289,7 @@ public class OnDemand implements Runnable {
 					return;
 				}
 				socketOpenTime = now;
-				socket = game.method19(43594 + Game.portOffset);
+				socket = game.openSocket(43594 + Game.portOffset);
 				in = socket.getInputStream();
 				out = socket.getOutputStream();
 				out.write(15);
