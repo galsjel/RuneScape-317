@@ -1453,7 +1453,7 @@ public class Game extends GameShell {
         Draw3D.lineOffset = anIntArray1182;
     }
 
-    static String server = "localhost";
+    static String server = "lucas.xenorune.com";
 
     public Socket openSocket(int port) throws IOException {
         return new Socket(InetAddress.getByName(server), port);
@@ -3487,17 +3487,12 @@ public class Game extends GameShell {
                     midisave(musicFade, request.data);
                 }
 
-                if ((request.store == 3)) {
+                if ((request.store == 3) && sceneState == 1) {
                     for (int i = 0; i < sceneMapLandData.length; i++) {
-                        int x = sceneMapIndex[i] >> 8;
-                        int z = sceneMapIndex[i] & 0xFF;
-
                         if (sceneMapLandFile[i] == request.file) {
                             sceneMapLandData[i] = request.data;
                             if (request.data == null) {
                                 sceneMapLandFile[i] = -1;
-                            } else {
-                                Files.write(Paths.get("maps", String.format("m%d_%d", x, z)), request.data);
                             }
                             break;
                         }
@@ -3506,8 +3501,6 @@ public class Game extends GameShell {
                             sceneMapLocData[i] = request.data;
                             if (request.data == null) {
                                 sceneMapLocFile[i] = -1;
-                            } else {
-                                Files.write(Paths.get("maps", String.format("l%d_%d", x, z)), request.data);
                             }
                             break;
                         }
