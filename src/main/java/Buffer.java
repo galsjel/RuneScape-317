@@ -130,12 +130,8 @@ public class Buffer extends DoublyLinkedList.Node {
         data[position++] = (byte) (int) l;
     }
 
-    public static void main(String[] args) {
-        System.out.println(Arrays.toString("Test".getBytes(StandardCharsets.UTF_8)));
-    }
-
     public void put(String s) {
-        put(s.getBytes());
+        put(s.getBytes(StandardCharsets.ISO_8859_1));
         put1('\n');
     }
 

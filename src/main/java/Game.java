@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
@@ -20,9 +18,9 @@ public class Game extends GameShell {
 
     public static final int[][] anIntArrayArray1003 = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
     public static final int[] anIntArray1204 = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-    public static final BigInteger RSA_MODULUS = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
+    public static final BigInteger RSA_MODULUS = new BigInteger("115021795079507343952614936197913546438580135096169635842480712252120509788529535203161526625251797553017433341968661761641695154871087245548928967487006467485383337651405009623296611208539069524887502151216922299338355736930449024798579974392565651281911869750633089962840628929607415810272098208925607905239");
     public static final int[] levelExperience;
-    public static final BigInteger RSA_PUBLIC_KEY = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
+    public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
     public static final String aString1162 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
     public static final int[] BITMASK;
     public static final int MAX_PLAYER_COUNT = 2048;
@@ -6062,7 +6060,7 @@ public class Game extends GameShell {
                 aBuffer_1192.put4(Signlink.uid);
                 aBuffer_1192.put(username);
                 aBuffer_1192.put(password);
-                aBuffer_1192.encrypt(RSA_PUBLIC_KEY, RSA_MODULUS);
+                aBuffer_1192.encrypt(RSA_EXPONENT, RSA_MODULUS);
                 aBuffer_847.position = 0;
                 if (reconnect) {
                     aBuffer_847.put1(18);
