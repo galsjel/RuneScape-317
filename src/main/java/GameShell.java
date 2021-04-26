@@ -236,11 +236,6 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
         int x = e.getX();
         int y = e.getY();
 
-        if (frame != null) {
-            x -= 4;
-            y -= 22;
-        }
-
         idleCycles = 0;
         lastMousePressX = x;
         lastMousePressY = y;
@@ -280,10 +275,6 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
     public void mouseDragged(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        if (frame != null) {
-            x -= 4;
-            y -= 22;
-        }
         idleCycles = 0;
         mouseX = x;
         mouseY = y;
@@ -293,10 +284,6 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
     public void mouseMoved(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        if (frame != null) {
-            x -= 4;
-            y -= 22;
-        }
         idleCycles = 0;
         mouseX = x;
         mouseY = y;
