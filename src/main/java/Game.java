@@ -6073,7 +6073,7 @@ public class Game extends GameShell {
                 for (int l1 = 0; l1 < 9; l1++) {
                     aBuffer_847.put4(archiveChecksum[l1]);
                 }
-                aBuffer_847.put(aBuffer_1192.data, aBuffer_1192.position, 0);
+                aBuffer_847.put(aBuffer_1192.data, 0, aBuffer_1192.position);
                 aBuffer_1192.random = new ISAACRandom(seed);
                 for (int j2 = 0; j2 < 4; j2++) {
                     seed[j2] += 50;

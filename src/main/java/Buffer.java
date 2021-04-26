@@ -139,7 +139,7 @@ public class Buffer extends DoublyLinkedList.Node {
         put1('\n');
     }
 
-    public void put(byte[] src, int len, int off) {
+    public void put(byte[] src, int off, int len) {
         System.arraycopy(src, off, data, position, len);
         position += len;
     }
@@ -345,7 +345,7 @@ public class Buffer extends DoublyLinkedList.Node {
         byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
         position = 0;
         put1(encrypted.length);
-        put(encrypted, encrypted.length, 0);
+        put(encrypted, 0, encrypted.length);
     }
 
 }
