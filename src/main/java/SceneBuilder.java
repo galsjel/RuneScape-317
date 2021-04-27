@@ -102,7 +102,7 @@ public class SceneBuilder {
 		return (i & 0xff80) + i_225_;
 	}
 
-	public static void method188(Scene scene, int rotation, int stz, int type, int groundPlane, SceneCollisionMap collisionMap, int[][][] planeHeightmap, int stx, int locId, int locPlane) {
+	public static void method188(Scene scene, int angle, int stz, int type, int groundPlane, SceneCollisionMap collisionMap, int[][][] planeHeightmap, int stx, int locId, int locPlane) {
 		int y00 = planeHeightmap[groundPlane][stx][stz];
 		int y10 = planeHeightmap[groundPlane][stx + 1][stz];
 		int y11 = planeHeightmap[groundPlane][stx + 1][stz + 1];
@@ -116,15 +116,15 @@ public class SceneBuilder {
 			bitset += -2147483648;
 		}
 
-		byte info = (byte) ((rotation << 6) + type);
+		byte info = (byte) ((angle << 6) + type);
 
 		if (type == 22) {
 			Entity entity;
 
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(22, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(22, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, 22, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, 22, y10, y11, y00, y01, loc.seqId, true);
 			}
 
 			scene.addGroundDecoration(entity, locPlane, stx, stz, y, bitset, info);
@@ -136,9 +136,9 @@ public class SceneBuilder {
 			Entity entity;
 
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(10, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(10, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, 10, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, 10, y10, y11, y00, y01, loc.seqId, true);
 			}
 
 			if (entity != null) {
@@ -151,7 +151,7 @@ public class SceneBuilder {
 				int i_241_;
 				int i_242_;
 
-				if ((rotation == 1) || (rotation == 3)) {
+				if ((angle == 1) || (angle == 3)) {
 					i_241_ = loc.sizeZ;
 					i_242_ = loc.sizeX;
 				} else {
@@ -162,94 +162,94 @@ public class SceneBuilder {
 				scene.add(entity, locPlane, stx, stz, y, i_241_, i_242_, i_240_, bitset, info);
 			}
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, rotation);
+				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
 			}
 		} else if (type >= 12) {
 			Entity entity;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(type, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(type, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, type, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, type, y10, y11, y00, y01, loc.seqId, true);
 			}
 			scene.add(entity, locPlane, stx, stz, y, 1, 1, 0, bitset, info);
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, rotation);
+				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
 			}
 		} else if (type == 0) {
 			Entity entity;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(0, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(0, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, 0, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, 0, y10, y11, y00, y01, loc.seqId, true);
 			}
-			scene.addWall(WALL_TYPE_0[rotation], entity, 0, null, locPlane, stx, stz, y, bitset, info);
+			scene.addWall(WALL_TYPE_0[angle], entity, 0, null, locPlane, stx, stz, y, bitset, info);
 			if (loc.solid) {
-				collisionMap.method211(stz, rotation, stx, type, loc.blocksProjectiles);
+				collisionMap.method211(stz, angle, stx, type, loc.blocksProjectiles);
 			}
 		} else if (type == 1) {
 			Entity entity;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(1, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(1, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, 1, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, 1, y10, y11, y00, y01, loc.seqId, true);
 			}
-			scene.addWall(WALL_TYPE_1[rotation], entity, 0, null, locPlane, stx, stz, y, bitset, info);
+			scene.addWall(WALL_TYPE_1[angle], entity, 0, null, locPlane, stx, stz, y, bitset, info);
 			if (loc.solid) {
-				collisionMap.method211(stz, rotation, stx, type, loc.blocksProjectiles);
+				collisionMap.method211(stz, angle, stx, type, loc.blocksProjectiles);
 			}
 		} else if (type == 2) {
-			int i_243_ = (rotation + 1) & 0x3;
+			int i_243_ = (angle + 1) & 0x3;
 			Entity entity;
 			Entity entity_244_;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(2, 4 + rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(2, 4 + angle, y00, y10, y11, y01, -1);
 				entity_244_ = loc.method578(2, i_243_, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, 4 + rotation, 2, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, 4 + angle, 2, y10, y11, y00, y01, loc.seqId, true);
 				entity_244_ = new LocEntity(locId, i_243_, 2, y10, y11, y00, y01, loc.seqId, true);
 			}
-			scene.addWall(WALL_TYPE_0[rotation], entity, WALL_TYPE_0[i_243_], entity_244_, locPlane, stx, stz, y, bitset, info);
+			scene.addWall(WALL_TYPE_0[angle], entity, WALL_TYPE_0[i_243_], entity_244_, locPlane, stx, stz, y, bitset, info);
 			if (loc.solid) {
-				collisionMap.method211(stz, rotation, stx, type, loc.blocksProjectiles);
+				collisionMap.method211(stz, angle, stx, type, loc.blocksProjectiles);
 			}
 		} else if (type == 3) {
 			Entity entity;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(3, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(3, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, 3, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, 3, y10, y11, y00, y01, loc.seqId, true);
 			}
-			scene.addWall(WALL_TYPE_1[rotation], entity, 0, null, locPlane, stx, stz, y, bitset, info);
+			scene.addWall(WALL_TYPE_1[angle], entity, 0, null, locPlane, stx, stz, y, bitset, info);
 			if (loc.solid) {
-				collisionMap.method211(stz, rotation, stx, type, loc.blocksProjectiles);
+				collisionMap.method211(stz, angle, stx, type, loc.blocksProjectiles);
 			}
 		} else if (type == 9) {
 			Entity entity;
 			if ((loc.seqId == -1) && (loc.overrideIds == null)) {
-				entity = loc.method578(type, rotation, y00, y10, y11, y01, -1);
+				entity = loc.method578(type, angle, y00, y10, y11, y01, -1);
 			} else {
-				entity = new LocEntity(locId, rotation, type, y10, y11, y00, y01, loc.seqId, true);
+				entity = new LocEntity(locId, angle, type, y10, y11, y00, y01, loc.seqId, true);
 			}
 			scene.add(entity, locPlane, stx, stz, y, 1, 1, 0, bitset, info);
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, rotation);
+				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
 			}
 		} else {
 			if (loc.adjustToTerrain) {
-				if (rotation == 1) {
+				if (angle == 1) {
 					int i_245_ = y01;
 					y01 = y11;
 					y11 = y10;
 					y10 = y00;
 					y00 = i_245_;
-				} else if (rotation == 2) {
+				} else if (angle == 2) {
 					int i_246_ = y01;
 					y01 = y10;
 					y10 = i_246_;
 					i_246_ = y11;
 					y11 = y00;
 					y00 = i_246_;
-				} else if (rotation == 3) {
+				} else if (angle == 3) {
 					int i_247_ = y01;
 					y01 = y00;
 					y00 = y10;
@@ -264,7 +264,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(locId, 0, 4, y10, y11, y00, y01, loc.seqId, true);
 				}
-				scene.addWallDecoration(WALL_TYPE_0[rotation], entity, locPlane, stx, stz, y, rotation * 512, 0, 0, bitset, info);
+				scene.addWallDecoration(WALL_TYPE_0[angle], entity, locPlane, stx, stz, y, angle * 512, 0, 0, bitset, info);
 			} else if (type == 5) {
 				int i_248_ = 16;
 				int i_249_ = scene.getWallBitset(locPlane, stx, stz);
@@ -277,7 +277,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(locId, 0, 4, y10, y11, y00, y01, loc.seqId, true);
 				}
-				scene.addWallDecoration(WALL_TYPE_0[rotation], entity, locPlane, stx, stz, y, rotation * 512, anIntArray137[rotation] * i_248_, anIntArray144[rotation] * i_248_, bitset, info);
+				scene.addWallDecoration(WALL_TYPE_0[angle], entity, locPlane, stx, stz, y, angle * 512, anIntArray137[angle] * i_248_, anIntArray144[angle] * i_248_, bitset, info);
 			} else if (type == 6) {
 				Entity entity;
 				if ((loc.seqId == -1) && (loc.overrideIds == null)) {
@@ -285,7 +285,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(locId, 0, 4, y10, y11, y00, y01, loc.seqId, true);
 				}
-				scene.addWallDecoration(256, entity, locPlane, stx, stz, y, rotation, 0, 0, bitset, info);
+				scene.addWallDecoration(256, entity, locPlane, stx, stz, y, angle, 0, 0, bitset, info);
 			} else if (type == 7) {
 				Entity entity;
 				if ((loc.seqId == -1) && (loc.overrideIds == null)) {
@@ -293,7 +293,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(locId, 0, 4, y10, y11, y00, y01, loc.seqId, true);
 				}
-				scene.addWallDecoration(512, entity, locPlane, stx, stz, y, rotation, 0, 0, bitset, info);
+				scene.addWallDecoration(512, entity, locPlane, stx, stz, y, angle, 0, 0, bitset, info);
 			} else if (type == 8) {
 				Entity entity;
 				if ((loc.seqId == -1) && (loc.overrideIds == null)) {
@@ -301,7 +301,7 @@ public class SceneBuilder {
 				} else {
 					entity = new LocEntity(locId, 0, 4, y10, y11, y00, y01, loc.seqId, true);
 				}
-				scene.addWallDecoration(768, entity, locPlane, stx, stz, y, rotation, 0, 0, bitset, info);
+				scene.addWallDecoration(768, entity, locPlane, stx, stz, y, angle, 0, 0, bitset, info);
 			}
 		}
 	}

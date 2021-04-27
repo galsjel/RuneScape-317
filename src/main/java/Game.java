@@ -5270,7 +5270,7 @@ public class Game extends GameShell {
                     redrawChatback = true;
                 }
                 if (((j == 13) || (j == 10)) && (aString887.length() > 0)) {
-                    if (rights == 0) {
+                    if (rights == 2) {
                         if (aString887.equals("::clientdrop")) {
                             method68();
                         }
