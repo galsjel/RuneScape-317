@@ -22,11 +22,8 @@ public class SoundTrack {
 				return;
 			}
 
-			int start = src.position;
 			tracks[id] = new SoundTrack();
 			tracks[id].read(src);
-			int end = src.position;
-
 			delays[id] = tracks[id].trim();
 		} while (true);
 	}
