@@ -5,11 +5,6 @@
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static java.nio.file.Files.*;
 
 public class ObjType {
 

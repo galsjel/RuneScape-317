@@ -22,6 +22,7 @@ public class FloType {
 			instances[j].method261(buffer);
 		}
 	}
+
 	public String unusedString;
 	public int anInt390;
 	public int textureId = -1;

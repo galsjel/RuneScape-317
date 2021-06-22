@@ -22,6 +22,7 @@ public class IDKType {
 			instances[j].method536(buffer);
 		}
 	}
+
 	public final int[] anIntArray659 = new int[6];
 	public final int[] anIntArray660 = new int[6];
 	public final int[] anIntArray661 = {-1, -1, -1, -1, -1};

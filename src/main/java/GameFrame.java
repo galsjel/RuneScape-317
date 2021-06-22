@@ -14,7 +14,7 @@ public class GameFrame extends JFrame {
 		setTitle("Jagex");
 		setResizable(false);
 		setLayout(new BorderLayout());
-		add(shell,BorderLayout.CENTER);
+		add(shell, BorderLayout.CENTER);
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);

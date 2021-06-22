@@ -348,6 +348,7 @@ public class SceneBuilder {
 		}
 		return bool;
 	}
+
 	public final int[] anIntArray124;
 	public final int[] anIntArray125;
 	public final int[] anIntArray126;
