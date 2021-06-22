@@ -826,7 +826,7 @@ public class Game extends GameShell {
 			}
 			imageCompass = new Image24(archiveMedia, "compass", 0);
 			imageMapedge = new Image24(archiveMedia, "mapedge", 0);
-			//imageMapedge.method345();
+			imageMapedge.method345();
 			try {
 				for (int k3 = 0; k3 < 100; k3++) {
 					imageMapscene[k3] = new Image8(archiveMedia, "mapscene", k3);
