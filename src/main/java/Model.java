@@ -308,7 +308,7 @@ public class Model extends Entity {
 	 *
 	 * @see #draw(int, int, int, int, int, int, int, int, int)
 	 */
-	public boolean pickBounds = false;
+	public boolean pickable = false;
 	/**
 	 * A storage for the original vertex normals to give {@link Scene#method308(Model, Model, int, int, int, boolean)}
 	 * a reference.
@@ -1915,7 +1915,7 @@ public class Model extends Entity {
 			int mouseY = Model.mouseY - Draw3D.centerY;
 
 			if ((mouseX > leftX) && (mouseX < rightX) && (mouseY > topY) && (mouseY < bottomY)) {
-				if (pickBounds) {
+				if (pickable) {
 					pickedBitsets[pickedCount++] = bitset;
 				} else {
 					picking = true;

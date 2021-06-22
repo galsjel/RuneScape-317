@@ -229,7 +229,7 @@ public class Buffer extends DoublyLinkedList.Node {
     public int get2() {
         position += 2;
         int i = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
-        if (i > 0x7fff) {
+        if (i > 32767) {
             i -= 0x10000;
         }
         return i;

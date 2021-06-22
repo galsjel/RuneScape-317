@@ -5,6 +5,11 @@
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.*;
 
 public class ObjType {
 
@@ -12,27 +17,27 @@ public class ObjType {
 	public static LRUMap<Integer, Model> modelCache = new LRUMap<>(50);
 	public static ObjType[] cached;
 	public static int cachePos;
-	public static Buffer buf;
+	public static Buffer dat;
 	public static int[] typeOffset;
-	public static int anInt203;
+	public static int count;
 
 	public static void unload() {
 		modelCache = null;
 		iconCache = null;
 		typeOffset = null;
 		cached = null;
-		buf = null;
+		dat = null;
 	}
 
 	public static void unpack(FileArchive archive) throws IOException {
-		buf = new Buffer(archive.read("obj.dat"));
-		Buffer buffer = new Buffer(archive.read("obj.idx"));
-		anInt203 = buffer.get2U();
-		typeOffset = new int[anInt203];
+		dat = new Buffer(archive.read("obj.dat"));
+		Buffer idx = new Buffer(archive.read("obj.idx"));
+		count = idx.get2U();
+		typeOffset = new int[count];
 		int i = 2;
-		for (int j = 0; j < anInt203; j++) {
+		for (int j = 0; j < count; j++) {
 			typeOffset[j] = i;
-			i += buffer.get2U();
+			i += idx.get2U();
 		}
 		cached = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -48,19 +53,19 @@ public class ObjType {
 		}
 		cachePos = (cachePos + 1) % 10;
 		ObjType type = cached[cachePos];
-		buf.position = typeOffset[id];
+		dat.position = typeOffset[id];
 		type.id = id;
 		type.reset();
-		type.read(buf);
-		if (type.linkedId != -1) {
-			type.link();
+		type.read(dat);
+		if (type.certificateId != -1) {
+			type.toCertificate();
 		}
 		if (!Game.members && type.members) {
 			type.name = "Members Object";
-			type.description = "Login to a members' server to use this object.".getBytes();
-			type.aStringArray168 = null;
-			type.aStringArray189 = null;
-			type.anInt202 = 0;
+			type.examine = "Login to a members' server to use this object.".getBytes();
+			type.groundOptions = null;
+			type.inventoryOptions = null;
+			type.team = 0;
 		}
 		return type;
 	}
@@ -104,12 +109,12 @@ public class ObjType {
 		}
 
 		// this will typically be the certificate item for noted stuff
-		Image24 linkedIcon = null;
+		Image24 originalIcon = null;
 
-		if (type.linkedId != -1) {
-			linkedIcon = getIcon(type.anInt179, 10, -1);
+		if (type.certificateId != -1) {
+			originalIcon = getIcon(type.linkedId, 10, -1);
 
-			if (linkedIcon == null) {
+			if (originalIcon == null) {
 				return null;
 			}
 		}
@@ -196,14 +201,14 @@ public class ObjType {
 			}
 		}
 
-		if (type.linkedId != -1) {
-			int w = linkedIcon.cropW;
-			int h = linkedIcon.cropH;
-			linkedIcon.cropW = 32;
-			linkedIcon.cropH = 32;
-			linkedIcon.draw(0, 0);
-			linkedIcon.cropW = w;
-			linkedIcon.cropH = h;
+		if (type.certificateId != -1) {
+			int w = originalIcon.cropW;
+			int h = originalIcon.cropH;
+			originalIcon.cropW = 32;
+			originalIcon.cropH = 32;
+			originalIcon.draw(0, 0);
+			originalIcon.cropW = w;
+			originalIcon.cropH = h;
 		}
 
 		if (outlineColor == 0) {
@@ -218,7 +223,7 @@ public class ObjType {
 		Draw3D.lineOffset = _loff;
 		Draw3D.jagged = true;
 
-		if (type.aBoolean176) {
+		if (type.stackable) {
 			icon.cropW = 33;
 		} else {
 			icon.cropW = 32;
@@ -228,162 +233,157 @@ public class ObjType {
 		return icon;
 	}
 
-	public byte aByte154;
-	public int anInt155;
+	public byte femaleOffsetY;
+	public int cost;
 	public int[] srcColor;
 	public int id = -1;
 	public int[] dstColor;
 	public boolean members;
-	public int anInt162;
-	public int linkedId;
-	public int anInt164;
-	public int anInt165;
-	public int anInt166;
+	public int femaleModelId2;
+	public int certificateId;
+	public int femaleModelId1;
+	public int maleModelId0;
+	public int maleHeadModelId1;
 	public int scaleX;
-	public String[] aStringArray168;
+	public String[] groundOptions;
 	public int iconOffsetX;
 	public String name;
-	public int anInt173;
-	public int anInt174;
-	public int anInt175;
-	public boolean aBoolean176;
-	public byte[] description;
-	public int anInt179;
+	public int femaleHeadModel1;
+	public int modelId;
+	public int maleHeadModelId0;
+	public boolean stackable;
+	public byte[] examine;
+	public int linkedId;
 	public int iconZoom;
-	public int anInt184;
-	public int anInt185;
-	public int anInt188;
-	public String[] aStringArray189;
+	public int lightAttenuation;
+	public int maleModelId2;
+	public int maleModelId1;
+	public String[] inventoryOptions;
 	public int iconPitch;
 	public int scaleY;
 	public int scaleZ;
 	public int[] stackId;
 	public int iconOffsetY;
-	public int anInt196;
-	public int anInt197;
+	public int lightAmbient;
+	public int femaleHeadModel0;
 	public int iconYaw;
 	public int unusedInt;
-	public int anInt200;
+	public int femaleModelId0;
 	public int[] stackAmount;
-	public int anInt202;
+	public int team;
 	public int iconRoll;
-	public byte aByte205;
+	public byte maleOffsetY;
 
 	public ObjType() {
 	}
 
-	public boolean method192(int j) {
-		int k = anInt175;
-		int l = anInt166;
-		if (j == 1) {
-			k = anInt197;
-			l = anInt173;
+	public boolean validateHeadModel(int gender) {
+		int m0 = maleHeadModelId0;
+		int m1 = maleHeadModelId1;
+		if (gender == 1) {
+			m0 = femaleHeadModel0;
+			m1 = femaleHeadModel1;
 		}
-		if (k == -1) {
+		if (m0 == -1) {
 			return true;
 		}
-		boolean flag = true;
-		if (!Model.validate(k)) {
-			flag = false;
+		boolean valid = Model.validate(m0);
+		if ((m1 != -1) && !Model.validate(m1)) {
+			valid = false;
 		}
-		if ((l != -1) && !Model.validate(l)) {
-			flag = false;
-		}
-		return flag;
+		return valid;
 	}
 
-	public Model method194(int j) {
-		int k = anInt175;
-		int l = anInt166;
-		if (j == 1) {
-			k = anInt197;
-			l = anInt173;
+	public Model getHeadModel(int gender) {
+		int m0 = maleHeadModelId0;
+		int m1 = maleHeadModelId1;
+		if (gender == 1) {
+			m0 = femaleHeadModel0;
+			m1 = femaleHeadModel1;
 		}
-		if (k == -1) {
+		if (m0 == -1) {
 			return null;
 		}
-		Model model = Model.tryGet(k);
-		if (l != -1) {
-			Model model_1 = Model.tryGet(l);
-			Model[] aclass30_sub2_sub4_sub6 = {model, model_1};
-			model = new Model(2, aclass30_sub2_sub4_sub6);
+		Model model = Model.tryGet(m0);
+		if (m1 != -1) {
+			model = new Model(2, new Model[]{model, Model.tryGet(m1)});
 		}
 		if (srcColor != null) {
-			for (int i1 = 0; i1 < srcColor.length; i1++) {
-				model.recolor(srcColor[i1], dstColor[i1]);
+			for (int i = 0; i < srcColor.length; i++) {
+				model.recolor(srcColor[i], dstColor[i]);
 			}
 		}
 		return model;
 	}
 
-	public boolean method195(int j) {
-		int k = anInt165;
-		int l = anInt188;
-		int i1 = anInt185;
-		if (j == 1) {
-			k = anInt200;
-			l = anInt164;
-			i1 = anInt162;
+	public boolean validateWornModel(int gender) {
+		int m0 = maleModelId0;
+		int m1 = maleModelId1;
+		int m2 = maleModelId2;
+		if (gender == 1) {
+			m0 = femaleModelId0;
+			m1 = femaleModelId1;
+			m2 = femaleModelId2;
 		}
-		if (k == -1) {
+		if (m0 == -1) {
 			return true;
 		}
-		boolean flag = true;
-		if (!Model.validate(k)) {
-			flag = false;
+		boolean valid = Model.validate(m0);
+		if ((m1 != -1) && !Model.validate(m1)) {
+			valid = false;
 		}
-		if ((l != -1) && !Model.validate(l)) {
-			flag = false;
+		if ((m2 != -1) && !Model.validate(m2)) {
+			valid = false;
 		}
-		if ((i1 != -1) && !Model.validate(i1)) {
-			flag = false;
-		}
-		return flag;
+		return valid;
 	}
 
-	public Model method196(int i) {
-		int j = anInt165;
-		int k = anInt188;
-		int l = anInt185;
-		if (i == 1) {
-			j = anInt200;
-			k = anInt164;
-			l = anInt162;
+	public Model getWornModel(int gender) {
+		int m0 = maleModelId0;
+		int m1 = maleModelId1;
+		int m2 = maleModelId2;
+
+		if (gender == 1) {
+			m0 = femaleModelId0;
+			m1 = femaleModelId1;
+			m2 = femaleModelId2;
 		}
-		if (j == -1) {
+
+		if (m0 == -1) {
 			return null;
 		}
-		Model model = Model.tryGet(j);
-		if (k != -1) {
-			if (l != -1) {
-				Model model_1 = Model.tryGet(k);
-				Model model_3 = Model.tryGet(l);
-				Model[] aclass30_sub2_sub4_sub6_1 = {model, model_1, model_3};
-				model = new Model(3, aclass30_sub2_sub4_sub6_1);
+
+		Model model = Model.tryGet(m0);
+
+		if (m1 != -1) {
+			if (m2 != -1) {
+				model = new Model(3, new Model[]{model, Model.tryGet(m1), Model.tryGet(m2)});
 			} else {
-				Model class30_sub2_sub4_sub6_2 = Model.tryGet(k);
-				Model[] aclass30_sub2_sub4_sub6 = {model, class30_sub2_sub4_sub6_2};
-				model = new Model(2, aclass30_sub2_sub4_sub6);
+				model = new Model(2, new Model[]{model, Model.tryGet(m1)});
 			}
 		}
-		if ((i == 0) && (aByte205 != 0)) {
-			model.translate(0, aByte205, 0);
+
+		if ((gender == 0) && (maleOffsetY != 0)) {
+			model.translate(0, maleOffsetY, 0);
 		}
-		if ((i == 1) && (aByte154 != 0)) {
-			model.translate(0, aByte154, 0);
+
+		if ((gender == 1) && (femaleOffsetY != 0)) {
+			model.translate(0, femaleOffsetY, 0);
 		}
+
 		if (srcColor != null) {
 			for (int i1 = 0; i1 < srcColor.length; i1++) {
 				model.recolor(srcColor[i1], dstColor[i1]);
 			}
 		}
+
 		return model;
 	}
 
 	public void reset() {
-		anInt174 = 0;
+		modelId = 0;
 		name = null;
-		description = null;
+		examine = null;
 		srcColor = null;
 		dstColor = null;
 		iconZoom = 2000;
@@ -393,57 +393,57 @@ public class ObjType {
 		iconOffsetX = 0;
 		iconOffsetY = 0;
 		unusedInt = -1;
-		aBoolean176 = false;
-		anInt155 = 1;
+		stackable = false;
+		cost = 1;
 		members = false;
-		aStringArray168 = null;
-		aStringArray189 = null;
-		anInt165 = -1;
-		anInt188 = -1;
-		aByte205 = 0;
-		anInt200 = -1;
-		anInt164 = -1;
-		aByte154 = 0;
-		anInt185 = -1;
-		anInt162 = -1;
-		anInt175 = -1;
-		anInt166 = -1;
-		anInt197 = -1;
-		anInt173 = -1;
+		groundOptions = null;
+		inventoryOptions = null;
+		maleModelId0 = -1;
+		maleModelId1 = -1;
+		maleOffsetY = 0;
+		femaleModelId0 = -1;
+		femaleModelId1 = -1;
+		femaleOffsetY = 0;
+		maleModelId2 = -1;
+		femaleModelId2 = -1;
+		maleHeadModelId0 = -1;
+		maleHeadModelId1 = -1;
+		femaleHeadModel0 = -1;
+		femaleHeadModel1 = -1;
 		stackId = null;
 		stackAmount = null;
-		anInt179 = -1;
 		linkedId = -1;
+		certificateId = -1;
 		scaleX = 128;
 		scaleZ = 128;
 		scaleY = 128;
-		anInt196 = 0;
-		anInt184 = 0;
-		anInt202 = 0;
+		lightAmbient = 0;
+		lightAttenuation = 0;
+		team = 0;
 	}
 
-	public void link() {
-		ObjType type = get(linkedId);
-		anInt174 = type.anInt174;
-		iconZoom = type.iconZoom;
-		iconPitch = type.iconPitch;
-		iconYaw = type.iconYaw;
-		iconRoll = type.iconRoll;
-		iconOffsetX = type.iconOffsetX;
-		iconOffsetY = type.iconOffsetY;
-		srcColor = type.srcColor;
-		dstColor = type.dstColor;
-		ObjType type_1 = get(anInt179);
-		name = type_1.name;
-		members = type_1.members;
-		anInt155 = type_1.anInt155;
+	public void toCertificate() {
+		ObjType cert = get(certificateId);
+		modelId = cert.modelId;
+		iconZoom = cert.iconZoom;
+		iconPitch = cert.iconPitch;
+		iconYaw = cert.iconYaw;
+		iconRoll = cert.iconRoll;
+		iconOffsetX = cert.iconOffsetX;
+		iconOffsetY = cert.iconOffsetY;
+		srcColor = cert.srcColor;
+		dstColor = cert.dstColor;
+		ObjType linked = get(linkedId);
+		name = linked.name;
+		members = linked.members;
+		cost = linked.cost;
 		String s = "a";
-		char c = type_1.name.charAt(0);
+		char c = linked.name.charAt(0);
 		if ((c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U')) {
 			s = "an";
 		}
-		description = ("Swap this note at any bank for " + s + " " + type_1.name + ".").getBytes();
-		aBoolean176 = true;
+		examine = ("Swap this note at any bank for " + s + " " + linked.name + ".").getBytes();
+		stackable = true;
 	}
 
 	public Model getModel(int amount) {
@@ -465,7 +465,7 @@ public class ObjType {
 			return model;
 		}
 
-		model = Model.tryGet(anInt174);
+		model = Model.tryGet(modelId);
 
 		if (model == null) {
 			return null;
@@ -481,25 +481,25 @@ public class ObjType {
 			}
 		}
 
-		model.calculateNormals(64 + anInt196, 768 + anInt184, -50, -10, -50, true);
-		model.pickBounds = true;
+		model.calculateNormals(64 + lightAmbient, 768 + lightAttenuation, -50, -10, -50, true);
+		model.pickable = true;
 		modelCache.put(id, model);
 		return model;
 	}
 
-	public Model method202(int i) {
-		if ((stackId != null) && (i > 1)) {
+	public Model getModelUnlit(int amount) {
+		if ((stackId != null) && (amount > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
-				if ((i >= stackAmount[k]) && (stackAmount[k] != 0)) {
+				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
 					j = stackId[k];
 				}
 			}
 			if (j != -1) {
-				return get(j).method202(1);
+				return get(j).getModelUnlit(1);
 			}
 		}
-		Model model = Model.tryGet(anInt174);
+		Model model = Model.tryGet(modelId);
 		if (model == null) {
 			return null;
 		}
@@ -518,11 +518,11 @@ public class ObjType {
 				return;
 			}
 			if (i == 1) {
-				anInt174 = buffer.get2U();
+				modelId = buffer.get2U();
 			} else if (i == 2) {
 				name = buffer.getString();
 			} else if (i == 3) {
-				description = buffer.getStringRaw();
+				examine = buffer.getStringRaw();
 			} else if (i == 4) {
 				iconZoom = buffer.get2U();
 			} else if (i == 5) {
@@ -542,34 +542,34 @@ public class ObjType {
 			} else if (i == 10) {
 				unusedInt = buffer.get2U();
 			} else if (i == 11) {
-				aBoolean176 = true;
+				stackable = true;
 			} else if (i == 12) {
-				anInt155 = buffer.get4();
+				cost = buffer.get4();
 			} else if (i == 16) {
 				members = true;
 			} else if (i == 23) {
-				anInt165 = buffer.get2U();
-				aByte205 = buffer.get1();
+				maleModelId0 = buffer.get2U();
+				maleOffsetY = buffer.get1();
 			} else if (i == 24) {
-				anInt188 = buffer.get2U();
+				maleModelId1 = buffer.get2U();
 			} else if (i == 25) {
-				anInt200 = buffer.get2U();
-				aByte154 = buffer.get1();
+				femaleModelId0 = buffer.get2U();
+				femaleOffsetY = buffer.get1();
 			} else if (i == 26) {
-				anInt164 = buffer.get2U();
+				femaleModelId1 = buffer.get2U();
 			} else if ((i >= 30) && (i < 35)) {
-				if (aStringArray168 == null) {
-					aStringArray168 = new String[5];
+				if (groundOptions == null) {
+					groundOptions = new String[5];
 				}
-				aStringArray168[i - 30] = buffer.getString();
-				if (aStringArray168[i - 30].equalsIgnoreCase("hidden")) {
-					aStringArray168[i - 30] = null;
+				groundOptions[i - 30] = buffer.getString();
+				if (groundOptions[i - 30].equalsIgnoreCase("hidden")) {
+					groundOptions[i - 30] = null;
 				}
 			} else if ((i >= 35) && (i < 40)) {
-				if (aStringArray189 == null) {
-					aStringArray189 = new String[5];
+				if (inventoryOptions == null) {
+					inventoryOptions = new String[5];
 				}
-				aStringArray189[i - 35] = buffer.getString();
+				inventoryOptions[i - 35] = buffer.getString();
 			} else if (i == 40) {
 				int j = buffer.get1U();
 				srcColor = new int[j];
@@ -579,23 +579,23 @@ public class ObjType {
 					dstColor[k] = buffer.get2U();
 				}
 			} else if (i == 78) {
-				anInt185 = buffer.get2U();
+				maleModelId2 = buffer.get2U();
 			} else if (i == 79) {
-				anInt162 = buffer.get2U();
+				femaleModelId2 = buffer.get2U();
 			} else if (i == 90) {
-				anInt175 = buffer.get2U();
+				maleHeadModelId0 = buffer.get2U();
 			} else if (i == 91) {
-				anInt197 = buffer.get2U();
+				femaleHeadModel0 = buffer.get2U();
 			} else if (i == 92) {
-				anInt166 = buffer.get2U();
+				maleHeadModelId1 = buffer.get2U();
 			} else if (i == 93) {
-				anInt173 = buffer.get2U();
+				femaleHeadModel1 = buffer.get2U();
 			} else if (i == 95) {
 				iconRoll = buffer.get2U();
 			} else if (i == 97) {
-				anInt179 = buffer.get2U();
-			} else if (i == 98) {
 				linkedId = buffer.get2U();
+			} else if (i == 98) {
+				certificateId = buffer.get2U();
 			} else if ((i >= 100) && (i < 110)) {
 				if (stackId == null) {
 					stackId = new int[10];
@@ -610,11 +610,11 @@ public class ObjType {
 			} else if (i == 112) {
 				scaleY = buffer.get2U();
 			} else if (i == 113) {
-				anInt196 = buffer.get1();
+				lightAmbient = buffer.get1();
 			} else if (i == 114) {
-				anInt184 = buffer.get1() * 5;
+				lightAttenuation = buffer.get1() * 5;
 			} else if (i == 115) {
-				anInt202 = buffer.get1U();
+				team = buffer.get1U();
 			}
 		} while (true);
 	}

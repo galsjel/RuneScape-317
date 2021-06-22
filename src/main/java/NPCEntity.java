@@ -55,7 +55,7 @@ public class NPCEntity extends PathingEntity {
 			}
 		}
 		if (type.size == 1) {
-			model.pickBounds = true;
+			model.pickable = true;
 		}
 		return model;
 	}

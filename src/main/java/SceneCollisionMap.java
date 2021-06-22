@@ -519,22 +519,22 @@ public class SceneCollisionMap {
 		return false;
 	}
 
-	public boolean method221(int i, int j, int k, int l, int i1, int j1, int k1) {
-		int l1 = (j + j1) - 1;
-		int i2 = (i + l) - 1;
-		if ((k >= j) && (k <= l1) && (k1 >= i) && (k1 <= i2)) {
+	public boolean method221(int z0, int x0, int x, int sizeZ, int flags, int sizeX, int z) {
+		int x1 = (x0 + sizeX) - 1;
+		int z1 = (z0 + sizeZ) - 1;
+		if ((x >= x0) && (x <= x1) && (z >= z0) && (z <= z1)) {
 			return true;
 		}
-		if ((k == (j - 1)) && (k1 >= i) && (k1 <= i2) && ((flags[k - anInt290][k1 - anInt291] & 8) == 0) && ((i1 & 8) == 0)) {
+		if ((x == (x0 - 1)) && (z >= z0) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 8) == 0) && ((flags & 8) == 0)) {
 			return true;
 		}
-		if ((k == (l1 + 1)) && (k1 >= i) && (k1 <= i2) && ((flags[k - anInt290][k1 - anInt291] & 0x80) == 0) && ((i1 & 2) == 0)) {
+		if ((x == (x1 + 1)) && (z >= z0) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 0x80) == 0) && ((flags & 2) == 0)) {
 			return true;
 		}
-		if ((k1 == (i - 1)) && (k >= j) && (k <= l1) && ((flags[k - anInt290][k1 - anInt291] & 2) == 0) && ((i1 & 4) == 0)) {
+		if ((z == (z0 - 1)) && (x >= x0) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 2) == 0) && ((flags & 4) == 0)) {
 			return true;
 		}
-		return (k1 == (i2 + 1)) && (k >= j) && (k <= l1) && ((flags[k - anInt290][k1 - anInt291] & 0x20) == 0) && ((i1 & 1) == 0);
+		return (z == (z1 + 1)) && (x >= x0) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 0x20) == 0) && ((flags & 1) == 0);
 	}
 
 }

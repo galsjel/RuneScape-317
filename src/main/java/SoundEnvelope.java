@@ -7,8 +7,8 @@
 public class SoundEnvelope {
 
 	public int length;
-	public int[] durations;
-	public int[] peaks;
+	public int[] shapeDelta;
+	public int[] shapePeak;
 	public int start;
 	public int end;
 	public int form;
@@ -30,11 +30,11 @@ public class SoundEnvelope {
 
 	public void readShape(Buffer buffer) {
 		length = buffer.get1U();
-		durations = new int[length];
-		peaks = new int[length];
+		shapeDelta = new int[length];
+		shapePeak = new int[length];
 		for (int i = 0; i < length; i++) {
-			durations[i] = buffer.get2U();
-			peaks[i] = buffer.get2U();
+			shapeDelta[i] = buffer.get2U();
+			shapePeak[i] = buffer.get2U();
 		}
 	}
 
@@ -48,13 +48,13 @@ public class SoundEnvelope {
 
 	public int evaluate(int delta) {
 		if (ticks >= threshold) {
-			amplitude = peaks[position++] << 15;
+			amplitude = shapePeak[position++] << 15;
 			if (position >= length) {
 				position = length - 1;
 			}
-			threshold = (int) (((double) durations[position] / 65536D) * (double) delta);
+			threshold = (int) (((double) shapeDelta[position] / 65536D) * (double) delta);
 			if (threshold > ticks) {
-				this.delta = ((peaks[position] << 15) - amplitude) / (threshold - ticks);
+				this.delta = ((shapePeak[position] << 15) - amplitude) / (threshold - ticks);
 			}
 		}
 		amplitude += this.delta;

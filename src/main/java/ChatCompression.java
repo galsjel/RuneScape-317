@@ -9,10 +9,10 @@ public class ChatCompression {
 			// the rest are just 'accepted' values.
 			'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', //
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
-			' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '£', '$', '%', '"', '[', ']' //
+			' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\u00A3', '$', '%', '"', '[', ']' //
 	};
 
-	private static final int RANGE = ' ' + '£'; // least significant char + most significant char (in terms of value)
+	private static final int RANGE = ' ' + '\u00A3'; // least significant char + most significant char (in terms of value)
 
 	public static String unpack(int expectedLength, Buffer buffer) {
 		int length = 0;

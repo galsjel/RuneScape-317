@@ -8,12 +8,12 @@ public class PlayerEntity extends PathingEntity {
 
 	public static LRUMap<Long, Model> modelCache = new LRUMap<>(260);
 	public final int[] anIntArray1700 = new int[5];
-	public final int[] anIntArray1717 = new int[12];
+	public final int[] appearance = new int[12];
 	public long aLong1697 = -1L;
 	public NPCType aType_1698;
 	public boolean aBoolean1699 = false;
-	public int anInt1701;
-	public int anInt1702;
+	public int team;
+	public int gender;
 	public String aString1703;
 	public int anInt1705;
 	public int anInt1706;
@@ -45,7 +45,7 @@ public class PlayerEntity extends PathingEntity {
 			return null;
 		}
 		super.anInt1507 = model.minY;
-		model.pickBounds = true;
+		model.pickable = true;
 		if (aBoolean1699) {
 			return model;
 		}
@@ -99,32 +99,32 @@ public class PlayerEntity extends PathingEntity {
 				model_1.translate(super.x - anInt1711, y - anInt1712, super.z - anInt1713);
 			}
 		}
-		model.pickBounds = true;
+		model.pickable = true;
 		return model;
 	}
 
 	public void method451(Buffer buffer) {
 		buffer.position = 0;
-		anInt1702 = buffer.get1U();
+		gender = buffer.get1U();
 		anInt1706 = buffer.get1U();
 		aType_1698 = null;
-		anInt1701 = 0;
+		team = 0;
 		for (int j = 0; j < 12; j++) {
 			int k = buffer.get1U();
 			if (k == 0) {
-				anIntArray1717[j] = 0;
+				appearance[j] = 0;
 				continue;
 			}
 			int i1 = buffer.get1U();
-			anIntArray1717[j] = (k << 8) + i1;
-			if ((j == 0) && (anIntArray1717[0] == 65535)) {
+			appearance[j] = (k << 8) + i1;
+			if ((j == 0) && (appearance[0] == 65535)) {
 				aType_1698 = NPCType.get(buffer.get2U());
 				break;
 			}
-			if ((anIntArray1717[j] >= 512) && ((anIntArray1717[j] - 512) < ObjType.anInt203)) {
-				int l1 = ObjType.get(anIntArray1717[j] - 512).anInt202;
+			if ((appearance[j] >= 512) && ((appearance[j] - 512) < ObjType.count)) {
+				int l1 = ObjType.get(appearance[j] - 512).team;
 				if (l1 != 0) {
-					anInt1701 = l1;
+					team = l1;
 				}
 			}
 		}
@@ -170,22 +170,22 @@ public class PlayerEntity extends PathingEntity {
 		aLong1718 = 0L;
 		for (int k1 = 0; k1 < 12; k1++) {
 			aLong1718 <<= 4;
-			if (anIntArray1717[k1] >= 256) {
-				aLong1718 += anIntArray1717[k1] - 256;
+			if (appearance[k1] >= 256) {
+				aLong1718 += appearance[k1] - 256;
 			}
 		}
-		if (anIntArray1717[0] >= 256) {
-			aLong1718 += (anIntArray1717[0] - 256) >> 4;
+		if (appearance[0] >= 256) {
+			aLong1718 += (appearance[0] - 256) >> 4;
 		}
-		if (anIntArray1717[1] >= 256) {
-			aLong1718 += (anIntArray1717[1] - 256) >> 8;
+		if (appearance[1] >= 256) {
+			aLong1718 += (appearance[1] - 256) >> 8;
 		}
 		for (int i2 = 0; i2 < 5; i2++) {
 			aLong1718 <<= 3;
 			aLong1718 += anIntArray1700[i2];
 		}
 		aLong1718 <<= 1;
-		aLong1718 += anInt1702;
+		aLong1718 += gender;
 	}
 
 	public Model method452() {
@@ -211,30 +211,32 @@ public class PlayerEntity extends PathingEntity {
 			}
 			if (type.anInt360 >= 0) {
 				j1 = type.anInt360;
-				l += ((long) j1 - anIntArray1717[5]) << 8;
+				l += ((long) j1 - appearance[5]) << 8;
 			}
 			if (type.anInt361 >= 0) {
 				k1 = type.anInt361;
-				l += ((long) k1 - anIntArray1717[3]) << 16;
+				l += ((long) k1 - appearance[3]) << 16;
 			}
 		} else if (super.seqCurrent >= 0) {
 			k = SeqType.instances[super.seqCurrent].primaryFrames[super.seqFrame];
 		}
+
 		Model model_1 = modelCache.get(l);
+
 		if (model_1 == null) {
 			boolean flag = false;
-			for (int i2 = 0; i2 < 12; i2++) {
-				int k2 = anIntArray1717[i2];
-				if ((k1 >= 0) && (i2 == 3)) {
-					k2 = k1;
+			for (int part = 0; part < 12; part++) {
+				int value = appearance[part];
+				if ((k1 >= 0) && (part == 3)) {
+					value = k1;
 				}
-				if ((j1 >= 0) && (i2 == 5)) {
-					k2 = j1;
+				if ((j1 >= 0) && (part == 5)) {
+					value = j1;
 				}
-				if ((k2 >= 256) && (k2 < 512) && !IDKType.instances[k2 - 256].method537()) {
+				if ((value >= 256) && (value < 512) && !IDKType.instances[value - 256].method537()) {
 					flag = true;
 				}
-				if ((k2 >= 512) && !ObjType.get(k2 - 512).method195(anInt1702)) {
+				if ((value >= 512) && !ObjType.get(value - 512).validateWornModel(gender)) {
 					flag = true;
 				}
 			}
@@ -247,31 +249,32 @@ public class PlayerEntity extends PathingEntity {
 				}
 			}
 		}
+
 		if (model_1 == null) {
-			Model[] aclass30_sub2_sub4_sub6 = new Model[12];
-			int j2 = 0;
-			for (int l2 = 0; l2 < 12; l2++) {
-				int i3 = anIntArray1717[l2];
-				if ((k1 >= 0) && (l2 == 3)) {
-					i3 = k1;
+			Model[] models = new Model[12];
+			int modelCount = 0;
+			for (int part = 0; part < 12; part++) {
+				int value = appearance[part];
+				if ((k1 >= 0) && (part == 3)) {
+					value = k1;
 				}
-				if ((j1 >= 0) && (l2 == 5)) {
-					i3 = j1;
+				if ((j1 >= 0) && (part == 5)) {
+					value = j1;
 				}
-				if ((i3 >= 256) && (i3 < 512)) {
-					Model model_3 = IDKType.instances[i3 - 256].method538();
+				if ((value >= 256) && (value < 512)) {
+					Model model_3 = IDKType.instances[value - 256].method538();
 					if (model_3 != null) {
-						aclass30_sub2_sub4_sub6[j2++] = model_3;
+						models[modelCount++] = model_3;
 					}
 				}
-				if (i3 >= 512) {
-					Model class30_sub2_sub4_sub6_4 = ObjType.get(i3 - 512).method196(anInt1702);
-					if (class30_sub2_sub4_sub6_4 != null) {
-						aclass30_sub2_sub4_sub6[j2++] = class30_sub2_sub4_sub6_4;
+				if (value >= 512) {
+					Model model = ObjType.get(value - 512).getWornModel(gender);
+					if (model != null) {
+						models[modelCount++] = model;
 					}
 				}
 			}
-			model_1 = new Model(j2, aclass30_sub2_sub4_sub6);
+			model_1 = new Model(modelCount, models);
 			for (int j3 = 0; j3 < 5; j3++) {
 				if (anIntArray1700[j3] != 0) {
 					model_1.recolor(Game.anIntArrayArray1003[j3][0], Game.anIntArrayArray1003[j3][anIntArray1700[j3]]);
@@ -315,11 +318,11 @@ public class PlayerEntity extends PathingEntity {
 		}
 		boolean flag = false;
 		for (int i = 0; i < 12; i++) {
-			int j = anIntArray1717[i];
+			int j = appearance[i];
 			if ((j >= 256) && (j < 512) && !IDKType.instances[j - 256].method539()) {
 				flag = true;
 			}
-			if ((j >= 512) && !ObjType.get(j - 512).method192(anInt1702)) {
+			if ((j >= 512) && !ObjType.get(j - 512).validateHeadModel(gender)) {
 				flag = true;
 			}
 		}
@@ -329,7 +332,7 @@ public class PlayerEntity extends PathingEntity {
 		Model[] aclass30_sub2_sub4_sub6 = new Model[12];
 		int k = 0;
 		for (int l = 0; l < 12; l++) {
-			int i1 = anIntArray1717[l];
+			int i1 = appearance[l];
 			if ((i1 >= 256) && (i1 < 512)) {
 				Model model_1 = IDKType.instances[i1 - 256].method540();
 				if (model_1 != null) {
@@ -337,7 +340,7 @@ public class PlayerEntity extends PathingEntity {
 				}
 			}
 			if (i1 >= 512) {
-				Model class30_sub2_sub4_sub6_2 = ObjType.get(i1 - 512).method194(anInt1702);
+				Model class30_sub2_sub4_sub6_2 = ObjType.get(i1 - 512).getHeadModel(gender);
 				if (class30_sub2_sub4_sub6_2 != null) {
 					aclass30_sub2_sub4_sub6[k++] = class30_sub2_sub4_sub6_2;
 				}

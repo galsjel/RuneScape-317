@@ -1,4 +1,8 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * A simple file archive format.
@@ -47,6 +51,16 @@ public class FileArchive {
 			fileSizeDeflated[file] = buffer.get3();
 			fileOffset[file] = offset;
 			offset += fileSizeDeflated[file];
+		}
+	}
+
+	public void export(String s, Path dst) throws IOException {
+		byte[] data = read(s);
+		if (data == null) {
+			throw new FileNotFoundException(s);
+		}
+		try (OutputStream out = Files.newOutputStream(dst)) {
+			out.write(data);
 		}
 	}
 

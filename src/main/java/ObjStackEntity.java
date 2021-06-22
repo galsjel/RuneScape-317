@@ -4,16 +4,16 @@
 
 public class ObjStackEntity extends Entity {
 
-	public int anInt1558;
-	public int anInt1559;
+	public int id;
+	public int amount;
 
 	public ObjStackEntity() {
 	}
 
 	@Override
 	public Model getModel() {
-		ObjType type = ObjType.get(anInt1558);
-		return type.getModel(anInt1559);
+		ObjType type = ObjType.get(id);
+		return type.getModel(amount);
 	}
 
 }

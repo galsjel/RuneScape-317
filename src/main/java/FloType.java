@@ -24,7 +24,7 @@ public class FloType {
 	}
 	public String unusedString;
 	public int anInt390;
-	public int anInt391 = -1;
+	public int textureId = -1;
 	public boolean unusedBool = false;
 	public boolean aBoolean393 = true;
 	public int anInt394;
@@ -47,7 +47,7 @@ public class FloType {
 				anInt390 = buffer.get3();
 				method262(anInt390);
 			} else if (i == 2) {
-				anInt391 = buffer.get1U();
+				textureId = buffer.get1U();
 			} else if (i == 3) {
 				unusedBool = true;
 			} else if (i == 5) {

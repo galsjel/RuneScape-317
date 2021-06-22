@@ -166,8 +166,8 @@ public class Scene {
 	public final int[][][] planeTileOcclusionCycles;
 	public final int[] anIntArray486 = new int[10000];
 	public final int[] anIntArray487 = new int[10000];
-	public final int[][] anIntArrayArray489 = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
-	public final int[][] anIntArrayArray490 = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
+	public final int[][] MINIMAP_TILE_MASK = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
+	public final int[][] MINIMAP_TILE_ROTATION_MAP = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
 	public int minPlane;
 	public int temporaryLocCount;
 	public int anInt488;
@@ -863,61 +863,70 @@ public class Scene {
 		}
 	}
 
-	public void drawMinimapTile(int[] ai, int i, int j, int k, int l, int i1) {
-		SceneTile tile = planeTiles[k][l][i1];
+	public void drawMinimapTile(int[] dst, int offset, int step, int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
+
 		if (tile == null) {
 			return;
 		}
+
 		SceneTileUnderlay underlay = tile.underlay;
 		if (underlay != null) {
-			int j1 = underlay.anInt722;
-			if (j1 == 0) {
+			int rgb = underlay.rgb;
+
+			if (rgb == 0) {
 				return;
 			}
+
 			for (int k1 = 0; k1 < 4; k1++) {
-				ai[i] = j1;
-				ai[i + 1] = j1;
-				ai[i + 2] = j1;
-				ai[i + 3] = j1;
-				i += j;
+				dst[offset] = rgb;
+				dst[offset + 1] = rgb;
+				dst[offset + 2] = rgb;
+				dst[offset + 3] = rgb;
+				offset += step;
 			}
 			return;
 		}
+
 		SceneTileOverlay overlay = tile.overlay;
+
 		if (overlay == null) {
 			return;
 		}
-		int l1 = overlay.anInt684;
-		int i2 = overlay.anInt685;
-		int j2 = overlay.anInt686;
-		int k2 = overlay.anInt687;
-		int[] ai1 = anIntArrayArray489[l1];
-		int[] ai2 = anIntArrayArray490[i2];
-		int l2 = 0;
-		if (j2 != 0) {
-			for (int i3 = 0; i3 < 4; i3++) {
-				ai[i] = (ai1[ai2[l2++]] != 0) ? k2 : j2;
-				ai[i + 1] = (ai1[ai2[l2++]] != 0) ? k2 : j2;
-				ai[i + 2] = (ai1[ai2[l2++]] != 0) ? k2 : j2;
-				ai[i + 3] = (ai1[ai2[l2++]] != 0) ? k2 : j2;
-				i += j;
+
+		int shape = overlay.shape;
+		int angle = overlay.angle;
+		int background = overlay.backgroundRGB;
+		int foreground = overlay.foregroundRGB;
+		int[] mask = MINIMAP_TILE_MASK[shape];
+		int[] rotation = MINIMAP_TILE_ROTATION_MAP[angle];
+		int off = 0;
+
+		if (background != 0) {
+			for (int i = 0; i < 4; i++) {
+				dst[offset] = (mask[rotation[off++]] != 0) ? foreground : background;
+				dst[offset + 1] = (mask[rotation[off++]] != 0) ? foreground : background;
+				dst[offset + 2] = (mask[rotation[off++]] != 0) ? foreground : background;
+				dst[offset + 3] = (mask[rotation[off++]] != 0) ? foreground : background;
+				offset += step;
 			}
 			return;
 		}
-		for (int j3 = 0; j3 < 4; j3++) {
-			if (ai1[ai2[l2++]] != 0) {
-				ai[i] = k2;
+
+		for (int i = 0; i < 4; i++) {
+			if (mask[rotation[off++]] != 0) {
+				dst[offset] = foreground;
 			}
-			if (ai1[ai2[l2++]] != 0) {
-				ai[i + 1] = k2;
+			if (mask[rotation[off++]] != 0) {
+				dst[offset + 1] = foreground;
 			}
-			if (ai1[ai2[l2++]] != 0) {
-				ai[i + 2] = k2;
+			if (mask[rotation[off++]] != 0) {
+				dst[offset + 2] = foreground;
 			}
-			if (ai1[ai2[l2++]] != 0) {
-				ai[i + 3] = k2;
+			if (mask[rotation[off++]] != 0) {
+				dst[offset + 3] = foreground;
 			}
-			i += j;
+			offset += step;
 		}
 	}
 

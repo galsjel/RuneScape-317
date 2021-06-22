@@ -1,3 +1,5 @@
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -5,7 +7,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
 
 public class OnDemand implements Runnable {
 
@@ -334,22 +335,22 @@ public class OnDemand implements Runnable {
 		return animIndex.length;
 	}
 
-	public void request(int archive, int file) {
-		if ((archive < 0) || (archive > storeFileVersions.length) || (file < 0) || (file > storeFileVersions[archive].length)) {
+	public void request(int store, int file) {
+		if ((store < 0) || (store > storeFileVersions.length) || (file < 0) || (file > storeFileVersions[store].length)) {
 			return;
 		}
-		if (storeFileVersions[archive][file] == 0) {
+		if (storeFileVersions[store][file] == 0) {
 			return;
 		}
 
 		synchronized (lock) {
 			for (OnDemandRequest request : requests) {
-				if (request.store == archive && request.file == file) {
+				if (request.store == store && request.file == file) {
 					return;
 				}
 			}
 			OnDemandRequest request = new OnDemandRequest();
-			request.store = archive;
+			request.store = store;
 			request.file = file;
 			request.important = true;
 			synchronized (queue) {
@@ -492,7 +493,7 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public OnDemandRequest poll() {
+	public OnDemandRequest poll() throws IOException {
 		OnDemandRequest request;
 
 		synchronized (completed) {
@@ -511,26 +512,10 @@ public class OnDemand implements Runnable {
 			return request;
 		}
 
-		int i = 0;
-		try {
-			GZIPInputStream gzipinputstream = new GZIPInputStream(new ByteArrayInputStream(request.data));
-			do {
-				if (i == aByteArray1359.length) {
-					throw new RuntimeException("buffer overflow!");
-				}
-				int k = gzipinputstream.read(aByteArray1359, i, aByteArray1359.length - i);
-				if (k == -1) {
-					break;
-				}
-				i += k;
-			} while (true);
-		} catch (IOException _ex) {
-			throw new RuntimeException("error unzipping");
+		try (GzipCompressorInputStream gzis = new GzipCompressorInputStream(new ByteArrayInputStream(request.data))) {
+			request.data = gzis.readAllBytes();
 		}
-		request.data = new byte[i];
-		for (int j = 0; j < i; j++) {
-			request.data[j] = aByteArray1359[j];
-		}
+
 		return request;
 	}
 

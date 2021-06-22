@@ -547,21 +547,21 @@ public class SceneBuilder {
 									int i_59_ = ((aByteArrayArrayArray136[plane][i_29_][i_40_]) + 1);
 									byte i_60_ = (aByteArrayArrayArray148[plane][i_29_][i_40_]);
 									FloType type = FloType.instances[i_44_ - 1];
-									int i_61_ = type.anInt391;
+									int textureId = type.textureId;
 									int i_62_;
 									int i_63_;
-									if (i_61_ >= 0) {
-										i_62_ = Draw3D.getAverageTextureRGB(i_61_);
+									if (textureId >= 0) {
+										i_62_ = Draw3D.getAverageTextureRGB(textureId);
 										i_63_ = -1;
 									} else if (type.anInt390 == 16711935) {
 										i_62_ = 0;
 										i_63_ = -2;
-										i_61_ = -1;
+										textureId = -1;
 									} else {
 										i_63_ = method177(type.anInt394, type.anInt395, type.anInt396);
 										i_62_ = (Draw3D.palette[method185(type.anInt399, 96)]);
 									}
-									scene.method279(plane, i_29_, i_40_, i_59_, i_60_, i_61_, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
+									scene.method279(plane, i_29_, i_40_, i_59_, i_60_, textureId, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
 								}
 							}
 						}

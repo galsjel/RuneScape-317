@@ -21,18 +21,18 @@ public class SceneTileOverlay {
 	public final int[] anIntArray680;
 	public final int[] anIntArray681;
 	public final boolean aBoolean683;
-	public final int anInt684;
-	public final int anInt685;
-	public final int anInt686;
-	public final int anInt687;
+	public final int shape;
+	public final int angle;
+	public final int backgroundRGB;
+	public final int foregroundRGB;
 	public int[] anIntArray682;
 
 	public SceneTileOverlay(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int k4, int l4) {
 		aBoolean683 = (i3 == l2) && (i3 == l) && (i3 == k2);
-		anInt684 = j3;
-		anInt685 = k1;
-		anInt686 = i2;
-		anInt687 = l4;
+		shape = j3;
+		angle = k1;
+		backgroundRGB = i2;
+		foregroundRGB = l4;
 		char c = '\200';
 		int i5 = c / 2;
 		int j5 = c / 4;
