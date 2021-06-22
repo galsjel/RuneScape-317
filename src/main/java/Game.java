@@ -693,7 +693,9 @@ public class Game extends GameShell {
 			int total = ondemand.getFileCount(1);
 
 			for (int i = 0; i < total; i++) {
-				ondemand.request(1, i);
+				if (ondemand.animIndex[i] != 0) {
+					ondemand.request(1, i);
+				}
 			}
 
 			while (ondemand.remaining() > 0) {

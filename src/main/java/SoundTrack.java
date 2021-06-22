@@ -27,12 +27,6 @@ public class SoundTrack {
 			tracks[id].read(src);
 			int end = src.position;
 
-			try (OutputStream out = Files.newOutputStream(Paths.get(String.format("377_synth/%d.synth", id)))) {
-				out.write(src.data, start, end - start);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
 			delays[id] = tracks[id].trim();
 		} while (true);
 	}
