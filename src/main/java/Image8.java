@@ -6,17 +6,17 @@ public class Image8 {
 	public byte[] pixels;
 	public int width;
 	public int height;
-	public int anInt1454;
-	public int anInt1455;
-	public int anInt1456;
-	public int anInt1457;
+	public int cropX;
+	public int cropY;
+	public int cropW;
+	public int cropH;
 
 	public Image8(FileArchive archive, String s, int i) throws IOException {
 		Buffer buffer = new Buffer(archive.read(s + ".dat"));
 		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
 		buffer_1.position = buffer.get2U();
-		anInt1456 = buffer_1.get2U();
-		anInt1457 = buffer_1.get2U();
+		cropW = buffer_1.get2U();
+		cropH = buffer_1.get2U();
 		int j = buffer_1.get1U();
 		palette = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
@@ -27,8 +27,8 @@ public class Image8 {
 			buffer.position += buffer_1.get2U() * buffer_1.get2U();
 			buffer_1.position++;
 		}
-		anInt1454 = buffer_1.get1U();
-		anInt1455 = buffer_1.get1U();
+		cropX = buffer_1.get1U();
+		cropY = buffer_1.get1U();
 		width = buffer_1.get2U();
 		height = buffer_1.get2U();
 		int i1 = buffer_1.get1U();
@@ -49,95 +49,95 @@ public class Image8 {
 		}
 	}
 
-	public void method356() {
-		anInt1456 /= 2;
-		anInt1457 /= 2;
-		byte[] abyte0 = new byte[anInt1456 * anInt1457];
+	public void shrink() {
+		cropW /= 2;
+		cropH /= 2;
+		byte[] pixels = new byte[cropW * cropH];
 		int i = 0;
 		for (int j = 0; j < height; j++) {
 			for (int k = 0; k < width; k++) {
-				abyte0[((k + anInt1454) >> 1) + (((j + anInt1455) >> 1) * anInt1456)] = pixels[i++];
+				pixels[((k + cropX) >> 1) + (((j + cropY) >> 1) * cropW)] = this.pixels[i++];
 			}
 		}
-		pixels = abyte0;
-		width = anInt1456;
-		height = anInt1457;
-		anInt1454 = 0;
-		anInt1455 = 0;
+		this.pixels = pixels;
+		width = cropW;
+		height = cropH;
+		cropX = 0;
+		cropY = 0;
 	}
 
-	public void method357() {
-		if ((width == anInt1456) && (height == anInt1457)) {
+	public void crop() {
+		if ((width == cropW) && (height == cropH)) {
 			return;
 		}
-		byte[] abyte0 = new byte[anInt1456 * anInt1457];
+		byte[] pixels = new byte[cropW * cropH];
 		int i = 0;
 		for (int j = 0; j < height; j++) {
 			for (int k = 0; k < width; k++) {
-				abyte0[k + anInt1454 + ((j + anInt1455) * anInt1456)] = pixels[i++];
+				pixels[k + cropX + ((j + cropY) * cropW)] = this.pixels[i++];
 			}
 		}
-		pixels = abyte0;
-		width = anInt1456;
-		height = anInt1457;
-		anInt1454 = 0;
-		anInt1455 = 0;
+		this.pixels = pixels;
+		width = cropW;
+		height = cropH;
+		cropX = 0;
+		cropY = 0;
 	}
 
-	public void method358() {
-		byte[] abyte0 = new byte[width * height];
-		int j = 0;
-		for (int k = 0; k < height; k++) {
-			for (int l = width - 1; l >= 0; l--) {
-				abyte0[j++] = pixels[l + (k * width)];
-			}
-		}
-		pixels = abyte0;
-		anInt1454 = anInt1456 - width - anInt1454;
-	}
-
-	public void method359() {
-		byte[] abyte0 = new byte[width * height];
+	public void flipH() {
+		byte[] pixels = new byte[width * height];
 		int i = 0;
-		for (int j = height - 1; j >= 0; j--) {
-			for (int k = 0; k < width; k++) {
-				abyte0[i++] = pixels[k + (j * width)];
+		for (int y = 0; y < height; y++) {
+			for (int x = width - 1; x >= 0; x--) {
+				pixels[i++] = this.pixels[x + (y * width)];
 			}
 		}
-		pixels = abyte0;
-		anInt1455 = anInt1457 - height - anInt1455;
+		this.pixels = pixels;
+		cropX = cropW - width - cropX;
 	}
 
-	public void method360(int i, int j, int k) {
-		for (int i1 = 0; i1 < palette.length; i1++) {
-			int j1 = (palette[i1] >> 16) & 0xff;
-			j1 += i;
-			if (j1 < 0) {
-				j1 = 0;
-			} else if (j1 > 255) {
-				j1 = 255;
+	public void flipV() {
+		byte[] pixels = new byte[width * height];
+		int i = 0;
+		for (int y = height - 1; y >= 0; y--) {
+			for (int x = 0; x < width; x++) {
+				pixels[i++] = this.pixels[x + (y * width)];
 			}
-			int k1 = (palette[i1] >> 8) & 0xff;
-			k1 += j;
-			if (k1 < 0) {
-				k1 = 0;
-			} else if (k1 > 255) {
-				k1 = 255;
+		}
+		this.pixels = pixels;
+		cropY = cropH - height - cropY;
+	}
+
+	public void translate(int r, int g, int b) {
+		for (int i = 0; i < palette.length; i++) {
+			int red = (palette[i] >> 16) & 0xff;
+			red += r;
+			if (red < 0) {
+				red = 0;
+			} else if (red > 255) {
+				red = 255;
 			}
-			int l1 = palette[i1] & 0xff;
-			l1 += k;
-			if (l1 < 0) {
-				l1 = 0;
-			} else if (l1 > 255) {
-				l1 = 255;
+			int green = (palette[i] >> 8) & 0xff;
+			green += g;
+			if (green < 0) {
+				green = 0;
+			} else if (green > 255) {
+				green = 255;
 			}
-			palette[i1] = (j1 << 16) + (k1 << 8) + l1;
+			int blue = palette[i] & 0xff;
+			blue += b;
+			if (blue < 0) {
+				blue = 0;
+			} else if (blue > 255) {
+				blue = 255;
+			}
+			palette[i] = (red << 16) + (green << 8) + blue;
 		}
 	}
 
 	public void blit(int x, int y) {
-		x += anInt1454;
-		y += anInt1455;
+		x += cropX;
+		y += cropY;
 		int l = x + (y * Draw2D.width);
 		int i1 = 0;
 		int j1 = height;

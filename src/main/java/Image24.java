@@ -39,8 +39,8 @@ public class Image24 extends DoublyLinkedList.Node {
 		}
 	}
 
-	public Image24(FileArchive archive, String s, int i) throws IOException {
-		Buffer buffer = new Buffer(archive.read(s + ".dat"));
+	public Image24(FileArchive archive, String file, int index) throws IOException {
+		Buffer buffer = new Buffer(archive.read(file + ".dat"));
 		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
 		buffer_1.position = buffer.get2U();
 		cropW = buffer_1.get2U();
@@ -53,7 +53,7 @@ public class Image24 extends DoublyLinkedList.Node {
 				ai[k + 1] = 1;
 			}
 		}
-		for (int l = 0; l < i; l++) {
+		for (int l = 0; l < index; l++) {
 			buffer_1.position += 2;
 			buffer.position += buffer_1.get2U() * buffer_1.get2U();
 			buffer_1.position++;
@@ -84,41 +84,41 @@ public class Image24 extends DoublyLinkedList.Node {
 		Draw2D.bind(pixels, width, height);
 	}
 
-	public void method344(int i, int j, int k) {
-		for (int i1 = 0; i1 < pixels.length; i1++) {
-			int j1 = pixels[i1];
-			if (j1 != 0) {
-				int k1 = (j1 >> 16) & 0xff;
-				k1 += i;
-				if (k1 < 1) {
-					k1 = 1;
-				} else if (k1 > 255) {
-					k1 = 255;
+	public void translate(int r, int g, int b) {
+		for (int i = 0; i < pixels.length; i++) {
+			int rgb = pixels[i];
+			if (rgb != 0) {
+				int red = (rgb >> 16) & 0xff;
+				red += r;
+				if (red < 1) {
+					red = 1;
+				} else if (red > 255) {
+					red = 255;
 				}
-				int l1 = (j1 >> 8) & 0xff;
-				l1 += j;
-				if (l1 < 1) {
-					l1 = 1;
-				} else if (l1 > 255) {
-					l1 = 255;
+				int green = (rgb >> 8) & 0xff;
+				green += g;
+				if (green < 1) {
+					green = 1;
+				} else if (green > 255) {
+					green = 255;
 				}
-				int i2 = j1 & 0xff;
-				i2 += k;
-				if (i2 < 1) {
-					i2 = 1;
-				} else if (i2 > 255) {
-					i2 = 255;
+				int blue = rgb & 0xff;
+				blue += b;
+				if (blue < 1) {
+					blue = 1;
+				} else if (blue > 255) {
+					blue = 255;
 				}
-				pixels[i1] = (k1 << 16) + (l1 << 8) + i2;
+				pixels[i] = (red << 16) + (green << 8) + blue;
 			}
 		}
 	}
 
-	public void method345() {
+	public void crop() {
 		int[] pixels = new int[cropW * cropH];
-		for (int j = 0; j < height; j++) {
-			for (int k = 0; k < width; k++) {
-				pixels[((j + cropY) * cropW) + (k + cropX)] = this.pixels[(j * width) + k];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				pixels[((y + cropY) * cropW) + (x + cropX)] = this.pixels[(y * width) + x];
 			}
 		}
 		this.pixels = pixels;

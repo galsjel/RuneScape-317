@@ -168,10 +168,10 @@ public class Draw3D {
 			try {
 				textures[textureId] = new Image8(archive, String.valueOf(textureId), 0);
 
-				if (lowmem && (textures[textureId].anInt1456 == 128)) {
-					textures[textureId].method356();
+				if (lowmem && (textures[textureId].cropW == 128)) {
+					textures[textureId].shrink();
 				} else {
-					textures[textureId].method357();
+					textures[textureId].crop();
 				}
 				textureCount++;
 			} catch (Exception ignored) {

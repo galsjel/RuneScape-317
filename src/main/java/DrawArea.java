@@ -3,30 +3,27 @@
 // Decompiler options: packimports(3) 
 
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
-public class DrawArea implements ImageProducer, ImageObserver {
+public class DrawArea {
 
 	public final int[] pixels;
 	public final int width;
 	public final int height;
-	public final ColorModel aColorModel318;
-	public final Image image;
-	public ImageConsumer consumer;
+	public final BufferedImage image;
 
-	public DrawArea(int width, int height, java.awt.Component component) {
+	public DrawArea(int width, int height) {
 		this.width = width;
 		this.height = height;
-		pixels = new int[width * height];
-		aColorModel318 = new DirectColorModel(32, 0xff0000, 65280, 255);
-		image = component.createImage(this);
-		method239();
-		component.prepareImage(image, this);
-		method239();
-		component.prepareImage(image, this);
-		method239();
-		component.prepareImage(image, this);
+		this.image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+		this.pixels = ((DataBufferInt) this.image.getRaster().getDataBuffer()).getData();
 		bind();
+	}
+
+	public DrawArea(Image24 image) {
+		this(image.width, image.height);
+		image.blitOpaque(0, 0);
 	}
 
 	public void bind() {
@@ -34,51 +31,7 @@ public class DrawArea implements ImageProducer, ImageObserver {
 	}
 
 	public void draw(Graphics g, int x, int y) {
-		method239();
-		g.drawImage(image, x, y, this);
-	}
-
-	@Override
-	public synchronized void addConsumer(ImageConsumer consumer) {
-		this.consumer = consumer;
-		consumer.setDimensions(width, height);
-		consumer.setProperties(null);
-		consumer.setColorModel(aColorModel318);
-		consumer.setHints(14);
-	}
-
-	@Override
-	public synchronized boolean isConsumer(ImageConsumer imageconsumer) {
-		return consumer == imageconsumer;
-	}
-
-	@Override
-	public synchronized void removeConsumer(ImageConsumer imageconsumer) {
-		if (consumer == imageconsumer) {
-			consumer = null;
-		}
-	}
-
-	@Override
-	public void startProduction(ImageConsumer imageconsumer) {
-		addConsumer(imageconsumer);
-	}
-
-	@Override
-	public void requestTopDownLeftRightResend(ImageConsumer imageconsumer) {
-		System.out.println("TDLR");
-	}
-
-	public synchronized void method239() {
-		if (consumer != null) {
-			consumer.setPixels(0, 0, width, height, aColorModel318, pixels, 0, width);
-			consumer.imageComplete(2);
-		}
-	}
-
-	@Override
-	public boolean imageUpdate(Image image, int i, int j, int k, int l, int i1) {
-		return true;
+		g.drawImage(image, x, y, null);
 	}
 
 }
