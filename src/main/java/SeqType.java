@@ -12,7 +12,6 @@ public class SeqType {
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("seq.dat"));
 		count = buffer.get2U();
-
 		if (instances == null) {
 			instances = new SeqType[count];
 		}

@@ -14,7 +14,7 @@ public class PlayerEntity extends PathingEntity {
 	public boolean aBoolean1699 = false;
 	public int team;
 	public int gender;
-	public String aString1703;
+	public String name;
 	public int anInt1705;
 	public int anInt1706;
 	public int anInt1707;
@@ -163,7 +163,7 @@ public class PlayerEntity extends PathingEntity {
 		if (super.seqRun == 65535) {
 			super.seqRun = -1;
 		}
-		aString1703 = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
+		name = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
 		anInt1705 = buffer.get1U();
 		anInt1723 = buffer.get2U();
 		aBoolean1710 = true;

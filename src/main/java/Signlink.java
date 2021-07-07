@@ -150,16 +150,16 @@ public class Signlink implements Runnable {
 		threadreq = runnable;
 	}
 
-	public static synchronized boolean wavesave(byte[] abyte0, int i) {
-		if (i > 0x1e8480) {
+	public static synchronized boolean wavesave(byte[] src, int len) {
+		if (len > 0x1e8480) {
 			return false;
 		}
 		if (savereq != null) {
 			return false;
 		} else {
 			wavepos = (wavepos + 1) % 5;
-			savelen = i;
-			savebuf = abyte0;
+			savelen = len;
+			savebuf = src;
 			waveplay = true;
 			savereq = "sound" + wavepos + ".wav";
 			return true;
