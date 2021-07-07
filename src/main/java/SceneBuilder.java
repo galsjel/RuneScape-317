@@ -152,17 +152,17 @@ public class SceneBuilder {
 				int i_242_;
 
 				if ((angle == 1) || (angle == 3)) {
-					i_241_ = loc.sizeZ;
-					i_242_ = loc.sizeX;
+					i_241_ = loc.length;
+					i_242_ = loc.width;
 				} else {
-					i_241_ = loc.sizeX;
-					i_242_ = loc.sizeZ;
+					i_241_ = loc.width;
+					i_242_ = loc.length;
 				}
 
 				scene.add(entity, locPlane, stx, stz, y, i_241_, i_242_, i_240_, bitset, info);
 			}
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
+				collisionMap.method212(loc.blocksProjectiles, loc.width, loc.length, stx, stz, angle);
 			}
 		} else if (type >= 12) {
 			Entity entity;
@@ -173,7 +173,7 @@ public class SceneBuilder {
 			}
 			scene.add(entity, locPlane, stx, stz, y, 1, 1, 0, bitset, info);
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
+				collisionMap.method212(loc.blocksProjectiles, loc.width, loc.length, stx, stz, angle);
 			}
 		} else if (type == 0) {
 			Entity entity;
@@ -232,7 +232,7 @@ public class SceneBuilder {
 			}
 			scene.add(entity, locPlane, stx, stz, y, 1, 1, 0, bitset, info);
 			if (loc.solid) {
-				collisionMap.method212(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, stx, stz, angle);
+				collisionMap.method212(loc.blocksProjectiles, loc.width, loc.length, stx, stz, angle);
 			}
 		} else {
 			if (loc.adjustToTerrain) {
@@ -799,11 +799,11 @@ public class SceneBuilder {
 					int i_132_;
 					int i_133_;
 					if ((i_123_ == 1) || (i_123_ == 3)) {
-						i_132_ = type.sizeZ;
-						i_133_ = type.sizeX;
+						i_132_ = type.length;
+						i_133_ = type.width;
 					} else {
-						i_132_ = type.sizeX;
-						i_133_ = type.sizeZ;
+						i_132_ = type.width;
+						i_133_ = type.length;
 					}
 					if (scene.add(entity, i_120_, i_121_, i, i_128_, i_132_, i_133_, i_131_, i_129_, i_130_) && type.castShadow) {
 						Model model;
@@ -828,7 +828,7 @@ public class SceneBuilder {
 					}
 				}
 				if (type.solid && (collisionMap != null)) {
-					collisionMap.method212(type.blocksProjectiles, type.sizeX, type.sizeZ, i_121_, i, i_123_);
+					collisionMap.method212(type.blocksProjectiles, type.width, type.length, i_121_, i, i_123_);
 				}
 			} else if (i_119_ >= 12) {
 				Entity entity;
@@ -842,7 +842,7 @@ public class SceneBuilder {
 					anIntArrayArrayArray135[i_120_][i_121_][i] |= 0x924;
 				}
 				if (type.solid && (collisionMap != null)) {
-					collisionMap.method212(type.blocksProjectiles, type.sizeX, type.sizeZ, i_121_, i, i_123_);
+					collisionMap.method212(type.blocksProjectiles, type.width, type.length, i_121_, i, i_123_);
 				}
 			} else if (i_119_ == 0) {
 				Entity entity;
@@ -977,7 +977,7 @@ public class SceneBuilder {
 				}
 				scene.add(entity, i_120_, i_121_, i, i_128_, 1, 1, 0, i_129_, i_130_);
 				if (type.solid && (collisionMap != null)) {
-					collisionMap.method212(type.blocksProjectiles, type.sizeX, type.sizeZ, i_121_, i, i_123_);
+					collisionMap.method212(type.blocksProjectiles, type.width, type.length, i_121_, i, i_123_);
 				}
 			} else {
 				if (type.adjustToTerrain) {
@@ -1198,8 +1198,8 @@ public class SceneBuilder {
 				int i_212_ = i_210_ & 0x3;
 				if ((i_209_ == i) && (i_208_ >= i_200_) && (i_208_ < (i_200_ + 8)) && (i_207_ >= i_198_) && (i_207_ < (i_198_ + 8))) {
 					LocType type = LocType.get(i_203_);
-					int i_213_ = i_197_ + ZoneUtil.method157(i_201_, type.sizeZ, i_208_ & 0x7, i_207_ & 0x7, type.sizeX);
-					int i_214_ = i_202_ + ZoneUtil.method158(i_207_ & 0x7, type.sizeZ, i_201_, type.sizeX, i_208_ & 0x7);
+					int i_213_ = i_197_ + ZoneUtil.method157(i_201_, type.length, i_208_ & 0x7, i_207_ & 0x7, type.width);
+					int i_214_ = i_202_ + ZoneUtil.method158(i_207_ & 0x7, type.length, i_201_, type.width, i_208_ & 0x7);
 					if ((i_213_ > 0) && (i_214_ > 0) && (i_213_ < 103) && (i_214_ < 103)) {
 						int i_215_ = i_209_;
 						if ((planeTileFlags[1][i_213_][i_214_] & 0x2) == 2) {

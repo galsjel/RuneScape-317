@@ -67,7 +67,7 @@ public class LocType {
 	public String name;
 	public int scaleY;
 	public byte lightAttenuation;
-	public int sizeX;
+	public int width;
 	public int translateY;
 	public int mapfunctionIcon;
 	public int[] dstColor;
@@ -79,7 +79,7 @@ public class LocType {
 	public int mapsceneIcon;
 	public int[] overrideIds;
 	public int supportsObj;
-	public int sizeZ;
+	public int length;
 	public boolean adjustToTerrain;
 	public boolean occludes;
 	public boolean decorative;
@@ -115,8 +115,8 @@ public class LocType {
 		description = null;
 		srcColor = null;
 		dstColor = null;
-		sizeX = 1;
-		sizeZ = 1;
+		width = 1;
+		length = 1;
 		solid = true;
 		blocksProjectiles = true;
 		interactable = false;
@@ -390,9 +390,9 @@ public class LocType {
 						}
 					}
 				} else if (j == 14) {
-					sizeX = buffer.get1U();
+					width = buffer.get1U();
 				} else if (j == 15) {
-					sizeZ = buffer.get1U();
+					length = buffer.get1U();
 				} else if (j == 17) {
 					solid = false;
 				} else if (j == 18) {

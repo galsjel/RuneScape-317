@@ -30,8 +30,6 @@ public class SceneCollisionMap {
 	}
 
 	public void method211(int i, int j, int k, int l, boolean flag) {
-		k -= anInt290;
-		i -= anInt291;
 		if (l == 0) {
 			if (j == 0) {
 				method214(k, i, 128);
@@ -157,8 +155,6 @@ public class SceneCollisionMap {
 		if (flag) {
 			k1 += 0x20000;
 		}
-		l -= anInt290;
-		i1 -= anInt291;
 		if ((j1 == 1) || (j1 == 3)) {
 			int l1 = j;
 			j = k;
@@ -176,8 +172,6 @@ public class SceneCollisionMap {
 	}
 
 	public void method213(int i, int k) {
-		k -= anInt290;
-		i -= anInt291;
 		flags[k][i] |= 0x200000;
 	}
 
@@ -186,8 +180,6 @@ public class SceneCollisionMap {
 	}
 
 	public void method215(int i, int j, boolean flag, int k, int l) {
-		k -= anInt290;
-		l -= anInt291;
 		if (j == 0) {
 			if (i == 0) {
 				method217(128, k, l);
@@ -308,21 +300,19 @@ public class SceneCollisionMap {
 		}
 	}
 
-	public void method216(int rotation, int sizeX, int x0, int z0, int sizeZ, boolean flag) {
+	public void method216(int rotation, int width, int x0, int z0, int length, boolean flag) {
 		int flags = 256;
 		if (flag) {
 			flags += 0x20000;
 		}
-		x0 -= anInt290;
-		z0 -= anInt291;
 		if ((rotation == 1) || (rotation == 3)) {
-			int tmp = sizeX;
-			sizeX = sizeZ;
-			sizeZ = tmp;
+			int tmp = width;
+			width = length;
+			length = tmp;
 		}
-		for (int x = x0; x < (x0 + sizeX); x++) {
+		for (int x = x0; x < (x0 + width); x++) {
 			if ((x >= 0) && (x < anInt292)) {
-				for (int z = z0; z < (z0 + sizeZ); z++) {
+				for (int z = z0; z < (z0 + length); z++) {
 					if ((z >= 0) && (z < anInt293)) {
 						method217(flags, x, z);
 					}
@@ -336,205 +326,195 @@ public class SceneCollisionMap {
 	}
 
 	public void method218(int j, int k) {
-		k -= anInt290;
-		j -= anInt291;
 		flags[k][j] &= 0xdfffff;
 	}
 
-	public boolean method219(int i, int j, int k, int i1, int j1, int k1) {
-		if ((j == i) && (k == k1)) {
+	public boolean method219(int sx, int sz, int dx, int dz, int locAngle, int locType) {
+		if ((sx == dx) && (sz == dz)) {
 			return true;
 		}
-		j -= anInt290;
-		k -= anInt291;
-		i -= anInt290;
-		k1 -= anInt291;
-		if (j1 == 0) {
-			if (i1 == 0) {
-				if ((j == (i - 1)) && (k == k1)) {
+		if (locType == 0) {
+			if (locAngle == 0) {
+				if ((sx == (dx - 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 0x1280102) == 0)) {
 					return true;
 				}
-			} else if (i1 == 1) {
-				if ((j == i) && (k == (k1 + 1))) {
+			} else if (locAngle == 1) {
+				if ((sx == dx) && (sz == (dz + 1))) {
 					return true;
 				}
-				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280180) == 0)) {
 					return true;
 				}
-			} else if (i1 == 2) {
-				if ((j == (i + 1)) && (k == k1)) {
+			} else if (locAngle == 2) {
+				if ((sx == (dx + 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 0x1280102) == 0)) {
 					return true;
 				}
-			} else if (i1 == 3) {
-				if ((j == i) && (k == (k1 - 1))) {
+			} else if (locAngle == 3) {
+				if ((sx == dx) && (sz == (dz - 1))) {
 					return true;
 				}
-				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280180) == 0)) {
 					return true;
 				}
 			}
 		}
-		if (j1 == 2) {
-			if (i1 == 0) {
-				if ((j == (i - 1)) && (k == k1)) {
+		if (locType == 2) {
+			if (locAngle == 0) {
+				if ((sx == (dx - 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1))) {
+				if ((sx == dx) && (sz == (dz + 1))) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280180) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 0x1280102) == 0)) {
 					return true;
 				}
-			} else if (i1 == 1) {
-				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
+			} else if (locAngle == 1) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1))) {
+				if ((sx == dx) && (sz == (dz + 1))) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1)) {
+				if ((sx == (dx + 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 0x1280102) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 0x1280102) == 0)) {
 					return true;
 				}
-			} else if (i1 == 2) {
-				if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 0x1280108) == 0)) {
+			} else if (locAngle == 2) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280108) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1)) {
+				if ((sx == (dx + 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1))) {
+				if ((sx == dx) && (sz == (dz - 1))) {
 					return true;
 				}
-			} else if (i1 == 3) {
-				if ((j == (i - 1)) && (k == k1)) {
+			} else if (locAngle == 3) {
+				if ((sx == (dx - 1)) && (sz == dz)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x1280120) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x1280120) == 0)) {
 					return true;
 				}
-				if ((j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x1280180) == 0)) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x1280180) == 0)) {
 					return true;
 				}
-				if ((j == i) && (k == (k1 - 1))) {
+				if ((sx == dx) && (sz == (dz - 1))) {
 					return true;
 				}
 			}
 		}
-		if (j1 == 9) {
-			if ((j == i) && (k == (k1 + 1)) && ((flags[j][k] & 0x20) == 0)) {
+		if (locType == 9) {
+			if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x20) == 0)) {
 				return true;
 			}
-			if ((j == i) && (k == (k1 - 1)) && ((flags[j][k] & 2) == 0)) {
+			if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 2) == 0)) {
 				return true;
 			}
-			if ((j == (i - 1)) && (k == k1) && ((flags[j][k] & 8) == 0)) {
+			if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 8) == 0)) {
 				return true;
 			}
-			return (j == (i + 1)) && (k == k1) && ((flags[j][k] & 0x80) == 0);
+			return (sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x80) == 0);
 		}
 		return false;
 	}
 
-	public boolean method220(int i, int j, int k, int l, int i1, int j1) {
-		if ((j1 == i) && (k == j)) {
+	public boolean method220(int sx, int sz, int dx, int dz, int locType, int locAngle) {
+		if ((sx == dx) && (sz == dz)) {
 			return true;
 		}
-		j1 -= anInt290;
-		k -= anInt291;
-		i -= anInt290;
-		j -= anInt291;
-		if ((l == 6) || (l == 7)) {
-			if (l == 7) {
-				i1 = (i1 + 2) & 3;
+		if ((locType == 6) || (locType == 7)) {
+			if (locType == 7) {
+				locAngle = (locAngle + 2) & 3;
 			}
-			if (i1 == 0) {
-				if ((j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0)) {
+			if (locAngle == 0) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x80) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 2) == 0)) {
 					return true;
 				}
-			} else if (i1 == 1) {
-				if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
+			} else if (locAngle == 1) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 8) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
+				if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 2) == 0)) {
 					return true;
 				}
-			} else if (i1 == 2) {
-				if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
+			} else if (locAngle == 2) {
+				if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 8) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x20) == 0)) {
 					return true;
 				}
-			} else if (i1 == 3) {
-				if ((j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0)) {
+			} else if (locAngle == 3) {
+				if ((sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x80) == 0)) {
 					return true;
 				}
-				if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
+				if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x20) == 0)) {
 					return true;
 				}
 			}
 		}
-		if (l == 8) {
-			if ((j1 == i) && (k == (j + 1)) && ((flags[j1][k] & 0x20) == 0)) {
+		if (locType == 8) {
+			if ((sx == dx) && (sz == (dz + 1)) && ((flags[sx][sz] & 0x20) == 0)) {
 				return true;
 			}
-			if ((j1 == i) && (k == (j - 1)) && ((flags[j1][k] & 2) == 0)) {
+			if ((sx == dx) && (sz == (dz - 1)) && ((flags[sx][sz] & 2) == 0)) {
 				return true;
 			}
-			if ((j1 == (i - 1)) && (k == j) && ((flags[j1][k] & 8) == 0)) {
+			if ((sx == (dx - 1)) && (sz == dz) && ((flags[sx][sz] & 8) == 0)) {
 				return true;
 			}
-			return (j1 == (i + 1)) && (k == j) && ((flags[j1][k] & 0x80) == 0);
+			return (sx == (dx + 1)) && (sz == dz) && ((flags[sx][sz] & 0x80) == 0);
 		}
 		return false;
 	}
 
-	public boolean method221(int z0, int x0, int x, int sizeZ, int flags, int sizeX, int z) {
-		int x1 = (x0 + sizeX) - 1;
-		int z1 = (z0 + sizeZ) - 1;
-		if ((x >= x0) && (x <= x1) && (z >= z0) && (z <= z1)) {
+	public boolean method221(int x, int z, int dx, int dz, int locWidth, int locLength, int locInteractionFlags) {
+		int x1 = (dx + locWidth) - 1;
+		int z1 = (dz + locLength) - 1;
+		if ((x >= dx) && (x <= x1) && (z >= dz) && (z <= z1)) {
 			return true;
 		}
-		if ((x == (x0 - 1)) && (z >= z0) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 8) == 0) && ((flags & 8) == 0)) {
+		if ((x == (dx - 1)) && (z >= dz) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 8) == 0) && ((locInteractionFlags & 8) == 0)) {
 			return true;
 		}
-		if ((x == (x1 + 1)) && (z >= z0) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 0x80) == 0) && ((flags & 2) == 0)) {
+		if ((x == (x1 + 1)) && (z >= dz) && (z <= z1) && ((this.flags[x - anInt290][z - anInt291] & 0x80) == 0) && ((locInteractionFlags & 2) == 0)) {
 			return true;
 		}
-		if ((z == (z0 - 1)) && (x >= x0) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 2) == 0) && ((flags & 4) == 0)) {
+		if ((z == (dz - 1)) && (x >= dx) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 2) == 0) && ((locInteractionFlags & 4) == 0)) {
 			return true;
 		}
-		return (z == (z1 + 1)) && (x >= x0) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 0x20) == 0) && ((flags & 1) == 0);
+		return (z == (z1 + 1)) && (x >= dx) && (x <= x1) && ((this.flags[x - anInt290][z - anInt291] & 0x20) == 0) && ((locInteractionFlags & 1) == 0);
 	}
 
 }

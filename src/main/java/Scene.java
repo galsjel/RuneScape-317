@@ -372,13 +372,13 @@ public class Scene {
 		planeTiles[plane][stx][stz].wallDecoration = decor;
 	}
 
-	public boolean add(Entity entity, int plane, int stx, int stz, int y, int sizeX, int sizeZ, int yaw, int bitset, byte info) {
+	public boolean add(Entity entity, int plane, int stx, int stz, int y, int width, int length, int yaw, int bitset, byte info) {
 		if (entity == null) {
 			return true;
 		} else {
-			int x = (stx * 128) + (64 * sizeX);
-			int z = (stz * 128) + (64 * sizeZ);
-			return add(entity, plane, stx, stz, sizeX, sizeZ, x, z, y, yaw, bitset, info, false);
+			int x = (stx * 128) + (64 * width);
+			int z = (stz * 128) + (64 * length);
+			return add(entity, plane, stx, stz, width, length, x, z, y, yaw, bitset, info, false);
 		}
 	}
 
@@ -422,9 +422,9 @@ public class Scene {
 		}
 	}
 
-	public boolean add(Entity entity, int plane, int stx, int stz, int sizeX, int sizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
-		for (int tx = stx; tx < (stx + sizeX); tx++) {
-			for (int tz = stz; tz < (stz + sizeZ); tz++) {
+	public boolean add(Entity entity, int plane, int stx, int stz, int width, int length, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
+		for (int tx = stx; tx < (stx + width); tx++) {
+			for (int tz = stz; tz < (stz + length); tz++) {
 				if ((tx < 0) || (tz < 0) || (tx >= maxTileX) || (tz >= maxTileZ)) {
 					return false;
 				}
@@ -445,18 +445,18 @@ public class Scene {
 		loc.yaw = yaw;
 		loc.minSceneTileX = stx;
 		loc.minSceneTileZ = stz;
-		loc.maxSceneTileX = (stx + sizeX) - 1;
-		loc.maxSceneTileZ = (stz + sizeZ) - 1;
+		loc.maxSceneTileX = (stx + width) - 1;
+		loc.maxSceneTileZ = (stz + length) - 1;
 
-		for (int tx = stx; tx < (stx + sizeX); tx++) {
-			for (int tz = stz; tz < (stz + sizeZ); tz++) {
+		for (int tx = stx; tx < (stx + width); tx++) {
+			for (int tz = stz; tz < (stz + length); tz++) {
 				int flags = 0;
 
 				if (tx > stx) {
 					flags++;
 				}
 
-				if (tx < ((stx + sizeX) - 1)) {
+				if (tx < ((stx + width) - 1)) {
 					flags += 4;
 				}
 
@@ -464,7 +464,7 @@ public class Scene {
 					flags += 8;
 				}
 
-				if (tz < ((stz + sizeZ) - 1)) {
+				if (tz < ((stz + length) - 1)) {
 					flags += 2;
 				}
 
