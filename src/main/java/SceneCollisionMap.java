@@ -14,10 +14,10 @@ public class SceneCollisionMap {
 		anInt292 = i;
 		anInt293 = j;
 		flags = new int[anInt292][anInt293];
-		method210();
+		reset();
 	}
 
-	public void method210() {
+	public void reset() {
 		for (int i = 0; i < anInt292; i++) {
 			for (int j = 0; j < anInt293; j++) {
 				if ((i == 0) || (j == 0) || (i == (anInt292 - 1)) || (j == (anInt293 - 1))) {

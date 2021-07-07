@@ -34,7 +34,7 @@ public class NPCEntity extends PathingEntity {
 		if (model == null) {
 			return null;
 		}
-		super.anInt1507 = model.minY;
+		super.height = model.minY;
 		if ((super.spotanim != -1) && (super.spotanimFrame != -1)) {
 			SpotAnimType type = SpotAnimType.instances[super.spotanim];
 			Model model_1 = type.method266();
@@ -61,7 +61,7 @@ public class NPCEntity extends PathingEntity {
 	}
 
 	@Override
-	public boolean method449() {
+	public boolean isVisible() {
 		return type != null;
 	}
 

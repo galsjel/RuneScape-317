@@ -68,7 +68,7 @@ public class NPCType {
 	public int[] anIntArray70;
 	public int unusedInt0 = -1;
 	public int[] anIntArray73;
-	public int anInt75 = -1;
+	public int headicon = -1;
 	public int[] anIntArray76;
 	public int seqStand = -1;
 	public long uid = -1L;
@@ -279,7 +279,7 @@ public class NPCType {
 			} else if (i == 101) {
 				anInt92 = buffer.get1() * 5;
 			} else if (i == 102) {
-				anInt75 = buffer.get2U();
+				headicon = buffer.get2U();
 			} else if (i == 103) {
 				turnSpeed = buffer.get2U();
 			} else if (i == 106) {

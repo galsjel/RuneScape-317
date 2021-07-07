@@ -47,7 +47,6 @@ public class Component {
 			}
 
 			int comparatorCount = in.get1U();
-
 			if (comparatorCount > 0) {
 				c.scriptComparator = new int[comparatorCount];
 				c.scriptOperand = new int[comparatorCount];
@@ -58,7 +57,6 @@ public class Component {
 			}
 
 			int scriptCount = in.get1U();
-
 			if (scriptCount > 0) {
 				c.scripts = new int[scriptCount][];
 				for (int scriptId = 0; scriptId < scriptCount; scriptId++) {
@@ -109,7 +107,7 @@ public class Component {
 						String s1 = in.getString();
 						if ((media != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
-							c.invSlotImage[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), media, s1.substring(0, i5));
+							c.invSlotImage[j2] = getImage(Integer.parseInt(s1.substring(i5 + 1)), media, s1.substring(0, i5));
 						}
 					}
 				}
@@ -154,12 +152,12 @@ public class Component {
 				String s = in.getString();
 				if ((media != null) && (s.length() > 0)) {
 					int comma = s.lastIndexOf(",");
-					c.image = method207(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
+					c.image = getImage(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
 				}
 				s = in.getString();
 				if ((media != null) && (s.length() > 0)) {
 					int comma = s.lastIndexOf(",");
-					c.activeImage = method207(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
+					c.activeImage = getImage(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
 				}
 			}
 
@@ -245,98 +243,90 @@ public class Component {
 		imageCache = null;
 	}
 
-	public static Image24 method207(int i, FileArchive archive, String s) {
-		long l = (StringUtil.hashCode(s) << 8) + (long) i;
-		Image24 image = imageCache.get(l);
+	public static Image24 getImage(int id, FileArchive media, String name) {
+		long uid = (StringUtil.hashCode(name) << 8) + (long) id;
+		Image24 image = imageCache.get(uid);
 		if (image != null) {
 			return image;
 		}
 		try {
-			image = new Image24(archive, s, i);
-			imageCache.put(l, image);
+			image = new Image24(media, name, id);
+			imageCache.put(uid, image);
 		} catch (Exception _ex) {
 			return null;
 		}
 		return image;
 	}
 
-	public static void method208(int i, int j, Model model) {
+	public static void cacheModel(int id, int type, Model model) {
 		modelCache.clear();
-		if ((model != null) && (j != 4)) {
-			modelCache.put(((long) j << 16) + i, model);
+		if ((model != null) && (type != 4)) {
+			modelCache.put(((long) type << 16) + id, model);
 		}
 	}
 
-	public Image24 image;
-	public int seqCycle;
-	public Image24[] invSlotImage;
-	public int unusedInt;
-	public int[] scriptOperand;
-	public int contentType;
-	public int[] invSlotX;
-	public int hoverColor;
-	public int optionType;
-	public int activeColor;
-	public int width;
-	public String option;
-	/**
-	 * A spell action should be two words separated by whitespace.
-	 * Example: "Cast on"
-	 * For usage search for <code>action 626</code> in {@link Game#useMenuOption(int)}
-	 */
-	public String spellAction;
-	public String spellName;
-	public int spellFlags;
-	public boolean center;
-	public int scrollY;
-	public String[] invOptions;
-	public int[][] scripts;
-	public boolean fill;
-	public String activeText;
-	public int delegateHover;
-	public int invMarginX;
-	public int color;
-	public int modelType;
-	public int modelTypeId;
-	/**
-	 * When <code>true</code> moving an <code>Obj</code> from one slot to another will simply erase the item from the
-	 * destination slot.
-	 */
-	public boolean invMoveReplaces;
-	public int parentId;
-	public int activeHoverColor;
-	public int[] children;
-	public int[] childX;
-	public boolean invUsable;
-	public BitmapFont font;
-	public int invMarginY;
-	public int[] scriptComparator;
-	public int seqFrame;
-	public int[] invSlotY;
-	public String text;
 	public boolean aBoolean249;
-	public int id;
-	public boolean unusedBool;
-	public int[] invSlotAmount;
-	public int[] invSlotObjId;
-	public byte transparency;
+	public int activeColor;
+	public int activeHoverColor;
+	public Image24 activeImage;
 	public int activeModelType;
 	public int activeModelTypeId;
-	public int seqId;
 	public int activeSeqId;
+	public String activeText;
+	public boolean center;
+	public int[] children;
+	public int[] childX;
+	public int[] childY;
+	public int color;
+	public int contentType;
+	public int delegateHover;
+	public boolean fill;
+	public BitmapFont font;
+	public int height;
+	public boolean hidden;
+	public int hoverColor;
+	public int id;
+	public Image24 image;
 	public boolean invDraggable;
-	public Image24 activeImage;
+	public int invMarginX;
+	public int invMarginY;
+	public boolean invMoveReplaces;
+	public String[] invOptions;
+	public int[] invSlotAmount;
+	public Image24[] invSlotImage;
+	public int[] invSlotObjId;
+	public int[] invSlotX;
+	public int[] invSlotY;
+	public boolean invUsable;
+	public int modelEyePitch;
+	public int modelType;
+	public int modelTypeId;
+	public int modelYaw;
+	public int modelZoom;
+	public String option;
+	public int optionType;
+	public int parentId;
+	public int[] scriptComparator;
+	public int[] scriptOperand;
+	public int[][] scripts;
 	public int scrollHeight;
+	public int scrollY;
+	public int seqCycle;
+	public int seqFrame;
+	public int seqId;
+	public boolean shadow;
+	public String spellAction;
+	public int spellFlags;
+	public String spellName;
+	public String text;
+	public byte transparency;
 	public int type;
+	public boolean unusedBool;
+	public int unusedInt;
+	public int width;
 	public int x;
 	public int y;
-	public boolean hidden;
-	public int height;
-	public boolean shadow;
-	public int modelZoom;
-	public int modelEyePitch;
-	public int modelYaw;
-	public int[] childY;
+
 
 	public Component() {
 	}

@@ -379,13 +379,13 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 	public void keyTyped(KeyEvent e) {
 	}
 
-	public int method5() {
-		int k = -1;
+	public int pollKey() {
+		int key = -1;
 		if (anInt33 != anInt32) {
-			k = anIntArray31[anInt32];
+			key = anIntArray31[anInt32];
 			anInt32 = (anInt32 + 1) & 0x7f;
 		}
-		return k;
+		return key;
 	}
 
 	@Override

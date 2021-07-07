@@ -16,7 +16,7 @@ public class PlayerEntity extends PathingEntity {
 	public int gender;
 	public String name;
 	public int combatLevel;
-	public int anInt1706;
+	public int headicons;
 	public int anInt1707;
 	public int anInt1708;
 	public int y;
@@ -44,7 +44,7 @@ public class PlayerEntity extends PathingEntity {
 		if (model == null) {
 			return null;
 		}
-		super.anInt1507 = model.minY;
+		super.height = model.minY;
 		model.pickable = true;
 		if (aBoolean1699) {
 			return model;
@@ -106,7 +106,7 @@ public class PlayerEntity extends PathingEntity {
 	public void method451(Buffer buffer) {
 		buffer.position = 0;
 		gender = buffer.get1U();
-		anInt1706 = buffer.get1U();
+		headicons = buffer.get1U();
 		aType_1698 = null;
 		team = 0;
 		for (int j = 0; j < 12; j++) {
@@ -305,7 +305,7 @@ public class PlayerEntity extends PathingEntity {
 	}
 
 	@Override
-	public boolean method449() {
+	public boolean isVisible() {
 		return aBoolean1710;
 	}
 

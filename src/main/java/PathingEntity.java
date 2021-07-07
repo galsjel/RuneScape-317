@@ -6,20 +6,20 @@ public class PathingEntity extends Entity {
 
 	public final int[] pathTileX = new int[10];
 	public final int[] pathTileZ = new int[10];
-	public final int[] anIntArray1514 = new int[4];
-	public final int[] anIntArray1515 = new int[4];
-	public final int[] anIntArray1516 = new int[4];
+	public final int[] damage = new int[4];
+	public final int[] damageType = new int[4];
+	public final int[] damageCycle = new int[4];
 	public final boolean[] pathRunning = new boolean[10];
 	public int index = -1;
 	public int anInt1503;
 	public int turnSpeed = 32;
 	public int seqRun = -1;
-	public String aString1506;
-	public int anInt1507 = 200;
+	public String chat;
+	public int height = 200;
 	public int dstYaw;
 	public int seqStand = -1;
 	public int seqTurn = -1;
-	public int anInt1513;
+	public int chatColor;
 	public int seqCurrent = -1;
 	public int seqFrame;
 	public int seqCycle;
@@ -34,11 +34,11 @@ public class PathingEntity extends Entity {
 	public int anInt1528;
 	public int anInt1529;
 	public int anInt1530;
-	public int anInt1531;
-	public int anInt1532 = -1000;
-	public int anInt1533;
-	public int anInt1534;
-	public int anInt1535 = 100;
+	public int chatStyle;
+	public int combatCycle = -1000;
+	public int health;
+	public int totalHealth;
+	public int chatTimer = 100;
 	public int anInt1537;
 	public int faceTileX;
 	public int faceTileZ;
@@ -104,10 +104,10 @@ public class PathingEntity extends Entity {
 
 	public void method447(int j, int k, int l) {
 		for (int i1 = 0; i1 < 4; i1++) {
-			if (anIntArray1516[i1] <= l) {
-				anIntArray1514[i1] = k;
-				anIntArray1515[i1] = j;
-				anIntArray1516[i1] = l + 70;
+			if (damageCycle[i1] <= l) {
+				damage[i1] = k;
+				damageType[i1] = j;
+				damageCycle[i1] = l + 70;
 				return;
 			}
 		}
@@ -160,7 +160,7 @@ public class PathingEntity extends Entity {
 		pathRunning[0] = flag;
 	}
 
-	public boolean method449() {
+	public boolean isVisible() {
 		return false;
 	}
 
