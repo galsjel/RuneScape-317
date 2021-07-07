@@ -15,7 +15,7 @@ public class PlayerEntity extends PathingEntity {
 	public int team;
 	public int gender;
 	public String name;
-	public int anInt1705;
+	public int combatLevel;
 	public int anInt1706;
 	public int anInt1707;
 	public int anInt1708;
@@ -30,7 +30,7 @@ public class PlayerEntity extends PathingEntity {
 	public int minSceneTileZ;
 	public int maxSceneTileX;
 	public int maxSceneTileZ;
-	public int anInt1723;
+	public int skillLevel;
 
 	public PlayerEntity() {
 	}
@@ -164,8 +164,8 @@ public class PlayerEntity extends PathingEntity {
 			super.seqRun = -1;
 		}
 		name = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
-		anInt1705 = buffer.get1U();
-		anInt1723 = buffer.get2U();
+		combatLevel = buffer.get1U();
+		skillLevel = buffer.get2U();
 		aBoolean1710 = true;
 		aLong1718 = 0L;
 		for (int k1 = 0; k1 < 12; k1++) {

@@ -12,207 +12,232 @@ public class Component {
 	public static LRUMap<Long, Image24> imageCache;
 	public static Component[] instances;
 
-	public static void unpack(FileArchive archive, BitmapFont[] aclass30_sub2_sub1_sub4, FileArchive archive_1) throws IOException {
+	public static void unpack(FileArchive config, BitmapFont[] fonts, FileArchive media) throws IOException {
 		imageCache = new LRUMap<>(500);
-		Buffer buffer = new Buffer(archive.read("data"));
+		Buffer in = new Buffer(config.read("data"));
+
 		int parentId = -1;
-		int j = buffer.get2U();
-		instances = new Component[j];
-		while (buffer.position < buffer.data.length) {
-			int id = buffer.get2U();
+		int count = in.get2U();
+
+		instances = new Component[count];
+
+		while (in.position < in.data.length) {
+			int id = in.get2U();
+
 			if (id == 65535) {
-				parentId = buffer.get2U();
-				id = buffer.get2U();
+				parentId = in.get2U();
+				id = in.get2U();
 			}
-			Component component = instances[id] = new Component();
-			component.id = id;
-			component.parentId = parentId;
-			component.type = buffer.get1U();
-			component.optionType = buffer.get1U();
-			component.contentType = buffer.get2U();
-			component.width = buffer.get2U();
-			component.height = buffer.get2U();
-			component.aByte254 = (byte) buffer.get1U();
-			component.anInt230 = buffer.get1U();
-			if (component.anInt230 != 0) {
-				component.anInt230 = ((component.anInt230 - 1) << 8) + buffer.get1U();
+
+			Component c = instances[id] = new Component();
+			c.id = id;
+			c.parentId = parentId;
+			c.type = in.get1U();
+			c.optionType = in.get1U();
+			c.contentType = in.get2U();
+			c.width = in.get2U();
+			c.height = in.get2U();
+			c.transparency = (byte) in.get1U();
+			c.delegateHover = in.get1U();
+
+			if (c.delegateHover != 0) {
+				c.delegateHover = ((c.delegateHover - 1) << 8) + in.get1U();
 			} else {
-				component.anInt230 = -1;
+				c.delegateHover = -1;
 			}
-			int i1 = buffer.get1U();
-			if (i1 > 0) {
-				component.anIntArray245 = new int[i1];
-				component.anIntArray212 = new int[i1];
-				for (int j1 = 0; j1 < i1; j1++) {
-					component.anIntArray245[j1] = buffer.get1U();
-					component.anIntArray212[j1] = buffer.get2U();
+
+			int comparatorCount = in.get1U();
+
+			if (comparatorCount > 0) {
+				c.scriptComparator = new int[comparatorCount];
+				c.scriptOperand = new int[comparatorCount];
+				for (int i = 0; i < comparatorCount; i++) {
+					c.scriptComparator[i] = in.get1U();
+					c.scriptOperand[i] = in.get2U();
 				}
 			}
-			int k1 = buffer.get1U();
-			if (k1 > 0) {
-				component.anIntArrayArray226 = new int[k1][];
-				for (int l1 = 0; l1 < k1; l1++) {
-					int i3 = buffer.get2U();
-					component.anIntArrayArray226[l1] = new int[i3];
-					for (int l4 = 0; l4 < i3; l4++) {
-						component.anIntArrayArray226[l1][l4] = buffer.get2U();
+
+			int scriptCount = in.get1U();
+
+			if (scriptCount > 0) {
+				c.scripts = new int[scriptCount][];
+				for (int scriptId = 0; scriptId < scriptCount; scriptId++) {
+					int length = in.get2U();
+					c.scripts[scriptId] = new int[length];
+					for (int i = 0; i < length; i++) {
+						c.scripts[scriptId][i] = in.get2U();
 					}
 				}
 			}
-			if (component.type == 0) {
-				component.scrollHeight = buffer.get2U();
-				component.aBoolean266 = buffer.get1U() == 1;
-				int i2 = buffer.get2U();
-				component.children = new int[i2];
-				component.childX = new int[i2];
-				component.childY = new int[i2];
-				for (int j3 = 0; j3 < i2; j3++) {
-					component.children[j3] = buffer.get2U();
-					component.childX[j3] = buffer.get2();
-					component.childY[j3] = buffer.get2();
+
+			if (c.type == 0) {
+				c.scrollHeight = in.get2U();
+				c.hidden = in.get1U() == 1;
+				int childCount = in.get2U();
+				c.children = new int[childCount];
+				c.childX = new int[childCount];
+				c.childY = new int[childCount];
+				for (int i = 0; i < childCount; i++) {
+					c.children[i] = in.get2U();
+					c.childX[i] = in.get2();
+					c.childY[i] = in.get2();
 				}
 			}
-			if (component.type == 1) {
-				component.unusedInt = buffer.get2U();
-				component.unusedBool = buffer.get1U() == 1;
+
+			if (c.type == 1) {
+				c.unusedInt = in.get2U();
+				c.unusedBool = in.get1U() == 1;
 			}
-			if (component.type == 2) {
-				component.slotObjId = new int[component.width * component.height];
-				component.slotAmount = new int[component.width * component.height];
-				component.aBoolean259 = buffer.get1U() == 1;
-				component.aBoolean249 = buffer.get1U() == 1;
-				component.aBoolean242 = buffer.get1U() == 1;
-				component.objMoveReplaces = buffer.get1U() == 1;
-				component.slotMarginX = buffer.get1U();
-				component.slotMarginY = buffer.get1U();
-				component.slotX = new int[20];
-				component.slotY = new int[20];
-				component.aImageArray209 = new Image24[20];
+
+			if (c.type == 2) {
+				c.invSlotObjId = new int[c.width * c.height];
+				c.invSlotAmount = new int[c.width * c.height];
+				c.invDraggable = in.get1U() == 1;
+				c.aBoolean249 = in.get1U() == 1;
+				c.invUsable = in.get1U() == 1;
+				c.invMoveReplaces = in.get1U() == 1;
+				c.invMarginX = in.get1U();
+				c.invMarginY = in.get1U();
+				c.invSlotX = new int[20];
+				c.invSlotY = new int[20];
+				c.invSlotImage = new Image24[20];
 				for (int j2 = 0; j2 < 20; j2++) {
-					int k3 = buffer.get1U();
+					int k3 = in.get1U();
 					if (k3 == 1) {
-						component.slotX[j2] = buffer.get2();
-						component.slotY[j2] = buffer.get2();
-						String s1 = buffer.getString();
-						if ((archive_1 != null) && (s1.length() > 0)) {
+						c.invSlotX[j2] = in.get2();
+						c.invSlotY[j2] = in.get2();
+						String s1 = in.getString();
+						if ((media != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
-							component.aImageArray209[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), archive_1, s1.substring(0, i5));
+							c.invSlotImage[j2] = method207(Integer.parseInt(s1.substring(i5 + 1)), media, s1.substring(0, i5));
 						}
 					}
 				}
-				component.aStringArray225 = new String[5];
-				for (int l3 = 0; l3 < 5; l3++) {
-					component.aStringArray225[l3] = buffer.getString();
-					if (component.aStringArray225[l3].length() == 0) {
-						component.aStringArray225[l3] = null;
+				c.invOptions = new String[5];
+				for (int i = 0; i < 5; i++) {
+					c.invOptions[i] = in.getString();
+					if (c.invOptions[i].length() == 0) {
+						c.invOptions[i] = null;
 					}
 				}
 			}
-			if (component.type == 3) {
-				component.aBoolean227 = buffer.get1U() == 1;
+
+			if (c.type == 3) {
+				c.fill = in.get1U() == 1;
 			}
-			if ((component.type == 4) || (component.type == 1)) {
-				component.aBoolean223 = buffer.get1U() == 1;
-				int k2 = buffer.get1U();
-				if (aclass30_sub2_sub1_sub4 != null) {
-					component.aFont_243 = aclass30_sub2_sub1_sub4[k2];
+
+			if ((c.type == 4) || (c.type == 1)) {
+				c.center = in.get1U() == 1;
+				int fontId = in.get1U();
+				if (fonts != null) {
+					c.font = fonts[fontId];
 				}
-				component.aBoolean268 = buffer.get1U() == 1;
+				c.shadow = in.get1U() == 1;
 			}
-			if (component.type == 4) {
-				component.aString248 = buffer.getString();
-				component.aString228 = buffer.getString();
+
+			if (c.type == 4) {
+				c.text = in.getString();
+				c.activeText = in.getString();
 			}
-			if ((component.type == 1) || (component.type == 3) || (component.type == 4)) {
-				component.anInt232 = buffer.get4();
+
+			if ((c.type == 1) || (c.type == 3) || (c.type == 4)) {
+				c.color = in.get4();
 			}
-			if ((component.type == 3) || (component.type == 4)) {
-				component.anInt219 = buffer.get4();
-				component.anInt216 = buffer.get4();
-				component.anInt239 = buffer.get4();
+
+			if ((c.type == 3) || (c.type == 4)) {
+				c.activeColor = in.get4();
+				c.hoverColor = in.get4();
+				c.activeHoverColor = in.get4();
 			}
-			if (component.type == 5) {
-				String s = buffer.getString();
-				if ((archive_1 != null) && (s.length() > 0)) {
-					int i4 = s.lastIndexOf(",");
-					component.aImage_207 = method207(Integer.parseInt(s.substring(i4 + 1)), archive_1, s.substring(0, i4));
+
+			if (c.type == 5) {
+				String s = in.getString();
+				if ((media != null) && (s.length() > 0)) {
+					int comma = s.lastIndexOf(",");
+					c.image = method207(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
 				}
-				s = buffer.getString();
-				if ((archive_1 != null) && (s.length() > 0)) {
-					int j4 = s.lastIndexOf(",");
-					component.aImage_260 = method207(Integer.parseInt(s.substring(j4 + 1)), archive_1, s.substring(0, j4));
+				s = in.getString();
+				if ((media != null) && (s.length() > 0)) {
+					int comma = s.lastIndexOf(",");
+					c.activeImage = method207(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
 				}
 			}
-			if (component.type == 6) {
-				int l = buffer.get1U();
-				if (l != 0) {
-					component.modelType = 1;
-					component.modelTypeId = ((l - 1) << 8) + buffer.get1U();
+
+			if (c.type == 6) {
+				int tmp = in.get1U();
+				if (tmp != 0) {
+					c.modelType = 1;
+					c.modelTypeId = ((tmp - 1) << 8) + in.get1U();
 				}
-				l = buffer.get1U();
-				if (l != 0) {
-					component.activeModelType = 1;
-					component.activeModelTypeId = ((l - 1) << 8) + buffer.get1U();
+
+				tmp = in.get1U();
+				if (tmp != 0) {
+					c.activeModelType = 1;
+					c.activeModelTypeId = ((tmp - 1) << 8) + in.get1U();
 				}
-				l = buffer.get1U();
-				if (l != 0) {
-					component.seqId = ((l - 1) << 8) + buffer.get1U();
+
+				tmp = in.get1U();
+				if (tmp != 0) {
+					c.seqId = ((tmp - 1) << 8) + in.get1U();
 				} else {
-					component.seqId = -1;
+					c.seqId = -1;
 				}
-				l = buffer.get1U();
-				if (l != 0) {
-					component.activeSeqId = ((l - 1) << 8) + buffer.get1U();
+
+				tmp = in.get1U();
+				if (tmp != 0) {
+					c.activeSeqId = ((tmp - 1) << 8) + in.get1U();
 				} else {
-					component.activeSeqId = -1;
+					c.activeSeqId = -1;
 				}
-				component.modelZoom = buffer.get2U();
-				component.modelEyePitch = buffer.get2U();
-				component.modelYaw = buffer.get2U();
+
+				c.modelZoom = in.get2U();
+				c.modelEyePitch = in.get2U();
+				c.modelYaw = in.get2U();
 			}
-			if (component.type == 7) {
-				component.slotObjId = new int[component.width * component.height];
-				component.slotAmount = new int[component.width * component.height];
-				component.aBoolean223 = buffer.get1U() == 1;
-				int l2 = buffer.get1U();
-				if (aclass30_sub2_sub1_sub4 != null) {
-					component.aFont_243 = aclass30_sub2_sub1_sub4[l2];
+
+			if (c.type == 7) {
+				c.invSlotObjId = new int[c.width * c.height];
+				c.invSlotAmount = new int[c.width * c.height];
+				c.center = in.get1U() == 1;
+				int fontId = in.get1U();
+				if (fonts != null) {
+					c.font = fonts[fontId];
 				}
-				component.aBoolean268 = buffer.get1U() == 1;
-				component.anInt232 = buffer.get4();
-				component.slotMarginX = buffer.get2();
-				component.slotMarginY = buffer.get2();
-				component.aBoolean249 = buffer.get1U() == 1;
-				component.aStringArray225 = new String[5];
+				c.shadow = in.get1U() == 1;
+				c.color = in.get4();
+				c.invMarginX = in.get2();
+				c.invMarginY = in.get2();
+				c.aBoolean249 = in.get1U() == 1;
+				c.invOptions = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
-					component.aStringArray225[k4] = buffer.getString();
-					if (component.aStringArray225[k4].length() == 0) {
-						component.aStringArray225[k4] = null;
+					c.invOptions[k4] = in.getString();
+					if (c.invOptions[k4].length() == 0) {
+						c.invOptions[k4] = null;
 					}
 				}
 			}
-			if (component.type == 8) {
-				component.aString222 = buffer.getString();
+
+			if (c.type == 8) {
+				c.spellAction = in.getString();
 			}
-			if ((component.optionType == 2) || (component.type == 2)) {
-				component.aString222 = buffer.getString();
-				component.aString218 = buffer.getString();
-				component.anInt237 = buffer.get2U();
+
+			if ((c.optionType == 2) || (c.type == 2)) {
+				c.spellAction = in.getString();
+				c.spellName = in.getString();
+				c.spellFlags = in.get2U();
 			}
-			if ((component.optionType == 1) || (component.optionType == 4) || (component.optionType == 5) || (component.optionType == 6)) {
-				component.aString221 = buffer.getString();
-				if (component.aString221.length() == 0) {
-					if (component.optionType == 1) {
-						component.aString221 = "Ok";
-					}
-					if (component.optionType == 4) {
-						component.aString221 = "Select";
-					}
-					if (component.optionType == 5) {
-						component.aString221 = "Select";
-					}
-					if (component.optionType == 6) {
-						component.aString221 = "Continue";
+
+			if ((c.optionType == 1) || (c.optionType == 4) || (c.optionType == 5) || (c.optionType == 6)) {
+				c.option = in.getString();
+				if (c.option.length() == 0) {
+					if (c.optionType == 1) {
+						c.option = "Ok";
+					} else if (c.optionType == 4) {
+						c.option = "Select";
+					} else if (c.optionType == 5) {
+						c.option = "Select";
+					} else if (c.optionType == 6) {
+						c.option = "Continue";
 					}
 				}
 			}
@@ -242,67 +267,72 @@ public class Component {
 		}
 	}
 
-	public Image24 aImage_207;
+	public Image24 image;
 	public int seqCycle;
-	public Image24[] aImageArray209;
+	public Image24[] invSlotImage;
 	public int unusedInt;
-	public int[] anIntArray212;
+	public int[] scriptOperand;
 	public int contentType;
-	public int[] slotX;
-	public int anInt216;
+	public int[] invSlotX;
+	public int hoverColor;
 	public int optionType;
-	public String aString218;
-	public int anInt219;
+	public int activeColor;
 	public int width;
-	public String aString221;
-	public String aString222;
-	public boolean aBoolean223;
+	public String option;
+	/**
+	 * A spell action should be two words separated by whitespace.
+	 * Example: "Cast on"
+	 * For usage search for <code>action 626</code> in {@link Game#useMenuOption(int)}
+	 */
+	public String spellAction;
+	public String spellName;
+	public int spellFlags;
+	public boolean center;
 	public int scrollY;
-	public String[] aStringArray225;
-	public int[][] anIntArrayArray226;
-	public boolean aBoolean227;
-	public String aString228;
-	public int anInt230;
-	public int slotMarginX;
-	public int anInt232;
+	public String[] invOptions;
+	public int[][] scripts;
+	public boolean fill;
+	public String activeText;
+	public int delegateHover;
+	public int invMarginX;
+	public int color;
 	public int modelType;
 	public int modelTypeId;
 	/**
 	 * When <code>true</code> moving an <code>Obj</code> from one slot to another will simply erase the item from the
 	 * destination slot.
 	 */
-	public boolean objMoveReplaces;
+	public boolean invMoveReplaces;
 	public int parentId;
-	public int anInt237;
-	public int anInt239;
+	public int activeHoverColor;
 	public int[] children;
 	public int[] childX;
-	public boolean aBoolean242;
-	public BitmapFont aFont_243;
-	public int slotMarginY;
-	public int[] anIntArray245;
+	public boolean invUsable;
+	public BitmapFont font;
+	public int invMarginY;
+	public int[] scriptComparator;
 	public int seqFrame;
-	public int[] slotY;
-	public String aString248;
+	public int[] invSlotY;
+	public String text;
 	public boolean aBoolean249;
 	public int id;
 	public boolean unusedBool;
-	public int[] slotAmount;
-	public int[] slotObjId;
-	public byte aByte254;
+	public int[] invSlotAmount;
+	public int[] invSlotObjId;
+	public byte transparency;
 	public int activeModelType;
 	public int activeModelTypeId;
 	public int seqId;
 	public int activeSeqId;
-	public boolean aBoolean259;
-	public Image24 aImage_260;
+	public boolean invDraggable;
+	public Image24 activeImage;
 	public int scrollHeight;
 	public int type;
 	public int x;
 	public int y;
-	public boolean aBoolean266;
+	public boolean hidden;
 	public int height;
-	public boolean aBoolean268;
+	public boolean shadow;
 	public int modelZoom;
 	public int modelEyePitch;
 	public int modelYaw;
@@ -312,13 +342,13 @@ public class Component {
 	}
 
 	public void swapSlots(int src, int dst) {
-		int tmp = slotObjId[src];
-		slotObjId[src] = slotObjId[dst];
-		slotObjId[dst] = tmp;
+		int tmp = invSlotObjId[src];
+		invSlotObjId[src] = invSlotObjId[dst];
+		invSlotObjId[dst] = tmp;
 
-		tmp = slotAmount[src];
-		slotAmount[src] = slotAmount[dst];
-		slotAmount[dst] = tmp;
+		tmp = invSlotAmount[src];
+		invSlotAmount[src] = invSlotAmount[dst];
+		invSlotAmount[dst] = tmp;
 	}
 
 	public Model getModel(int type, int id) {
