@@ -1792,7 +1792,7 @@ public class Game extends GameShell {
 		Arrays.fill(pixels, 0);
 
 		for (int z = 1; z < 103; z++) {
-			int offset = (48 + (48 * 512)) + ((103 - z) * 512 * 4);
+			int offset = (52 + (48 * 512)) + ((103 - z) * 512 * 4);
 
 			for (int x = 1; x < 103; x++) {
 				if ((planeTileFlags[plane][x][z] & 0x18) == 0) {
