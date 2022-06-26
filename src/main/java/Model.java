@@ -892,7 +892,7 @@ public class Model extends Entity {
 	 * @param copyVertexY <code>true</code> to copy <code>model.vertexY</code>.
 	 * @param copyFaces   <code>true</code> to copy all face data from <code>model</code>.
 	 * @param model       the model to copy.
-	 * @see LocType#method578(int, int, int, int, int, int, int)
+	 * @see LocType#getModel(int, int, int, int, int, int, int)
 	 */
 	public Model(boolean copyVertexY, boolean copyFaces, Model model) {
 		counter++;

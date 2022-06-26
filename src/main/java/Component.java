@@ -164,14 +164,14 @@ public class Component {
 			if (c.type == 6) {
 				int tmp = in.get1U();
 				if (tmp != 0) {
-					c.modelType = 1;
-					c.modelTypeId = ((tmp - 1) << 8) + in.get1U();
+					c.modelCategory = 1;
+					c.modelID = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
 				if (tmp != 0) {
-					c.activeModelType = 1;
-					c.activeModelTypeId = ((tmp - 1) << 8) + in.get1U();
+					c.activeModelCategory = 1;
+					c.activeModelID = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
@@ -269,8 +269,8 @@ public class Component {
 	public int activeColor;
 	public int activeHoverColor;
 	public Image24 activeImage;
-	public int activeModelType;
-	public int activeModelTypeId;
+	public int activeModelCategory;
+	public int activeModelID;
 	public int activeSeqId;
 	public String activeText;
 	public boolean center;
@@ -299,8 +299,8 @@ public class Component {
 	public int[] invSlotY;
 	public boolean invUsable;
 	public int modelEyePitch;
-	public int modelType;
-	public int modelTypeId;
+	public int modelCategory;
+	public int modelID;
 	public int modelYaw;
 	public int modelZoom;
 	public String option;
@@ -341,28 +341,28 @@ public class Component {
 		invSlotAmount[dst] = tmp;
 	}
 
-	public Model getModel(int type, int id) {
-		Model model = modelCache.get(((long) type << 16) + id);
+	public Model getModel(int category, int id) {
+		Model model = modelCache.get(((long) category << 16) + id);
 		if (model != null) {
 			return model;
 		}
-		if (type == 1) {
+		if (category == 1) {
 			model = Model.tryGet(id);
 		}
-		if (type == 2) {
+		if (category == 2) {
 			model = NPCType.get(id).method160();
 		}
-		if (type == 3) {
-			model = Game.self.method453();
+		if (category == 3) {
+			model = Game.localPlayer.method453();
 		}
-		if (type == 4) {
+		if (category == 4) {
 			model = ObjType.get(id).getModelUnlit(50);
 		}
-		if (type == 5) {
+		if (category == 5) {
 			model = null;
 		}
 		if (model != null) {
-			modelCache.put((long) ((type << 16) + id), model);
+			modelCache.put((long) ((category << 16) + id), model);
 		}
 		return model;
 	}
@@ -371,9 +371,9 @@ public class Component {
 		Model model;
 
 		if (active) {
-			model = getModel(activeModelType, activeModelTypeId);
+			model = getModel(activeModelCategory, activeModelID);
 		} else {
-			model = getModel(modelType, modelTypeId);
+			model = getModel(modelCategory, modelID);
 		}
 
 		if (model == null) {

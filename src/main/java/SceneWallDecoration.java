@@ -3,7 +3,7 @@ public class SceneWallDecoration {
 	public int y;
 	public int x;
 	public int z;
-	public int type;
+	public int occlude;
 	public int yaw;
 	public Entity entity;
 	public int bitset;

@@ -329,56 +329,56 @@ public class Scene {
 		planeTiles[plane][stx][stz].objStack = objStack;
 	}
 
-	public void addWall(int type0, Entity wall0, int type1, Entity wall1, int plane, int stx, int stz, int y, int bitset, byte info) {
-		if ((wall0 == null) && (wall1 == null)) {
+	public void setWall(int occludeA, Entity entityA, int occludeB, Entity entityB, int plane, int localX, int localZ, int y, int bitset, byte info) {
+		if ((entityA == null) && (entityB == null)) {
 			return;
 		}
 		SceneWall wall = new SceneWall();
 		wall.bitset = bitset;
 		wall.info = info;
-		wall.x = (stx * 128) + 64;
-		wall.z = (stz * 128) + 64;
+		wall.x = (localX * 128) + 64;
+		wall.z = (localZ * 128) + 64;
 		wall.y = y;
-		wall.entity0 = wall0;
-		wall.entity1 = wall1;
-		wall.type0 = type0;
-		wall.type1 = type1;
+		wall.entityA = entityA;
+		wall.entityB = entityB;
+		wall.occludeA = occludeA;
+		wall.occludeB = occludeB;
 		for (int p = plane; p >= 0; p--) {
-			if (planeTiles[p][stx][stz] == null) {
-				planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
+			if (planeTiles[p][localX][localZ] == null) {
+				planeTiles[p][localX][localZ] = new SceneTile(p, localX, localZ);
 			}
 		}
-		planeTiles[plane][stx][stz].wall = wall;
+		planeTiles[plane][localX][localZ].wall = wall;
 	}
 
-	public void addWallDecoration(int type, Entity entity, int plane, int stx, int stz, int y, int yaw, int offsetX, int offsetZ, int bitset, byte info) {
+	public void setWallDecoration(int occlude, Entity entity, int plane, int localX, int localZ, int y, int yaw, int offsetX, int offsetZ, int bitset, byte info) {
 		if (entity == null) {
 			return;
 		}
-		SceneWallDecoration decor = new SceneWallDecoration();
-		decor.bitset = bitset;
-		decor.info = info;
-		decor.x = (stx * 128) + 64 + offsetX;
-		decor.z = (stz * 128) + 64 + offsetZ;
-		decor.y = y;
-		decor.entity = entity;
-		decor.type = type;
-		decor.yaw = yaw;
+		SceneWallDecoration deco = new SceneWallDecoration();
+		deco.bitset = bitset;
+		deco.info = info;
+		deco.x = (localX * 128) + 64 + offsetX;
+		deco.z = (localZ * 128) + 64 + offsetZ;
+		deco.y = y;
+		deco.entity = entity;
+		deco.occlude = occlude;
+		deco.yaw = yaw;
 		for (int p = plane; p >= 0; p--) {
-			if (planeTiles[p][stx][stz] == null) {
-				planeTiles[p][stx][stz] = new SceneTile(p, stx, stz);
+			if (planeTiles[p][localX][localZ] == null) {
+				planeTiles[p][localX][localZ] = new SceneTile(p, localX, localZ);
 			}
 		}
-		planeTiles[plane][stx][stz].wallDecoration = decor;
+		planeTiles[plane][localX][localZ].wallDecoration = deco;
 	}
 
-	public boolean add(Entity entity, int plane, int stx, int stz, int y, int width, int length, int yaw, int bitset, byte info) {
+	public boolean add(Entity entity, int plane, int localX, int localZ, int y, int width, int length, int yaw, int bitset, byte info) {
 		if (entity == null) {
 			return true;
 		} else {
-			int x = (stx * 128) + (64 * width);
-			int z = (stz * 128) + (64 * length);
-			return add(entity, plane, stx, stz, width, length, x, z, y, yaw, bitset, info, false);
+			int x = (localX * 128) + (64 * width);
+			int z = (localZ * 128) + (64 * length);
+			return add(entity, plane, localX, localZ, width, length, x, z, y, yaw, bitset, info, false);
 		}
 	}
 
@@ -628,8 +628,8 @@ public class Scene {
 		}
 	}
 
-	public int getWallBitset(int i, int j, int k) {
-		SceneTile tile = planeTiles[i][j][k];
+	public int getWallBitset(int plane, int x, int z) {
+		SceneTile tile = planeTiles[plane][x][z];
 		if ((tile != null) && (tile.wall != null)) {
 			return tile.wall.bitset;
 		} else {
@@ -671,21 +671,26 @@ public class Scene {
 
 	public int getInfo(int plane, int x, int z, int bitset) {
 		SceneTile tile = planeTiles[plane][x][z];
+
 		if (tile == null) {
 			return -1;
 		}
+
 		if ((tile.wall != null) && (tile.wall.bitset == bitset)) {
 			return tile.wall.info & 0xff;
 		}
+
 		if ((tile.wallDecoration != null) && (tile.wallDecoration.bitset == bitset)) {
 			return tile.wallDecoration.info & 0xff;
 		}
+
 		if ((tile.groundDecoration != null) && (tile.groundDecoration.bitset == bitset)) {
 			return tile.groundDecoration.info & 0xff;
 		}
-		for (int i1 = 0; i1 < tile.locCount; i1++) {
-			if (tile.locs[i1].bitset == bitset) {
-				return tile.locs[i1].info & 0xff;
+
+		for (int i = 0; i < tile.locCount; i++) {
+			if (tile.locs[i].bitset == bitset) {
+				return tile.locs[i].info & 0xff;
 			}
 		}
 		return -1;
@@ -700,14 +705,14 @@ public class Scene {
 					SceneTile tile = planeTiles[l1][i2][j2];
 					if (tile != null) {
 						SceneWall wall = tile.wall;
-						if ((wall != null) && (wall.entity0 != null) && (wall.entity0.vertexNormal != null)) {
-							method307(l1, 1, 1, i2, j2, (Model) wall.entity0);
-							if ((wall.entity1 != null) && (wall.entity1.vertexNormal != null)) {
-								method307(l1, 1, 1, i2, j2, (Model) wall.entity1);
-								method308((Model) wall.entity0, (Model) wall.entity1, 0, 0, 0, false);
-								((Model) wall.entity1).applyLighting(j, k1, k, i, i1);
+						if ((wall != null) && (wall.entityA != null) && (wall.entityA.vertexNormal != null)) {
+							method307(l1, 1, 1, i2, j2, (Model) wall.entityA);
+							if ((wall.entityB != null) && (wall.entityB.vertexNormal != null)) {
+								method307(l1, 1, 1, i2, j2, (Model) wall.entityB);
+								method308((Model) wall.entityA, (Model) wall.entityB, 0, 0, 0, false);
+								((Model) wall.entityB).applyLighting(j, k1, k, i, i1);
 							}
-							((Model) wall.entity0).applyLighting(j, k1, k, i, i1);
+							((Model) wall.entityA).applyLighting(j, k1, k, i, i1);
 						}
 						for (int k2 = 0; k2 < tile.locCount; k2++) {
 							SceneLoc loc = tile.locs[k2];
@@ -770,11 +775,11 @@ public class Scene {
 								if (tile != null) {
 									int i3 = ((planeHeightmaps[j2][k2][l2] + planeHeightmaps[j2][k2 + 1][l2] + planeHeightmaps[j2][k2][l2 + 1] + planeHeightmaps[j2][k2 + 1][l2 + 1]) / 4) - ((planeHeightmaps[i][l][i1] + planeHeightmaps[i][l + 1][i1] + planeHeightmaps[i][l][i1 + 1] + planeHeightmaps[i][l + 1][i1 + 1]) / 4);
 									SceneWall wall = tile.wall;
-									if ((wall != null) && (wall.entity0 != null) && (wall.entity0.vertexNormal != null)) {
-										method308(model, (Model) wall.entity0, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
+									if ((wall != null) && (wall.entityA != null) && (wall.entityA.vertexNormal != null)) {
+										method308(model, (Model) wall.entityA, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
 									}
-									if ((wall != null) && (wall.entity1 != null) && (wall.entity1.vertexNormal != null)) {
-										method308(model, (Model) wall.entity1, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
+									if ((wall != null) && (wall.entityB != null) && (wall.entityB.vertexNormal != null)) {
+										method308(model, (Model) wall.entityB, ((k2 - l) * 128) + ((1 - j) * 64), i3, ((l2 - i1) * 128) + ((1 - k) * 64), flag);
 									}
 									for (int j3 = 0; j3 < tile.locCount; j3++) {
 										SceneLoc loc = tile.locs[j3];
@@ -1154,7 +1159,7 @@ public class Scene {
 					}
 					SceneWall wall = tile_7.wall;
 					if (wall != null) {
-						wall.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
+						wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
 					for (int i2 = 0; i2 < tile_7.locCount; i2++) {
 						SceneLoc loc = tile_7.locs[i2];
@@ -1192,16 +1197,16 @@ public class Scene {
 					tile_1.anInt1328 = anIntArray480[j1];
 				}
 				if (wall != null) {
-					if ((wall.type0 & anIntArray479[j1]) != 0) {
-						if (wall.type0 == 16) {
+					if ((wall.occludeA & anIntArray479[j1]) != 0) {
+						if (wall.occludeA == 16) {
 							tile_1.anInt1325 = 3;
 							tile_1.anInt1326 = anIntArray481[j1];
 							tile_1.anInt1327 = 3 - tile_1.anInt1326;
-						} else if (wall.type0 == 32) {
+						} else if (wall.occludeA == 32) {
 							tile_1.anInt1325 = 6;
 							tile_1.anInt1326 = anIntArray482[j1];
 							tile_1.anInt1327 = 6 - tile_1.anInt1326;
-						} else if (wall.type0 == 64) {
+						} else if (wall.occludeA == 64) {
 							tile_1.anInt1325 = 12;
 							tile_1.anInt1326 = anIntArray483[j1];
 							tile_1.anInt1327 = 12 - tile_1.anInt1326;
@@ -1213,17 +1218,17 @@ public class Scene {
 					} else {
 						tile_1.anInt1325 = 0;
 					}
-					if (((wall.type0 & j2) != 0) && !wallOccluded(l, i, j, wall.type0)) {
-						wall.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
+					if (((wall.occludeA & j2) != 0) && !wallOccluded(l, i, j, wall.occludeA)) {
+						wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
-					if (((wall.type1 & j2) != 0) && !wallOccluded(l, i, j, wall.type1)) {
-						wall.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
+					if (((wall.occludeB & j2) != 0) && !wallOccluded(l, i, j, wall.occludeB)) {
+						wall.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
 					}
 				}
 				if ((decor != null) && !occluded(l, i, j, decor.entity.minY)) {
-					if ((decor.type & j2) != 0) {
+					if ((decor.occlude & j2) != 0) {
 						decor.entity.draw(decor.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, decor.x - eyeX, decor.y - eyeY, decor.z - eyeZ, decor.bitset);
-					} else if ((decor.type & 0x300) != 0) {
+					} else if ((decor.occlude & 0x300) != 0) {
 						int j4 = decor.x - eyeX;
 						int l5 = decor.y - eyeY;
 						int k6 = decor.z - eyeZ;
@@ -1240,12 +1245,12 @@ public class Scene {
 						} else {
 							k10 = k6;
 						}
-						if (((decor.type & 0x100) != 0) && (k10 < k9)) {
+						if (((decor.occlude & 0x100) != 0) && (k10 < k9)) {
 							int i11 = j4 + anIntArray463[i8];
 							int k11 = k6 + anIntArray464[i8];
 							decor.entity.draw((i8 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i11, l5, k11, decor.bitset);
 						}
-						if (((decor.type & 0x200) != 0) && (k10 > k9)) {
+						if (((decor.occlude & 0x200) != 0) && (k10 > k9)) {
 							int j11 = j4 + anIntArray465[i8];
 							int l11 = k6 + anIntArray466[i8];
 							decor.entity.draw(((i8 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j11, l5, l11, decor.bitset);
@@ -1309,8 +1314,8 @@ public class Scene {
 				}
 				if (flag2) {
 					SceneWall wall_1 = tile_1.wall;
-					if (!wallOccluded(l, i, j, wall_1.type0)) {
-						wall_1.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_1.x - eyeX, wall_1.y - eyeY, wall_1.z - eyeZ, wall_1.bitset);
+					if (!wallOccluded(l, i, j, wall_1.occludeA)) {
+						wall_1.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_1.x - eyeX, wall_1.y - eyeY, wall_1.z - eyeZ, wall_1.bitset);
 					}
 					tile_1.anInt1325 = 0;
 				}
@@ -1474,46 +1479,46 @@ public class Scene {
 				}
 			}
 			if (tile_1.anInt1328 != 0) {
-				SceneWallDecoration wallDecoration = tile_1.wallDecoration;
-				if ((wallDecoration != null) && !occluded(l, i, j, wallDecoration.entity.minY)) {
-					if ((wallDecoration.type & tile_1.anInt1328) != 0) {
-						wallDecoration.entity.draw(wallDecoration.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration.x - eyeX, wallDecoration.y - eyeY, wallDecoration.z - eyeZ, wallDecoration.bitset);
-					} else if ((wallDecoration.type & 0x300) != 0) {
-						int l2 = wallDecoration.x - eyeX;
-						int j3 = wallDecoration.y - eyeY;
-						int i4 = wallDecoration.z - eyeZ;
-						int k5 = wallDecoration.yaw;
+				SceneWallDecoration deco = tile_1.wallDecoration;
+				if ((deco != null) && !occluded(l, i, j, deco.entity.minY)) {
+					if ((deco.occlude & tile_1.anInt1328) != 0) {
+						deco.entity.draw(deco.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, deco.x - eyeX, deco.y - eyeY, deco.z - eyeZ, deco.bitset);
+					} else if ((deco.occlude & 0x300) != 0) {
+						int dx = deco.x - eyeX;
+						int dy = deco.y - eyeY;
+						int dz = deco.z - eyeZ;
+						int rotation = deco.yaw;
 						int j6;
-						if ((k5 == 1) || (k5 == 2)) {
-							j6 = -l2;
+						if ((rotation == 1) || (rotation == 2)) {
+							j6 = -dx;
 						} else {
-							j6 = l2;
+							j6 = dx;
 						}
 						int l7;
-						if ((k5 == 2) || (k5 == 3)) {
-							l7 = -i4;
+						if ((rotation == 2) || (rotation == 3)) {
+							l7 = -dz;
 						} else {
-							l7 = i4;
+							l7 = dz;
 						}
-						if (((wallDecoration.type & 0x100) != 0) && (l7 >= j6)) {
-							int i9 = l2 + anIntArray463[k5];
-							int i10 = i4 + anIntArray464[k5];
-							wallDecoration.entity.draw((k5 * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i9, j3, i10, wallDecoration.bitset);
+						if (((deco.occlude & 0x100) != 0) && (l7 >= j6)) {
+							int i9 = dx + anIntArray463[rotation];
+							int i10 = dz + anIntArray464[rotation];
+							deco.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, i9, dy, i10, deco.bitset);
 						}
-						if (((wallDecoration.type & 0x200) != 0) && (l7 <= j6)) {
-							int j9 = l2 + anIntArray465[k5];
-							int j10 = i4 + anIntArray466[k5];
-							wallDecoration.entity.draw(((k5 * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j9, j3, j10, wallDecoration.bitset);
+						if (((deco.occlude & 0x200) != 0) && (l7 <= j6)) {
+							int j9 = dx + anIntArray465[rotation];
+							int j10 = dz + anIntArray466[rotation];
+							deco.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, j9, dy, j10, deco.bitset);
 						}
 					}
 				}
 				SceneWall wall_2 = tile_1.wall;
 				if (wall_2 != null) {
-					if (((wall_2.type1 & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.type1)) {
-						wall_2.entity1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
+					if (((wall_2.occludeB & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.occludeB)) {
+						wall_2.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
 					}
-					if (((wall_2.type0 & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.type0)) {
-						wall_2.entity0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
+					if (((wall_2.occludeA & tile_1.anInt1328) != 0) && !wallOccluded(l, i, j, wall_2.occludeA)) {
+						wall_2.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall_2.x - eyeX, wall_2.y - eyeY, wall_2.z - eyeZ, wall_2.bitset);
 					}
 				}
 			}

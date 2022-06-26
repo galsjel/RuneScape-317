@@ -28,7 +28,7 @@ public class SeqType {
 	public int[] primaryFrames;
 	public int[] secondaryFrames;
 	public int[] frameDelays;
-	public int anInt356 = -1;
+	public int speed = -1;
 	public int[] anIntArray357;
 	public boolean aBoolean358 = false;
 	public int anInt359 = 5;
@@ -77,7 +77,7 @@ public class SeqType {
 					frameDelays[j] = buffer.get2U();
 				}
 			} else if (op == 2) {
-				anInt356 = buffer.get2U();
+				speed = buffer.get2U();
 			} else if (op == 3) {
 				int k = buffer.get1U();
 				anIntArray357 = new int[k + 1];

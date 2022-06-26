@@ -11,7 +11,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 
 	public final long[] otim = new long[10];
 	public final int[] actionKey = new int[128];
-	public final int[] anIntArray31 = new int[128];
+	public final int[] keyQueue = new int[128];
 	public int state;
 	public int deltime = 20;
 	public int mindel = 1;
@@ -22,7 +22,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 	public Graphics graphics;
 	public GameFrame frame;
 	public boolean refresh = true;
-	public boolean aBoolean17 = true;
+	public boolean focused = true;
 	public int idleCycles;
 	public int mouseButton;
 	public int mouseX;
@@ -35,8 +35,8 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 	public int mousePressX;
 	public int mousePressY;
 	public long mousePressTime;
-	public int anInt32;
-	public int anInt33;
+	public int keyQueueReadPos;
+	public int keyQueueWritePos;
 
 	public void init(int width, int height) {
 		screenWidth = width;
@@ -146,7 +146,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 					mousePressTime = lastMousePressTime;
 					lastMousePressButton = 0;
 					update();
-					anInt32 = anInt33;
+					keyQueueReadPos = keyQueueWritePos;
 				}
 
 				count &= 0xff;
@@ -293,49 +293,49 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 	public void keyPressed(KeyEvent e) {
 		idleCycles = 0;
 		int code = e.getKeyCode();
-		int ch = e.getKeyChar();
+		int value = e.getKeyChar();
 
-		if (ch < 30) {
-			ch = 0;
+		if (value < 30) {
+			value = 0;
 		}
 
 		if (code == KeyEvent.VK_LEFT) {
-			ch = 1;
+			value = 1;
 		} else if (code == KeyEvent.VK_RIGHT) {
-			ch = 2;
+			value = 2;
 		} else if (code == KeyEvent.VK_UP) {
-			ch = 3;
+			value = 3;
 		} else if (code == KeyEvent.VK_DOWN) {
-			ch = 4;
+			value = 4;
 		} else if (code == KeyEvent.VK_CONTROL) {
-			ch = 5;
+			value = 5;
 		} else if (code == KeyEvent.VK_BACK_SPACE) {
-			ch = 8;
+			value = 8;
 		} else if (code == KeyEvent.VK_DELETE) {
-			ch = 8;
+			value = 8;
 		} else if (code == KeyEvent.VK_TAB) {
-			ch = 9;
+			value = 9;
 		} else if (code == KeyEvent.VK_ENTER) {
-			ch = 10;
+			value = 10;
 		} else if ((code >= KeyEvent.VK_F1) && (code <= KeyEvent.VK_F12)) {
-			ch = (1008 + code) - KeyEvent.VK_F1;
+			value = (1008 + code) - KeyEvent.VK_F1;
 		} else if (code == KeyEvent.VK_HOME) {
-			ch = 1000;
+			value = 1000;
 		} else if (code == KeyEvent.VK_END) {
-			ch = 1001;
+			value = 1001;
 		} else if (code == KeyEvent.VK_PAGE_UP) {
-			ch = 1002;
+			value = 1002;
 		} else if (code == KeyEvent.VK_PAGE_DOWN) {
-			ch = 1003;
+			value = 1003;
 		}
 
-		if ((ch > 0) && (ch < 128)) {
-			actionKey[ch] = 1;
+		if ((value > 0) && (value < 128)) {
+			actionKey[value] = 1;
 		}
 
-		if (ch > 4) {
-			anIntArray31[anInt33] = ch;
-			anInt33 = (anInt33 + 1) & 0x7f;
+		if (value > 4) {
+			keyQueue[keyQueueWritePos] = value;
+			keyQueueWritePos = (keyQueueWritePos + 1) & 0x7f;
 		}
 	}
 
@@ -381,23 +381,23 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 
 	public int pollKey() {
 		int key = -1;
-		if (anInt33 != anInt32) {
-			key = anIntArray31[anInt32];
-			anInt32 = (anInt32 + 1) & 0x7f;
+		if (keyQueueWritePos != keyQueueReadPos) {
+			key = keyQueue[keyQueueReadPos];
+			keyQueueReadPos = (keyQueueReadPos + 1) & 0x7f;
 		}
 		return key;
 	}
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		aBoolean17 = true;
+		focused = true;
 		refresh = true;
 		refresh();
 	}
 
 	@Override
 	public void focusLost(FocusEvent e) {
-		aBoolean17 = false;
+		focused = false;
 		for (int i = 0; i < 128; i++) {
 			actionKey[i] = 0;
 		}
