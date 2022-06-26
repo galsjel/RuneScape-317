@@ -49,7 +49,7 @@ public class Model extends Entity {
 	public static int[] sin = Draw3D.sin;
 	public static int[] cos = Draw3D.cos;
 	public static int[] palette = Draw3D.palette;
-	public static int[] reciprical16 = Draw3D.reciprical16;
+	public static int[] reciprical16 = Draw3D.reciprocal16;
 
 	public static class Header {
 
