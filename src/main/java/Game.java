@@ -19,8 +19,8 @@ import java.util.zip.CRC32;
 
 public class Game extends GameShell {
 
-	public static final int[][] anIntArrayArray1003 = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
-	public static final int[] anIntArray1204 = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
+	public static final int[][] designPartColor = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
+	public static final int[] designHairColor = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
 	public static final BigInteger RSA_MODULUS = new BigInteger("115021795079507343952614936197913546438580135096169635842480712252120509788529535203161526625251797553017433341968661761641695154871087245548928967487006467485383337651405009623296611208539069524887502151216922299338355736930449024798579974392565651281911869750633089962840628929607415810272098208925607905239");
 	public static final int[] levelExperience;
 	public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
@@ -189,7 +189,7 @@ public class Game extends GameShell {
 	public final int[] chatStyles = new int[anInt975];
 	public final int[] chatTimers = new int[anInt975];
 	public final String[] chatMessages = new String[anInt975];
-	public final int[] anIntArray990 = new int[5];
+	public final int[] designColors = new int[5];
 	public final int anInt1002 = 0x23201b;
 	public final int[] anIntArray1030 = new int[5];
 	public final int[] anIntArray1045 = new int[2000];
@@ -197,14 +197,14 @@ public class Game extends GameShell {
 	public final int[] compassMaskLineLengths = new int[33];
 	public final Component aComponent_1059 = new Component();
 	public final int anInt1063 = 0x4d4233;
-	public final int[] anIntArray1065 = new int[7];
+	public final int[] designIdentikits = new int[7];
 	public final int[] archiveChecksum = new int[9];
 	public final String[] aStringArray1127 = new String[5];
 	public final boolean[] aBooleanArray1128 = new boolean[5];
 	public final int[][][] sceneInstancedChunkBitset = new int[4][13][13];
 	public final int[] tabComponentId = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	public final int[] anIntArray1203 = new int[5];
-	public final int[] waveIDs = new int[50];
+	public final int[] waveIds = new int[50];
 	public final Image8[] imageModIcons = new Image8[2];
 	public final int[] minimapMaskLineLengths = new int[151];
 	public final int[] anIntArray1240 = new int[100];
@@ -261,7 +261,7 @@ public class Game extends GameShell {
 	public MouseRecorder mouseRecorder;
 	public volatile boolean flamesThread = false;
 	public String aString881 = "";
-	public int localPlayerID = -1;
+	public int localPlayerId = -1;
 	public boolean menuVisible = false;
 	public int lastHoveredComponentId;
 	public String chatTyped = "";
@@ -365,7 +365,7 @@ public class Game extends GameShell {
 	public Image8 imageBackbase1;
 	public Image8 imageBackbase2;
 	public Image8 imageBackhmid1;
-	public boolean aBoolean1031 = false;
+	public boolean updateDesignModel = false;
 	public Image24[] imageMapfunction = new Image24[100];
 	public int sceneBaseTileX;
 	public int sceneBaseTileZ;
@@ -377,13 +377,13 @@ public class Game extends GameShell {
 	public int flameGradientCycle1;
 	public int stickyChatbackComponentId = -1;
 	public int anInt1046;
-	public boolean aBoolean1047 = true;
+	public boolean designGender = true;
 	public int invbackHoveredComponentId;
 	public String lastProgressMessage;
 	public FileArchive archiveTitle;
 	public int anInt1054 = -1;
 	public int anInt1055;
-	public DoublyLinkedList aList_1056 = new DoublyLinkedList();
+	public DoublyLinkedList spotanims = new DoublyLinkedList();
 	public Image8[] imageMapscene = new Image8[100];
 	public int waveCount;
 	/**
@@ -1130,7 +1130,7 @@ public class Game extends GameShell {
 		planeObjStacks = null;
 		temporaryLocs = null;
 		aList_1013 = null;
-		aList_1056 = null;
+		spotanims = null;
 		menuParamA = null;
 		menuParamB = null;
 		menuAction = null;
@@ -1607,7 +1607,7 @@ public class Game extends GameShell {
 	public void method22() {
 		try {
 			minimapPlane = -1;
-			aList_1056.clear();
+			spotanims.clear();
 			aList_1013.clear();
 			Draw3D.clearTexels();
 			clearCaches();
@@ -2942,15 +2942,15 @@ public class Game extends GameShell {
 		nextMusicDelay = 0;
 	}
 
-	public void method45() {
-		aBoolean1031 = true;
-		for (int j = 0; j < 7; j++) {
-			anIntArray1065[j] = -1;
-			for (int k = 0; k < IDKType.anInt655; k++) {
-				if (IDKType.instances[k].aBoolean662 || (IDKType.instances[k].anInt657 != (j + (aBoolean1047 ? 0 : 7)))) {
+	public void validateCharacterDesign() {
+		updateDesignModel = true;
+		for (int part = 0; part < 7; part++) {
+			designIdentikits[part] = -1;
+			for (int kit = 0; kit < IDKType.count; kit++) {
+				if (IDKType.instances[kit].selectable || (IDKType.instances[kit].type != (part + (designGender ? 0 : 7)))) {
 					continue;
 				}
-				anIntArray1065[j] = k;
+				designIdentikits[part] = kit;
 				break;
 			}
 		}
@@ -2984,10 +2984,10 @@ public class Game extends GameShell {
 			}
 			npc.size = npc.type.size;
 			npc.turnSpeed = npc.type.turnSpeed;
-			npc.seqWalk = npc.type.seqWalk;
-			npc.seqTurnAround = npc.type.seqTurnAround;
+			npc.seqWalk = npc.type.seqWalkId;
+			npc.seqTurnAround = npc.type.seqTurnAroundId;
 			npc.seqTurnLeft = npc.type.seqTurnLeft;
-			npc.seqTurnRight = npc.type.seqTurnRight;
+			npc.seqTurnRight = npc.type.seqTurnRightId;
 			npc.seqStand = npc.type.seqStand;
 			npc.move(localPlayer.pathTileX[0] + x, localPlayer.pathTileZ[0] + z, j1 == 1);
 		}
@@ -3021,7 +3021,7 @@ public class Game extends GameShell {
 				continue;
 			}
 
-			player.aBoolean1699 = ((lowmem && (playerCount > 50)) || (playerCount > 200)) && !local && (player.seqCurrent == player.seqStand);
+			player.lowmem = ((lowmem && (playerCount > 50)) || (playerCount > 200)) && !local && (player.seqId2 == player.seqStand);
 
 			int stx = player.x >> 7;
 			int stz = player.z >> 7;
@@ -3030,8 +3030,8 @@ public class Game extends GameShell {
 				continue;
 			}
 
-			if ((player.model != null) && (loopCycle >= player.anInt1707) && (loopCycle < player.anInt1708)) {
-				player.aBoolean1699 = false;
+			if ((player.locModel != null) && (loopCycle >= player.locStartCycle) && (loopCycle < player.locStopCycle)) {
+				player.lowmem = false;
 				player.y = getHeightmapY(currentPlane, player.x, player.z);
 				scene.addTemporary(player, currentPlane, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
 				continue;
@@ -3097,51 +3097,56 @@ public class Game extends GameShell {
 			socialMessage = "Enter name of player to delete from list";
 		}
 		if ((type >= 300) && (type <= 313)) {
-			int k = (type - 300) / 2;
-			int j1 = type & 1;
-			int i2 = anIntArray1065[k];
-			if (i2 != -1) {
+			int part = (type - 300) / 2;
+			int direction = type & 1;
+			int kit = designIdentikits[part];
+
+			if (kit != -1) {
 				do {
-					if ((j1 == 0) && (--i2 < 0)) {
-						i2 = IDKType.anInt655 - 1;
+					if ((direction == 0) && (--kit < 0)) {
+						kit = IDKType.count - 1;
 					}
-					if ((j1 == 1) && (++i2 >= IDKType.anInt655)) {
-						i2 = 0;
+					if ((direction == 1) && (++kit >= IDKType.count)) {
+						kit = 0;
 					}
-				} while (IDKType.instances[i2].aBoolean662 || (IDKType.instances[i2].anInt657 != (k + (aBoolean1047 ? 0 : 7))));
-				anIntArray1065[k] = i2;
-				aBoolean1031 = true;
+				} while (IDKType.instances[kit].selectable || (IDKType.instances[kit].type != (part + (designGender ? 0 : 7))));
+
+				designIdentikits[part] = kit;
+				updateDesignModel = true;
 			}
 		}
 		if ((type >= 314) && (type <= 323)) {
-			int l = (type - 314) / 2;
-			int k1 = type & 1;
-			int j2 = anIntArray990[l];
-			if ((k1 == 0) && (--j2 < 0)) {
-				j2 = anIntArrayArray1003[l].length - 1;
+			int part = (type - 314) / 2;
+			int direction = type & 1;
+			int color = designColors[part];
+
+			if ((direction == 0) && (--color < 0)) {
+				color = designPartColor[part].length - 1;
 			}
-			if ((k1 == 1) && (++j2 >= anIntArrayArray1003[l].length)) {
-				j2 = 0;
+
+			if ((direction == 1) && (++color >= designPartColor[part].length)) {
+				color = 0;
 			}
-			anIntArray990[l] = j2;
-			aBoolean1031 = true;
+
+			designColors[part] = color;
+			updateDesignModel = true;
 		}
-		if ((type == 324) && !aBoolean1047) {
-			aBoolean1047 = true;
-			method45();
+		if ((type == 324) && !designGender) {
+			designGender = true;
+			validateCharacterDesign();
 		}
-		if ((type == 325) && aBoolean1047) {
-			aBoolean1047 = false;
-			method45();
+		if ((type == 325) && designGender) {
+			designGender = false;
+			validateCharacterDesign();
 		}
 		if (type == 326) {
 			out.putOp(101);
-			out.put1(aBoolean1047 ? 0 : 1);
-			for (int i1 = 0; i1 < 7; i1++) {
-				out.put1(anIntArray1065[i1]);
+			out.put1(designGender ? 0 : 1);
+			for (int i = 0; i < 7; i++) {
+				out.put1(designIdentikits[i]);
 			}
-			for (int l1 = 0; l1 < 5; l1++) {
-				out.put1(anIntArray990[l1]);
+			for (int i = 0; i < 5; i++) {
+				out.put1(designColors[i]);
 			}
 			return true;
 		}
@@ -3262,8 +3267,8 @@ public class Game extends GameShell {
 			int info = scene.getInfo(plane, x, z, bitset);
 			int rotation = (info >> 6) & 3;
 			int kind = info & 0x1f;
-			int typeID = (bitset >> 14) & 0x7fff;
-			LocType type = LocType.get(typeID);
+			int locId = (bitset >> 14) & 0x7fff;
+			LocType type = LocType.get(locId);
 
 			if (type.mapsceneIcon != -1) {
 				Image8 icon = imageMapscene[type.mapsceneIcon];
@@ -3300,8 +3305,8 @@ public class Game extends GameShell {
 		bitset = scene.getGroundDecorationBitset(plane, x, z);
 
 		if (bitset != 0) {
-			int typeID = (bitset >> 14) & 0x7fff;
-			LocType type = LocType.get(typeID);
+			int locId = (bitset >> 14) & 0x7fff;
+			LocType type = LocType.get(locId);
 
 			if (type.mapsceneIcon != -1) {
 				Image8 icon = imageMapscene[type.mapsceneIcon];
@@ -3476,7 +3481,7 @@ public class Game extends GameShell {
 				if (projectile.anInt1590 < 0) {
 					int j = -projectile.anInt1590 - 1;
 					PlayerEntity player;
-					if (j == localPlayerID) {
+					if (j == localPlayerId) {
 						player = localPlayer;
 					} else {
 						player = players[j];
@@ -5103,23 +5108,23 @@ public class Game extends GameShell {
 			int i1 = bitset & 0x7f;
 			int j1 = (bitset >> 7) & 0x7f;
 			int k1 = (bitset >> 29) & 3;
-			int locID = (bitset >> 14) & 0x7fff;
+			int locId = (bitset >> 14) & 0x7fff;
 			if (bitset == j) {
 				continue;
 			}
 			j = bitset;
 			if ((k1 == 2) && (scene.getInfo(currentPlane, i1, j1, bitset) >= 0)) {
-				LocType type = LocType.get(locID);
+				LocType loc = LocType.get(locId);
 
-				if (type.overrideTypeIDs != null) {
-					type = type.getOverrideType();
+				if (loc.overrideTypeIDs != null) {
+					loc = loc.getOverrideType();
 				}
 
-				if (type == null) {
+				if (loc == null) {
 					continue;
 				}
 				if (anInt1282 == 1) {
-					menuOption[menuSize] = "Use " + aString1286 + " with @cya@" + type.name;
+					menuOption[menuSize] = "Use " + aString1286 + " with @cya@" + loc.name;
 					menuAction[menuSize] = 62;
 					menuParamC[menuSize] = bitset;
 					menuParamA[menuSize] = i1;
@@ -5127,7 +5132,7 @@ public class Game extends GameShell {
 					menuSize++;
 				} else if (anInt1136 == 1) {
 					if ((activeSpellFlags & 4) == 4) {
-						menuOption[menuSize] = spellCaption + " @cya@" + type.name;
+						menuOption[menuSize] = spellCaption + " @cya@" + loc.name;
 						menuAction[menuSize] = 956;
 						menuParamC[menuSize] = bitset;
 						menuParamA[menuSize] = i1;
@@ -5135,10 +5140,10 @@ public class Game extends GameShell {
 						menuSize++;
 					}
 				} else {
-					if (type.actions != null) {
+					if (loc.actions != null) {
 						for (int i2 = 4; i2 >= 0; i2--) {
-							if (type.actions[i2] != null) {
-								menuOption[menuSize] = type.actions[i2] + " @cya@" + type.name;
+							if (loc.actions[i2] != null) {
+								menuOption[menuSize] = loc.actions[i2] + " @cya@" + loc.name;
 								if (i2 == 0) {
 									menuAction[menuSize] = 502;
 								}
@@ -5161,16 +5166,16 @@ public class Game extends GameShell {
 							}
 						}
 					}
-					menuOption[menuSize] = "Examine @cya@" + type.name;
+					menuOption[menuSize] = "Examine @cya@" + loc.name;
 					menuAction[menuSize] = 1226;
-					menuParamC[menuSize] = type.index << 14;
+					menuParamC[menuSize] = loc.index << 14;
 					menuParamA[menuSize] = i1;
 					menuParamB[menuSize] = j1;
 					menuSize++;
 				}
 			}
 			if (k1 == 1) {
-				NPCEntity npc = npcs[locID];
+				NPCEntity npc = npcs[locId];
 				if ((npc.type.size == 1) && ((npc.x & 0x7f) == 64) && ((npc.z & 0x7f) == 64)) {
 					for (int j2 = 0; j2 < npcCount; j2++) {
 						NPCEntity class30_sub2_sub4_sub1_sub1_1 = npcs[npcIndices[j2]];
@@ -5185,10 +5190,10 @@ public class Game extends GameShell {
 						}
 					}
 				}
-				method87(npc.type, locID, j1, i1);
+				method87(npc.type, locId, j1, i1);
 			}
 			if (k1 == 0) {
-				PlayerEntity player = players[locID];
+				PlayerEntity player = players[locId];
 				if (((player.x & 0x7f) == 64) && ((player.z & 0x7f) == 64)) {
 					for (int k2 = 0; k2 < npcCount; k2++) {
 						NPCEntity class30_sub2_sub4_sub1_sub1_2 = npcs[npcIndices[k2]];
@@ -5203,7 +5208,7 @@ public class Game extends GameShell {
 						}
 					}
 				}
-				method88(i1, locID, player, j1);
+				method88(i1, locId, player, j1);
 			}
 			if (k1 == 3) {
 				DoublyLinkedList list = planeObjStacks[currentPlane][i1][j1];
@@ -5720,36 +5725,43 @@ public class Game extends GameShell {
 		if (type == 327) {
 			component.modelEyePitch = 150;
 			component.modelYaw = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
-			if (aBoolean1031) {
-				for (int k1 = 0; k1 < 7; k1++) {
-					int l1 = anIntArray1065[k1];
-					if ((l1 >= 0) && !IDKType.instances[l1].method537()) {
+
+			if (updateDesignModel) {
+				for (int i = 0; i < 7; i++) {
+					int kit = designIdentikits[i];
+					if ((kit >= 0) && !IDKType.instances[kit].validateModel()) {
 						return;
 					}
 				}
-				aBoolean1031 = false;
-				Model[] aclass30_sub2_sub4_sub6 = new Model[7];
-				int i2 = 0;
-				for (int j2 = 0; j2 < 7; j2++) {
-					int k2 = anIntArray1065[j2];
-					if (k2 >= 0) {
-						aclass30_sub2_sub4_sub6[i2++] = IDKType.instances[k2].method538();
+
+				updateDesignModel = false;
+
+				Model[] models = new Model[7];
+				int modelCount = 0;
+				for (int part = 0; part < 7; part++) {
+					int kit = designIdentikits[part];
+
+					if (kit >= 0) {
+						models[modelCount++] = IDKType.instances[kit].getModel();
 					}
 				}
-				Model model = new Model(i2, aclass30_sub2_sub4_sub6);
-				for (int l2 = 0; l2 < 5; l2++) {
-					if (anIntArray990[l2] != 0) {
-						model.recolor(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
-						if (l2 == 1) {
-							model.recolor(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
+
+				Model model = new Model(modelCount, models);
+				for (int part = 0; part < 5; part++) {
+					if (designColors[part] != 0) {
+						model.recolor(designPartColor[part][0], designPartColor[part][designColors[part]]);
+						if (part == 1) {
+							model.recolor(designHairColor[0], designHairColor[designColors[part]]);
 						}
 					}
 				}
+
 				model.createLabelReferences();
 				model.applySequenceFrame(SeqType.instances[localPlayer.seqStand].primaryFrames[0]);
 				model.calculateNormals(64, 850, -30, -50, -30, true);
+
 				component.modelCategory = 5;
-				component.modelID = 0;
+				component.modelId = 0;
 				Component.cacheModel(0, 5, model);
 			}
 			return;
@@ -5759,7 +5771,7 @@ public class Game extends GameShell {
 				aImage_931 = component.image;
 				aImage_932 = component.activeImage;
 			}
-			if (aBoolean1047) {
+			if (designGender) {
 				component.image = aImage_932;
 			} else {
 				component.image = aImage_931;
@@ -5771,7 +5783,7 @@ public class Game extends GameShell {
 				aImage_931 = component.image;
 				aImage_932 = component.activeImage;
 			}
-			if (aBoolean1047) {
+			if (designGender) {
 				component.image = aImage_931;
 			} else {
 				component.image = aImage_932;
@@ -6294,7 +6306,7 @@ public class Game extends GameShell {
 				}
 				localPlayer = players[LOCAL_PLAYER_INDEX] = new PlayerEntity();
 				aList_1013.clear();
-				aList_1056.clear();
+				spotanims.clear();
 				for (int l2 = 0; l2 < 4; l2++) {
 					for (int i3 = 0; i3 < 104; i3++) {
 						for (int k3 = 0; k3 < 104; k3++) {
@@ -6318,10 +6330,10 @@ public class Game extends GameShell {
 				chatbackMessage = null;
 				anInt1055 = 0;
 				anInt1054 = -1;
-				aBoolean1047 = true;
-				method45();
+				designGender = true;
+				validateCharacterDesign();
 				for (int j3 = 0; j3 < 5; j3++) {
-					anIntArray990[j3] = 0;
+					designColors[j3] = 0;
 				}
 				for (int l3 = 0; l3 < 5; l3++) {
 					aStringArray1127[l3] = null;
@@ -6694,10 +6706,10 @@ public class Game extends GameShell {
 					i1 = -1;
 				}
 				int i2 = buffer.get1U();
-				if ((i1 == npc.anInt1526) && (i1 != -1)) {
+				if ((i1 == npc.seqId1) && (i1 != -1)) {
 					int l2 = SeqType.instances[i1].anInt365;
 					if (l2 == 1) {
-						npc.anInt1527 = 0;
+						npc.seqFrame1 = 0;
 						npc.anInt1528 = 0;
 						npc.anInt1529 = i2;
 						npc.anInt1530 = 0;
@@ -6705,9 +6717,9 @@ public class Game extends GameShell {
 					if (l2 == 2) {
 						npc.anInt1530 = 0;
 					}
-				} else if ((i1 == -1) || (npc.anInt1526 == -1) || (SeqType.instances[i1].anInt359 >= SeqType.instances[npc.anInt1526].anInt359)) {
-					npc.anInt1526 = i1;
-					npc.anInt1527 = 0;
+				} else if ((i1 == -1) || (npc.seqId1 == -1) || (SeqType.instances[i1].priority >= SeqType.instances[npc.seqId1].priority)) {
+					npc.seqId1 = i1;
+					npc.seqFrame1 = 0;
 					npc.anInt1528 = 0;
 					npc.anInt1529 = i2;
 					npc.anInt1530 = 0;
@@ -6725,7 +6737,7 @@ public class Game extends GameShell {
 			if ((l & 0x80) != 0) {
 				npc.spotanim = buffer.get2U();
 				int k1 = buffer.get4();
-				npc.anInt1524 = k1 >> 16;
+				npc.spotanimY = k1 >> 16;
 				npc.anInt1523 = loopCycle + (k1 & 0xffff);
 				npc.spotanimFrame = 0;
 				npc.spotanimCycle = 0;
@@ -6758,10 +6770,10 @@ public class Game extends GameShell {
 				npc.type = NPCType.get(buffer.get2ULEA());
 				npc.size = npc.type.size;
 				npc.turnSpeed = npc.type.turnSpeed;
-				npc.seqWalk = npc.type.seqWalk;
-				npc.seqTurnAround = npc.type.seqTurnAround;
+				npc.seqWalk = npc.type.seqWalkId;
+				npc.seqTurnAround = npc.type.seqTurnAroundId;
 				npc.seqTurnLeft = npc.type.seqTurnLeft;
-				npc.seqTurnRight = npc.type.seqTurnRight;
+				npc.seqTurnRight = npc.type.seqTurnRightId;
 				npc.seqStand = npc.type.seqStand;
 			}
 			if ((l & 4) != 0) {
@@ -6785,8 +6797,8 @@ public class Game extends GameShell {
 			return;
 		}
 		String s = type.name;
-		if (type.anInt61 != 0) {
-			s = s + method110(localPlayer.combatLevel, type.anInt61) + " (level-" + type.anInt61 + ")";
+		if (type.level != 0) {
+			s = s + method110(localPlayer.combatLevel, type.level) + " (level-" + type.level + ")";
 		}
 		if (anInt1282 == 1) {
 			menuOption[menuSize] = "Use " + aString1286 + " with @yel@" + s;
@@ -6837,7 +6849,7 @@ public class Game extends GameShell {
 				for (int i1 = 4; i1 >= 0; i1--) {
 					if ((type.op[i1] != null) && type.op[i1].equalsIgnoreCase("attack")) {
 						char c = '\0';
-						if (type.anInt61 > localPlayer.combatLevel) {
+						if (type.level > localPlayer.combatLevel) {
 							c = '\u07D0';
 						}
 						menuOption[menuSize] = type.op[i1] + " @yel@" + s;
@@ -6952,28 +6964,28 @@ public class Game extends GameShell {
 
 	public void storeLoc(SceneLocTemporary loc) {
 		int bitset = 0;
-		int locID = -1;
+		int locId = -1;
 		int kind = 0;
 		int rotation = 0;
-		if (loc.classID == 0) {
+		if (loc.classId == 0) {
 			bitset = scene.getWallBitset(loc.plane, loc.localX, loc.localZ);
 		}
-		if (loc.classID == 1) {
+		if (loc.classId == 1) {
 			bitset = scene.getWallDecorationBitset(loc.plane, loc.localX, loc.localZ);
 		}
-		if (loc.classID == 2) {
+		if (loc.classId == 2) {
 			bitset = scene.getLocBitset(loc.plane, loc.localX, loc.localZ);
 		}
-		if (loc.classID == 3) {
+		if (loc.classId == 3) {
 			bitset = scene.getGroundDecorationBitset(loc.plane, loc.localX, loc.localZ);
 		}
 		if (bitset != 0) {
 			int info = scene.getInfo(loc.plane, loc.localX, loc.localZ, bitset);
-			locID = (bitset >> 14) & 0x7fff;
+			locId = (bitset >> 14) & 0x7fff;
 			kind = info & 0x1f;
 			rotation = info >> 6;
 		}
-		loc.savedLocID = locID;
+		loc.savedLocId = locId;
 		loc.savedKind = kind;
 		loc.savedRotation = rotation;
 	}
@@ -6986,12 +6998,12 @@ public class Game extends GameShell {
 				boolean failed = false;
 
 				try {
-					if ((waveIDs[i] == lastWaveId) && (waveLoops[i] == lastWaveLoops)) {
+					if ((waveIds[i] == lastWaveId) && (waveLoops[i] == lastWaveLoops)) {
 						if (!wavereplay()) {
 							failed = true;
 						}
 					} else {
-						Buffer buffer = SoundTrack.generate(waveLoops[i], waveIDs[i]);
+						Buffer buffer = SoundTrack.generate(waveLoops[i], waveIds[i]);
 
 						// the sample rate is 22050Hz and sample size is 1 byte which means dividing the bytes by 22 is
 						// roughly converting the bytes to time in milliseconds
@@ -7000,7 +7012,7 @@ public class Game extends GameShell {
 							lastWaveStartTime = System.currentTimeMillis();
 
 							if (wavesave(buffer.data, buffer.position)) {
-								lastWaveId = waveIDs[i];
+								lastWaveId = waveIds[i];
 								lastWaveLoops = waveLoops[i];
 							} else {
 								failed = true;
@@ -7013,7 +7025,7 @@ public class Game extends GameShell {
 				if (!failed || (waveDelay[i] == -5)) {
 					waveCount--;
 					for (int j = i; j < waveCount; j++) {
-						waveIDs[j] = waveIDs[j + 1];
+						waveIds[j] = waveIds[j + 1];
 						waveLoops[j] = waveLoops[j + 1];
 						waveDelay[j] = waveDelay[j + 1];
 					}
@@ -7179,7 +7191,7 @@ public class Game extends GameShell {
 
 	public void method96(PathingEntity entity) {
 		if ((entity.x < 128) || (entity.z < 128) || (entity.x >= 13184) || (entity.z >= 13184)) {
-			entity.anInt1526 = -1;
+			entity.seqId1 = -1;
 			entity.spotanim = -1;
 			entity.forceMoveEndCycle = 0;
 			entity.forceMoveStartCycle = 0;
@@ -7188,7 +7200,7 @@ public class Game extends GameShell {
 			entity.method446();
 		}
 		if ((entity == localPlayer) && ((entity.x < 1536) || (entity.z < 1536) || (entity.x >= 11776) || (entity.z >= 11776))) {
-			entity.anInt1526 = -1;
+			entity.seqId1 = -1;
 			entity.spotanim = -1;
 			entity.forceMoveEndCycle = 0;
 			entity.forceMoveStartCycle = 0;
@@ -7232,7 +7244,7 @@ public class Game extends GameShell {
 	}
 
 	public void method98(PathingEntity entity) {
-		if ((entity.forceMoveStartCycle == loopCycle) || (entity.anInt1526 == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.instances[entity.anInt1526].getFrameDelay(entity.anInt1527))) {
+		if ((entity.forceMoveStartCycle == loopCycle) || (entity.seqId1 == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.instances[entity.seqId1].getFrameDelay(entity.seqFrame1))) {
 			int duration = entity.forceMoveStartCycle - entity.forceMoveEndCycle;
 			int delta = loopCycle - entity.forceMoveEndCycle;
 			int dx0 = (entity.forceMoveStartSceneTileX * 128) + (entity.size * 64);
@@ -7261,15 +7273,15 @@ public class Game extends GameShell {
 	}
 
 	public void method99(PathingEntity entity) {
-		entity.seqCurrent = entity.seqStand;
+		entity.seqId2 = entity.seqStand;
 
 		if (entity.pathRemaining == 0) {
 			entity.anInt1503 = 0;
 			return;
 		}
 
-		if ((entity.anInt1526 != -1) && (entity.anInt1529 == 0)) {
-			SeqType type = SeqType.instances[entity.anInt1526];
+		if ((entity.seqId1 != -1) && (entity.anInt1529 == 0)) {
+			SeqType type = SeqType.instances[entity.seqId1];
 
 			if ((entity.anInt1542 > 0) && (type.anInt363 == 0)) {
 				entity.anInt1503++;
@@ -7343,7 +7355,7 @@ public class Game extends GameShell {
 			seq = entity.seqWalk;
 		}
 
-		entity.seqCurrent = seq;
+		entity.seqId2 = seq;
 
 		int moveSpeed = 4;
 
@@ -7368,8 +7380,8 @@ public class Game extends GameShell {
 			moveSpeed <<= 1;
 		}
 
-		if ((moveSpeed >= 8) && (entity.seqCurrent == entity.seqWalk) && (entity.seqRun != -1)) {
-			entity.seqCurrent = entity.seqRun;
+		if ((moveSpeed >= 8) && (entity.seqId2 == entity.seqWalk) && (entity.seqRun != -1)) {
+			entity.seqId2 = entity.seqRun;
 		}
 
 		if (x < dstX) {
@@ -7422,7 +7434,7 @@ public class Game extends GameShell {
 		if (e.index >= 32768) {
 			int index = e.index - 32768;
 
-			if (index == localPlayerID) {
+			if (index == localPlayerId) {
 				index = LOCAL_PLAYER_INDEX;
 			}
 
@@ -7463,13 +7475,13 @@ public class Game extends GameShell {
 
 			e.yaw &= 0x7ff;
 
-			if ((e.seqCurrent == e.seqStand) && (e.yaw != e.dstYaw)) {
+			if ((e.seqId2 == e.seqStand) && (e.yaw != e.dstYaw)) {
 				if (e.seqTurn != -1) {
-					e.seqCurrent = e.seqTurn;
+					e.seqId2 = e.seqTurn;
 					return;
 				}
 
-				e.seqCurrent = e.seqWalk;
+				e.seqId2 = e.seqWalk;
 			}
 		}
 	}
@@ -7477,18 +7489,18 @@ public class Game extends GameShell {
 	public void method101(PathingEntity e) {
 		e.aBoolean1541 = false;
 
-		if (e.seqCurrent != -1) {
-			SeqType seq = SeqType.instances[e.seqCurrent];
+		if (e.seqId2 != -1) {
+			SeqType seq = SeqType.instances[e.seqId2];
 			e.seqCycle++;
 
-			if ((e.seqFrame < seq.frameCount) && (e.seqCycle > seq.getFrameDelay(e.seqFrame))) {
+			if ((e.seqFrame2 < seq.frameCount) && (e.seqCycle > seq.getFrameDelay(e.seqFrame2))) {
 				e.seqCycle = 0;
-				e.seqFrame++;
+				e.seqFrame2++;
 			}
 
-			if (e.seqFrame >= seq.frameCount) {
+			if (e.seqFrame2 >= seq.frameCount) {
 				e.seqCycle = 0;
-				e.seqFrame = 0;
+				e.seqFrame2 = 0;
 			}
 		}
 
@@ -7508,8 +7520,8 @@ public class Game extends GameShell {
 			}
 		}
 
-		if ((e.anInt1526 != -1) && (e.anInt1529 <= 1)) {
-			SeqType seq = SeqType.instances[e.anInt1526];
+		if ((e.seqId1 != -1) && (e.anInt1529 <= 1)) {
+			SeqType seq = SeqType.instances[e.seqId1];
 
 			if ((seq.anInt363 == 1) && (e.anInt1542 > 0) && (e.forceMoveEndCycle <= loopCycle) && (e.forceMoveStartCycle < loopCycle)) {
 				e.anInt1529 = 1;
@@ -7517,22 +7529,22 @@ public class Game extends GameShell {
 			}
 		}
 
-		if ((e.anInt1526 != -1) && (e.anInt1529 == 0)) {
-			SeqType seq = SeqType.instances[e.anInt1526];
+		if ((e.seqId1 != -1) && (e.anInt1529 == 0)) {
+			SeqType seq = SeqType.instances[e.seqId1];
 
-			for (e.anInt1528++; (e.anInt1527 < seq.frameCount) && (e.anInt1528 > seq.getFrameDelay(e.anInt1527)); e.anInt1527++) {
-				e.anInt1528 -= seq.getFrameDelay(e.anInt1527);
+			for (e.anInt1528++; (e.seqFrame1 < seq.frameCount) && (e.anInt1528 > seq.getFrameDelay(e.seqFrame1)); e.seqFrame1++) {
+				e.anInt1528 -= seq.getFrameDelay(e.seqFrame1);
 			}
 
-			if (e.anInt1527 >= seq.frameCount) {
-				e.anInt1527 -= seq.speed;
+			if (e.seqFrame1 >= seq.frameCount) {
+				e.seqFrame1 -= seq.speed;
 				e.anInt1530++;
 
 				if (e.anInt1530 >= seq.anInt362) {
-					e.anInt1526 = -1;
+					e.seqId1 = -1;
 				}
-				if ((e.anInt1527 < 0) || (e.anInt1527 >= seq.frameCount)) {
-					e.anInt1526 = -1;
+				if ((e.seqFrame1 < 0) || (e.seqFrame1 >= seq.frameCount)) {
+					e.seqId1 = -1;
 				}
 			}
 			e.aBoolean1541 = seq.aBoolean358;
@@ -7814,17 +7826,18 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method104() {
-		SpotAnimEntity spotAnim = (SpotAnimEntity) aList_1056.peekFront();
-		for (; spotAnim != null; spotAnim = (SpotAnimEntity) aList_1056.prev()) {
-			if ((spotAnim.anInt1560 != currentPlane) || spotAnim.aBoolean1567) {
-				spotAnim.unlink();
-			} else if (loopCycle >= spotAnim.anInt1564) {
-				spotAnim.method454(delta);
-				if (spotAnim.aBoolean1567) {
-					spotAnim.unlink();
+	public void updateSpotAnims() {
+		SpotAnimEntity anim = (SpotAnimEntity) spotanims.peekFront();
+
+		for (; anim != null; anim = (SpotAnimEntity) spotanims.prev()) {
+			if ((anim.plane != currentPlane) || anim.seqComplete) {
+				anim.unlink();
+			} else if (loopCycle >= anim.startCycle) {
+				anim.update(delta);
+				if (anim.seqComplete) {
+					anim.unlink();
 				} else {
-					scene.addTemporary(spotAnim, spotAnim.anInt1560, spotAnim.anInt1561, spotAnim.anInt1562, spotAnim.anInt1563, 0, -1, false, 60);
+					scene.addTemporary(anim, anim.plane, anim.x, anim.z, anim.y, 0, -1, false, 60);
 				}
 			}
 		}
@@ -8216,7 +8229,7 @@ public class Game extends GameShell {
 		if ((i & 0x100) != 0) {
 			player.spotanim = buffer.get2ULE();
 			int k = buffer.get4();
-			player.anInt1524 = k >> 16;
+			player.spotanimY = k >> 16;
 			player.anInt1523 = loopCycle + (k & 0xffff);
 			player.spotanimFrame = 0;
 			player.spotanimCycle = 0;
@@ -8228,15 +8241,15 @@ public class Game extends GameShell {
 			}
 		}
 		if ((i & 8) != 0) {
-			int l = buffer.get2ULE();
-			if (l == 65535) {
-				l = -1;
+			int seqId = buffer.get2ULE();
+			if (seqId == 65535) {
+				seqId = -1;
 			}
 			int i2 = buffer.get1UC();
-			if ((l == player.anInt1526) && (l != -1)) {
-				int i3 = SeqType.instances[l].anInt365;
+			if ((seqId == player.seqId1) && (seqId != -1)) {
+				int i3 = SeqType.instances[seqId].anInt365;
 				if (i3 == 1) {
-					player.anInt1527 = 0;
+					player.seqFrame1 = 0;
 					player.anInt1528 = 0;
 					player.anInt1529 = i2;
 					player.anInt1530 = 0;
@@ -8244,9 +8257,9 @@ public class Game extends GameShell {
 				if (i3 == 2) {
 					player.anInt1530 = 0;
 				}
-			} else if ((l == -1) || (player.anInt1526 == -1) || (SeqType.instances[l].anInt359 >= SeqType.instances[player.anInt1526].anInt359)) {
-				player.anInt1526 = l;
-				player.anInt1527 = 0;
+			} else if ((seqId == -1) || (player.seqId1 == -1) || (SeqType.instances[seqId].priority >= SeqType.instances[player.seqId1].priority)) {
+				player.seqId1 = seqId;
+				player.seqFrame1 = 0;
 				player.anInt1528 = 0;
 				player.anInt1529 = i2;
 				player.anInt1530 = 0;
@@ -8270,7 +8283,7 @@ public class Game extends GameShell {
 			int j2 = buffer.get1U();
 			int j3 = buffer.get1UC();
 			int k3 = buffer.position;
-			if ((player.name != null) && player.aBoolean1710) {
+			if ((player.name != null) && player.visible) {
 				long l3 = StringUtil.toBase37(player.name);
 				boolean flag = false;
 				if (j2 <= 1) {
@@ -8548,8 +8561,8 @@ public class Game extends GameShell {
 					loc.anInt1294--;
 				}
 				if (loc.anInt1294 == 0) {
-					if ((loc.savedLocID < 0) || SceneBuilder.isLocReady(loc.savedLocID, loc.savedKind)) {
-						addLoc(loc.localZ, loc.plane, loc.savedRotation, loc.savedKind, loc.localX, loc.classID, loc.savedLocID);
+					if ((loc.savedLocId < 0) || SceneBuilder.isLocReady(loc.savedLocId, loc.savedKind)) {
+						addLoc(loc.localZ, loc.plane, loc.savedRotation, loc.savedKind, loc.localX, loc.classId, loc.savedLocId);
 						loc.unlink();
 					}
 				} else {
@@ -8557,11 +8570,11 @@ public class Game extends GameShell {
 						loc.anInt1302--;
 					}
 					if ((loc.anInt1302 == 0) && (loc.localX >= 1) && (loc.localZ >= 1) && (loc.localX <= 102) && (loc.localZ <= 102) && ((loc.anInt1291 < 0) || SceneBuilder.isLocReady(loc.anInt1291, loc.anInt1293))) {
-						addLoc(loc.localZ, loc.plane, loc.anInt1292, loc.anInt1293, loc.localX, loc.classID, loc.anInt1291);
+						addLoc(loc.localZ, loc.plane, loc.anInt1292, loc.anInt1293, loc.localX, loc.classId, loc.anInt1291);
 						loc.anInt1302 = -1;
-						if ((loc.anInt1291 == loc.savedLocID) && (loc.savedLocID == -1)) {
+						if ((loc.anInt1291 == loc.savedLocId) && (loc.savedLocId == -1)) {
 							loc.unlink();
-						} else if ((loc.anInt1291 == loc.savedLocID) && (loc.anInt1292 == loc.savedRotation) && (loc.anInt1293 == loc.savedKind)) {
+						} else if ((loc.anInt1291 == loc.savedLocId) && (loc.anInt1292 == loc.savedRotation) && (loc.anInt1293 == loc.savedKind)) {
 							loc.unlink();
 						}
 					}
@@ -9239,10 +9252,10 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method130(int j, int k, int l, int classID, int z, int k1, int plane, int x, int j2) {
+	public void method130(int j, int k, int l, int classId, int z, int k1, int plane, int x, int j2) {
 		SceneLocTemporary loc = null;
 		for (SceneLocTemporary other = (SceneLocTemporary) temporaryLocs.peekFront(); other != null; other = (SceneLocTemporary) temporaryLocs.prev()) {
-			if ((other.plane != plane) || (other.localX != x) || (other.localZ != z) || (other.classID != classID)) {
+			if ((other.plane != plane) || (other.localX != x) || (other.localZ != z) || (other.classId != classId)) {
 				continue;
 			}
 			loc = other;
@@ -9251,7 +9264,7 @@ public class Game extends GameShell {
 		if (loc == null) {
 			loc = new SceneLocTemporary();
 			loc.plane = plane;
-			loc.classID = classID;
+			loc.classId = classId;
 			loc.localX = x;
 			loc.localZ = z;
 			storeLoc(loc);
@@ -9581,14 +9594,14 @@ public class Game extends GameShell {
 			int pos = buffer.get1U();
 			int x = zoneX + ((pos >> 4) & 7);
 			int z = zoneZ + (pos & 7);
-			int objID = buffer.get2U();
+			int objId = buffer.get2U();
 			int objAmount = buffer.get2U();
 			int newAmount = buffer.get2U();
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
 				DoublyLinkedList stacks = planeObjStacks[currentPlane][x][z];
 				if (stacks != null) {
 					for (ObjStackEntity stack = (ObjStackEntity) stacks.peekFront(); stack != null; stack = (ObjStackEntity) stacks.prev()) {
-						if ((stack.id != (objID & 0x7fff)) || (stack.amount != objAmount)) {
+						if ((stack.id != (objId & 0x7fff)) || (stack.amount != objAmount)) {
 							continue;
 						}
 						stack.amount = newAmount;
@@ -9605,29 +9618,29 @@ public class Game extends GameShell {
 			int pos = buffer.get1U();
 			int x = zoneX + ((pos >> 4) & 7);
 			int z = zoneZ + (pos & 7);
-			int waveID = buffer.get2U();
+			int waveId = buffer.get2U();
 			int info = buffer.get1U();
 			int maxDist = (info >> 4) & 0xf;
 			int loopCount = info & 0b111;
 			if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && aBoolean848 && !lowmem && (waveCount < 50)) {
-				waveIDs[waveCount] = waveID;
+				waveIds[waveCount] = waveId;
 				waveLoops[waveCount] = loopCount;
-				waveDelay[waveCount] = SoundTrack.delays[waveID];
+				waveDelay[waveCount] = SoundTrack.delays[waveId];
 				waveCount++;
 			}
 		}
 
 		// reveal obj (this would already be visible to the local player if it belongs to them)
 		if (opcode == 215) {
-			int objID = buffer.get2UA();
+			int objId = buffer.get2UA();
 			int pos = buffer.get1US();
 			int x = zoneX + ((pos >> 4) & 7);
 			int z = zoneZ + (pos & 7);
-			int ownerID = buffer.get2UA();
+			int ownerId = buffer.get2UA();
 			int objAmount = buffer.get2U();
-			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerID != localPlayerID)) {
+			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerId != localPlayerId)) {
 				ObjStackEntity obj = new ObjStackEntity();
-				obj.id = objID;
+				obj.id = objId;
 				obj.amount = objAmount;
 				if (planeObjStacks[currentPlane][x][z] == null) {
 					planeObjStacks[currentPlane][x][z] = new DoublyLinkedList();
@@ -9643,12 +9656,12 @@ public class Game extends GameShell {
 			int pos = buffer.get1UA();
 			int x = zoneX + ((pos >> 4) & 7);
 			int z = zoneZ + (pos & 7);
-			int objID = buffer.get2U();
+			int objId = buffer.get2U();
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
 				DoublyLinkedList list = planeObjStacks[currentPlane][x][z];
 				if (list != null) {
 					for (ObjStackEntity obj = (ObjStackEntity) list.peekFront(); obj != null; obj = (ObjStackEntity) list.prev()) {
-						if (obj.id != (objID & 0x7fff)) {
+						if (obj.id != (objId & 0x7fff)) {
 							continue;
 						}
 						obj.unlink();
@@ -9671,8 +9684,8 @@ public class Game extends GameShell {
 			int info = buffer.get1US();
 			int kind = info >> 2;
 			int rotation = info & 3;
-			int classID = LOC_KIND_TO_CLASS_ID[kind];
-			int seqID = buffer.get2UA();
+			int classId = LOC_KIND_TO_CLASS_ID[kind];
+			int seqId = buffer.get2UA();
 
 			if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
 				return;
@@ -9683,30 +9696,30 @@ public class Game extends GameShell {
 			int heightmapNE = planeHeightmap[currentPlane][x + 1][z + 1];
 			int heightmapNW = planeHeightmap[currentPlane][x][z + 1];
 
-			if (classID == 0) {
+			if (classId == 0) {
 				SceneWall wall = scene.getWall(currentPlane, x, z);
 
 				if (wall != null) {
-					int locID = (wall.bitset >> 14) & 0x7fff;
+					int locId = (wall.bitset >> 14) & 0x7fff;
 
 					if (kind == 2) {
-						wall.entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-						wall.entityB = new LocEntity(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+						wall.entityA = new LocEntity(locId, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
+						wall.entityB = new LocEntity(locId, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
 					} else {
-						wall.entityA = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+						wall.entityA = new LocEntity(locId, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
 					}
 				}
 			}
 
-			if (classID == 1) {
+			if (classId == 1) {
 				SceneWallDecoration deco = scene.getWallDecoration(currentPlane, x, z);
 
 				if (deco != null) {
-					deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+					deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
 				}
 			}
 
-			if (classID == 2) {
+			if (classId == 2) {
 				SceneLoc loc = scene.getLoc(currentPlane, x, z);
 
 				if (kind == 11) {
@@ -9714,15 +9727,15 @@ public class Game extends GameShell {
 				}
 
 				if (loc != null) {
-					loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+					loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
 				}
 			}
 
-			if (classID == 3) {
+			if (classId == 3) {
 				SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentPlane);
 
 				if (deco != null) {
-					deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+					deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqId, false);
 				}
 			}
 			return;
@@ -9732,62 +9745,69 @@ public class Game extends GameShell {
 			int pos = buffer.get1US();
 			int x = zoneX + ((pos >> 4) & 7);
 			int z = zoneZ + (pos & 7);
-			int playerID = buffer.get2U();
-			byte byte0 = buffer.get1S();
-			int l14 = buffer.get2ULE();
-			byte byte1 = buffer.get1C();
-			int k17 = buffer.get2U();
+			int pid = buffer.get2U();
+			byte maxX = buffer.get1S();
+			int startCycle = buffer.get2ULE();
+			byte maxZ = buffer.get1C();
+			int stopCycle = buffer.get2U();
 			int info = buffer.get1US();
 			int kind = info >> 2;
 			int rotation = info & 3;
-			int classID = LOC_KIND_TO_CLASS_ID[kind];
-			byte byte2 = buffer.get1();
-			int l21 = buffer.get2U();
-			byte byte3 = buffer.get1C();
+			int classId = LOC_KIND_TO_CLASS_ID[kind];
+			byte minX = buffer.get1();
+			int locId = buffer.get2U();
+			byte minZ = buffer.get1C();
 			PlayerEntity player;
 
-			if (playerID == localPlayerID) {
+			if (pid == localPlayerId) {
 				player = localPlayer;
 			} else {
-				player = players[playerID];
+				player = players[pid];
 			}
 
 			if (player != null) {
-				LocType type = LocType.get(l21);
+				LocType type = LocType.get(locId);
 				int heightmapSW = planeHeightmap[currentPlane][x][z];
 				int heightmapSE = planeHeightmap[currentPlane][x + 1][z];
 				int heightmapNE = planeHeightmap[currentPlane][x + 1][z + 1];
 				int heightmapNW = planeHeightmap[currentPlane][x][z + 1];
+
 				Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
 
 				if (model != null) {
-					method130(k17 + 1, -1, 0, classID, z, 0, currentPlane, x, l14 + 1);
-					player.anInt1707 = l14 + loopCycle;
-					player.anInt1708 = k17 + loopCycle;
-					player.model = model;
-					int i23 = type.width;
-					int j23 = type.length;
+					method130(stopCycle + 1, -1, 0, classId, z, 0, currentPlane, x, startCycle + 1);
+
+					player.locStartCycle = startCycle + loopCycle;
+					player.locStopCycle = stopCycle + loopCycle;
+					player.locModel = model;
+					int sizeX = type.width;
+					int sizeZ = type.length;
+
 					if ((rotation == 1) || (rotation == 3)) {
-						i23 = type.length;
-						j23 = type.width;
+						sizeX = type.length;
+						sizeZ = type.width;
 					}
-					player.anInt1711 = (x * 128) + (i23 * 64);
-					player.anInt1713 = (z * 128) + (j23 * 64);
-					player.anInt1712 = getHeightmapY(currentPlane, player.anInt1711, player.anInt1713);
-					if (byte2 > byte0) {
-						byte byte4 = byte2;
-						byte2 = byte0;
-						byte0 = byte4;
+
+					player.locOffsetX = (x * 128) + (sizeX * 64);
+					player.locOffsetZ = (z * 128) + (sizeZ * 64);
+					player.locOffsetY = getHeightmapY(currentPlane, player.locOffsetX, player.locOffsetZ);
+
+					if (minX > maxX) {
+						byte tmp = minX;
+						minX = maxX;
+						maxX = tmp;
 					}
-					if (byte3 > byte1) {
-						byte byte5 = byte3;
-						byte3 = byte1;
-						byte1 = byte5;
+
+					if (minZ > maxZ) {
+						byte tmp = minZ;
+						minZ = maxZ;
+						maxZ = tmp;
 					}
-					player.minSceneTileX = x + byte2;
-					player.maxSceneTileX = x + byte0;
-					player.minSceneTileZ = z + byte3;
-					player.maxSceneTileZ = z + byte1;
+
+					player.minSceneTileX = x + minX;
+					player.maxSceneTileX = x + maxX;
+					player.minSceneTileZ = z + minZ;
+					player.maxSceneTileZ = z + maxZ;
 				}
 			}
 		}
@@ -9808,17 +9828,18 @@ public class Game extends GameShell {
 		}
 
 		if (opcode == 4) {
-			int j2 = buffer.get1U();
-			int i5 = zoneX + ((j2 >> 4) & 7);
-			int l7 = zoneZ + (j2 & 7);
-			int k10 = buffer.get2U();
-			int l12 = buffer.get1U();
-			int j15 = buffer.get2U();
-			if ((i5 >= 0) && (l7 >= 0) && (i5 < 104) && (l7 < 104)) {
-				i5 = (i5 * 128) + 64;
-				l7 = (l7 * 128) + 64;
-				SpotAnimEntity spotAnim = new SpotAnimEntity(currentPlane, loopCycle, j15, k10, getHeightmapY(currentPlane, i5, l7) - l12, l7, i5);
-				aList_1056.pushBack(spotAnim);
+			int pos = buffer.get1U();
+			int x = zoneX + ((pos >> 4) & 7);
+			int z = zoneZ + (pos & 7);
+			int id = buffer.get2U();
+			int y = buffer.get1U();
+			int delay = buffer.get2U();
+
+			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+				x = (x * 128) + 64;
+				z = (z * 128) + 64;
+				SpotAnimEntity spotAnim = new SpotAnimEntity(currentPlane, loopCycle, delay, id, getHeightmapY(currentPlane, x, z) - y, z, x);
+				spotanims.pushBack(spotAnim);
 			}
 			return;
 		}
@@ -10099,13 +10120,13 @@ public class Game extends GameShell {
 
 		if (bitset != 0) {
 			int info = scene.getInfo(plane, x, z, bitset);
-			int otherID = (bitset >> 14) & 0x7fff;
+			int otherId = (bitset >> 14) & 0x7fff;
 			int otherKind = info & 0x1f;
 			int otherRotation = info >> 6;
 
 			if (classID == 0) {
 				scene.removeWall(x, plane, z);
-				LocType type = LocType.get(otherID);
+				LocType type = LocType.get(otherId);
 				if (type.solid) {
 					collisions[plane].remove(otherRotation, otherKind, type.blocksProjectiles, x, z);
 				}
@@ -10117,7 +10138,7 @@ public class Game extends GameShell {
 
 			if (classID == 2) {
 				scene.removeLoc(plane, x, z);
-				LocType type = LocType.get(otherID);
+				LocType type = LocType.get(otherId);
 
 				if (((x + type.width) > 103) || ((z + type.width) > 103) || ((x + type.length) > 103) || ((z + type.length) > 103)) {
 					return;
@@ -10130,7 +10151,7 @@ public class Game extends GameShell {
 
 			if (classID == 3) {
 				scene.removeGroundDecoration(plane, x, z);
-				LocType type_2 = LocType.get(otherID);
+				LocType type_2 = LocType.get(otherId);
 				if (type_2.solid && type_2.interactable) {
 					collisions[plane].method218(z, x);
 				}
@@ -10309,10 +10330,10 @@ public class Game extends GameShell {
 			if (ptype == 185) {
 				int k = in.get2ULEA();
 				Component.instances[k].modelCategory = 3;
-				if (localPlayer.aType_1698 == null) {
-					Component.instances[k].modelID = (localPlayer.anIntArray1700[0] << 25) + (localPlayer.anIntArray1700[4] << 20) + (localPlayer.appearance[0] << 15) + (localPlayer.appearance[8] << 10) + (localPlayer.appearance[11] << 5) + localPlayer.appearance[1];
+				if (localPlayer.npcType == null) {
+					Component.instances[k].modelId = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
 				} else {
-					Component.instances[k].modelID = (int) (0x12345678L + localPlayer.aType_1698.uid);
+					Component.instances[k].modelId = (int) (0x12345678L + localPlayer.npcType.uid);
 				}
 				ptype = -1;
 				return true;
@@ -10684,7 +10705,7 @@ public class Game extends GameShell {
 				int npcId = in.get2ULEA();
 				int componentId = in.get2ULEA();
 				Component.instances[componentId].modelCategory = 2;
-				Component.instances[componentId].modelID = npcId;
+				Component.instances[componentId].modelId = npcId;
 				ptype = -1;
 				return true;
 			}
@@ -10721,7 +10742,7 @@ public class Game extends GameShell {
 				int l11 = in.get1U();
 				int k17 = in.get2U();
 				if (aBoolean848 && !lowmem && (waveCount < 50)) {
-					waveIDs[waveCount] = i4;
+					waveIds[waveCount] = i4;
 					waveLoops[waveCount] = l11;
 					waveDelay[waveCount] = k17 + SoundTrack.delays[i4];
 					waveCount++;
@@ -10802,12 +10823,12 @@ public class Game extends GameShell {
 			if (ptype == 1) {
 				for (PlayerEntity player : players) {
 					if (player != null) {
-						player.anInt1526 = -1;
+						player.seqId1 = -1;
 					}
 				}
 				for (NPCEntity npc : npcs) {
 					if (npc != null) {
-						npc.anInt1526 = -1;
+						npc.seqId1 = -1;
 					}
 				}
 				ptype = -1;
@@ -11024,7 +11045,7 @@ public class Game extends GameShell {
 				} else {
 					ObjType type = ObjType.get(objId);
 					Component.instances[componentId].modelCategory = 4;
-					Component.instances[componentId].modelID = objId;
+					Component.instances[componentId].modelId = objId;
 					Component.instances[componentId].modelEyePitch = type.iconPitch;
 					Component.instances[componentId].modelYaw = type.iconYaw;
 					Component.instances[componentId].modelZoom = (type.iconZoom * 100) / zoom;
@@ -11094,7 +11115,7 @@ public class Game extends GameShell {
 				int componentId = in.get2ULEA();
 				int modelId = in.get2U();
 				Component.instances[componentId].modelCategory = 1;
-				Component.instances[componentId].modelID = modelId;
+				Component.instances[componentId].modelId = modelId;
 				ptype = -1;
 				return true;
 			}
@@ -11178,7 +11199,7 @@ public class Game extends GameShell {
 			}
 			if (ptype == 249) {
 				anInt1046 = in.get1UA();
-				localPlayerID = in.get2ULEA();
+				localPlayerId = in.get2ULEA();
 				ptype = -1;
 				return true;
 			}
@@ -11365,7 +11386,7 @@ public class Game extends GameShell {
 		method47(false);
 		method26(false);
 		method55();
-		method104();
+		updateSpotAnims();
 		if (!aBoolean1160) {
 			int pitch = cameraPitch;
 

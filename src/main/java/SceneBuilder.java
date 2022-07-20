@@ -22,7 +22,7 @@ public class SceneBuilder {
     }
 
     public static int method172(int i, int i_108_) {
-        int i_109_ = ((method176(i + 45365, i_108_ + 91923, 4) - 128) + ((method176(i + 10294, i_108_ + 37821, 2) - 128) >> 1) + ((method176(i, i_108_, 1) - 128) >> 2));
+        int i_109_ = (method176(i + 45365, i_108_ + 91923, 4) - 128) + ((method176(i + 10294, i_108_ + 37821, 2) - 128) >> 1) + ((method176(i, i_108_, 1) - 128) >> 2);
         i_109_ = (int) ((double) i_109_ * 0.3) + 35;
         if (i_109_ < 10) {
             i_109_ = 10;
@@ -85,28 +85,29 @@ public class SceneBuilder {
     }
 
     public static int method184(int i, int i_216_, int i_217_, int i_218_) {
-        int i_219_ = ((65536 - Draw3D.cos[(i_217_ * 1024) / i_218_]) >> 1);
+        int i_219_ = (65536 - Draw3D.cos[(i_217_ * 1024) / i_218_]) >> 1;
         return ((i * (65536 - i_219_)) >> 16) + ((i_216_ * i_219_) >> 16);
     }
 
     public static int method186(int i, int i_221_) {
-        int i_222_ = (method170(i - 1, i_221_ - 1) + method170(i + 1, i_221_ - 1) + method170(i - 1, i_221_ + 1) + method170(i + 1, i_221_ + 1));
-        int i_223_ = (method170(i - 1, i_221_) + method170(i + 1, i_221_) + method170(i, i_221_ - 1) + method170(i, i_221_ + 1));
+        int i_222_ = method170(i - 1, i_221_ - 1) + method170(i + 1, i_221_ - 1) + method170(i - 1, i_221_ + 1) + method170(i + 1, i_221_ + 1);
+        int i_223_ = method170(i - 1, i_221_) + method170(i + 1, i_221_) + method170(i, i_221_ - 1) + method170(i, i_221_ + 1);
         int i_224_ = method170(i, i_221_);
         return (i_222_ / 16) + (i_223_ / 8) + (i_224_ / 4);
     }
 
-    public static int method187(int i, int i_225_) {
-        if (i == -1) {
+    public static int mulHSL(int hsl, int lightness) {
+        if (hsl == -1) {
             return 12345678;
         }
-        i_225_ = (i_225_ * (i & 0x7f)) / 128;
-        if (i_225_ < 2) {
-            i_225_ = 2;
-        } else if (i_225_ > 126) {
-            i_225_ = 126;
+        lightness = (lightness * (hsl & 0x7f)) / 128;
+
+        if (lightness < 2) {
+            lightness = 2;
+        } else if (lightness > 126) {
+            lightness = 126;
         }
-        return (i & 0xff80) + i_225_;
+        return (hsl & 0xff80) + lightness;
     }
 
     public static void addLoc(Scene scene, int rotation, int z, int kind, int plane, SceneCollisionMap collision, int[][][] planeHeightmap, int x, int locID, int dataPlane) {
@@ -396,7 +397,7 @@ public class SceneBuilder {
     public final byte[][][] planeShademap;
     public final int[][][] planeOccludemap;
     public final byte[][][] aByteArrayArrayArray136;
-    public final int[][] anIntArrayArray139;
+    public final int[][] planeTileLightness;
     public final byte[][][] aByteArrayArrayArray142;
     public final int maxTileX;
     public final int maxTileZ;
@@ -415,7 +416,7 @@ public class SceneBuilder {
         aByteArrayArrayArray148 = new byte[4][this.maxTileX][this.maxTileZ];
         planeOccludemap = new int[4][this.maxTileX + 1][this.maxTileZ + 1];
         planeShademap = new byte[4][this.maxTileX + 1][this.maxTileZ + 1];
-        anIntArrayArray139 = new int[this.maxTileX + 1][this.maxTileZ + 1];
+        planeTileLightness = new int[this.maxTileX + 1][this.maxTileZ + 1];
         anIntArray124 = new int[this.maxTileZ];
         anIntArray125 = new int[this.maxTileZ];
         anIntArray126 = new int[this.maxTileZ];
@@ -423,203 +424,245 @@ public class SceneBuilder {
         anIntArray128 = new int[this.maxTileZ];
     }
 
-    public void method171(SceneCollisionMap[] collisionMaps, Scene scene) {
-        for (int i_6_ = 0; i_6_ < 4; i_6_++) {
-            for (int i_7_ = 0; i_7_ < 104; i_7_++) {
-                for (int i_8_ = 0; i_8_ < 104; i_8_++) {
-                    if ((planeTileFlags[i_6_][i_7_][i_8_] & 0x1) == 1) {
-                        int i_9_ = i_6_;
-                        if ((planeTileFlags[1][i_7_][i_8_] & 0x2) == 2) {
-                            i_9_--;
+    public void method171(SceneCollisionMap[] planeCollisions, Scene scene) {
+        for (int plane = 0; plane < 4; plane++) {
+            for (int x = 0; x < 104; x++) {
+                for (int z = 0; z < 104; z++) {
+                    if ((planeTileFlags[plane][x][z] & 0x1) == 1) {
+                        int physicalPlane = plane;
+
+                        // bridge
+                        if ((planeTileFlags[1][x][z] & 0x2) == 2) {
+                            physicalPlane--;
                         }
-                        if (i_9_ >= 0) {
-                            collisionMaps[i_9_].addSolid(i_8_, i_7_);
+
+                        if (physicalPlane >= 0) {
+                            planeCollisions[physicalPlane].addSolid(z, x);
                         }
                     }
                 }
             }
+
         }
         anInt123 += (int) (Math.random() * 5.0) - 2;
+
         if (anInt123 < -8) {
             anInt123 = -8;
         }
+
         if (anInt123 > 8) {
             anInt123 = 8;
         }
+
         anInt133 += (int) (Math.random() * 5.0) - 2;
+
         if (anInt133 < -16) {
             anInt133 = -16;
         }
+
         if (anInt133 > 16) {
             anInt133 = 16;
         }
+
         for (int plane = 0; plane < 4; plane++) {
-            byte[][] is = planeShademap[plane];
-            int i_11_ = 96;
-            int i_12_ = 768;
-            int i_13_ = -50;
-            int i_14_ = -10;
-            int i_15_ = -50;
-            int i_16_ = (int) Math.sqrt((i_13_ * i_13_) + (i_14_ * i_14_) + (i_15_ * i_15_));
-            int i_17_ = (i_12_ * i_16_) >> 8;
-            for (int i_18_ = 1; i_18_ < (maxTileZ - 1); i_18_++) {
-                for (int i_19_ = 1; i_19_ < (maxTileX - 1); i_19_++) {
-                    int i_20_ = (planeHeightmap[plane][i_19_ + 1][i_18_] - planeHeightmap[plane][i_19_ - 1][i_18_]);
-                    int i_21_ = (planeHeightmap[plane][i_19_][i_18_ + 1] - planeHeightmap[plane][i_19_][i_18_ - 1]);
-                    int i_22_ = (int) Math.sqrt((i_20_ * i_20_) + 65536 + (i_21_ * i_21_));
-                    int i_23_ = (i_20_ << 8) / i_22_;
-                    int i_24_ = 65536 / i_22_;
-                    int i_25_ = (i_21_ << 8) / i_22_;
-                    int i_26_ = i_11_ + (((i_13_ * i_23_) + (i_14_ * i_24_) + (i_15_ * i_25_)) / i_17_);
-                    int i_27_ = ((is[i_19_ - 1][i_18_] >> 2) + (is[i_19_ + 1][i_18_] >> 3) + (is[i_19_][i_18_ - 1] >> 2) + (is[i_19_][i_18_ + 1] >> 3) + (is[i_19_][i_18_] >> 1));
-                    anIntArrayArray139[i_19_][i_18_] = i_26_ - i_27_;
+            byte[][] shademap = planeShademap[plane];
+            int lightAmbient = 96;
+            int lightAttenuation = 768;
+            int lightX = -50;
+            int lightY = -10;
+            int lightZ = -50;
+            int lightMagnitude = (lightAttenuation * (int) Math.sqrt((lightX * lightX) + (lightY * lightY) + (lightZ * lightZ))) >> 8;
+
+            for (int z = 1; z < (maxTileZ - 1); z++) {
+                for (int x = 1; x < (maxTileX - 1); x++) {
+                    int dx = planeHeightmap[plane][x + 1][z] - planeHeightmap[plane][x - 1][z];
+                    int dz = planeHeightmap[plane][x][z + 1] - planeHeightmap[plane][x][z - 1];
+                    int len = (int) Math.sqrt((dx * dx) + 65536 + (dz * dz));
+                    int nx = (dx << 8) / len;
+                    int ny = 65536 / len;
+                    int nz = (dz << 8) / len;
+                    int light = lightAmbient + (((lightX * nx) + (lightY * ny) + (lightZ * nz)) / lightMagnitude);
+                    int shade = (shademap[x - 1][z] >> 2) + (shademap[x + 1][z] >> 3) + (shademap[x][z - 1] >> 2) + (shademap[x][z + 1] >> 3) + (shademap[x][z] >> 1);
+                    planeTileLightness[x][z] = light - shade;
                 }
             }
-            for (int i_28_ = 0; i_28_ < maxTileZ; i_28_++) {
-                anIntArray124[i_28_] = 0;
-                anIntArray125[i_28_] = 0;
-                anIntArray126[i_28_] = 0;
-                anIntArray127[i_28_] = 0;
-                anIntArray128[i_28_] = 0;
+
+            for (int z = 0; z < maxTileZ; z++) {
+                anIntArray124[z] = 0;
+                anIntArray125[z] = 0;
+                anIntArray126[z] = 0;
+                anIntArray127[z] = 0;
+                anIntArray128[z] = 0;
             }
-            for (int i_29_ = -5; i_29_ < (maxTileX + 5); i_29_++) {
-                for (int i_30_ = 0; i_30_ < maxTileZ; i_30_++) {
-                    int i_31_ = i_29_ + 5;
-                    if ((i_31_ >= 0) && (i_31_ < maxTileX)) {
-                        int i_32_ = aByteArrayArrayArray142[plane][i_31_][i_30_] & 0xff;
-                        if (i_32_ > 0) {
-                            FloType type = FloType.instances[i_32_ - 1];
-                            anIntArray124[i_30_] += type.anInt397;
-                            anIntArray125[i_30_] += type.anInt395;
-                            anIntArray126[i_30_] += type.anInt396;
-                            anIntArray127[i_30_] += type.anInt398;
-                            anIntArray128[i_30_]++;
+
+            for (int x0 = -5; x0 < (maxTileX + 5); x0++) {
+                for (int z0 = 0; z0 < maxTileZ; z0++) {
+                    int x1 = x0 + 5;
+
+                    if ((x1 >= 0) && (x1 < maxTileX)) {
+                        int floId = aByteArrayArrayArray142[plane][x1][z0] & 0xff;
+
+                        if (floId > 0) {
+                            FloType flo = FloType.instances[floId - 1];
+                            anIntArray124[z0] += flo.chroma;
+                            anIntArray125[z0] += flo.saturation;
+                            anIntArray126[z0] += flo.lightness;
+                            anIntArray127[z0] += flo.luminance;
+                            anIntArray128[z0]++;
                         }
                     }
-                    int i_33_ = i_29_ - 5;
-                    if ((i_33_ >= 0) && (i_33_ < maxTileX)) {
-                        int i_34_ = aByteArrayArrayArray142[plane][i_33_][i_30_] & 0xff;
-                        if (i_34_ > 0) {
-                            FloType type = FloType.instances[i_34_ - 1];
-                            anIntArray124[i_30_] -= type.anInt397;
-                            anIntArray125[i_30_] -= type.anInt395;
-                            anIntArray126[i_30_] -= type.anInt396;
-                            anIntArray127[i_30_] -= type.anInt398;
-                            anIntArray128[i_30_]--;
+
+                    int x2 = x0 - 5;
+
+                    if ((x2 >= 0) && (x2 < maxTileX)) {
+                        int floId = aByteArrayArrayArray142[plane][x2][z0] & 0xff;
+
+                        if (floId > 0) {
+                            FloType flo = FloType.instances[floId - 1];
+                            anIntArray124[z0] -= flo.chroma;
+                            anIntArray125[z0] -= flo.saturation;
+                            anIntArray126[z0] -= flo.lightness;
+                            anIntArray127[z0] -= flo.luminance;
+                            anIntArray128[z0]--;
                         }
                     }
                 }
-                if ((i_29_ >= 1) && (i_29_ < (maxTileX - 1))) {
+
+                if ((x0 >= 1) && (x0 < (maxTileX - 1))) {
                     int i_35_ = 0;
                     int i_36_ = 0;
                     int i_37_ = 0;
                     int i_38_ = 0;
                     int i_39_ = 0;
-                    for (int i_40_ = -5; i_40_ < (maxTileZ + 5); i_40_++) {
-                        int i_41_ = i_40_ + 5;
-                        if ((i_41_ >= 0) && (i_41_ < maxTileZ)) {
-                            i_35_ += anIntArray124[i_41_];
-                            i_36_ += anIntArray125[i_41_];
-                            i_37_ += anIntArray126[i_41_];
-                            i_38_ += anIntArray127[i_41_];
-                            i_39_ += anIntArray128[i_41_];
+
+                    for (int z0 = -5; z0 < (maxTileZ + 5); z0++) {
+                        int dz1 = z0 + 5;
+
+                        if ((dz1 >= 0) && (dz1 < maxTileZ)) {
+                            i_35_ += anIntArray124[dz1];
+                            i_36_ += anIntArray125[dz1];
+                            i_37_ += anIntArray126[dz1];
+                            i_38_ += anIntArray127[dz1];
+                            i_39_ += anIntArray128[dz1];
                         }
-                        int i_42_ = i_40_ - 5;
-                        if ((i_42_ >= 0) && (i_42_ < maxTileZ)) {
-                            i_35_ -= anIntArray124[i_42_];
-                            i_36_ -= anIntArray125[i_42_];
-                            i_37_ -= anIntArray126[i_42_];
-                            i_38_ -= anIntArray127[i_42_];
-                            i_39_ -= anIntArray128[i_42_];
+
+                        int dz2 = z0 - 5;
+
+                        if ((dz2 >= 0) && (dz2 < maxTileZ)) {
+                            i_35_ -= anIntArray124[dz2];
+                            i_36_ -= anIntArray125[dz2];
+                            i_37_ -= anIntArray126[dz2];
+                            i_38_ -= anIntArray127[dz2];
+                            i_39_ -= anIntArray128[dz2];
                         }
-                        if ((i_40_ >= 1) && (i_40_ < (maxTileZ - 1)) && (!lowmem || ((planeTileFlags[0][i_29_][i_40_] & 0x2) != 0) || (((planeTileFlags[plane][i_29_][i_40_] & 0x10) == 0) && (getDrawPlane(plane, i_29_, i_40_) == anInt131)))) {
+
+                        if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((planeTileFlags[0][x0][z0] & 0x2) != 0) || (((planeTileFlags[plane][x0][z0] & 0x10) == 0) && (getDrawPlane(plane, x0, z0) == anInt131)))) {
                             if (plane < minPlane) {
                                 minPlane = plane;
                             }
-                            int i_43_ = (aByteArrayArrayArray142[plane][i_29_][i_40_] & 0xff);
-                            int i_44_ = (aByteArrayArrayArray130[plane][i_29_][i_40_] & 0xff);
-                            if ((i_43_ > 0) || (i_44_ > 0)) {
-                                int i_45_ = planeHeightmap[plane][i_29_][i_40_];
-                                int i_46_ = (planeHeightmap[plane][i_29_ + 1][i_40_]);
-                                int i_47_ = (planeHeightmap[plane][i_29_ + 1][i_40_ + 1]);
-                                int i_48_ = (planeHeightmap[plane][i_29_][i_40_ + 1]);
-                                int i_49_ = anIntArrayArray139[i_29_][i_40_];
-                                int i_50_ = anIntArrayArray139[i_29_ + 1][i_40_];
-                                int i_51_ = anIntArrayArray139[i_29_ + 1][i_40_ + 1];
-                                int i_52_ = anIntArrayArray139[i_29_][i_40_ + 1];
+
+                            int i_43_ = aByteArrayArrayArray142[plane][x0][z0] & 0xff;
+                            int floId = aByteArrayArrayArray130[plane][x0][z0] & 0xff;
+
+                            if ((i_43_ > 0) || (floId > 0)) {
+                                int heightSW = planeHeightmap[plane][x0][z0];
+                                int heightSE = planeHeightmap[plane][x0 + 1][z0];
+                                int heightNE = planeHeightmap[plane][x0 + 1][z0 + 1];
+                                int heightNW = planeHeightmap[plane][x0][z0 + 1];
+
+                                int tileHeight00 = planeTileLightness[x0][z0];
+                                int tileHeight10 = planeTileLightness[x0 + 1][z0];
+                                int tileHeight11 = planeTileLightness[x0 + 1][z0 + 1];
+                                int tileHeight01 = planeTileLightness[x0][z0 + 1];
+
                                 int i_53_ = -1;
                                 int i_54_ = -1;
+
                                 if (i_43_ > 0) {
-                                    int i_55_ = (i_35_ * 256) / i_38_;
-                                    int i_56_ = i_36_ / i_39_;
-                                    int i_57_ = i_37_ / i_39_;
-                                    i_53_ = method177(i_55_, i_56_, i_57_);
-                                    i_55_ = (i_55_ + anInt123) & 0xff;
-                                    i_57_ += anInt133;
-                                    if (i_57_ < 0) {
-                                        i_57_ = 0;
-                                    } else if (i_57_ > 255) {
-                                        i_57_ = 255;
+                                    int hue = (i_35_ * 256) / i_38_;
+                                    int saturation = i_36_ / i_39_;
+                                    int lightness = i_37_ / i_39_;
+
+                                    i_53_ = decimateHSL(hue, saturation, lightness);
+
+                                    hue = (hue + anInt123) & 0xff;
+                                    lightness += anInt133;
+
+                                    if (lightness < 0) {
+                                        lightness = 0;
+                                    } else if (lightness > 255) {
+                                        lightness = 255;
                                     }
-                                    i_54_ = method177(i_55_, i_56_, i_57_);
+
+                                    i_54_ = decimateHSL(hue, saturation, lightness);
                                 }
+
                                 if (plane > 0) {
                                     boolean bool = true;
-                                    if ((i_43_ == 0) && ((aByteArrayArrayArray136[plane][i_29_][i_40_]) != 0)) {
+                                    if ((i_43_ == 0) && (aByteArrayArrayArray136[plane][x0][z0] != 0)) {
                                         bool = false;
                                     }
-                                    if ((i_44_ > 0) && !(FloType.instances[i_44_ - 1].aBoolean393)) {
+                                    if ((floId > 0) && !FloType.instances[floId - 1].aBoolean393) {
                                         bool = false;
                                     }
-                                    if (bool && (i_45_ == i_46_) && (i_45_ == i_47_) && (i_45_ == i_48_)) {
-                                        planeOccludemap[plane][i_29_][i_40_] |= 0x924;
+                                    if (bool && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
+                                        planeOccludemap[plane][x0][z0] |= 0x924;
                                     }
                                 }
+
                                 int i_58_ = 0;
+
                                 if (i_53_ != -1) {
-                                    i_58_ = (Draw3D.palette[method187(i_54_, 96)]);
+                                    i_58_ = Draw3D.palette[mulHSL(i_54_, 96)];
                                 }
-                                if (i_44_ == 0) {
-                                    scene.method279(plane, i_29_, i_40_, 0, 0, -1, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), 0, 0, 0, 0, i_58_, 0);
+
+                                if (floId == 0) {
+                                    scene.setTile(plane, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), 0, 0, 0, 0, i_58_, 0);
                                 } else {
-                                    int i_59_ = ((aByteArrayArrayArray136[plane][i_29_][i_40_]) + 1);
-                                    byte i_60_ = (aByteArrayArrayArray148[plane][i_29_][i_40_]);
-                                    FloType type = FloType.instances[i_44_ - 1];
-                                    int textureId = type.textureId;
-                                    int i_62_;
-                                    int i_63_;
+                                    int i_59_ = aByteArrayArrayArray136[plane][x0][z0] + 1;
+                                    byte i_60_ = aByteArrayArrayArray148[plane][x0][z0];
+                                    FloType flo = FloType.instances[floId - 1];
+                                    int textureId = flo.textureId;
+                                    int rgb;
+                                    int hsl;
+
                                     if (textureId >= 0) {
-                                        i_62_ = Draw3D.getAverageTextureRGB(textureId);
-                                        i_63_ = -1;
-                                    } else if (type.anInt390 == 16711935) {
-                                        i_62_ = 0;
-                                        i_63_ = -2;
+                                        rgb = Draw3D.getAverageTextureRGB(textureId);
+                                        hsl = -1;
+                                    } else if (flo.rgb == 16711935) {
+                                        rgb = 0;
+                                        hsl = -2;
                                         textureId = -1;
                                     } else {
-                                        i_63_ = method177(type.anInt394, type.anInt395, type.anInt396);
-                                        i_62_ = (Draw3D.palette[method185(type.anInt399, 96)]);
+                                        hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
+                                        rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
                                     }
-                                    scene.method279(plane, i_29_, i_40_, i_59_, i_60_, textureId, i_45_, i_46_, i_47_, i_48_, method187(i_53_, i_49_), method187(i_53_, i_50_), method187(i_53_, i_51_), method187(i_53_, i_52_), method185(i_63_, i_49_), method185(i_63_, i_50_), method185(i_63_, i_51_), method185(i_63_, i_52_), i_58_, i_62_);
+
+                                    scene.setTile(plane, x0, z0, i_59_, i_60_, textureId, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
                                 }
                             }
                         }
                     }
                 }
             }
+
             for (int stz = 1; stz < (maxTileZ - 1); stz++) {
                 for (int stx = 1; stx < (maxTileX - 1); stx++) {
                     scene.setDrawPlane(plane, stx, stz, getDrawPlane(plane, stx, stz));
                 }
             }
         }
+
         scene.method305(-10, 64, -50, 768, -50);
-        for (int i_66_ = 0; i_66_ < maxTileX; i_66_++) {
-            for (int i_67_ = 0; i_67_ < maxTileZ; i_67_++) {
-                if ((planeTileFlags[1][i_66_][i_67_] & 0x2) == 2) {
-                    scene.setBridge(i_66_, i_67_);
+
+        for (int x = 0; x < maxTileX; x++) {
+            for (int z = 0; z < maxTileZ; z++) {
+                if ((planeTileFlags[1][x][z] & 0x2) == 2) {
+                    scene.setBridge(x, z);
                 }
             }
         }
+
         int i_68_ = 1;
         int i_69_ = 2;
         int i_70_ = 4;
@@ -638,19 +681,19 @@ public class SceneBuilder {
                             int i_77_ = plane;
                             int i_78_ = plane;
                             for (/**/; i_75_ > 0; i_75_--) {
-                                if (((planeOccludemap[plane][x][i_75_ - 1]) & i_68_) == 0) {
+                                if ((planeOccludemap[plane][x][i_75_ - 1] & i_68_) == 0) {
                                     break;
                                 }
                             }
                             for (/**/; i_76_ < maxTileZ; i_76_++) {
-                                if (((planeOccludemap[plane][x][i_76_ + 1]) & i_68_) == 0) {
+                                if ((planeOccludemap[plane][x][i_76_ + 1] & i_68_) == 0) {
                                     break;
                                 }
                             }
                             while_0_:
                             for (/**/; i_77_ > 0; i_77_--) {
                                 for (int i_79_ = i_75_; i_79_ <= i_76_; i_79_++) {
-                                    if (((planeOccludemap[i_77_ - 1][x][i_79_]) & i_68_) == 0) {
+                                    if ((planeOccludemap[i_77_ - 1][x][i_79_] & i_68_) == 0) {
                                         break while_0_;
                                     }
                                 }
@@ -658,7 +701,7 @@ public class SceneBuilder {
                             while_1_:
                             for (/**/; i_78_ < i_71_; i_78_++) {
                                 for (int i_80_ = i_75_; i_80_ <= i_76_; i_80_++) {
-                                    if (((planeOccludemap[i_78_ + 1][x][i_80_]) & i_68_) == 0) {
+                                    if ((planeOccludemap[i_78_ + 1][x][i_80_] & i_68_) == 0) {
                                         break while_1_;
                                     }
                                 }
@@ -666,7 +709,7 @@ public class SceneBuilder {
                             int i_81_ = ((i_78_ + 1) - i_77_) * ((i_76_ - i_75_) + 1);
                             if (i_81_ >= 8) {
                                 int i_82_ = 240;
-                                int i_83_ = (planeHeightmap[i_78_][x][i_75_] - i_82_);
+                                int i_83_ = planeHeightmap[i_78_][x][i_75_] - i_82_;
                                 int i_84_ = planeHeightmap[i_77_][x][i_75_];
                                 Scene.method277(i_71_, x * 128, i_84_, x * 128, (i_76_ * 128) + 128, i_83_, i_75_ * 128, 1);
                                 for (int i_85_ = i_77_; i_85_ <= i_78_; i_85_++) {
@@ -682,19 +725,19 @@ public class SceneBuilder {
                             int i_89_ = plane;
                             int i_90_ = plane;
                             for (/**/; i_87_ > 0; i_87_--) {
-                                if (((planeOccludemap[plane][i_87_ - 1][z]) & i_69_) == 0) {
+                                if ((planeOccludemap[plane][i_87_ - 1][z] & i_69_) == 0) {
                                     break;
                                 }
                             }
                             for (/**/; i_88_ < maxTileX; i_88_++) {
-                                if (((planeOccludemap[plane][i_88_ + 1][z]) & i_69_) == 0) {
+                                if ((planeOccludemap[plane][i_88_ + 1][z] & i_69_) == 0) {
                                     break;
                                 }
                             }
                             while_2_:
                             for (/**/; i_89_ > 0; i_89_--) {
                                 for (int i_91_ = i_87_; i_91_ <= i_88_; i_91_++) {
-                                    if (((planeOccludemap[i_89_ - 1][i_91_][z]) & i_69_) == 0) {
+                                    if ((planeOccludemap[i_89_ - 1][i_91_][z] & i_69_) == 0) {
                                         break while_2_;
                                     }
                                 }
@@ -702,7 +745,7 @@ public class SceneBuilder {
                             while_3_:
                             for (/**/; i_90_ < i_71_; i_90_++) {
                                 for (int i_92_ = i_87_; i_92_ <= i_88_; i_92_++) {
-                                    if (((planeOccludemap[i_90_ + 1][i_92_][z]) & i_69_) == 0) {
+                                    if ((planeOccludemap[i_90_ + 1][i_92_][z] & i_69_) == 0) {
                                         break while_3_;
                                     }
                                 }
@@ -710,7 +753,7 @@ public class SceneBuilder {
                             int i_93_ = ((i_90_ + 1) - i_89_) * ((i_88_ - i_87_) + 1);
                             if (i_93_ >= 8) {
                                 int i_94_ = 240;
-                                int i_95_ = (planeHeightmap[i_90_][i_87_][z] - i_94_);
+                                int i_95_ = planeHeightmap[i_90_][i_87_][z] - i_94_;
                                 int i_96_ = planeHeightmap[i_89_][i_87_][z];
                                 Scene.method277(i_71_, i_87_ * 128, i_96_, (i_88_ * 128) + 128, z * 128, i_95_, z * 128, 2);
                                 for (int i_97_ = i_89_; i_97_ <= i_90_; i_97_++) {
@@ -726,19 +769,19 @@ public class SceneBuilder {
                             int i_101_ = z;
                             int i_102_ = z;
                             for (/**/; i_101_ > 0; i_101_--) {
-                                if (((planeOccludemap[plane][x][i_101_ - 1]) & i_70_) == 0) {
+                                if ((planeOccludemap[plane][x][i_101_ - 1] & i_70_) == 0) {
                                     break;
                                 }
                             }
                             for (/**/; i_102_ < maxTileZ; i_102_++) {
-                                if (((planeOccludemap[plane][x][i_102_ + 1]) & i_70_) == 0) {
+                                if ((planeOccludemap[plane][x][i_102_ + 1] & i_70_) == 0) {
                                     break;
                                 }
                             }
                             while_4_:
                             for (/**/; i_99_ > 0; i_99_--) {
                                 for (int i_103_ = i_101_; i_103_ <= i_102_; i_103_++) {
-                                    if (((planeOccludemap[plane][i_99_ - 1][i_103_]) & i_70_) == 0) {
+                                    if ((planeOccludemap[plane][i_99_ - 1][i_103_] & i_70_) == 0) {
                                         break while_4_;
                                     }
                                 }
@@ -746,7 +789,7 @@ public class SceneBuilder {
                             while_5_:
                             for (/**/; i_100_ < maxTileX; i_100_++) {
                                 for (int i_104_ = i_101_; i_104_ <= i_102_; i_104_++) {
-                                    if (((planeOccludemap[plane][i_100_ + 1][i_104_]) & i_70_) == 0) {
+                                    if ((planeOccludemap[plane][i_100_ + 1][i_104_] & i_70_) == 0) {
                                         break while_5_;
                                     }
                                 }
@@ -871,7 +914,7 @@ public class SceneBuilder {
                                     shade = 30;
                                 }
 
-                                if (shade > (planeShademap[plane][x + dx][z + dz])) {
+                                if (shade > planeShademap[plane][x + dx][z + dz]) {
                                     planeShademap[plane][x + dx][z + dz] = (byte) shade;
                                 }
                             }
@@ -1117,27 +1160,27 @@ public class SceneBuilder {
         }
     }
 
-    public int method177(int i, int i_156_, int i_157_) {
-        if (i_157_ > 179) {
-            i_156_ /= 2;
+    public int decimateHSL(int hue, int saturation, int lightness) {
+        if (lightness > 179) {
+            saturation /= 2;
         }
-        if (i_157_ > 192) {
-            i_156_ /= 2;
+        if (lightness > 192) {
+            saturation /= 2;
         }
-        if (i_157_ > 217) {
-            i_156_ /= 2;
+        if (lightness > 217) {
+            saturation /= 2;
         }
-        if (i_157_ > 243) {
-            i_156_ /= 2;
+        if (lightness > 243) {
+            saturation /= 2;
         }
-        return ((i / 4) << 10) + ((i_156_ / 32) << 7) + (i_157_ / 2);
+        return ((hue / 4) << 10) + ((saturation / 32) << 7) + (lightness / 2);
     }
 
     public void method179(int i, int i_162_, SceneCollisionMap[] collisionMaps, int i_164_, int i_165_, byte[] is, int i_166_, int i_167_, int i_168_) {
         for (int i_169_ = 0; i_169_ < 8; i_169_++) {
             for (int i_170_ = 0; i_170_ < 8; i_170_++) {
                 if (((i_164_ + i_169_) > 0) && ((i_164_ + i_169_) < 103) && ((i_168_ + i_170_) > 0) && ((i_168_ + i_170_) < 103)) {
-                    collisionMaps[i_167_].flags[i_164_ + i_169_][(i_168_ + i_170_)] &= ~0x1000000;
+                    collisionMaps[i_167_].flags[i_164_ + i_169_][i_168_ + i_170_] &= ~0x1000000;
                 }
             }
         }
@@ -1197,7 +1240,7 @@ public class SceneBuilder {
                     if (i_187_ == 0) {
                         planeHeightmap[0][i_186_][i] = -i_192_ * 8;
                     } else {
-                        planeHeightmap[i_187_][i_186_][i] = (planeHeightmap[i_187_ - 1][i_186_][i] - (i_192_ * 8));
+                        planeHeightmap[i_187_][i_186_][i] = planeHeightmap[i_187_ - 1][i_186_][i] - (i_192_ * 8);
                         break;
                     }
                     break;
@@ -1281,26 +1324,30 @@ public class SceneBuilder {
         }
     }
 
-    public int method185(int i, int i_220_) {
-        if (i == -2) {
+    public int adjustLightness(int hsl, int scalar) {
+        if (hsl == -2) {
             return 12345678;
         }
-        if (i == -1) {
-            if (i_220_ < 0) {
-                i_220_ = 0;
-            } else if (i_220_ > 127) {
-                i_220_ = 127;
+
+        if (hsl == -1) {
+            if (scalar < 0) {
+                scalar = 0;
+            } else if (scalar > 127) {
+                scalar = 127;
             }
-            i_220_ = 127 - i_220_;
-            return i_220_;
+            scalar = 127 - scalar;
+            return scalar;
         }
-        i_220_ = (i_220_ * (i & 0x7f)) / 128;
-        if (i_220_ < 2) {
-            i_220_ = 2;
-        } else if (i_220_ > 126) {
-            i_220_ = 126;
+
+        scalar = (scalar * (hsl & 0x7f)) / 128;
+
+        if (scalar < 2) {
+            scalar = 2;
+        } else if (scalar > 126) {
+            scalar = 126;
         }
-        return (i & 0xff80) + i_220_;
+
+        return (hsl & 0xff80) + scalar;
     }
 
     public void method190(int i, SceneCollisionMap[] collisionMaps, int i_263_, Scene scene, byte[] is) {

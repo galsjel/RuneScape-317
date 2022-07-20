@@ -165,13 +165,13 @@ public class Component {
 				int tmp = in.get1U();
 				if (tmp != 0) {
 					c.modelCategory = 1;
-					c.modelID = ((tmp - 1) << 8) + in.get1U();
+					c.modelId = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
 				if (tmp != 0) {
 					c.activeModelCategory = 1;
-					c.activeModelID = ((tmp - 1) << 8) + in.get1U();
+					c.activeModelId = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
@@ -270,7 +270,7 @@ public class Component {
 	public int activeHoverColor;
 	public Image24 activeImage;
 	public int activeModelCategory;
-	public int activeModelID;
+	public int activeModelId;
 	public int activeSeqId;
 	public String activeText;
 	public boolean center;
@@ -300,7 +300,7 @@ public class Component {
 	public boolean invUsable;
 	public int modelEyePitch;
 	public int modelCategory;
-	public int modelID;
+	public int modelId;
 	public int modelYaw;
 	public int modelZoom;
 	public String option;
@@ -350,16 +350,13 @@ public class Component {
 			model = Model.tryGet(id);
 		}
 		if (category == 2) {
-			model = NPCType.get(id).method160();
+			model = NPCType.get(id).getUnlitHeadModel();
 		}
 		if (category == 3) {
-			model = Game.localPlayer.method453();
+			model = Game.localPlayer.getUnlitHeadModel();
 		}
 		if (category == 4) {
-			model = ObjType.get(id).getModelUnlit(50);
-		}
-		if (category == 5) {
-			model = null;
+			model = ObjType.get(id).getUnlitModel(50);
 		}
 		if (model != null) {
 			modelCache.put((long) ((category << 16) + id), model);
@@ -371,9 +368,9 @@ public class Component {
 		Model model;
 
 		if (active) {
-			model = getModel(activeModelCategory, activeModelID);
+			model = getModel(activeModelCategory, activeModelId);
 		} else {
-			model = getModel(modelCategory, modelID);
+			model = getModel(modelCategory, modelId);
 		}
 
 		if (model == null) {

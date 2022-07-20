@@ -99,7 +99,7 @@ public class LocType {
      */
     public boolean dynamic;
     public int scaleZ;
-    public int[] modelIDs;
+    public int[] modelIds;
     public int varbit;
     public int decorationPadding;
     public int[] modelKinds;
@@ -115,7 +115,7 @@ public class LocType {
     }
 
     public void reset() {
-        modelIDs = null;
+        modelIds = null;
         modelKinds = null;
         name = null;
         description = null;
@@ -154,31 +154,31 @@ public class LocType {
     }
 
     public void method574(OnDemand onDemand) {
-        if (modelIDs == null) {
+        if (modelIds == null) {
             return;
         }
-        for (int k : modelIDs) {
+        for (int k : modelIds) {
             onDemand.method560(k & 0xffff, 0);
         }
     }
 
     public boolean validate(int kind) {
         if (modelKinds == null) {
-            if (modelIDs == null) {
+            if (modelIds == null) {
                 return true;
             }
             if (kind != 10) {
                 return true;
             }
             boolean valid = true;
-            for (int modelID : modelIDs) {
+            for (int modelID : modelIds) {
                 valid &= Model.validate(modelID & 0xffff);
             }
             return valid;
         }
         for (int i = 0; i < modelKinds.length; i++) {
             if (modelKinds[i] == kind) {
-                return Model.validate(modelIDs[i] & 0xffff);
+                return Model.validate(modelIds[i] & 0xffff);
             }
         }
         return true;
@@ -211,11 +211,11 @@ public class LocType {
     }
 
     public boolean method579() {
-        if (modelIDs == null) {
+        if (modelIds == null) {
             return true;
         }
         boolean flag1 = true;
-        for (int j : modelIDs) {
+        for (int j : modelIds) {
             flag1 &= Model.validate(j & 0xffff);
         }
         return flag1;
@@ -258,30 +258,30 @@ public class LocType {
                 return cached;
             }
 
-            if (modelIDs == null) {
+            if (modelIds == null) {
                 return null;
             }
 
             boolean flip = invert ^ (rotation > 3);
-            int modelCount = modelIDs.length;
+            int modelCount = modelIds.length;
 
             for (int i = 0; i < modelCount; i++) {
-                int modelID = modelIDs[i];
+                int modelId = modelIds[i];
 
                 if (flip) {
-                    modelID += 0x10000;
+                    modelId += 0x10000;
                 }
 
-                model = staticCache.get(modelID);
+                model = staticCache.get(modelId);
                 if (model == null) {
-                    model = Model.tryGet(modelID & 0xffff);
+                    model = Model.tryGet(modelId & 0xffff);
                     if (model == null) {
                         return null;
                     }
                     if (flip) {
                         model.rotateY180();
                     }
-                    staticCache.put((long) modelID, model);
+                    staticCache.put((long) modelId, model);
                 }
 
                 if (modelCount > 1) {
@@ -315,17 +315,17 @@ public class LocType {
                 return cached;
             }
 
-            int modelID = modelIDs[kindIndex];
+            int modelId = modelIds[kindIndex];
             boolean flip = invert ^ (rotation > 3);
 
             if (flip) {
-                modelID += 0x10000;
+                modelId += 0x10000;
             }
 
-            model = staticCache.get(modelID);
+            model = staticCache.get(modelId);
 
             if (model == null) {
-                model = Model.tryGet(modelID & 0xffff);
+                model = Model.tryGet(modelId & 0xffff);
 
                 if (model == null) {
                     return null;
@@ -335,7 +335,7 @@ public class LocType {
                     model.rotateY180();
                 }
 
-                staticCache.put((long) modelID, model);
+                staticCache.put((long) modelId, model);
             }
         }
 
@@ -392,11 +392,11 @@ public class LocType {
                 if (j == 1) {
                     int k = buffer.get1U();
                     if (k > 0) {
-                        if ((modelIDs == null) || lowmem) {
+                        if ((modelIds == null) || lowmem) {
                             modelKinds = new int[k];
-                            modelIDs = new int[k];
+                            modelIds = new int[k];
                             for (int k1 = 0; k1 < k; k1++) {
-                                modelIDs[k1] = buffer.get2U();
+                                modelIds[k1] = buffer.get2U();
                                 modelKinds[k1] = buffer.get1U();
                             }
                         } else {
@@ -410,11 +410,11 @@ public class LocType {
                 } else if (j == 5) {
                     int l = buffer.get1U();
                     if (l > 0) {
-                        if ((modelIDs == null) || lowmem) {
+                        if ((modelIds == null) || lowmem) {
                             modelKinds = null;
-                            modelIDs = new int[l];
+                            modelIds = new int[l];
                             for (int l1 = 0; l1 < l; l1++) {
-                                modelIDs[l1] = buffer.get2U();
+                                modelIds[l1] = buffer.get2U();
                             }
                         } else {
                             buffer.position += l * 2;
@@ -518,7 +518,7 @@ public class LocType {
             }
         } while (true);
         if (i == -1) {
-            interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
+            interactable = (modelIds != null) && ((modelKinds == null) || (modelKinds[0] == 10));
             if (actions != null) {
                 interactable = true;
             }

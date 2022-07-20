@@ -250,7 +250,7 @@ public class Scene {
 		}
 	}
 
-	public void method279(int plane, int stx, int stz, int type, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
+	public void setTile(int plane, int stx, int stz, int type, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
 		if (type == 0) {
 			SceneTileUnderlay underlay = new SceneTileUnderlay(k2, l2, i3, j3, -1, k4, false);
 			for (int p = plane; p >= 0; p--) {

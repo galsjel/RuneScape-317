@@ -184,10 +184,10 @@ public class Buffer extends DoublyLinkedList.Node {
 	 */
 	public int getSmart() {
 		int i = data[position] & 0xff;
-		if (i < 0x80) {
-			return get1U() - 0x40;
+		if (i < 128) {
+			return get1U() - 64;
 		} else {
-			return get2U() - 0xC000;
+			return get2U() - 49152;
 		}
 	}
 
@@ -198,10 +198,10 @@ public class Buffer extends DoublyLinkedList.Node {
 	 */
 	public int getSmartU() {
 		int i = data[position] & 0xff;
-		if (i < 0x80) {
+		if (i < 128) {
 			return get1U();
 		} else {
-			return get2U() - 0x8000;
+			return get2U() - 32768;
 		}
 	}
 

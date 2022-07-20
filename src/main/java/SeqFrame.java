@@ -98,6 +98,7 @@ public class SeqFrame {
 			int baseCount = header.get1U();
 			int lastBase = -1;
 			int length = 0;
+
 			for (int base = 0; base < baseCount; base++) {
 				int flags = tran1.get1U();
 
@@ -106,6 +107,7 @@ public class SeqFrame {
 				}
 
 				if (skeleton.baseTypes[base] != SeqSkeleton.OP_BASE) {
+					// Look for any skipped ORIGIN bases and insert them into this frame.
 					for (int cur = base - 1; cur > lastBase; cur--) {
 						if (skeleton.baseTypes[cur] == SeqSkeleton.OP_BASE) {
 							bases[length] = cur;

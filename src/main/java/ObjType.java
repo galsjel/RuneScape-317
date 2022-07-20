@@ -482,7 +482,7 @@ public class ObjType {
 		return model;
 	}
 
-	public Model getModelUnlit(int amount) {
+	public Model getUnlitModel(int amount) {
 		if ((stackId != null) && (amount > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
@@ -491,7 +491,7 @@ public class ObjType {
 				}
 			}
 			if (j != -1) {
-				return get(j).getModelUnlit(1);
+				return get(j).getUnlitModel(1);
 			}
 		}
 		Model model = Model.tryGet(modelId);

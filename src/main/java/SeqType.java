@@ -31,9 +31,9 @@ public class SeqType {
 	public int speed = -1;
 	public int[] anIntArray357;
 	public boolean aBoolean358 = false;
-	public int anInt359 = 5;
-	public int anInt360 = -1;
-	public int anInt361 = -1;
+	public int priority = 5;
+	public int rightHandOverride = -1;
+	public int leftHandOverride = -1;
 	public int anInt362 = 99;
 	public int anInt363 = -1;
 	public int anInt364 = -1;
@@ -88,11 +88,11 @@ public class SeqType {
 			} else if (op == 4) {
 				aBoolean358 = true;
 			} else if (op == 5) {
-				anInt359 = buffer.get1U();
+				priority = buffer.get1U();
 			} else if (op == 6) {
-				anInt360 = buffer.get2U();
+				rightHandOverride = buffer.get2U();
 			} else if (op == 7) {
-				anInt361 = buffer.get2U();
+				leftHandOverride = buffer.get2U();
 			} else if (op == 8) {
 				anInt362 = buffer.get1U();
 			} else if (op == 9) {

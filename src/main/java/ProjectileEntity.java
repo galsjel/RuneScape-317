@@ -64,7 +64,7 @@ public class ProjectileEntity extends Entity {
 
 	@Override
 	public Model getModel() {
-		Model model = aType_1592.method266();
+		Model model = aType_1592.getModel();
 		if (model == null) {
 			return null;
 		}
@@ -79,11 +79,11 @@ public class ProjectileEntity extends Entity {
 			model_1.labelFaces = null;
 			model_1.labelVertices = null;
 		}
-		if ((aType_1592.anInt410 != 128) || (aType_1592.anInt411 != 128)) {
-			model_1.scale(aType_1592.anInt410, aType_1592.anInt410, aType_1592.anInt411);
+		if ((aType_1592.scaleXY != 128) || (aType_1592.scaleZ != 128)) {
+			model_1.scale(aType_1592.scaleXY, aType_1592.scaleXY, aType_1592.scaleZ);
 		}
 		model_1.rotateX(anInt1596);
-		model_1.calculateNormals(64 + aType_1592.anInt413, 850 + aType_1592.anInt414, -30, -50, -30, true);
+		model_1.calculateNormals(64 + aType_1592.lightAmbient, 850 + aType_1592.lightAttenuation, -30, -50, -30, true);
 		return model_1;
 	}
 
