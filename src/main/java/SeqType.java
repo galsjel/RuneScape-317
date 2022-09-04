@@ -57,19 +57,11 @@ public class SeqType {
 	public int idleStyle = -1;
 
 	/**
-	 * Restarts the sequence when played in a NPC/Player mask.
+	 * If 0, restarts the sequence if already playing
+	 * If 1, does not restart if already playing
+	 * @see Game#method86(Buffer) 
 	 */
-	public static final int REPLAY_STYLE_RESTART = 1;
-
-	/**
-	 * Does not restart the sequence.
-	 */
-	public static final int REPLAY_STYLE_CONTINUE = 2;
-
-	/**
-	 * Describes how the seq should act if played while already active.
-	 */
-	public int replayStyle = REPLAY_STYLE_CONTINUE;
+	public int replayStyle = 1;
 
 	public int unusedInt;
 
