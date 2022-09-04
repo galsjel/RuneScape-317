@@ -7267,7 +7267,7 @@ public class Game extends GameShell {
 	}
 
 	public void startForceMovement(PathingEntity entity) {
-		if ((entity.forceMoveStartCycle == loopCycle) || (entity.primarySeqID == -1) || (entity.primarySeqDelay != 0) || ((entity.primarySeqCycle + 1) > SeqType.instances[entity.primarySeqID].getFrameDelay(entity.primarySeqFrame))) {
+		if ((entity.forceMoveStartCycle == loopCycle) || (entity.primarySeqID == -1) || (entity.primarySeqDelay != 0) || ((entity.primarySeqCycle + 1) > SeqType.instances[entity.primarySeqID].getFrameDuration(entity.primarySeqFrame))) {
 			int duration = entity.forceMoveStartCycle - entity.forceMoveEndCycle;
 			int delta = loopCycle - entity.forceMoveEndCycle;
 			int dx0 = (entity.forceMoveStartSceneTileX * 128) + (entity.size * 64);
@@ -7520,7 +7520,7 @@ public class Game extends GameShell {
 			SeqType seq = SeqType.instances[e.secondarySeqID];
 			e.secondarySeqCycle++;
 
-			if ((e.secondarySeqFrame < seq.frameCount) && (e.secondarySeqCycle > seq.getFrameDelay(e.secondarySeqFrame))) {
+			if ((e.secondarySeqFrame < seq.frameCount) && (e.secondarySeqCycle > seq.getFrameDuration(e.secondarySeqFrame))) {
 				e.secondarySeqCycle = 0;
 				e.secondarySeqFrame++;
 			}
@@ -7538,8 +7538,8 @@ public class Game extends GameShell {
 
 			SeqType seq = SpotAnimType.instances[e.spotanim].seq;
 
-			for (e.spotanimCycle++; (e.spotanimFrame < seq.frameCount) && (e.spotanimCycle > seq.getFrameDelay(e.spotanimFrame)); e.spotanimFrame++) {
-				e.spotanimCycle -= seq.getFrameDelay(e.spotanimFrame);
+			for (e.spotanimCycle++; (e.spotanimFrame < seq.frameCount) && (e.spotanimCycle > seq.getFrameDuration(e.spotanimFrame)); e.spotanimFrame++) {
+				e.spotanimCycle -= seq.getFrameDuration(e.spotanimFrame);
 			}
 
 			if ((e.spotanimFrame >= seq.frameCount) && ((e.spotanimFrame < 0) || (e.spotanimFrame >= seq.frameCount))) {
@@ -7561,12 +7561,12 @@ public class Game extends GameShell {
 		if ((e.primarySeqID != -1) && (e.primarySeqDelay == 0)) {
 			SeqType seq = SeqType.instances[e.primarySeqID];
 
-			for (e.primarySeqCycle++; (e.primarySeqFrame < seq.frameCount) && (e.primarySeqCycle > seq.getFrameDelay(e.primarySeqFrame)); e.primarySeqFrame++) {
-				e.primarySeqCycle -= seq.getFrameDelay(e.primarySeqFrame);
+			for (e.primarySeqCycle++; (e.primarySeqFrame < seq.frameCount) && (e.primarySeqCycle > seq.getFrameDuration(e.primarySeqFrame)); e.primarySeqFrame++) {
+				e.primarySeqCycle -= seq.getFrameDuration(e.primarySeqFrame);
 			}
 
 			if (e.primarySeqFrame >= seq.frameCount) {
-				e.primarySeqFrame -= seq.speed;
+				e.primarySeqFrame -= seq.loopFrameCount;
 				e.primarySeqLoop++;
 
 				if (e.primarySeqLoop >= seq.loopCount) {
@@ -7576,7 +7576,7 @@ public class Game extends GameShell {
 					e.primarySeqID = -1;
 				}
 			}
-			e.aBoolean1541 = seq.aBoolean358;
+			e.aBoolean1541 = seq.forwardRenderPadding;
 		}
 
 		if (e.primarySeqDelay > 0) {
@@ -8791,11 +8791,11 @@ public class Game extends GameShell {
 
 				if (seqId != -1) {
 					SeqType type = SeqType.instances[seqId];
-					for (child.seqCycle += delta; child.seqCycle > type.getFrameDelay(child.seqFrame); ) {
-						child.seqCycle -= type.getFrameDelay(child.seqFrame) + 1;
+					for (child.seqCycle += delta; child.seqCycle > type.getFrameDuration(child.seqFrame); ) {
+						child.seqCycle -= type.getFrameDuration(child.seqFrame) + 1;
 						child.seqFrame++;
 						if (child.seqFrame >= type.frameCount) {
-							child.seqFrame -= type.speed;
+							child.seqFrame -= type.loopFrameCount;
 							if ((child.seqFrame < 0) || (child.seqFrame >= type.frameCount)) {
 								child.seqFrame = 0;
 							}

@@ -24,20 +24,60 @@ public class SeqType {
 		}
 	}
 
+	/**
+	 * The amount of frames in this {@link SeqType}.
+	 */
 	public int frameCount;
+
+	/**
+	 * The list of {@link SeqTransform} indices indexed by Frame ID.
+	 * @see SeqTransform
+	 */
 	public int[] transformIndices;
 
 	/**
 	 * Auxiliary transform indices appear to only be used by a {@link Component} of type <code>6</code> as seen in {@link Game#drawParentComponent(Component, int, int, int)}.
 	 */
 	public int[] auxiliaryTransformIndices;
-	public int[] frameDelays;
-	public int speed = -1;
+
+	/**
+	 * A list of durations indexed by Frame ID.
+	 */
+	public int[] frameDuration;
+
+	/**
+	 * The number of frames from the end of this {@link SeqType} used for looping.
+	 */
+	public int loopFrameCount = -1;
+
+	/**
+	 * Used to determine which transform bases a primary frame is allowed to use, and secondary not.
+	 * @see Model#applyTransforms(int, int, int[])
+	 */
 	public int[] mask;
-	public boolean aBoolean358 = false;
+
+	/**
+	 * Adds additional space to the render bounds.
+	 * @see Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)
+	 */
+	public boolean forwardRenderPadding = false;
 	public int priority = 5;
+
+	/**
+	 * Allows this {@link SeqType} to override the right hand of a {@link PlayerEntity}.
+	 * @see PlayerEntity#getSequencedModel()
+	 */
 	public int rightHandOverride = -1;
+
+	/**
+	 * Allows this {@link SeqType} to override the left hand of a {@link PlayerEntity}.
+	 * @see PlayerEntity#getSequencedModel()
+	 */
 	public int leftHandOverride = -1;
+
+	/**
+	 * How many times this seq is allowed to loop before stopping.
+	 */
 	public int loopCount = 99;
 
 	/**
@@ -59,7 +99,7 @@ public class SeqType {
 	/**
 	 * If 0, restarts the sequence if already playing
 	 * If 1, does not restart if already playing
-	 * @see Game#method86(Buffer) 
+	 * @see Game#method86(Buffer)
 	 */
 	public int replayStyle = 1;
 
@@ -68,21 +108,21 @@ public class SeqType {
 	public SeqType() {
 	}
 
-	public int getFrameDelay(int frame) {
-		int delay = frameDelays[frame];
+	public int getFrameDuration(int frame) {
+		int duration = frameDuration[frame];
 
-		if (delay == 0) {
+		if (duration == 0) {
 			SeqTransform transform = SeqTransform.get(transformIndices[frame]);
 			if (transform != null) {
-				delay = frameDelays[frame] = transform.delay;
+				duration = frameDuration[frame] = transform.delay;
 			}
 		}
 
-		if (delay == 0) {
-			delay = 1;
+		if (duration == 0) {
+			duration = 1;
 		}
 
-		return delay;
+		return duration;
 	}
 
 	public void load(Buffer buffer) {
@@ -94,17 +134,17 @@ public class SeqType {
 				frameCount = buffer.get1U();
 				transformIndices = new int[frameCount];
 				auxiliaryTransformIndices = new int[frameCount];
-				frameDelays = new int[frameCount];
+				frameDuration = new int[frameCount];
 				for (int f = 0; f < frameCount; f++) {
 					transformIndices[f] = buffer.get2U();
 					auxiliaryTransformIndices[f] = buffer.get2U();
 					if (auxiliaryTransformIndices[f] == 65535) {
 						auxiliaryTransformIndices[f] = -1;
 					}
-					frameDelays[f] = buffer.get2U();
+					frameDuration[f] = buffer.get2U();
 				}
 			} else if (op == 2) {
-				speed = buffer.get2U();
+				loopFrameCount = buffer.get2U();
 			} else if (op == 3) {
 				int count = buffer.get1U();
 				mask = new int[count + 1];
@@ -113,7 +153,7 @@ public class SeqType {
 				}
 				mask[count] = 9999999;
 			} else if (op == 4) {
-				aBoolean358 = true;
+				forwardRenderPadding = true;
 			} else if (op == 5) {
 				priority = buffer.get1U();
 			} else if (op == 6) {
@@ -141,8 +181,8 @@ public class SeqType {
 			transformIndices[0] = -1;
 			auxiliaryTransformIndices = new int[1];
 			auxiliaryTransformIndices[0] = -1;
-			frameDelays = new int[1];
-			frameDelays[0] = -1;
+			frameDuration = new int[1];
+			frameDuration[0] = -1;
 		}
 
 		if (moveStyle == -1) {

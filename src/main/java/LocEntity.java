@@ -33,9 +33,9 @@ public class LocEntity extends Entity {
 			seqFrame = 0;
 			seqCycle = Game.loopCycle;
 
-			if (randomFrame && (seq.speed != -1)) {
+			if (randomFrame && (seq.loopFrameCount != -1)) {
 				seqFrame = (int) (Math.random() * (double) seq.frameCount);
-				seqCycle -= (int) (Math.random() * (double) seq.getFrameDelay(seqFrame));
+				seqCycle -= (int) (Math.random() * (double) seq.getFrameDuration(seqFrame));
 			}
 		}
 		LocType type = LocType.get(this.id);
@@ -51,19 +51,19 @@ public class LocEntity extends Entity {
 		if (seq != null) {
 			int delta = Game.loopCycle - seqCycle;
 
-			if ((delta > 100) && (seq.speed > 0)) {
+			if ((delta > 100) && (seq.loopFrameCount > 0)) {
 				delta = 100;
 			}
 
-			while (delta > seq.getFrameDelay(seqFrame)) {
-				delta -= seq.getFrameDelay(seqFrame);
+			while (delta > seq.getFrameDuration(seqFrame)) {
+				delta -= seq.getFrameDuration(seqFrame);
 				seqFrame++;
 
 				if (seqFrame < seq.frameCount) {
 					continue;
 				}
 
-				seqFrame -= seq.speed;
+				seqFrame -= seq.loopFrameCount;
 
 				if ((seqFrame >= 0) && (seqFrame < seq.frameCount)) {
 					continue;

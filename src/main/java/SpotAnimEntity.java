@@ -65,8 +65,8 @@ public class SpotAnimEntity extends Entity {
 	}
 
 	public void update(int delta) {
-		for (seqCycle += delta; seqCycle > type.seq.getFrameDelay(seqFrame); ) {
-			seqCycle -= type.seq.getFrameDelay(seqFrame) + 1;
+		for (seqCycle += delta; seqCycle > type.seq.getFrameDuration(seqFrame); ) {
+			seqCycle -= type.seq.getFrameDuration(seqFrame) + 1;
 			seqFrame++;
 			
 			if (seqFrame >= type.seq.frameCount) {
