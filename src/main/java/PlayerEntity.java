@@ -156,33 +156,33 @@ public class PlayerEntity extends PathingEntity {
 			colors[part] = color;
 		}
 
-		super.seqStand = buffer.get2U();
-		if (super.seqStand == 65535) {
-			super.seqStand = -1;
+		super.seqStandID = buffer.get2U();
+		if (super.seqStandID == 65535) {
+			super.seqStandID = -1;
 		}
-		super.seqTurn = buffer.get2U();
-		if (super.seqTurn == 65535) {
-			super.seqTurn = -1;
+		super.seqTurnID = buffer.get2U();
+		if (super.seqTurnID == 65535) {
+			super.seqTurnID = -1;
 		}
-		super.seqWalk = buffer.get2U();
-		if (super.seqWalk == 65535) {
-			super.seqWalk = -1;
+		super.seqWalkID = buffer.get2U();
+		if (super.seqWalkID == 65535) {
+			super.seqWalkID = -1;
 		}
-		super.seqTurnAround = buffer.get2U();
-		if (super.seqTurnAround == 65535) {
-			super.seqTurnAround = -1;
+		super.seqTurnAroundID = buffer.get2U();
+		if (super.seqTurnAroundID == 65535) {
+			super.seqTurnAroundID = -1;
 		}
-		super.seqTurnLeft = buffer.get2U();
-		if (super.seqTurnLeft == 65535) {
-			super.seqTurnLeft = -1;
+		super.seqTurnLeftID = buffer.get2U();
+		if (super.seqTurnLeftID == 65535) {
+			super.seqTurnLeftID = -1;
 		}
-		super.seqTurnRight = buffer.get2U();
-		if (super.seqTurnRight == 65535) {
-			super.seqTurnRight = -1;
+		super.seqTurnRightID = buffer.get2U();
+		if (super.seqTurnRightID == 65535) {
+			super.seqTurnRightID = -1;
 		}
-		super.seqRun = buffer.get2U();
-		if (super.seqRun == 65535) {
-			super.seqRun = -1;
+		super.seqRunID = buffer.get2U();
+		if (super.seqRunID == 65535) {
+			super.seqRunID = -1;
 		}
 		name = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
 		combatLevel = buffer.get1U();
@@ -218,7 +218,7 @@ public class PlayerEntity extends PathingEntity {
 	public Model getSequencedModel() {
 		if (npcType != null) {
 			int transformID = -1;
-			if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+			if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
 				transformID = SeqType.instances[super.primarySeqID].transformIndices[super.primarySeqFrame];
 			} else if (super.secondarySeqID >= 0) {
 				transformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
@@ -232,11 +232,11 @@ public class PlayerEntity extends PathingEntity {
 		int rightHandValue = -1;
 		int leftHandValue = -1;
 
-		if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+		if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
 			SeqType type = SeqType.instances[super.primarySeqID];
 			primaryTransformID = type.transformIndices[super.primarySeqFrame];
 
-			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStand)) {
+			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
 				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 			}
 

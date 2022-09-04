@@ -11,29 +11,29 @@ public class PathingEntity extends Entity {
 	public final int[] damageCycle = new int[4];
 	public final boolean[] pathRunning = new boolean[10];
 	public int index = -1;
-	public int anInt1503;
+	public int seqTrigger;
 	public int turnSpeed = 32;
-	public int seqRun = -1;
+	public int seqRunID = -1;
 	public String chat;
 	public int height = 200;
 	public int dstYaw;
-	public int seqStand = -1;
-	public int seqTurn = -1;
+	public int seqStandID = -1;
+	public int seqTurnID = -1;
 	public int chatColor;
 	public int secondarySeqID = -1;
 	public int secondarySeqFrame;
-	public int seqCycle;
+	public int secondarySeqCycle;
 	public int spotanim = -1;
 	public int spotanimFrame;
 	public int spotanimCycle;
 	public int anInt1523;
 	public int spotanimY;
-	public int pathRemaining;
+	public int pathLength;
 	public int primarySeqID = -1;
 	public int primarySeqFrame;
-	public int anInt1528;
-	public int anInt1529;
-	public int anInt1530;
+	public int primarySeqCycle;
+	public int primarySeqDelay;
+	public int primarySeqLoop;
 	public int chatStyle;
 	public int combatCycle = -1000;
 	public int health;
@@ -44,7 +44,7 @@ public class PathingEntity extends Entity {
 	public int faceTileZ;
 	public int size = 1;
 	public boolean aBoolean1541 = false;
-	public int anInt1542;
+	public int seqPathLength;
 	public int forceMoveStartSceneTileX;
 	public int forceMoveEndSceneTileX;
 	public int forceMoveStartSceneTileZ;
@@ -55,16 +55,16 @@ public class PathingEntity extends Entity {
 	public int x;
 	public int z;
 	public int yaw;
-	public int seqWalk = -1;
-	public int seqTurnAround = -1;
-	public int seqTurnLeft = -1;
-	public int seqTurnRight = -1;
+	public int seqWalkID = -1;
+	public int seqTurnAroundID = -1;
+	public int seqTurnLeftID = -1;
+	public int seqTurnRightID = -1;
 
 	public PathingEntity() {
 	}
 
 	public void move(int x, int z, boolean teleport) {
-		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].anInt364 == 1)) {
+		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].idleStyle == 1)) {
 			primarySeqID = -1;
 		}
 		if (!teleport) {
@@ -72,11 +72,11 @@ public class PathingEntity extends Entity {
 			int dz = z - pathTileZ[0];
 
 			if ((dx >= -8) && (dx <= 8) && (dz >= -8) && (dz <= 8)) {
-				if (pathRemaining < 9) {
-					pathRemaining++;
+				if (pathLength < 9) {
+					pathLength++;
 				}
 
-				for (int i = pathRemaining; i > 0; i--) {
+				for (int i = pathLength; i > 0; i--) {
 					pathTileX[i] = pathTileX[i - 1];
 					pathTileZ[i] = pathTileZ[i - 1];
 					pathRunning[i] = pathRunning[i - 1];
@@ -88,18 +88,18 @@ public class PathingEntity extends Entity {
 				return;
 			}
 		}
-		pathRemaining = 0;
-		anInt1542 = 0;
-		anInt1503 = 0;
+		pathLength = 0;
+		seqPathLength = 0;
+		seqTrigger = 0;
 		pathTileX[0] = x;
 		pathTileZ[0] = z;
 		this.x = (pathTileX[0] * 128) + (size * 64);
 		this.z = (pathTileZ[0] * 128) + (size * 64);
 	}
 
-	public void method446() {
-		pathRemaining = 0;
-		anInt1542 = 0;
+	public void resetPath() {
+		pathLength = 0;
+		seqPathLength = 0;
 	}
 
 	public void method447(int j, int k, int l) {
@@ -144,13 +144,13 @@ public class PathingEntity extends Entity {
 			j++;
 			k--;
 		}
-		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].anInt364 == 1)) {
+		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].idleStyle == 1)) {
 			primarySeqID = -1;
 		}
-		if (pathRemaining < 9) {
-			pathRemaining++;
+		if (pathLength < 9) {
+			pathLength++;
 		}
-		for (int l = pathRemaining; l > 0; l--) {
+		for (int l = pathLength; l > 0; l--) {
 			pathTileX[l] = pathTileX[l - 1];
 			pathTileZ[l] = pathTileZ[l - 1];
 			pathRunning[l] = pathRunning[l - 1];

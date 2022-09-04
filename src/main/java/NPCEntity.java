@@ -10,10 +10,10 @@ public class NPCEntity extends PathingEntity {
 	}
 
 	public Model getSequencedModel() {
-		if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+		if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
 			int primaryTransformID = SeqType.instances[super.primarySeqID].transformIndices[super.primarySeqFrame];
 			int secondaryTransformID = -1;
-			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStand)) {
+			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
 				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 			}
 			return type.getSequencedModel(secondaryTransformID, primaryTransformID, SeqType.instances[super.primarySeqID].mask);

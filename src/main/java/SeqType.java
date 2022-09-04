@@ -38,10 +38,39 @@ public class SeqType {
 	public int priority = 5;
 	public int rightHandOverride = -1;
 	public int leftHandOverride = -1;
-	public int anInt362 = 99;
-	public int anInt363 = -1;
-	public int anInt364 = -1;
-	public int anInt365 = 2;
+	public int loopCount = 99;
+
+	/**
+	 * If 0, causes faster movement, allows looking at target
+	 * If 1, pause while moving
+	 * If 2, does not look at target, continues playing during movement
+	 * @see Game#updateMovement(PathingEntity)
+	 */
+	public int moveStyle = -1;
+	
+	/**
+	 * If 0, allows looking at a target
+	 * If 1, stops playing on move
+	 * If 2, does not look at target, continues playing during movement
+	 * @see Game#updateMovement(PathingEntity)
+	 */
+	public int idleStyle = -1;
+
+	/**
+	 * Restarts the sequence when played in a NPC/Player mask.
+	 */
+	public static final int REPLAY_STYLE_RESTART = 1;
+
+	/**
+	 * Does not restart the sequence.
+	 */
+	public static final int REPLAY_STYLE_CONTINUE = 2;
+
+	/**
+	 * Describes how the seq should act if played while already active.
+	 */
+	public int replayStyle = REPLAY_STYLE_CONTINUE;
+
 	public int unusedInt;
 
 	public SeqType() {
@@ -100,13 +129,13 @@ public class SeqType {
 			} else if (op == 7) {
 				leftHandOverride = buffer.get2U();
 			} else if (op == 8) {
-				anInt362 = buffer.get1U();
+				loopCount = buffer.get1U();
 			} else if (op == 9) {
-				anInt363 = buffer.get1U();
+				moveStyle = buffer.get1U();
 			} else if (op == 10) {
-				anInt364 = buffer.get1U();
+				idleStyle = buffer.get1U();
 			} else if (op == 11) {
-				anInt365 = buffer.get1U();
+				replayStyle = buffer.get1U();
 			} else if (op == 12) {
 				unusedInt = buffer.get4();
 			} else {
@@ -124,20 +153,20 @@ public class SeqType {
 			frameDelays[0] = -1;
 		}
 
-		if (anInt363 == -1) {
+		if (moveStyle == -1) {
 			if (mask != null) {
-				anInt363 = 2;
+				moveStyle = 2;
 			} else {
-				anInt363 = 0;
+				moveStyle = 0;
 			}
 		}
 
-		if (anInt364 == -1) {
+		if (idleStyle == -1) {
 			if (mask != null) {
-				anInt364 = 2;
+				idleStyle = 2;
 				return;
 			}
-			anInt364 = 0;
+			idleStyle = 0;
 		}
 	}
 
