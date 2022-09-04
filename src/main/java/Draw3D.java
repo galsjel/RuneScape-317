@@ -193,7 +193,7 @@ public class Draw3D {
             b += texturePalette[textureId][i] & 0xff;
         }
         int rgb = ((r / length) << 16) + ((g / length) << 8) + (b / length);
-        rgb = powRGB(rgb, 1.3999999999999999D);
+        rgb = setGamma(rgb, 1.3999999999999999D);
         if (rgb == 0) {
             rgb = 1;
         }
@@ -369,7 +369,7 @@ public class Draw3D {
                 int intB = (int) (b * 256D);
                 int rgb = (intR << 16) + (intG << 8) + intB;
 
-                rgb = powRGB(rgb, brightness);
+                rgb = setGamma(rgb, brightness);
 
                 if (rgb == 0) {
                     rgb = 1;
@@ -388,7 +388,7 @@ public class Draw3D {
             texturePalette[textureId] = new int[palette.length];
 
             for (int i = 0; i < palette.length; i++) {
-                texturePalette[textureId][i] = powRGB(palette[i], brightness);
+                texturePalette[textureId][i] = setGamma(palette[i], brightness);
 
                 if (((texturePalette[textureId][i] & 0xf8f8ff) == 0) && (i != 0)) {
                     texturePalette[textureId][i] = 1;
@@ -402,19 +402,19 @@ public class Draw3D {
     }
 
     /**
-     * Returns the <code>rgb</code> with each component raised to the power of <code>brightness</code>
+     * Returns the <code>rgb</code> with each component raised to the power of <code>gamma</code>
      *
      * @param rgb        the input rgb.
-     * @param brightness the brightness.
+     * @param gamma the gamma.
      * @return the result.
      */
-    private static int powRGB(int rgb, double brightness) {
+    private static int setGamma(int rgb, double gamma) {
         double r = (double) (rgb >> 16) / 256D;
         double g = (double) ((rgb >> 8) & 0xff) / 256D;
         double b = (double) (rgb & 0xff) / 256D;
-        r = Math.pow(r, brightness);
-        g = Math.pow(g, brightness);
-        b = Math.pow(b, brightness);
+        r = Math.pow(r, gamma);
+        g = Math.pow(g, gamma);
+        b = Math.pow(b, gamma);
         int intR = (int) (r * 256D);
         int intG = (int) (g * 256D);
         int intB = (int) (b * 256D);
