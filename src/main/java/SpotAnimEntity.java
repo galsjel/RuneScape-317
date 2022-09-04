@@ -31,13 +31,13 @@ public class SpotAnimEntity extends Entity {
 			return null;
 		}
 
-		int frame = type.seq.primaryFrames[seqFrame];
+		int transformID = type.seq.transformIndices[seqFrame];
 
-		Model model = new Model(true, SeqFrame.isNull(frame), false, base);
+		Model model = new Model(true, SeqTransform.isNull(transformID), false, base);
 
 		if (!seqComplete) {
 			model.createLabelReferences();
-			model.applySequenceFrame(frame);
+			model.applyTransform(transformID);
 			model.labelFaces = null;
 			model.labelVertices = null;
 		}

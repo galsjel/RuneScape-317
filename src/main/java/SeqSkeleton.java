@@ -1,8 +1,8 @@
 /**
  * A {@link SeqSkeleton} describes the usage and relationship between groups of vertices.
  *
- * @see Model#applySequenceFrame(int)
- * @see Model#applySequenceFrames(int, int, int[])
+ * @see Model#applyTransform(int)
+ * @see Model#applyTransforms(int, int, int[])
  */
 public class SeqSkeleton {
     /**

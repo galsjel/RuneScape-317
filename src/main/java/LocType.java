@@ -184,8 +184,8 @@ public class LocType {
         return true;
     }
 
-    public Model getModel(int kind, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int seqFrame) {
-        Model model = getModel(kind, seqFrame, rotation);
+    public Model getModel(int kind, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int transformID) {
+        Model model = getModel(kind, transformID, rotation);
 
         if (model == null) {
             return null;
@@ -242,7 +242,7 @@ public class LocType {
         }
     }
 
-    public Model getModel(int kind, int frame, int rotation) {
+    public Model getModel(int kind, int transformID, int rotation) {
         Model model = null;
         long bitset;
 
@@ -251,7 +251,7 @@ public class LocType {
                 return null;
             }
 
-            bitset = ((long) index << 6) + rotation + ((long) (frame + 1) << 32);
+            bitset = ((long) index << 6) + rotation + ((long) (transformID + 1) << 32);
             Model cached = dynamicCache.get(bitset);
 
             if (cached != null) {
@@ -307,7 +307,7 @@ public class LocType {
                 return null;
             }
 
-            bitset = ((long) this.index << 6) + ((long) kindIndex << 3) + rotation + ((long) (frame + 1) << 32);
+            bitset = ((long) this.index << 6) + ((long) kindIndex << 3) + rotation + ((long) (transformID + 1) << 32);
 
             Model cached = dynamicCache.get(bitset);
 
@@ -342,11 +342,11 @@ public class LocType {
         boolean scaled = (scaleX != 128) || (scaleZ != 128) || (scaleY != 128);
         boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
 
-        Model modified = new Model(srcColor == null, SeqFrame.isNull(frame), (rotation == 0) && (frame == -1) && !scaled && !translated, model);
+        Model modified = new Model(srcColor == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
 
-        if (frame != -1) {
+        if (transformID != -1) {
             modified.createLabelReferences();
-            modified.applySequenceFrame(frame);
+            modified.applyTransform(transformID);
             modified.labelFaces = null;
             modified.labelVertices = null;
         }

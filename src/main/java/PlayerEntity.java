@@ -59,10 +59,10 @@ public class PlayerEntity extends PathingEntity {
 			Model spotModel1 = spot.getModel();
 
 			if (spotModel1 != null) {
-				Model spotModel2 = new Model(true, SeqFrame.isNull(super.spotanimFrame), false, spotModel1);
+				Model spotModel2 = new Model(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
 				spotModel2.translate(0, -super.spotanimY, 0);
 				spotModel2.createLabelReferences();
-				spotModel2.applySequenceFrame(spot.seq.primaryFrames[super.spotanimFrame]);
+				spotModel2.applyTransform(spot.seq.transformIndices[super.spotanimFrame]);
 				spotModel2.labelFaces = null;
 				spotModel2.labelVertices = null;
 				if ((spot.scaleXY != 128) || (spot.scaleZ != 128)) {
@@ -217,27 +217,27 @@ public class PlayerEntity extends PathingEntity {
 
 	public Model getSequencedModel() {
 		if (npcType != null) {
-			int frame = -1;
-			if ((super.seqId1 >= 0) && (super.anInt1529 == 0)) {
-				frame = SeqType.instances[super.seqId1].primaryFrames[super.seqFrame1];
-			} else if (super.seqId2 >= 0) {
-				frame = SeqType.instances[super.seqId2].primaryFrames[super.seqFrame2];
+			int transformID = -1;
+			if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+				transformID = SeqType.instances[super.primarySeqID].transformIndices[super.primarySeqFrame];
+			} else if (super.secondarySeqID >= 0) {
+				transformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 			}
-			return npcType.getSequencedModel(-1, frame, null);
+			return npcType.getSequencedModel(-1, transformID, null);
 		}
 
 		long hashCode = this.appearanceHashcode;
-		int frame1 = -1;
-		int frame2 = -1;
+		int primaryTransformID = -1;
+		int secondaryTransformID = -1;
 		int rightHandValue = -1;
 		int leftHandValue = -1;
 
-		if ((super.seqId1 >= 0) && (super.anInt1529 == 0)) {
-			SeqType type = SeqType.instances[super.seqId1];
-			frame1 = type.primaryFrames[super.seqFrame1];
+		if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+			SeqType type = SeqType.instances[super.primarySeqID];
+			primaryTransformID = type.transformIndices[super.primarySeqFrame];
 
-			if ((super.seqId2 >= 0) && (super.seqId2 != super.seqStand)) {
-				frame2 = SeqType.instances[super.seqId2].primaryFrames[super.seqFrame2];
+			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStand)) {
+				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 			}
 
 			if (type.rightHandOverride >= 0) {
@@ -249,8 +249,8 @@ public class PlayerEntity extends PathingEntity {
 				leftHandValue = type.leftHandOverride;
 				hashCode += ((long) leftHandValue - appearances[3]) << 16;
 			}
-		} else if (super.seqId2 >= 0) {
-			frame1 = SeqType.instances[super.seqId2].primaryFrames[super.seqFrame2];
+		} else if (super.secondarySeqID >= 0) {
+			primaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 		}
 
 		Model model = modelCache.get(hashCode);
@@ -339,12 +339,12 @@ public class PlayerEntity extends PathingEntity {
 		}
 
 		Model animated = Model.EMPTY;
-		animated.set(model, SeqFrame.isNull(frame1) & SeqFrame.isNull(frame2));
+		animated.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
-		if ((frame1 != -1) && (frame2 != -1)) {
-			animated.applySequenceFrames(frame1, frame2, SeqType.instances[super.seqId1].anIntArray357);
-		} else if (frame1 != -1) {
-			animated.applySequenceFrame(frame1);
+		if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
+			animated.applyTransforms(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
+		} else if (primaryTransformID != -1) {
+			animated.applyTransform(primaryTransformID);
 		}
 
 		animated.calculateBoundsCylinder();

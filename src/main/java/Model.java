@@ -519,7 +519,7 @@ public class Model extends Entity {
 
 	/**
 	 * Constructs a new model by merging the provided models. This constructor is used to combine models <i>before</i>
-	 * {@link SeqFrame}'s have been applied. Using this constructor implies all models merged are compatible with any
+	 * {@link SeqTransform}'s have been applied. Using this constructor implies all models merged are compatible with any
 	 * animations played on them.
 	 *
 	 * @param count  the model count.
@@ -662,7 +662,7 @@ public class Model extends Entity {
 
 	/**
 	 * Constructs a new model by combining models. This constructor is commonly used to combine models which have already
-	 * had a {@link SeqFrame} applied, and does not copy label information.
+	 * had a {@link SeqTransform} applied, and does not copy label information.
 	 *
 	 * @param count  the model count.
 	 * @param dummy  dummy.
@@ -817,7 +817,7 @@ public class Model extends Entity {
 
 	/**
 	 * Constructs a new model that can either share or clone the provided models attributes. This constructor is used to
-	 * save memory by avoiding allocations, and is meant to be used with models prior to having a {@link SeqFrame} applied.
+	 * save memory by avoiding allocations, and is meant to be used with models prior to having a {@link SeqTransform} applied.
 	 *
 	 * @param shareColors   <code>true</code> to reference the provided model's colors.
 	 * @param shareAlpha    <code>true</code> to reference the provided model's face alpha.
@@ -975,7 +975,7 @@ public class Model extends Entity {
 	/**
 	 * Sets <code>this</code> model to the provided model using a vertex pool.
 	 * <p>
-	 * Face alpha may be optionally copied in case an applied {@link SeqFrame} modifies the alpha of the model.
+	 * Face alpha may be optionally copied in case an applied {@link SeqTransform} modifies the alpha of the model.
 	 *
 	 * @param model      the model.
 	 * @param shareAlpha whether to copy or share a reference to face alphas.
@@ -1169,8 +1169,8 @@ public class Model extends Entity {
 	 * This method is required for applying animations to a model and should only be called once on a single instance
 	 * of a {@link Model}.
 	 *
-	 * @see #applySequenceFrame(int)
-	 * @see #applySequenceFrames(int, int, int[])
+	 * @see #applyTransform(int)
+	 * @see #applyTransforms(int, int, int[])
 	 * @see #applyTransform(int, int[], int, int, int)
 	 */
 	public void createLabelReferences() {
@@ -1229,62 +1229,62 @@ public class Model extends Entity {
 	}
 
 	/**
-	 * Applies a {@link SeqFrame} of the specified <code>id</code>.
+	 * Applies a {@link SeqTransform} of the specified <code>id</code>.
 	 *
-	 * @param frameId the frame id.
+	 * @param id the transform id.
 	 */
-	public void applySequenceFrame(int frameId) {
+	public void applyTransform(int id) {
 		if (labelVertices == null) {
 			return;
 		}
-		if (frameId == -1) {
+		if (id == -1) {
 			return;
 		}
-		SeqFrame frame = SeqFrame.get(frameId);
-		if (frame == null) {
+		SeqTransform transform = SeqTransform.get(id);
+		if (transform == null) {
 			return;
 		}
-		SeqSkeleton skeleton = frame.skeleton;
+		SeqSkeleton skeleton = transform.skeleton;
 		baseX = 0;
 		baseY = 0;
 		baseZ = 0;
-		for (int i = 0; i < frame.length; i++) {
-			int base = frame.bases[i];
-			applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], frame.x[i], frame.y[i], frame.z[i]);
+		for (int i = 0; i < transform.length; i++) {
+			int base = transform.bases[i];
+			applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], transform.x[i], transform.y[i], transform.z[i]);
 		}
 	}
 
 	/**
-	 * Applies the specified {@link SeqFrame} ids.
+	 * Applies the specified {@link SeqTransform} ids.
 	 *
-	 * @param frameId1 the primary frame id.
-	 * @param frameId2 the secondary frame id.
-	 * @param mask     the mask contains base ids to prevent the primary frame from using the same bases as the secondary frame.
+	 * @param primaryID the primary transform id.
+	 * @param secondaryID the secondary transform id.
+	 * @param mask     the mask contains base ids to prevent the primary transform from using the same bases as the secondary transform.
 	 */
-	public void applySequenceFrames(int frameId1, int frameId2, int[] mask) {
-		if (frameId1 == -1) {
+	public void applyTransforms(int primaryID, int secondaryID, int[] mask) {
+		if (primaryID == -1) {
 			return;
 		}
 
-		if ((mask == null) || (frameId2 == -1)) {
-			applySequenceFrame(frameId1);
+		if ((mask == null) || (secondaryID == -1)) {
+			applyTransform(primaryID);
 			return;
 		}
 
-		SeqFrame frame0 = SeqFrame.get(frameId1);
+		SeqTransform primary = SeqTransform.get(primaryID);
 
-		if (frame0 == null) {
+		if (primary == null) {
 			return;
 		}
 
-		SeqFrame frame1 = SeqFrame.get(frameId2);
+		SeqTransform secondary = SeqTransform.get(secondaryID);
 
-		if (frame1 == null) {
-			applySequenceFrame(frameId1);
+		if (secondary == null) {
+			applyTransform(primaryID);
 			return;
 		}
 
-		SeqSkeleton skeleton = frame0.skeleton;
+		SeqSkeleton skeleton = primary.skeleton;
 
 		baseX = 0;
 		baseY = 0;
@@ -1293,15 +1293,15 @@ public class Model extends Entity {
 		int counter = 0;
 		int maskBase = mask[counter++];
 
-		for (int i = 0; i < frame0.length; i++) {
-			int base = frame0.bases[i];
+		for (int i = 0; i < primary.length; i++) {
+			int base = primary.bases[i];
 
 			while (base > maskBase) {
 				maskBase = mask[counter++];
 			}
 
 			if ((base != maskBase) || (skeleton.baseTypes[base] == 0)) {
-				applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], frame0.x[i], frame0.y[i], frame0.z[i]);
+				applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], primary.x[i], primary.y[i], primary.z[i]);
 			}
 		}
 
@@ -1312,15 +1312,15 @@ public class Model extends Entity {
 		counter = 0;
 		maskBase = mask[counter++];
 
-		for (int frame = 0; frame < frame1.length; frame++) {
-			int group = frame1.bases[frame];
+		for (int i = 0; i < secondary.length; i++) {
+			int base = secondary.bases[i];
 
-			while (group > maskBase) {
+			while (base > maskBase) {
 				maskBase = mask[counter++];
 			}
 
-			if ((group == maskBase) || (skeleton.baseTypes[group] == 0)) {
-				applyTransform(skeleton.baseTypes[group], skeleton.baseLabels[group], frame1.x[frame], frame1.y[frame], frame1.z[frame]);
+			if ((base == maskBase) || (skeleton.baseTypes[base] == 0)) {
+				applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], secondary.x[i], secondary.y[i], secondary.z[i]);
 			}
 		}
 	}
@@ -1334,8 +1334,8 @@ public class Model extends Entity {
 	 * @param x      the param x.
 	 * @param y      the param y.
 	 * @param z      the param z.
-	 * @see #applySequenceFrames(int, int, int[])
-	 * @see #applySequenceFrame(int)
+	 * @see #applyTransforms(int, int, int[])
+	 * @see #applyTransform(int)
 	 * @see SeqSkeleton#OP_BASE
 	 * @see SeqSkeleton#OP_TRANSLATE
 	 * @see SeqSkeleton#OP_ROTATE

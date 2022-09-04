@@ -46,7 +46,7 @@ public class LocEntity extends Entity {
 
 	@Override
 	public Model getModel() {
-		int frame = -1;
+		int transformID = -1;
 
 		if (seq != null) {
 			int delta = Game.loopCycle - seqCycle;
@@ -75,7 +75,7 @@ public class LocEntity extends Entity {
 			seqCycle = Game.loopCycle - delta;
 
 			if (seq != null) {
-				frame = seq.primaryFrames[seqFrame];
+				transformID = seq.transformIndices[seqFrame];
 			}
 		}
 
@@ -90,7 +90,7 @@ public class LocEntity extends Entity {
 		if (type == null) {
 			return null;
 		} else {
-			return type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, frame);
+			return type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, transformID);
 		}
 	}
 

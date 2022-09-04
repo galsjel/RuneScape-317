@@ -20,8 +20,8 @@ public class PathingEntity extends Entity {
 	public int seqStand = -1;
 	public int seqTurn = -1;
 	public int chatColor;
-	public int seqId2 = -1;
-	public int seqFrame2;
+	public int secondarySeqID = -1;
+	public int secondarySeqFrame;
 	public int seqCycle;
 	public int spotanim = -1;
 	public int spotanimFrame;
@@ -29,8 +29,8 @@ public class PathingEntity extends Entity {
 	public int anInt1523;
 	public int spotanimY;
 	public int pathRemaining;
-	public int seqId1 = -1;
-	public int seqFrame1;
+	public int primarySeqID = -1;
+	public int primarySeqFrame;
 	public int anInt1528;
 	public int anInt1529;
 	public int anInt1530;
@@ -64,8 +64,8 @@ public class PathingEntity extends Entity {
 	}
 
 	public void move(int x, int z, boolean teleport) {
-		if ((seqId1 != -1) && (SeqType.instances[seqId1].anInt364 == 1)) {
-			seqId1 = -1;
+		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].anInt364 == 1)) {
+			primarySeqID = -1;
 		}
 		if (!teleport) {
 			int dx = x - pathTileX[0];
@@ -144,8 +144,8 @@ public class PathingEntity extends Entity {
 			j++;
 			k--;
 		}
-		if ((seqId1 != -1) && (SeqType.instances[seqId1].anInt364 == 1)) {
-			seqId1 = -1;
+		if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].anInt364 == 1)) {
+			primarySeqID = -1;
 		}
 		if (pathRemaining < 9) {
 			pathRemaining++;

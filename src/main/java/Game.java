@@ -672,7 +672,7 @@ public class Game extends GameShell {
 			ondemand = new OnDemand();
 			ondemand.load(archiveVersionlist, this);
 
-			SeqFrame.init(ondemand.getSeqFrameCount());
+			SeqTransform.init(ondemand.getSeqFrameCount());
 			Model.init(ondemand.getFileCount(0), ondemand);
 
 			if (!lowmem) {
@@ -1168,7 +1168,7 @@ public class Game extends GameShell {
 		Draw3D.unload();
 		Scene.unload();
 		Model.unload();
-		SeqFrame.unload();
+		SeqTransform.unload();
 		System.gc();
 	}
 
@@ -3021,7 +3021,7 @@ public class Game extends GameShell {
 				continue;
 			}
 
-			player.lowmem = ((lowmem && (playerCount > 50)) || (playerCount > 200)) && !local && (player.seqId2 == player.seqStand);
+			player.lowmem = ((lowmem && (playerCount > 50)) || (playerCount > 200)) && !local && (player.secondarySeqID == player.seqStand);
 
 			int stx = player.x >> 7;
 			int stz = player.z >> 7;
@@ -3590,7 +3590,7 @@ public class Game extends GameShell {
 				}
 
 				if ((request.store == 1) && (request.data != null)) {
-					SeqFrame.unpack(request.data);
+					SeqTransform.unpack(request.data);
 				}
 
 				if ((request.store == 2) && (request.file == music) && (request.data != null)) {
@@ -5757,7 +5757,7 @@ public class Game extends GameShell {
 				}
 
 				model.createLabelReferences();
-				model.applySequenceFrame(SeqType.instances[localPlayer.seqStand].primaryFrames[0]);
+				model.applyTransform(SeqType.instances[localPlayer.seqStand].transformIndices[0]);
 				model.calculateNormals(64, 850, -30, -50, -30, true);
 
 				component.modelCategory = 5;
@@ -6706,10 +6706,10 @@ public class Game extends GameShell {
 					i1 = -1;
 				}
 				int i2 = buffer.get1U();
-				if ((i1 == npc.seqId1) && (i1 != -1)) {
+				if ((i1 == npc.primarySeqID) && (i1 != -1)) {
 					int l2 = SeqType.instances[i1].anInt365;
 					if (l2 == 1) {
-						npc.seqFrame1 = 0;
+						npc.primarySeqFrame = 0;
 						npc.anInt1528 = 0;
 						npc.anInt1529 = i2;
 						npc.anInt1530 = 0;
@@ -6717,9 +6717,9 @@ public class Game extends GameShell {
 					if (l2 == 2) {
 						npc.anInt1530 = 0;
 					}
-				} else if ((i1 == -1) || (npc.seqId1 == -1) || (SeqType.instances[i1].priority >= SeqType.instances[npc.seqId1].priority)) {
-					npc.seqId1 = i1;
-					npc.seqFrame1 = 0;
+				} else if ((i1 == -1) || (npc.primarySeqID == -1) || (SeqType.instances[i1].priority >= SeqType.instances[npc.primarySeqID].priority)) {
+					npc.primarySeqID = i1;
+					npc.primarySeqFrame = 0;
 					npc.anInt1528 = 0;
 					npc.anInt1529 = i2;
 					npc.anInt1530 = 0;
@@ -7191,7 +7191,7 @@ public class Game extends GameShell {
 
 	public void method96(PathingEntity entity) {
 		if ((entity.x < 128) || (entity.z < 128) || (entity.x >= 13184) || (entity.z >= 13184)) {
-			entity.seqId1 = -1;
+			entity.primarySeqID = -1;
 			entity.spotanim = -1;
 			entity.forceMoveEndCycle = 0;
 			entity.forceMoveStartCycle = 0;
@@ -7200,7 +7200,7 @@ public class Game extends GameShell {
 			entity.method446();
 		}
 		if ((entity == localPlayer) && ((entity.x < 1536) || (entity.z < 1536) || (entity.x >= 11776) || (entity.z >= 11776))) {
-			entity.seqId1 = -1;
+			entity.primarySeqID = -1;
 			entity.spotanim = -1;
 			entity.forceMoveEndCycle = 0;
 			entity.forceMoveStartCycle = 0;
@@ -7244,7 +7244,7 @@ public class Game extends GameShell {
 	}
 
 	public void method98(PathingEntity entity) {
-		if ((entity.forceMoveStartCycle == loopCycle) || (entity.seqId1 == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.instances[entity.seqId1].getFrameDelay(entity.seqFrame1))) {
+		if ((entity.forceMoveStartCycle == loopCycle) || (entity.primarySeqID == -1) || (entity.anInt1529 != 0) || ((entity.anInt1528 + 1) > SeqType.instances[entity.primarySeqID].getFrameDelay(entity.primarySeqFrame))) {
 			int duration = entity.forceMoveStartCycle - entity.forceMoveEndCycle;
 			int delta = loopCycle - entity.forceMoveEndCycle;
 			int dx0 = (entity.forceMoveStartSceneTileX * 128) + (entity.size * 64);
@@ -7273,15 +7273,15 @@ public class Game extends GameShell {
 	}
 
 	public void method99(PathingEntity entity) {
-		entity.seqId2 = entity.seqStand;
+		entity.secondarySeqID = entity.seqStand;
 
 		if (entity.pathRemaining == 0) {
 			entity.anInt1503 = 0;
 			return;
 		}
 
-		if ((entity.seqId1 != -1) && (entity.anInt1529 == 0)) {
-			SeqType type = SeqType.instances[entity.seqId1];
+		if ((entity.primarySeqID != -1) && (entity.anInt1529 == 0)) {
+			SeqType type = SeqType.instances[entity.primarySeqID];
 
 			if ((entity.anInt1542 > 0) && (type.anInt363 == 0)) {
 				entity.anInt1503++;
@@ -7355,7 +7355,7 @@ public class Game extends GameShell {
 			seq = entity.seqWalk;
 		}
 
-		entity.seqId2 = seq;
+		entity.secondarySeqID = seq;
 
 		int moveSpeed = 4;
 
@@ -7380,8 +7380,8 @@ public class Game extends GameShell {
 			moveSpeed <<= 1;
 		}
 
-		if ((moveSpeed >= 8) && (entity.seqId2 == entity.seqWalk) && (entity.seqRun != -1)) {
-			entity.seqId2 = entity.seqRun;
+		if ((moveSpeed >= 8) && (entity.secondarySeqID == entity.seqWalk) && (entity.seqRun != -1)) {
+			entity.secondarySeqID = entity.seqRun;
 		}
 
 		if (x < dstX) {
@@ -7475,13 +7475,13 @@ public class Game extends GameShell {
 
 			e.yaw &= 0x7ff;
 
-			if ((e.seqId2 == e.seqStand) && (e.yaw != e.dstYaw)) {
+			if ((e.secondarySeqID == e.seqStand) && (e.yaw != e.dstYaw)) {
 				if (e.seqTurn != -1) {
-					e.seqId2 = e.seqTurn;
+					e.secondarySeqID = e.seqTurn;
 					return;
 				}
 
-				e.seqId2 = e.seqWalk;
+				e.secondarySeqID = e.seqWalk;
 			}
 		}
 	}
@@ -7489,18 +7489,18 @@ public class Game extends GameShell {
 	public void method101(PathingEntity e) {
 		e.aBoolean1541 = false;
 
-		if (e.seqId2 != -1) {
-			SeqType seq = SeqType.instances[e.seqId2];
+		if (e.secondarySeqID != -1) {
+			SeqType seq = SeqType.instances[e.secondarySeqID];
 			e.seqCycle++;
 
-			if ((e.seqFrame2 < seq.frameCount) && (e.seqCycle > seq.getFrameDelay(e.seqFrame2))) {
+			if ((e.secondarySeqFrame < seq.frameCount) && (e.seqCycle > seq.getFrameDelay(e.secondarySeqFrame))) {
 				e.seqCycle = 0;
-				e.seqFrame2++;
+				e.secondarySeqFrame++;
 			}
 
-			if (e.seqFrame2 >= seq.frameCount) {
+			if (e.secondarySeqFrame >= seq.frameCount) {
 				e.seqCycle = 0;
-				e.seqFrame2 = 0;
+				e.secondarySeqFrame = 0;
 			}
 		}
 
@@ -7520,8 +7520,8 @@ public class Game extends GameShell {
 			}
 		}
 
-		if ((e.seqId1 != -1) && (e.anInt1529 <= 1)) {
-			SeqType seq = SeqType.instances[e.seqId1];
+		if ((e.primarySeqID != -1) && (e.anInt1529 <= 1)) {
+			SeqType seq = SeqType.instances[e.primarySeqID];
 
 			if ((seq.anInt363 == 1) && (e.anInt1542 > 0) && (e.forceMoveEndCycle <= loopCycle) && (e.forceMoveStartCycle < loopCycle)) {
 				e.anInt1529 = 1;
@@ -7529,22 +7529,22 @@ public class Game extends GameShell {
 			}
 		}
 
-		if ((e.seqId1 != -1) && (e.anInt1529 == 0)) {
-			SeqType seq = SeqType.instances[e.seqId1];
+		if ((e.primarySeqID != -1) && (e.anInt1529 == 0)) {
+			SeqType seq = SeqType.instances[e.primarySeqID];
 
-			for (e.anInt1528++; (e.seqFrame1 < seq.frameCount) && (e.anInt1528 > seq.getFrameDelay(e.seqFrame1)); e.seqFrame1++) {
-				e.anInt1528 -= seq.getFrameDelay(e.seqFrame1);
+			for (e.anInt1528++; (e.primarySeqFrame < seq.frameCount) && (e.anInt1528 > seq.getFrameDelay(e.primarySeqFrame)); e.primarySeqFrame++) {
+				e.anInt1528 -= seq.getFrameDelay(e.primarySeqFrame);
 			}
 
-			if (e.seqFrame1 >= seq.frameCount) {
-				e.seqFrame1 -= seq.speed;
+			if (e.primarySeqFrame >= seq.frameCount) {
+				e.primarySeqFrame -= seq.speed;
 				e.anInt1530++;
 
 				if (e.anInt1530 >= seq.anInt362) {
-					e.seqId1 = -1;
+					e.primarySeqID = -1;
 				}
-				if ((e.seqFrame1 < 0) || (e.seqFrame1 >= seq.frameCount)) {
-					e.seqId1 = -1;
+				if ((e.primarySeqFrame < 0) || (e.primarySeqFrame >= seq.frameCount)) {
+					e.primarySeqID = -1;
 				}
 			}
 			e.aBoolean1541 = seq.aBoolean358;
@@ -8145,7 +8145,7 @@ public class Game extends GameShell {
 					model = child.getModel(-1, -1, active);
 				} else {
 					SeqType type = SeqType.instances[seqId];
-					model = child.getModel(type.secondaryFrames[child.seqFrame], type.primaryFrames[child.seqFrame], active);
+					model = child.getModel(type.auxiliaryTransformIndices[child.seqFrame], type.transformIndices[child.seqFrame], active);
 				}
 
 				if (model != null) {
@@ -8246,10 +8246,10 @@ public class Game extends GameShell {
 				seqId = -1;
 			}
 			int i2 = buffer.get1UC();
-			if ((seqId == player.seqId1) && (seqId != -1)) {
+			if ((seqId == player.primarySeqID) && (seqId != -1)) {
 				int i3 = SeqType.instances[seqId].anInt365;
 				if (i3 == 1) {
-					player.seqFrame1 = 0;
+					player.primarySeqFrame = 0;
 					player.anInt1528 = 0;
 					player.anInt1529 = i2;
 					player.anInt1530 = 0;
@@ -8257,9 +8257,9 @@ public class Game extends GameShell {
 				if (i3 == 2) {
 					player.anInt1530 = 0;
 				}
-			} else if ((seqId == -1) || (player.seqId1 == -1) || (SeqType.instances[seqId].priority >= SeqType.instances[player.seqId1].priority)) {
-				player.seqId1 = seqId;
-				player.seqFrame1 = 0;
+			} else if ((seqId == -1) || (player.primarySeqID == -1) || (SeqType.instances[seqId].priority >= SeqType.instances[player.primarySeqID].priority)) {
+				player.primarySeqID = seqId;
+				player.primarySeqFrame = 0;
 				player.anInt1528 = 0;
 				player.anInt1529 = i2;
 				player.anInt1530 = 0;
@@ -10823,12 +10823,12 @@ public class Game extends GameShell {
 			if (ptype == 1) {
 				for (PlayerEntity player : players) {
 					if (player != null) {
-						player.seqId1 = -1;
+						player.primarySeqID = -1;
 					}
 				}
 				for (NPCEntity npc : npcs) {
 					if (npc != null) {
-						npc.seqId1 = -1;
+						npc.primarySeqID = -1;
 					}
 				}
 				ptype = -1;

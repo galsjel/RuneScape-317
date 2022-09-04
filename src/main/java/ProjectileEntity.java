@@ -68,14 +68,14 @@ public class ProjectileEntity extends Entity {
 		if (model == null) {
 			return null;
 		}
-		int j = -1;
+		int transformID = -1;
 		if (aType_1592.seq != null) {
-			j = aType_1592.seq.primaryFrames[anInt1593];
+			transformID = aType_1592.seq.transformIndices[anInt1593];
 		}
-		Model model_1 = new Model(true, SeqFrame.isNull(j), false, model);
-		if (j != -1) {
+		Model model_1 = new Model(true, SeqTransform.isNull(transformID), false, model);
+		if (transformID != -1) {
 			model_1.createLabelReferences();
-			model_1.applySequenceFrame(j);
+			model_1.applyTransform(transformID);
 			model_1.labelFaces = null;
 			model_1.labelVertices = null;
 		}

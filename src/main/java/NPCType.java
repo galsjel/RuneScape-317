@@ -159,13 +159,13 @@ public class NPCType {
 		}
 	}
 
-	public Model getSequencedModel(int seqFrame2, int seqFrame1, int[] seqMask) {
+	public Model getSequencedModel(int secondaryTransformID, int primaryTransformID, int[] seqMask) {
 		if (overrides != null) {
 			NPCType override = getOverrideType();
 			if (override == null) {
 				return null;
 			} else {
-				return override.getSequencedModel(seqFrame2, seqFrame1, seqMask);
+				return override.getSequencedModel(secondaryTransformID, primaryTransformID, seqMask);
 			}
 		}
 
@@ -208,12 +208,12 @@ public class NPCType {
 		}
 
 		Model model_1 = Model.EMPTY;
-		model_1.set(model, SeqFrame.isNull(seqFrame1) & SeqFrame.isNull(seqFrame2));
+		model_1.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
-		if ((seqFrame1 != -1) && (seqFrame2 != -1)) {
-			model_1.applySequenceFrames(seqFrame1, seqFrame2, seqMask);
-		} else if (seqFrame1 != -1) {
-			model_1.applySequenceFrame(seqFrame1);
+		if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
+			model_1.applyTransforms(primaryTransformID, secondaryTransformID, seqMask);
+		} else if (primaryTransformID != -1) {
+			model_1.applyTransform(primaryTransformID);
 		}
 
 		if ((anInt91 != 128) || (anInt86 != 128)) {

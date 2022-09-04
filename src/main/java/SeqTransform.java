@@ -1,12 +1,12 @@
 /**
- * A {@link SeqFrame} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
+ * A {@link SeqTransform} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
  *
- * @see Model#applySequenceFrame(int)
- * @see Model#applySequenceFrames(int, int, int[])
+ * @see Model#applyTransform(int)
+ * @see Model#applyTransforms(int, int, int[])
  */
-public class SeqFrame {
+public class SeqTransform {
 
-	public static SeqFrame[] instances;
+	public static SeqTransform[] instances;
 
 	/**
 	 * Syntax sugar.
@@ -24,7 +24,7 @@ public class SeqFrame {
 	 * @param count the count
 	 */
 	public static void init(int count) {
-		instances = new SeqFrame[count + 1];
+		instances = new SeqTransform[count + 1];
 	}
 
 	/**
@@ -35,12 +35,12 @@ public class SeqFrame {
 	}
 
 	/**
-	 * Gets the {@link SeqFrame}
+	 * Gets the {@link SeqTransform}
 	 *
-	 * @param id the frame id.
-	 * @return the {@link SeqFrame} or <code>null</code> if it does not exist.
+	 * @param id the transform id.
+	 * @return the {@link SeqTransform} or <code>null</code> if it does not exist.
 	 */
-	public static SeqFrame get(int id) {
+	public static SeqTransform get(int id) {
 		if ((instances == null) || (id < 0) || (id >= instances.length)) {
 			return null;
 		} else {
@@ -49,10 +49,8 @@ public class SeqFrame {
 	}
 
 	/**
-	 * Reads the animation data and stores its frames in {@link #instances}.
-	 * <p>
-	 * <b>Note:</b> This method can read <i>multiple</i> {@link SeqFrame} which means the input data can be an entire working
-	 * animation.
+	 * This method can read <i>multiple</i> {@link SeqTransform}s which means the input data can be all the transforms
+	 * related to the loaded skeleton.
 	 *
 	 * @param src the animation data.
 	 * @see #get(int)
@@ -91,9 +89,9 @@ public class SeqFrame {
 		int[] z = new int[500];
 
 		for (int i = 0; i < frameCount; i++) {
-			SeqFrame frame = instances[header.get2U()] = new SeqFrame();
-			frame.delay = del.get1U();
-			frame.skeleton = skeleton;
+			SeqTransform transform = instances[header.get2U()] = new SeqTransform();
+			transform.delay = del.get1U();
+			transform.skeleton = skeleton;
 
 			int baseCount = header.get1U();
 			int lastBase = -1;
@@ -107,7 +105,7 @@ public class SeqFrame {
 				}
 
 				if (skeleton.baseTypes[base] != SeqSkeleton.OP_BASE) {
-					// Look for any skipped ORIGIN bases and insert them into this frame.
+					// Look for any skipped ORIGIN bases and insert them into this transform.
 					for (int cur = base - 1; cur > lastBase; cur--) {
 						if (skeleton.baseTypes[cur] == SeqSkeleton.OP_BASE) {
 							bases[length] = cur;
@@ -150,23 +148,23 @@ public class SeqFrame {
 				length++;
 			}
 
-			frame.length = length;
-			frame.bases = new int[length];
-			frame.x = new int[length];
-			frame.y = new int[length];
-			frame.z = new int[length];
+			transform.length = length;
+			transform.bases = new int[length];
+			transform.x = new int[length];
+			transform.y = new int[length];
+			transform.z = new int[length];
 
 			for (int j = 0; j < length; j++) {
-				frame.bases[j] = bases[j];
-				frame.x[j] = x[j];
-				frame.y[j] = y[j];
-				frame.z[j] = z[j];
+				transform.bases[j] = bases[j];
+				transform.x[j] = x[j];
+				transform.y[j] = y[j];
+				transform.z[j] = z[j];
 			}
 		}
 	}
 
 	/**
-	 * The skeleton associated to this frame.
+	 * The skeleton associated to this transform.
 	 */
 	public SeqSkeleton skeleton;
 	/**
@@ -174,15 +172,15 @@ public class SeqFrame {
 	 */
 	public int delay;
 	/**
-	 * The number of operations the frame performs.
+	 * The number of operations this transform performs.
 	 */
 	public int length;
 	/**
-	 * The list of bases the frame uses.
+	 * The list of bases this transform uses.
 	 */
 	public int[] bases;
 	/**
-	 * The frame parameters.
+	 * This transforms parameters.
 	 */
 	public int[] x, y, z;
 

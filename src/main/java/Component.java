@@ -364,7 +364,7 @@ public class Component {
 		return model;
 	}
 
-	public Model getModel(int seqFrameId1, int seqFrameId0, boolean active) {
+	public Model getModel(int secondaryTransformID, int primaryTransformID, boolean active) {
 		Model model;
 
 		if (active) {
@@ -377,22 +377,22 @@ public class Component {
 			return null;
 		}
 
-		if ((seqFrameId0 == -1) && (seqFrameId1 == -1) && (model.faceColor == null)) {
+		if ((primaryTransformID == -1) && (secondaryTransformID == -1) && (model.faceColor == null)) {
 			return model;
 		}
 
-		Model animatedModel = new Model(true, SeqFrame.isNull(seqFrameId0) & SeqFrame.isNull(seqFrameId1), false, model);
+		Model animatedModel = new Model(true, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID), false, model);
 
-		if ((seqFrameId0 != -1) || (seqFrameId1 != -1)) {
+		if ((primaryTransformID != -1) || (secondaryTransformID != -1)) {
 			animatedModel.createLabelReferences();
 		}
 
-		if (seqFrameId0 != -1) {
-			animatedModel.applySequenceFrame(seqFrameId0);
+		if (primaryTransformID != -1) {
+			animatedModel.applyTransform(primaryTransformID);
 		}
 
-		if (seqFrameId1 != -1) {
-			animatedModel.applySequenceFrame(seqFrameId1);
+		if (secondaryTransformID != -1) {
+			animatedModel.applyTransform(secondaryTransformID);
 		}
 
 		animatedModel.calculateNormals(64, 768, -50, -10, -50, true);

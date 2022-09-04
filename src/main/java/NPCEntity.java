@@ -10,21 +10,22 @@ public class NPCEntity extends PathingEntity {
 	}
 
 	public Model getSequencedModel() {
-		if ((super.seqId1 >= 0) && (super.anInt1529 == 0)) {
-			int frame1 = SeqType.instances[super.seqId1].primaryFrames[super.seqFrame1];
-			int frame2 = -1;
-			if ((super.seqId2 >= 0) && (super.seqId2 != super.seqStand)) {
-				frame2 = SeqType.instances[super.seqId2].primaryFrames[super.seqFrame2];
+		if ((super.primarySeqID >= 0) && (super.anInt1529 == 0)) {
+			int primaryTransformID = SeqType.instances[super.primarySeqID].transformIndices[super.primarySeqFrame];
+			int secondaryTransformID = -1;
+			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStand)) {
+				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 			}
-			return type.getSequencedModel(frame2, frame1, SeqType.instances[super.seqId1].anIntArray357);
+			return type.getSequencedModel(secondaryTransformID, primaryTransformID, SeqType.instances[super.primarySeqID].mask);
 		}
 
-		int frame = -1;
+		int transformID = -1;
 
-		if (super.seqId2 >= 0) {
-			frame = SeqType.instances[super.seqId2].primaryFrames[super.seqFrame2];
+		if (super.secondarySeqID >= 0) {
+			transformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
 		}
-		return type.getSequencedModel(-1, frame, null);
+
+		return type.getSequencedModel(-1, transformID, null);
 	}
 
 	@Override
@@ -46,13 +47,13 @@ public class NPCEntity extends PathingEntity {
 			Model model0 = spotanim.getModel();
 
 			if (model0 != null) {
-				int frame = spotanim.seq.primaryFrames[super.spotanimFrame];
+				int transformID = spotanim.seq.transformIndices[super.spotanimFrame];
 
 				// create a copy of the model
-				Model model1 = new Model(true, SeqFrame.isNull(frame), false, model0);
+				Model model1 = new Model(true, SeqTransform.isNull(transformID), false, model0);
 				model1.translate(0, -super.spotanimY, 0);
 				model1.createLabelReferences();
-				model1.applySequenceFrame(frame);
+				model1.applyTransform(transformID);
 				model1.labelFaces = null;
 				model1.labelVertices = null;
 

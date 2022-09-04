@@ -25,11 +25,15 @@ public class SeqType {
 	}
 
 	public int frameCount;
-	public int[] primaryFrames;
-	public int[] secondaryFrames;
+	public int[] transformIndices;
+
+	/**
+	 * Auxiliary transform indices appear to only be used by a {@link Component} of type <code>6</code> as seen in {@link Game#drawParentComponent(Component, int, int, int)}.
+	 */
+	public int[] auxiliaryTransformIndices;
 	public int[] frameDelays;
 	public int speed = -1;
-	public int[] anIntArray357;
+	public int[] mask;
 	public boolean aBoolean358 = false;
 	public int priority = 5;
 	public int rightHandOverride = -1;
@@ -45,16 +49,18 @@ public class SeqType {
 
 	public int getFrameDelay(int frame) {
 		int delay = frameDelays[frame];
-		if (delay == 0) {
-			SeqFrame transform = SeqFrame.get(primaryFrames[frame]);
 
+		if (delay == 0) {
+			SeqTransform transform = SeqTransform.get(transformIndices[frame]);
 			if (transform != null) {
 				delay = frameDelays[frame] = transform.delay;
 			}
 		}
+
 		if (delay == 0) {
 			delay = 1;
 		}
+
 		return delay;
 	}
 
@@ -65,26 +71,26 @@ public class SeqType {
 				break;
 			} else if (op == 1) {
 				frameCount = buffer.get1U();
-				primaryFrames = new int[frameCount];
-				secondaryFrames = new int[frameCount];
+				transformIndices = new int[frameCount];
+				auxiliaryTransformIndices = new int[frameCount];
 				frameDelays = new int[frameCount];
-				for (int j = 0; j < frameCount; j++) {
-					primaryFrames[j] = buffer.get2U();
-					secondaryFrames[j] = buffer.get2U();
-					if (secondaryFrames[j] == 65535) {
-						secondaryFrames[j] = -1;
+				for (int f = 0; f < frameCount; f++) {
+					transformIndices[f] = buffer.get2U();
+					auxiliaryTransformIndices[f] = buffer.get2U();
+					if (auxiliaryTransformIndices[f] == 65535) {
+						auxiliaryTransformIndices[f] = -1;
 					}
-					frameDelays[j] = buffer.get2U();
+					frameDelays[f] = buffer.get2U();
 				}
 			} else if (op == 2) {
 				speed = buffer.get2U();
 			} else if (op == 3) {
-				int k = buffer.get1U();
-				anIntArray357 = new int[k + 1];
-				for (int l = 0; l < k; l++) {
-					anIntArray357[l] = buffer.get1U();
+				int count = buffer.get1U();
+				mask = new int[count + 1];
+				for (int l = 0; l < count; l++) {
+					mask[l] = buffer.get1U();
 				}
-				anIntArray357[k] = 9999999;
+				mask[count] = 9999999;
 			} else if (op == 4) {
 				aBoolean358 = true;
 			} else if (op == 5) {
@@ -110,16 +116,16 @@ public class SeqType {
 
 		if (frameCount == 0) {
 			frameCount = 1;
-			primaryFrames = new int[1];
-			primaryFrames[0] = -1;
-			secondaryFrames = new int[1];
-			secondaryFrames[0] = -1;
+			transformIndices = new int[1];
+			transformIndices[0] = -1;
+			auxiliaryTransformIndices = new int[1];
+			auxiliaryTransformIndices[0] = -1;
 			frameDelays = new int[1];
 			frameDelays[0] = -1;
 		}
 
 		if (anInt363 == -1) {
-			if (anIntArray357 != null) {
+			if (mask != null) {
 				anInt363 = 2;
 			} else {
 				anInt363 = 0;
@@ -127,7 +133,7 @@ public class SeqType {
 		}
 
 		if (anInt364 == -1) {
-			if (anIntArray357 != null) {
+			if (mask != null) {
 				anInt364 = 2;
 				return;
 			}
