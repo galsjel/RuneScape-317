@@ -129,10 +129,10 @@ public class SceneBuilder {
         if (kind == 22) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(22, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 22, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, 22, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.addGroundDecoration(entity, dataPlane, x, z, y, bitset, info);
@@ -143,10 +143,10 @@ public class SceneBuilder {
         } else if ((kind == 10) || (kind == 11)) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(10, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 10, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, 10, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             if (entity != null) {
@@ -174,10 +174,10 @@ public class SceneBuilder {
             }
         } else if (kind >= 12) {
             Entity entity;
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.add(entity, dataPlane, x, z, y, 1, 1, 0, bitset, info);
@@ -188,10 +188,10 @@ public class SceneBuilder {
         } else if (kind == 0) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(0, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 0, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, 0, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
@@ -202,10 +202,10 @@ public class SceneBuilder {
         } else if (kind == 1) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(1, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 1, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, 1, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
@@ -218,12 +218,12 @@ public class SceneBuilder {
             Entity locA;
             Entity locB;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 locA = loc.getModel(2, 4 + rotation, heightSW, heightSE, heightNE, heightNW, -1);
                 locB = loc.getModel(2, nextRotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                locA = new LocEntity(locID, 4 + rotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
-                locB = new LocEntity(locID, nextRotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                locA = new LocEntity(locID, 4 + rotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+                locB = new LocEntity(locID, nextRotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], locA, WALL_ROTATION_OCCLUDE_TYPE[nextRotation], locB, dataPlane, x, z, y, bitset, info);
@@ -234,10 +234,10 @@ public class SceneBuilder {
         } else if (kind == 3) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(3, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 3, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, 3, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
@@ -248,10 +248,10 @@ public class SceneBuilder {
         } else if (kind == 9) {
             Entity entity;
 
-            if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                 entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
             scene.add(entity, dataPlane, x, z, y, 1, 1, 0, bitset, info);
@@ -286,10 +286,10 @@ public class SceneBuilder {
             if (kind == 4) {
                 Entity entity;
 
-                if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                     entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
                 scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataPlane, x, z, y, rotation * 512, 0, 0, bitset, info);
@@ -303,40 +303,40 @@ public class SceneBuilder {
 
                 Entity entity;
 
-                if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                     entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
                 scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataPlane, x, z, y, rotation * 512, anIntArray137[rotation] * padding, anIntArray144[rotation] * padding, bitset, info);
             } else if (kind == 6) {
                 Entity entity;
 
-                if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                     entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
                 scene.setWallDecoration(256, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
             } else if (kind == 7) {
                 Entity entity;
 
-                if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                     entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
                 scene.setWallDecoration(512, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
             } else if (kind == 8) {
                 Entity entity;
 
-                if ((loc.seqId == -1) && (loc.overrideTypeIDs == null)) {
+                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
                     entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
                 scene.setWallDecoration(768, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
@@ -500,10 +500,10 @@ public class SceneBuilder {
                     int x1 = x0 + 5;
 
                     if ((x1 >= 0) && (x1 < maxTileX)) {
-                        int floId = aByteArrayArrayArray142[plane][x1][z0] & 0xff;
+                        int floID = aByteArrayArrayArray142[plane][x1][z0] & 0xff;
 
-                        if (floId > 0) {
-                            FloType flo = FloType.instances[floId - 1];
+                        if (floID > 0) {
+                            FloType flo = FloType.instances[floID - 1];
                             anIntArray124[z0] += flo.chroma;
                             anIntArray125[z0] += flo.saturation;
                             anIntArray126[z0] += flo.lightness;
@@ -515,10 +515,10 @@ public class SceneBuilder {
                     int x2 = x0 - 5;
 
                     if ((x2 >= 0) && (x2 < maxTileX)) {
-                        int floId = aByteArrayArrayArray142[plane][x2][z0] & 0xff;
+                        int floID = aByteArrayArrayArray142[plane][x2][z0] & 0xff;
 
-                        if (floId > 0) {
-                            FloType flo = FloType.instances[floId - 1];
+                        if (floID > 0) {
+                            FloType flo = FloType.instances[floID - 1];
                             anIntArray124[z0] -= flo.chroma;
                             anIntArray125[z0] -= flo.saturation;
                             anIntArray126[z0] -= flo.lightness;
@@ -562,9 +562,9 @@ public class SceneBuilder {
                             }
 
                             int i_43_ = aByteArrayArrayArray142[plane][x0][z0] & 0xff;
-                            int floId = aByteArrayArrayArray130[plane][x0][z0] & 0xff;
+                            int floID = aByteArrayArrayArray130[plane][x0][z0] & 0xff;
 
-                            if ((i_43_ > 0) || (floId > 0)) {
+                            if ((i_43_ > 0) || (floID > 0)) {
                                 int heightSW = planeHeightmap[plane][x0][z0];
                                 int heightSE = planeHeightmap[plane][x0 + 1][z0];
                                 int heightNE = planeHeightmap[plane][x0 + 1][z0 + 1];
@@ -602,7 +602,7 @@ public class SceneBuilder {
                                     if ((i_43_ == 0) && (aByteArrayArrayArray136[plane][x0][z0] != 0)) {
                                         bool = false;
                                     }
-                                    if ((floId > 0) && !FloType.instances[floId - 1].aBoolean393) {
+                                    if ((floID > 0) && !FloType.instances[floID - 1].aBoolean393) {
                                         bool = false;
                                     }
                                     if (bool && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
@@ -616,29 +616,29 @@ public class SceneBuilder {
                                     i_58_ = Draw3D.palette[mulHSL(i_54_, 96)];
                                 }
 
-                                if (floId == 0) {
+                                if (floID == 0) {
                                     scene.setTile(plane, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), 0, 0, 0, 0, i_58_, 0);
                                 } else {
                                     int i_59_ = aByteArrayArrayArray136[plane][x0][z0] + 1;
                                     byte i_60_ = aByteArrayArrayArray148[plane][x0][z0];
-                                    FloType flo = FloType.instances[floId - 1];
-                                    int textureId = flo.textureId;
+                                    FloType flo = FloType.instances[floID - 1];
+                                    int textureID = flo.textureID;
                                     int rgb;
                                     int hsl;
 
-                                    if (textureId >= 0) {
-                                        rgb = Draw3D.getAverageTextureRGB(textureId);
+                                    if (textureID >= 0) {
+                                        rgb = Draw3D.getAverageTextureRGB(textureID);
                                         hsl = -1;
                                     } else if (flo.rgb == 16711935) {
                                         rgb = 0;
                                         hsl = -2;
-                                        textureId = -1;
+                                        textureID = -1;
                                     } else {
                                         hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
                                         rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
                                     }
 
-                                    scene.setTile(plane, x0, z0, i_59_, i_60_, textureId, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
+                                    scene.setTile(plane, x0, z0, i_59_, i_60_, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
                                 }
                             }
                         }
@@ -857,10 +857,10 @@ public class SceneBuilder {
             if (!lowmem || type.interactable || type.important) {
                 Entity entity;
 
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
 
                 scene.addGroundDecoration(entity, plane, x, z, heightmapAverage, bitset, info);
@@ -872,10 +872,10 @@ public class SceneBuilder {
         } else if ((kind == 10) || (kind == 11)) {
             Entity entity;
 
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 10, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, 10, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
             if (entity != null) {
@@ -929,10 +929,10 @@ public class SceneBuilder {
         } else if (kind >= 12) {
             Entity entity;
 
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
             scene.add(entity, plane, x, z, heightmapAverage, 1, 1, 0, bitset, info);
@@ -947,10 +947,10 @@ public class SceneBuilder {
         } else if (kind == 0) {
             Entity entity;
 
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(0, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 0, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, 0, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
@@ -999,10 +999,10 @@ public class SceneBuilder {
         } else if (kind == 1) {
             Entity entity;
 
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(1, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 1, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, 1, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
@@ -1026,12 +1026,12 @@ public class SceneBuilder {
             int i_137_ = (rotation + 1) & 0x3;
             Entity entity;
             Entity entity_138_;
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(2, 4 + rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 entity_138_ = type.getModel(2, i_137_, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
-                entity_138_ = new LocEntity(locID, i_137_, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+                entity_138_ = new LocEntity(locID, i_137_, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, WALL_ROTATION_OCCLUDE_TYPE[i_137_], entity_138_, plane, x, z, heightmapAverage, bitset, info);
             if (type.occludes) {
@@ -1057,10 +1057,10 @@ public class SceneBuilder {
             }
         } else if (kind == 3) {
             Entity entity;
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(3, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, 3, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, 3, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
             if (type.castShadow) {
@@ -1079,10 +1079,10 @@ public class SceneBuilder {
             }
         } else if (kind == 9) {
             Entity entity;
-            if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
             } else {
-                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
             scene.add(entity, plane, x, z, heightmapAverage, 1, 1, 0, bitset, info);
             if (type.solid && (collision != null)) {
@@ -1113,10 +1113,10 @@ public class SceneBuilder {
             }
             if (kind == 4) {
                 Entity entity;
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
                 scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, plane, x, z, heightmapAverage, rotation * 512, 0, 0, bitset, info);
             } else if (kind == 5) {
@@ -1126,34 +1126,34 @@ public class SceneBuilder {
                     i_142_ = LocType.get((i_143_ >> 14) & 0x7fff).decorationPadding;
                 }
                 Entity entity;
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
                 scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, plane, x, z, heightmapAverage, rotation * 512, anIntArray137[rotation] * i_142_, anIntArray144[rotation] * i_142_, bitset, info);
             } else if (kind == 6) {
                 Entity entity;
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
                 scene.setWallDecoration(256, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             } else if (kind == 7) {
                 Entity entity;
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
                 scene.setWallDecoration(512, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             } else if (kind == 8) {
                 Entity entity;
-                if ((type.seqId == -1) && (type.overrideTypeIDs == null)) {
+                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                     entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
                 } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqId, true);
+                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
                 scene.setWallDecoration(768, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             }

@@ -22,7 +22,7 @@ public class Scene {
 	public static final SceneOccluder[] activeOccluders = new SceneOccluder[500];
 	public static boolean lowmem = true;
 	public static int anInt446;
-	public static int anInt447;
+	public static int topPlane;
 	public static int cycle;
 	public static int anInt449;
 	public static int anInt450;
@@ -41,8 +41,8 @@ public class Scene {
 	public static boolean aBoolean467;
 	public static int anInt468;
 	public static int anInt469;
-	public static int anInt470 = -1;
-	public static int anInt471 = -1;
+	public static int clickTileX = -1;
+	public static int clickTileZ = -1;
 	public static int[] anIntArray473 = new int[anInt472];
 	public static SceneOccluder[][] aOccluderArrayArray474 = new SceneOccluder[anInt472][500];
 	public static int activeOccluderCount;
@@ -939,11 +939,11 @@ public class Scene {
 		aBoolean467 = true;
 		anInt468 = j;
 		anInt469 = i;
-		anInt470 = -1;
-		anInt471 = -1;
+		clickTileX = -1;
+		clickTileZ = -1;
 	}
 
-	public void method313(int eyeX, int eyeZ, int eyeYaw, int eyeY, int i1, int eyePitch) {
+	public void draw(int eyeX, int eyeZ, int eyeYaw, int eyeY, int topPlane, int eyePitch) {
 		if (eyeX < 0) {
 			eyeX = 0;
 		} else if (eyeX >= (maxTileX * 128)) {
@@ -965,7 +965,7 @@ public class Scene {
 		Scene.eyeZ = eyeZ;
 		eyeTileX = eyeX / 128;
 		eyeTileZ = eyeZ / 128;
-		anInt447 = i1;
+		Scene.topPlane = topPlane;
 		anInt449 = eyeTileX - 25;
 		if (anInt449 < 0) {
 			anInt449 = 0;
@@ -990,7 +990,7 @@ public class Scene {
 				for (int k2 = anInt451; k2 < anInt452; k2++) {
 					SceneTile tile = aclass30_sub3[i2][k2];
 					if (tile != null) {
-						if ((tile.drawPlane > i1) || (!aBooleanArrayArray492[(i2 - eyeTileX) + 25][(k2 - eyeTileZ) + 25] && ((planeHeightmaps[k1][i2][k2] - eyeY) < 2000))) {
+						if ((tile.drawPlane > topPlane) || (!aBooleanArrayArray492[(i2 - eyeTileX) + 25][(k2 - eyeTileZ) + 25] && ((planeHeightmaps[k1][i2][k2] - eyeY) < 2000))) {
 							tile.aBoolean1322 = false;
 							tile.aBoolean1323 = false;
 							tile.anInt1325 = 0;
@@ -1616,8 +1616,8 @@ public class Scene {
 		if ((((i6 - k6) * (l5 - l6)) - ((j6 - l6) * (k5 - k6))) > 0) {
 			Draw3D.clipX = (i6 < 0) || (k6 < 0) || (k5 < 0) || (i6 > Draw2D.boundX) || (k6 > Draw2D.boundX) || (k5 > Draw2D.boundX);
 			if (aBoolean467 && method318(anInt468, anInt469, j6, l6, l5, i6, k6, k5)) {
-				anInt470 = j1;
-				anInt471 = k1;
+				clickTileX = j1;
+				clickTileZ = k1;
 			}
 			if (underlay.anInt720 == -1) {
 				if (underlay.anInt718 != 0xbc614e) {
@@ -1637,8 +1637,8 @@ public class Scene {
 		if ((((i5 - k5) * (l6 - l5)) - ((j5 - l5) * (k6 - k5))) > 0) {
 			Draw3D.clipX = (i5 < 0) || (k5 < 0) || (k6 < 0) || (i5 > Draw2D.boundX) || (k5 > Draw2D.boundX) || (k6 > Draw2D.boundX);
 			if (aBoolean467 && method318(anInt468, anInt469, j5, l5, l6, i5, k5, k6)) {
-				anInt470 = j1;
-				anInt471 = k1;
+				clickTileX = j1;
+				clickTileZ = k1;
 			}
 			if (underlay.anInt720 == -1) {
 				if (underlay.anInt716 != 0xbc614e) {
@@ -1693,8 +1693,8 @@ public class Scene {
 			if ((((i4 - j4) * (j5 - i5)) - ((l4 - i5) * (k4 - j4))) > 0) {
 				Draw3D.clipX = (i4 < 0) || (j4 < 0) || (k4 < 0) || (i4 > Draw2D.boundX) || (j4 > Draw2D.boundX) || (k4 > Draw2D.boundX);
 				if (aBoolean467 && method318(anInt468, anInt469, l4, i5, j5, i4, j4, k4)) {
-					anInt470 = i;
-					anInt471 = i1;
+					clickTileX = i;
+					clickTileZ = i1;
 				}
 				if ((overlay.anIntArray682 == null) || (overlay.anIntArray682[j2] == -1)) {
 					if (overlay.anIntArray676[j2] != 0xbc614e) {
@@ -1745,8 +1745,8 @@ public class Scene {
 	}
 
 	public void method319() {
-		int j = anIntArray473[anInt447];
-		SceneOccluder[] aclass47 = aOccluderArrayArray474[anInt447];
+		int j = anIntArray473[topPlane];
+		SceneOccluder[] aclass47 = aOccluderArrayArray474[topPlane];
 		activeOccluderCount = 0;
 		for (int k = 0; k < j; k++) {
 			SceneOccluder occluder = aclass47[k];

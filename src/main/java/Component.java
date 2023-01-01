@@ -16,7 +16,7 @@ public class Component {
 		imageCache = new LRUMap<>(500);
 		Buffer in = new Buffer(config.read("data"));
 
-		int parentId = -1;
+		int parentID = -1;
 		int count = in.get2U();
 
 		instances = new Component[count];
@@ -25,13 +25,13 @@ public class Component {
 			int id = in.get2U();
 
 			if (id == 65535) {
-				parentId = in.get2U();
+				parentID = in.get2U();
 				id = in.get2U();
 			}
 
 			Component c = instances[id] = new Component();
 			c.id = id;
-			c.parentId = parentId;
+			c.parentID = parentID;
 			c.type = in.get1U();
 			c.optionType = in.get1U();
 			c.contentType = in.get2U();
@@ -59,11 +59,11 @@ public class Component {
 			int scriptCount = in.get1U();
 			if (scriptCount > 0) {
 				c.scripts = new int[scriptCount][];
-				for (int scriptId = 0; scriptId < scriptCount; scriptId++) {
+				for (int scriptID = 0; scriptID < scriptCount; scriptID++) {
 					int length = in.get2U();
-					c.scripts[scriptId] = new int[length];
+					c.scripts[scriptID] = new int[length];
 					for (int i = 0; i < length; i++) {
-						c.scripts[scriptId][i] = in.get2U();
+						c.scripts[scriptID][i] = in.get2U();
 					}
 				}
 			}
@@ -88,7 +88,7 @@ public class Component {
 			}
 
 			if (c.type == 2) {
-				c.invSlotObjId = new int[c.width * c.height];
+				c.invSlotObjID = new int[c.width * c.height];
 				c.invSlotAmount = new int[c.width * c.height];
 				c.invDraggable = in.get1U() == 1;
 				c.aBoolean249 = in.get1U() == 1;
@@ -126,9 +126,9 @@ public class Component {
 
 			if ((c.type == 4) || (c.type == 1)) {
 				c.center = in.get1U() == 1;
-				int fontId = in.get1U();
+				int fontID = in.get1U();
 				if (fonts != null) {
-					c.font = fonts[fontId];
+					c.font = fonts[fontID];
 				}
 				c.shadow = in.get1U() == 1;
 			}
@@ -165,41 +165,41 @@ public class Component {
 				int tmp = in.get1U();
 				if (tmp != 0) {
 					c.modelCategory = 1;
-					c.modelId = ((tmp - 1) << 8) + in.get1U();
+					c.modelID = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
 				if (tmp != 0) {
 					c.activeModelCategory = 1;
-					c.activeModelId = ((tmp - 1) << 8) + in.get1U();
+					c.activeModelID = ((tmp - 1) << 8) + in.get1U();
 				}
 
 				tmp = in.get1U();
 				if (tmp != 0) {
-					c.seqId = ((tmp - 1) << 8) + in.get1U();
+					c.seqID = ((tmp - 1) << 8) + in.get1U();
 				} else {
-					c.seqId = -1;
+					c.seqID = -1;
 				}
 
 				tmp = in.get1U();
 				if (tmp != 0) {
-					c.activeSeqId = ((tmp - 1) << 8) + in.get1U();
+					c.activeSeqID = ((tmp - 1) << 8) + in.get1U();
 				} else {
-					c.activeSeqId = -1;
+					c.activeSeqID = -1;
 				}
 
 				c.modelZoom = in.get2U();
-				c.modelEyePitch = in.get2U();
+				c.modelPitch = in.get2U();
 				c.modelYaw = in.get2U();
 			}
 
 			if (c.type == 7) {
-				c.invSlotObjId = new int[c.width * c.height];
+				c.invSlotObjID = new int[c.width * c.height];
 				c.invSlotAmount = new int[c.width * c.height];
 				c.center = in.get1U() == 1;
-				int fontId = in.get1U();
+				int fontID = in.get1U();
 				if (fonts != null) {
-					c.font = fonts[fontId];
+					c.font = fonts[fontID];
 				}
 				c.shadow = in.get1U() == 1;
 				c.color = in.get4();
@@ -270,8 +270,8 @@ public class Component {
 	public int activeHoverColor;
 	public Image24 activeImage;
 	public int activeModelCategory;
-	public int activeModelId;
-	public int activeSeqId;
+	public int activeModelID;
+	public int activeSeqID;
 	public String activeText;
 	public boolean center;
 	public int[] children;
@@ -294,18 +294,18 @@ public class Component {
 	public String[] invOptions;
 	public int[] invSlotAmount;
 	public Image24[] invSlotImage;
-	public int[] invSlotObjId;
+	public int[] invSlotObjID;
 	public int[] invSlotX;
 	public int[] invSlotY;
 	public boolean invUsable;
-	public int modelEyePitch;
+	public int modelPitch;
 	public int modelCategory;
-	public int modelId;
+	public int modelID;
 	public int modelYaw;
 	public int modelZoom;
 	public String option;
 	public int optionType;
-	public int parentId;
+	public int parentID;
 	public int[] scriptComparator;
 	public int[] scriptOperand;
 	public int[][] scripts;
@@ -313,7 +313,7 @@ public class Component {
 	public int scrollY;
 	public int seqCycle;
 	public int seqFrame;
-	public int seqId;
+	public int seqID;
 	public boolean shadow;
 	public String spellAction;
 	public int spellFlags;
@@ -332,9 +332,9 @@ public class Component {
 	}
 
 	public void swapSlots(int src, int dst) {
-		int tmp = invSlotObjId[src];
-		invSlotObjId[src] = invSlotObjId[dst];
-		invSlotObjId[dst] = tmp;
+		int tmp = invSlotObjID[src];
+		invSlotObjID[src] = invSlotObjID[dst];
+		invSlotObjID[dst] = tmp;
 
 		tmp = invSlotAmount[src];
 		invSlotAmount[src] = invSlotAmount[dst];
@@ -368,9 +368,9 @@ public class Component {
 		Model model;
 
 		if (active) {
-			model = getModel(activeModelCategory, activeModelId);
+			model = getModel(activeModelCategory, activeModelID);
 		} else {
-			model = getModel(modelCategory, modelId);
+			model = getModel(modelCategory, modelID);
 		}
 
 		if (model == null) {

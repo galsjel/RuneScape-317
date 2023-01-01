@@ -25,7 +25,7 @@ public class FloType {
 
 	public String unusedString;
 	public int rgb;
-	public int textureId = -1;
+	public int textureID = -1;
 	public boolean unusedBool = false;
 	public boolean aBoolean393 = true;
 	public int hue;
@@ -48,7 +48,7 @@ public class FloType {
 				rgb = buffer.get3();
 				setColor(rgb);
 			} else if (i == 2) {
-				textureId = buffer.get1U();
+				textureID = buffer.get1U();
 			} else if (i == 3) {
 				unusedBool = true;
 			} else if (i == 5) {

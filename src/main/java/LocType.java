@@ -99,14 +99,14 @@ public class LocType {
      */
     public boolean dynamic;
     public int scaleZ;
-    public int[] modelIds;
+    public int[] modelIDs;
     public int varbit;
     public int decorationPadding;
     public int[] modelKinds;
     public String description;
     public boolean interactable;
     public boolean castShadow;
-    public int seqId;
+    public int seqID;
     public int translateZ;
     public int[] srcColor;
     public String[] actions;
@@ -115,7 +115,7 @@ public class LocType {
     }
 
     public void reset() {
-        modelIds = null;
+        modelIDs = null;
         modelKinds = null;
         name = null;
         description = null;
@@ -129,7 +129,7 @@ public class LocType {
         adjustToTerrain = false;
         dynamic = false;
         occludes = false;
-        seqId = -1;
+        seqID = -1;
         decorationPadding = 16;
         lightAmbient = 0;
         lightAttenuation = 0;
@@ -154,31 +154,31 @@ public class LocType {
     }
 
     public void method574(OnDemand onDemand) {
-        if (modelIds == null) {
+        if (modelIDs == null) {
             return;
         }
-        for (int k : modelIds) {
+        for (int k : modelIDs) {
             onDemand.method560(k & 0xffff, 0);
         }
     }
 
     public boolean validate(int kind) {
         if (modelKinds == null) {
-            if (modelIds == null) {
+            if (modelIDs == null) {
                 return true;
             }
             if (kind != 10) {
                 return true;
             }
             boolean valid = true;
-            for (int modelID : modelIds) {
+            for (int modelID : modelIDs) {
                 valid &= Model.validate(modelID & 0xffff);
             }
             return valid;
         }
         for (int i = 0; i < modelKinds.length; i++) {
             if (modelKinds[i] == kind) {
-                return Model.validate(modelIds[i] & 0xffff);
+                return Model.validate(modelIDs[i] & 0xffff);
             }
         }
         return true;
@@ -211,11 +211,11 @@ public class LocType {
     }
 
     public boolean method579() {
-        if (modelIds == null) {
+        if (modelIDs == null) {
             return true;
         }
         boolean flag1 = true;
-        for (int j : modelIds) {
+        for (int j : modelIDs) {
             flag1 &= Model.validate(j & 0xffff);
         }
         return flag1;
@@ -258,30 +258,30 @@ public class LocType {
                 return cached;
             }
 
-            if (modelIds == null) {
+            if (modelIDs == null) {
                 return null;
             }
 
             boolean flip = invert ^ (rotation > 3);
-            int modelCount = modelIds.length;
+            int modelCount = modelIDs.length;
 
             for (int i = 0; i < modelCount; i++) {
-                int modelId = modelIds[i];
+                int modelID = modelIDs[i];
 
                 if (flip) {
-                    modelId += 0x10000;
+                    modelID += 0x10000;
                 }
 
-                model = staticCache.get(modelId);
+                model = staticCache.get(modelID);
                 if (model == null) {
-                    model = Model.tryGet(modelId & 0xffff);
+                    model = Model.tryGet(modelID & 0xffff);
                     if (model == null) {
                         return null;
                     }
                     if (flip) {
                         model.rotateY180();
                     }
-                    staticCache.put((long) modelId, model);
+                    staticCache.put((long) modelID, model);
                 }
 
                 if (modelCount > 1) {
@@ -315,17 +315,17 @@ public class LocType {
                 return cached;
             }
 
-            int modelId = modelIds[kindIndex];
+            int modelID = modelIDs[kindIndex];
             boolean flip = invert ^ (rotation > 3);
 
             if (flip) {
-                modelId += 0x10000;
+                modelID += 0x10000;
             }
 
-            model = staticCache.get(modelId);
+            model = staticCache.get(modelID);
 
             if (model == null) {
-                model = Model.tryGet(modelId & 0xffff);
+                model = Model.tryGet(modelID & 0xffff);
 
                 if (model == null) {
                     return null;
@@ -335,7 +335,7 @@ public class LocType {
                     model.rotateY180();
                 }
 
-                staticCache.put((long) modelId, model);
+                staticCache.put((long) modelID, model);
             }
         }
 
@@ -392,11 +392,11 @@ public class LocType {
                 if (j == 1) {
                     int k = buffer.get1U();
                     if (k > 0) {
-                        if ((modelIds == null) || lowmem) {
+                        if ((modelIDs == null) || lowmem) {
                             modelKinds = new int[k];
-                            modelIds = new int[k];
+                            modelIDs = new int[k];
                             for (int k1 = 0; k1 < k; k1++) {
-                                modelIds[k1] = buffer.get2U();
+                                modelIDs[k1] = buffer.get2U();
                                 modelKinds[k1] = buffer.get1U();
                             }
                         } else {
@@ -410,11 +410,11 @@ public class LocType {
                 } else if (j == 5) {
                     int l = buffer.get1U();
                     if (l > 0) {
-                        if ((modelIds == null) || lowmem) {
+                        if ((modelIDs == null) || lowmem) {
                             modelKinds = null;
-                            modelIds = new int[l];
+                            modelIDs = new int[l];
                             for (int l1 = 0; l1 < l; l1++) {
-                                modelIds[l1] = buffer.get2U();
+                                modelIDs[l1] = buffer.get2U();
                             }
                         } else {
                             buffer.position += l * 2;
@@ -440,9 +440,9 @@ public class LocType {
                 } else if (j == 23) {
                     occludes = true;
                 } else if (j == 24) {
-                    seqId = buffer.get2U();
-                    if (seqId == 65535) {
-                        seqId = -1;
+                    seqID = buffer.get2U();
+                    if (seqID == 65535) {
+                        seqID = -1;
                     }
                 } else if (j == 28) {
                     decorationPadding = buffer.get1U();
@@ -518,7 +518,7 @@ public class LocType {
             }
         } while (true);
         if (i == -1) {
-            interactable = (modelIds != null) && ((modelKinds == null) || (modelKinds[0] == 10));
+            interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
             if (actions != null) {
                 interactable = true;
             }

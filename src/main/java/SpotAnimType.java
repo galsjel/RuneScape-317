@@ -32,8 +32,8 @@ public class SpotAnimType {
 	public final int[] colorSrc = new int[6];
 	public final int[] colorDst = new int[6];
 	public int index;
-	public int modelId;
-	public int seqId = -1;
+	public int modelID;
+	public int seqID = -1;
 	public SeqType seq;
 	public int scaleXY = 128;
 	public int scaleZ = 128;
@@ -51,11 +51,11 @@ public class SpotAnimType {
 				return;
 			}
 			if (i == 1) {
-				modelId = buffer.get2U();
+				modelID = buffer.get2U();
 			} else if (i == 2) {
-				seqId = buffer.get2U();
+				seqID = buffer.get2U();
 				if (SeqType.instances != null) {
-					seq = SeqType.instances[seqId];
+					seq = SeqType.instances[seqID];
 				}
 			} else if (i == 4) {
 				scaleXY = buffer.get2U();
@@ -84,7 +84,7 @@ public class SpotAnimType {
 			return model;
 		}
 
-		model = Model.tryGet(modelId);
+		model = Model.tryGet(modelID);
 
 		if (model == null) {
 			return null;

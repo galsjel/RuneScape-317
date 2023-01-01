@@ -56,24 +56,24 @@ public class NPCType {
 		dat = null;
 	}
 
-	public int seqTurnRightId = -1;
-	public int varbitId = -1;
-	public int seqTurnAroundId = -1;
-	public int varpId = -1;
+	public int seqTurnRightID = -1;
+	public int varbitID = -1;
+	public int seqTurnAroundID = -1;
+	public int varpID = -1;
 	public int level = -1;
 	public String name;
 	public String[] op;
-	public int seqWalkId = -1;
+	public int seqWalkID = -1;
 	public byte size = 1;
 	public int[] colorDst;
 	public int unusedInt0 = -1;
-	public int[] headModelIds;
+	public int[] headModelIDs;
 	public int headicon = -1;
 	public int[] colorSrc;
-	public int seqStand = -1;
+	public int seqStandID = -1;
 	public long uid = -1L;
 	public int turnSpeed = 32;
-	public int seqTurnLeft = -1;
+	public int seqTurnLeftID = -1;
 	public boolean aBoolean84 = true;
 	public int anInt85;
 	public int anInt86 = 128;
@@ -84,7 +84,7 @@ public class NPCType {
 	public int anInt91 = 128;
 	public int anInt92;
 	public boolean aBoolean93 = false;
-	public int[] modelIds;
+	public int[] modelIDs;
 	public int unusedInt2 = -1;
 
 	public NPCType() {
@@ -100,13 +100,13 @@ public class NPCType {
 			}
 		}
 
-		if (headModelIds == null) {
+		if (headModelIDs == null) {
 			return null;
 		}
 
 		boolean loaded = false;
 
-		for (int value : headModelIds) {
+		for (int value : headModelIDs) {
 			if (!Model.validate(value)) {
 				loaded = true;
 			}
@@ -116,10 +116,10 @@ public class NPCType {
 			return null;
 		}
 
-		Model[] models = new Model[headModelIds.length];
+		Model[] models = new Model[headModelIDs.length];
 
-		for (int i = 0; i < headModelIds.length; i++) {
-			models[i] = Model.tryGet(headModelIds[i]);
+		for (int i = 0; i < headModelIDs.length; i++) {
+			models[i] = Model.tryGet(headModelIDs[i]);
 		}
 
 		Model model;
@@ -141,15 +141,15 @@ public class NPCType {
 	public NPCType getOverrideType() {
 		int value = -1;
 
-		if (varbitId != -1) {
-			VarbitType vb = VarbitType.instances[this.varbitId];
+		if (varbitID != -1) {
+			VarbitType vb = VarbitType.instances[this.varbitID];
 			int varp = vb.varp;
 			int lsb = vb.lsb;
 			int msb = vb.msb;
 			int mask = Game.BITMASK[msb - lsb];
 			value = (game.variables[varp] >> lsb) & mask;
-		} else if (varpId != -1) {
-			value = game.variables[varpId];
+		} else if (varpID != -1) {
+			value = game.variables[varpID];
 		}
 
 		if ((value < 0) || (value >= overrides.length) || (overrides[value] == -1)) {
@@ -174,7 +174,7 @@ public class NPCType {
 		if (model == null) {
 			boolean invalid = false;
 
-			for (int value : modelIds) {
+			for (int value : modelIDs) {
 				if (!Model.validate(value)) {
 					invalid = true;
 				}
@@ -184,10 +184,10 @@ public class NPCType {
 				return null;
 			}
 
-			Model[] models = new Model[modelIds.length];
+			Model[] models = new Model[modelIDs.length];
 
-			for (int i = 0; i < modelIds.length; i++) {
-				models[i] = Model.tryGet(modelIds[i]);
+			for (int i = 0; i < modelIDs.length; i++) {
+				models[i] = Model.tryGet(modelIDs[i]);
 			}
 
 			if (models.length == 1) {
@@ -237,9 +237,9 @@ public class NPCType {
 			}
 			if (i == 1) {
 				int j = buffer.get1U();
-				modelIds = new int[j];
+				modelIDs = new int[j];
 				for (int j1 = 0; j1 < j; j1++) {
-					modelIds[j1] = buffer.get2U();
+					modelIDs[j1] = buffer.get2U();
 				}
 			} else if (i == 2) {
 				name = buffer.getString();
@@ -248,14 +248,14 @@ public class NPCType {
 			} else if (i == 12) {
 				size = buffer.get1();
 			} else if (i == 13) {
-				seqStand = buffer.get2U();
+				seqStandID = buffer.get2U();
 			} else if (i == 14) {
-				seqWalkId = buffer.get2U();
+				seqWalkID = buffer.get2U();
 			} else if (i == 17) {
-				seqWalkId = buffer.get2U();
-				seqTurnAroundId = buffer.get2U();
-				seqTurnLeft = buffer.get2U();
-				seqTurnRightId = buffer.get2U();
+				seqWalkID = buffer.get2U();
+				seqTurnAroundID = buffer.get2U();
+				seqTurnLeftID = buffer.get2U();
+				seqTurnRightID = buffer.get2U();
 			} else if ((i >= 30) && (i < 40)) {
 				if (op == null) {
 					op = new String[5];
@@ -274,9 +274,9 @@ public class NPCType {
 				}
 			} else if (i == 60) {
 				int l = buffer.get1U();
-				headModelIds = new int[l];
+				headModelIDs = new int[l];
 				for (int l1 = 0; l1 < l; l1++) {
-					headModelIds[l1] = buffer.get2U();
+					headModelIDs[l1] = buffer.get2U();
 				}
 			} else if (i == 90) {
 				unusedInt2 = buffer.get2U();
@@ -303,13 +303,13 @@ public class NPCType {
 			} else if (i == 103) {
 				turnSpeed = buffer.get2U();
 			} else if (i == 106) {
-				varbitId = buffer.get2U();
-				if (varbitId == 65535) {
-					varbitId = -1;
+				varbitID = buffer.get2U();
+				if (varbitID == 65535) {
+					varbitID = -1;
 				}
-				varpId = buffer.get2U();
-				if (varpId == 65535) {
-					varpId = -1;
+				varpID = buffer.get2U();
+				if (varpID == 65535) {
+					varpID = -1;
 				}
 				int i1 = buffer.get1U();
 				overrides = new int[i1 + 1];

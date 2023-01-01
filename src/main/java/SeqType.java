@@ -61,6 +61,10 @@ public class SeqType {
 	 * @see Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)
 	 */
 	public boolean forwardRenderPadding = false;
+
+	/**
+	 * The priority.
+	 */
 	public int priority = 5;
 
 	/**

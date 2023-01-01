@@ -52,7 +52,7 @@ public class ObjType {
 		type.id = id;
 		type.reset();
 		type.read(dat);
-		if (type.certificateId != -1) {
+		if (type.certificateID != -1) {
 			type.toCertificate();
 		}
 		if (!Game.members && type.members) {
@@ -81,19 +81,19 @@ public class ObjType {
 
 		ObjType type = get(id);
 
-		if (type.stackId == null) {
+		if (type.stackIDs == null) {
 			amount = -1;
 		}
 
 		if (amount > 1) {
-			int newId = -1;
+			int newID = -1;
 			for (int j1 = 0; j1 < 10; j1++) {
 				if ((amount >= type.stackAmount[j1]) && (type.stackAmount[j1] != 0)) {
-					newId = type.stackId[j1];
+					newID = type.stackIDs[j1];
 				}
 			}
-			if (newId != -1) {
-				type = get(newId);
+			if (newID != -1) {
+				type = get(newID);
 			}
 		}
 
@@ -106,8 +106,8 @@ public class ObjType {
 		// this will typically be the certificate item for noted stuff
 		Image24 originalIcon = null;
 
-		if (type.certificateId != -1) {
-			originalIcon = getIcon(type.linkedId, 10, -1);
+		if (type.certificateID != -1) {
+			originalIcon = getIcon(type.linkedID, 10, -1);
 
 			if (originalIcon == null) {
 				return null;
@@ -196,7 +196,7 @@ public class ObjType {
 			}
 		}
 
-		if (type.certificateId != -1) {
+		if (type.certificateID != -1) {
 			int w = originalIcon.cropW;
 			int h = originalIcon.cropH;
 			originalIcon.cropW = 32;
@@ -235,7 +235,7 @@ public class ObjType {
 	public int[] dstColor;
 	public boolean members;
 	public int femaleModelId2;
-	public int certificateId;
+	public int certificateID;
 	public int femaleModelId1;
 	public int maleModelId0;
 	public int maleHeadModelId1;
@@ -244,11 +244,11 @@ public class ObjType {
 	public int iconOffsetX;
 	public String name;
 	public int femaleHeadModel1;
-	public int modelId;
+	public int modelID;
 	public int maleHeadModelId0;
 	public boolean stackable;
 	public byte[] examine;
-	public int linkedId;
+	public int linkedID;
 	public int iconZoom;
 	public int lightAttenuation;
 	public int maleModelId2;
@@ -257,7 +257,7 @@ public class ObjType {
 	public int iconPitch;
 	public int scaleY;
 	public int scaleZ;
-	public int[] stackId;
+	public int[] stackIDs;
 	public int iconOffsetY;
 	public int lightAmbient;
 	public int femaleHeadModel0;
@@ -376,7 +376,7 @@ public class ObjType {
 	}
 
 	public void reset() {
-		modelId = 0;
+		modelID = 0;
 		name = null;
 		examine = null;
 		srcColor = null;
@@ -405,10 +405,10 @@ public class ObjType {
 		maleHeadModelId1 = -1;
 		femaleHeadModel0 = -1;
 		femaleHeadModel1 = -1;
-		stackId = null;
+		stackIDs = null;
 		stackAmount = null;
-		linkedId = -1;
-		certificateId = -1;
+		linkedID = -1;
+		certificateID = -1;
 		scaleX = 128;
 		scaleZ = 128;
 		scaleY = 128;
@@ -418,8 +418,8 @@ public class ObjType {
 	}
 
 	public void toCertificate() {
-		ObjType cert = get(certificateId);
-		modelId = cert.modelId;
+		ObjType cert = get(certificateID);
+		modelID = cert.modelID;
 		iconZoom = cert.iconZoom;
 		iconPitch = cert.iconPitch;
 		iconYaw = cert.iconYaw;
@@ -428,7 +428,7 @@ public class ObjType {
 		iconOffsetY = cert.iconOffsetY;
 		srcColor = cert.srcColor;
 		dstColor = cert.dstColor;
-		ObjType linked = get(linkedId);
+		ObjType linked = get(linkedID);
 		name = linked.name;
 		members = linked.members;
 		cost = linked.cost;
@@ -442,15 +442,15 @@ public class ObjType {
 	}
 
 	public Model getModel(int amount) {
-		if ((stackId != null) && (amount > 1)) {
-			int newId = -1;
+		if ((stackIDs != null) && (amount > 1)) {
+			int newID = -1;
 			for (int k = 0; k < 10; k++) {
 				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
-					newId = stackId[k];
+					newID = stackIDs[k];
 				}
 			}
-			if (newId != -1) {
-				return get(newId).getModel(1);
+			if (newID != -1) {
+				return get(newID).getModel(1);
 			}
 		}
 
@@ -460,7 +460,7 @@ public class ObjType {
 			return model;
 		}
 
-		model = Model.tryGet(modelId);
+		model = Model.tryGet(modelID);
 
 		if (model == null) {
 			return null;
@@ -483,18 +483,18 @@ public class ObjType {
 	}
 
 	public Model getUnlitModel(int amount) {
-		if ((stackId != null) && (amount > 1)) {
+		if ((stackIDs != null) && (amount > 1)) {
 			int j = -1;
 			for (int k = 0; k < 10; k++) {
 				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
-					j = stackId[k];
+					j = stackIDs[k];
 				}
 			}
 			if (j != -1) {
 				return get(j).getUnlitModel(1);
 			}
 		}
-		Model model = Model.tryGet(modelId);
+		Model model = Model.tryGet(modelID);
 		if (model == null) {
 			return null;
 		}
@@ -513,7 +513,7 @@ public class ObjType {
 				return;
 			}
 			if (i == 1) {
-				modelId = buffer.get2U();
+				modelID = buffer.get2U();
 			} else if (i == 2) {
 				name = buffer.getString();
 			} else if (i == 3) {
@@ -588,15 +588,15 @@ public class ObjType {
 			} else if (i == 95) {
 				iconRoll = buffer.get2U();
 			} else if (i == 97) {
-				linkedId = buffer.get2U();
+				linkedID = buffer.get2U();
 			} else if (i == 98) {
-				certificateId = buffer.get2U();
+				certificateID = buffer.get2U();
 			} else if ((i >= 100) && (i < 110)) {
-				if (stackId == null) {
-					stackId = new int[10];
+				if (stackIDs == null) {
+					stackIDs = new int[10];
 					stackAmount = new int[10];
 				}
-				stackId[i - 100] = buffer.get2U();
+				stackIDs[i - 100] = buffer.get2U();
 				stackAmount[i - 100] = buffer.get2U();
 			} else if (i == 110) {
 				scaleX = buffer.get2U();

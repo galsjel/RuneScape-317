@@ -4,21 +4,21 @@
 
 public class SceneLocTemporary extends DoublyLinkedList.Node {
 
-	public int anInt1291;
-	public int anInt1292;
-	public int anInt1293;
-	public int anInt1294;
+	public int id;
+	public int rotation;
+	public int kind;
+	public int duration;
 	public int plane;
-	public int classId;
+	public int classID;
 	public int localX;
 	public int localZ;
-	public int savedLocId;
-	public int savedRotation;
-	public int savedKind;
-	public int anInt1302;
+	public int previousLocID;
+	public int previousRotation;
+	public int previousKind;
+	public int delay;
 
 	public SceneLocTemporary() {
-		anInt1294 = -1;
+		duration = -1;
 	}
 
 }

@@ -164,14 +164,14 @@ public class Draw3D {
     public static void unpackTextures(FileArchive archive) {
         textureCount = 0;
 
-        for (int textureId = 0; textureId < 50; textureId++) {
+        for (int textureID = 0; textureID < 50; textureID++) {
             try {
-                textures[textureId] = new Image8(archive, String.valueOf(textureId), 0);
+                textures[textureID] = new Image8(archive, String.valueOf(textureID), 0);
 
-                if (lowmem && (textures[textureId].cropW == 128)) {
-                    textures[textureId].shrink();
+                if (lowmem && (textures[textureID].cropW == 128)) {
+                    textures[textureID].shrink();
                 } else {
-                    textures[textureId].crop();
+                    textures[textureID].crop();
                 }
                 textureCount++;
             } catch (Exception ignored) {
@@ -379,25 +379,25 @@ public class Draw3D {
             }
         }
 
-        for (int textureId = 0; textureId < 50; textureId++) {
-            if (textures[textureId] == null) {
+        for (int textureID = 0; textureID < 50; textureID++) {
+            if (textures[textureID] == null) {
                 continue;
             }
 
-            int[] palette = textures[textureId].palette;
-            texturePalette[textureId] = new int[palette.length];
+            int[] palette = textures[textureID].palette;
+            texturePalette[textureID] = new int[palette.length];
 
             for (int i = 0; i < palette.length; i++) {
-                texturePalette[textureId][i] = setGamma(palette[i], brightness);
+                texturePalette[textureID][i] = setGamma(palette[i], brightness);
 
-                if (((texturePalette[textureId][i] & 0xf8f8ff) == 0) && (i != 0)) {
-                    texturePalette[textureId][i] = 1;
+                if (((texturePalette[textureID][i] & 0xf8f8ff) == 0) && (i != 0)) {
+                    texturePalette[textureID][i] = 1;
                 }
             }
         }
 
-        for (int textureId = 0; textureId < 50; textureId++) {
-            unloadTexture(textureId);
+        for (int textureID = 0; textureID < 50; textureID++) {
+            unloadTexture(textureID);
         }
     }
 

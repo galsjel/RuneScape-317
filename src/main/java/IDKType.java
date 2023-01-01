@@ -25,9 +25,9 @@ public class IDKType {
 
 	public final int[] colorSrc = new int[6];
 	public final int[] colorDst = new int[6];
-	public final int[] headModelIds = {-1, -1, -1, -1, -1};
+	public final int[] headModelIDs = {-1, -1, -1, -1, -1};
 	public int type = -1;
-	public int[] modelIds;
+	public int[] modelIDs;
 	public boolean selectable = false;
 
 	public IDKType() {
@@ -43,9 +43,9 @@ public class IDKType {
 				type = buffer.get1U();
 			} else if (i == 2) {
 				int j = buffer.get1U();
-				modelIds = new int[j];
+				modelIDs = new int[j];
 				for (int k = 0; k < j; k++) {
-					modelIds[k] = buffer.get2U();
+					modelIDs[k] = buffer.get2U();
 				}
 			} else if (i == 3) {
 				selectable = true;
@@ -54,7 +54,7 @@ public class IDKType {
 			} else if ((i >= 50) && (i < 60)) {
 				colorDst[i - 50] = buffer.get2U();
 			} else if ((i >= 60) && (i < 70)) {
-				headModelIds[i - 60] = buffer.get2U();
+				headModelIDs[i - 60] = buffer.get2U();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
 			}
@@ -62,11 +62,11 @@ public class IDKType {
 	}
 
 	public boolean validateModel() {
-		if (modelIds == null) {
+		if (modelIDs == null) {
 			return true;
 		}
 		boolean loaded = true;
-		for (int modelId : modelIds) {
+		for (int modelId : modelIDs) {
 			if (!Model.validate(modelId)) {
 				loaded = false;
 			}
@@ -75,12 +75,12 @@ public class IDKType {
 	}
 
 	public Model getModel() {
-		if (modelIds == null) {
+		if (modelIDs == null) {
 			return null;
 		}
-		Model[] aclass30_sub2_sub4_sub6 = new Model[modelIds.length];
-		for (int i = 0; i < modelIds.length; i++) {
-			aclass30_sub2_sub4_sub6[i] = Model.tryGet(modelIds[i]);
+		Model[] aclass30_sub2_sub4_sub6 = new Model[modelIDs.length];
+		for (int i = 0; i < modelIDs.length; i++) {
+			aclass30_sub2_sub4_sub6[i] = Model.tryGet(modelIDs[i]);
 		}
 		Model model;
 		if (aclass30_sub2_sub4_sub6.length == 1) {
@@ -100,7 +100,7 @@ public class IDKType {
 	public boolean validateHeadModel() {
 		boolean loaded = true;
 		for (int i = 0; i < 5; i++) {
-			if ((headModelIds[i] != -1) && !Model.validate(headModelIds[i])) {
+			if ((headModelIDs[i] != -1) && !Model.validate(headModelIDs[i])) {
 				loaded = false;
 			}
 		}
@@ -111,8 +111,8 @@ public class IDKType {
 		Model[] aclass30_sub2_sub4_sub6 = new Model[5];
 		int j = 0;
 		for (int k = 0; k < 5; k++) {
-			if (headModelIds[k] != -1) {
-				aclass30_sub2_sub4_sub6[j++] = Model.tryGet(headModelIds[k]);
+			if (headModelIDs[k] != -1) {
+				aclass30_sub2_sub4_sub6[j++] = Model.tryGet(headModelIDs[k]);
 			}
 		}
 		Model model = new Model(j, aclass30_sub2_sub4_sub6);
