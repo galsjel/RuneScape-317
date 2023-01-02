@@ -7,8 +7,8 @@ public class SceneWall {
 	public int y;
 	public int x;
 	public int z;
-	public int occludeA;
-	public int occludeB;
+	public int typeA;
+	public int typeB;
 	public Entity entityA;
 	public Entity entityB;
 	public int bitset;

@@ -447,9 +447,9 @@ public class LocType {
                 } else if (j == 28) {
                     decorationPadding = buffer.read8U();
                 } else if (j == 29) {
-                    lightAmbient = buffer.read8();
+                    lightAmbient = buffer.read();
                 } else if (j == 39) {
-                    lightAttenuation = buffer.read8();
+                    lightAttenuation = buffer.read();
                 } else if ((j >= 30) && (j < 39)) {
                     if (actions == null) {
                         actions = new String[5];

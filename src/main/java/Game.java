@@ -21,7 +21,7 @@ public class Game extends GameShell {
 
 	public static final int[][] designPartColor = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
 	public static final int[] designHairColor = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-	public static final BigInteger RSA_MODULUS = new BigInteger("115021795079507343952614936197913546438580135096169635842480712252120509788529535203161526625251797553017433341968661761641695154871087245548928967487006467485383337651405009623296611208539069524887502151216922299338355736930449024798579974392565651281911869750633089962840628929607415810272098208925607905239");
+	public static final BigInteger RSA_MODULUS = new BigInteger("150437374157649496260907284144944613391868328356428312785170855566836496148649769873303054925785940753587048471819630374797613652942136320599534564023031743563833250113572385619350489566973866283982326500382760586083379242813677444239924493338426453599564333273724064297982529208425077775100347146662074078333");
 	public static final int[] levelExperience;
 	public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
 	public static final String VALID_CHAT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
@@ -737,7 +737,7 @@ public class Game extends GameShell {
 			Model.init(ondemand.getFileCount(0), ondemand);
 
 			if (!lowmem) {
-				music = 0;
+				music = 7;
 
 				try {
 					music = Integer.parseInt(getParameter("music"));
@@ -1537,7 +1537,7 @@ public class Game extends GameShell {
 		Draw2D.drawLineX(0, 77, 479, 0);
 	}
 
-	static String server = "lucas.xenorune.com";
+	static String server = "0.0.0.0";
 
 	public Socket openSocket(int port) throws IOException {
 		return new Socket(InetAddress.getByName(server), port);
@@ -1937,38 +1937,38 @@ public class Game extends GameShell {
 
 		int k = -99999999;
 
-		ObjStackEntity stack0 = null;
-		ObjStackEntity stack1 = null;
-		ObjStackEntity stack2 = null;
+		ObjEntity obj0 = null;
+		ObjEntity obj1 = null;
+		ObjEntity obj2 = null;
 
-		for (ObjStackEntity stack = (ObjStackEntity) list.peekFront(); stack != null; stack = (ObjStackEntity) list.prev()) {
-			ObjType type = ObjType.get(stack.id);
+		for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
+			ObjType type = ObjType.get(obj.id);
 
 			int l = type.cost;
 
 			if (type.stackable) {
-				l *= stack.amount + 1;
+				l *= obj.amount + 1;
 			}
 
 			if (l > k) {
 				k = l;
-				stack0 = stack;
+				obj0 = obj;
 			}
 		}
 
-		list.pushFront(stack0);
+		list.pushFront(obj0);
 
-		for (ObjStackEntity stack = (ObjStackEntity) list.peekFront(); stack != null; stack = (ObjStackEntity) list.prev()) {
-			if ((stack.id != stack0.id) && (stack1 == null)) {
-				stack1 = stack;
+		for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
+			if ((obj.id != obj0.id) && (obj1 == null)) {
+				obj1 = obj;
 			}
-			if ((stack.id != stack0.id) && (stack.id != stack1.id) && (stack2 == null)) {
-				stack2 = stack;
+			if ((obj.id != obj0.id) && (obj.id != obj1.id) && (obj2 == null)) {
+				obj2 = obj;
 			}
 		}
 
 		int bitset = x + (z << 7) + 0x60000000;
-		scene.addObjStack(stack0, stack1, stack2, currentLevel, x, z, getHeightmapY(currentLevel, (x * 128) + 64, (z * 128) + 64), bitset);
+		scene.addObjStack(obj0, obj1, obj2, currentLevel, x, z, getHeightmapY(currentLevel, (x * 128) + 64, (z * 128) + 64), bitset);
 	}
 
 	public void appendNPCs(boolean flag) {
@@ -5335,7 +5335,7 @@ public class Game extends GameShell {
 			if (k1 == 3) {
 				DoublyLinkedList list = levelObjStacks[currentLevel][i1][j1];
 				if (list != null) {
-					for (ObjStackEntity objStack = (ObjStackEntity) list.peekBack(); objStack != null; objStack = (ObjStackEntity) list.next()) {
+					for (ObjEntity objStack = (ObjEntity) list.peekBack(); objStack != null; objStack = (ObjEntity) list.next()) {
 						ObjType type = ObjType.get(objStack.id);
 						if (anInt1282 == 1) {
 							menuOption[menuSize] = "Use " + aString1286 + " with @lre@" + type.name;
@@ -5629,7 +5629,7 @@ public class Game extends GameShell {
 						out.write8S(j2);
 						chatBuffer.position = 0;
 						ChatCompression.pack(chatTyped, chatBuffer);
-						out.writeBytesA(chatBuffer.data, 0, chatBuffer.position);
+						out.writeA(chatBuffer.data, 0, chatBuffer.position);
 						out.writeSize(out.position - j3);
 						chatTyped = ChatCompression.method527(chatTyped);
 						chatTyped = Censor.apply(chatTyped);
@@ -6406,7 +6406,7 @@ public class Game extends GameShell {
 				for (int l1 = 0; l1 < 9; l1++) {
 					login.write32(archiveChecksum[l1]);
 				}
-				login.writeBytes(out.data, 0, out.position);
+				login.write(out.data, 0, out.position);
 				out.random = new ISAACRandom(seed);
 				for (int j2 = 0; j2 < 4; j2++) {
 					seed[j2] += 50;
@@ -8515,7 +8515,7 @@ public class Game extends GameShell {
 				if (!ignore && (overrideChat == 0)) {
 					try {
 						chatBuffer.position = 0;
-						buffer.getBytesReversed(chatBuffer.data, 0, length);
+						buffer.readReversed(chatBuffer.data, 0, length);
 						chatBuffer.position = 0;
 
 						String chat = ChatCompression.unpack(length, chatBuffer);
@@ -8551,7 +8551,7 @@ public class Game extends GameShell {
 			int j1 = buffer.read8UC();
 			byte[] abyte0 = new byte[j1];
 			Buffer buffer_1 = new Buffer(abyte0);
-			buffer.readBytes(abyte0, 0, j1);
+			buffer.read(abyte0, 0, j1);
 			aBufferArray895[j] = buffer_1;
 			player.method451(buffer_1);
 		}
@@ -9843,7 +9843,7 @@ public class Game extends GameShell {
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
 				DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
 				if (stacks != null) {
-					for (ObjStackEntity stack = (ObjStackEntity) stacks.peekFront(); stack != null; stack = (ObjStackEntity) stacks.prev()) {
+					for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
 						if ((stack.id != (objID & 0x7fff)) || (stack.amount != objAmount)) {
 							continue;
 						}
@@ -9882,7 +9882,7 @@ public class Game extends GameShell {
 			int ownerPID = buffer.read16UA();
 			int objAmount = buffer.read16U();
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
-				ObjStackEntity obj = new ObjStackEntity();
+				ObjEntity obj = new ObjEntity();
 				obj.id = objID;
 				obj.amount = objAmount;
 				if (levelObjStacks[currentLevel][x][z] == null) {
@@ -9903,7 +9903,7 @@ public class Game extends GameShell {
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
 				DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
 				if (list != null) {
-					for (ObjStackEntity obj = (ObjStackEntity) list.peekFront(); obj != null; obj = (ObjStackEntity) list.prev()) {
+					for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
 						if (obj.id != (objID & 0x7fff)) {
 							continue;
 						}
@@ -9998,7 +9998,7 @@ public class Game extends GameShell {
 			int kind = info >> 2;
 			int rotation = info & 3;
 			int classID = LOC_KIND_TO_CLASS_ID[kind];
-			byte minX = buffer.read8();
+			byte minX = buffer.read();
 			int locID = buffer.read16U();
 			byte minZ = buffer.read8C();
 			PlayerEntity player;
@@ -10098,7 +10098,7 @@ public class Game extends GameShell {
 			int x = baseX + ((pos >> 4) & 7);
 			int z = baseZ + (pos & 7);
 			if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-				ObjStackEntity stack = new ObjStackEntity();
+				ObjEntity stack = new ObjEntity();
 				stack.id = id;
 				stack.amount = amount;
 				if (levelObjStacks[currentLevel][x][z] == null) {
@@ -10130,8 +10130,8 @@ public class Game extends GameShell {
 			int pos = buffer.read8U();
 			int srcX = baseX + ((pos >> 4) & 7);
 			int srcZ = baseZ + (pos & 7);
-			int dstX = srcX + buffer.read8();
-			int dstZ = srcZ + buffer.read8();
+			int dstX = srcX + buffer.read();
+			int dstZ = srcZ + buffer.read();
 			int targetID = buffer.read16();
 			int spotanimID = buffer.read16U();
 			int srcY = buffer.read8U() * 4;
@@ -11579,7 +11579,7 @@ public class Game extends GameShell {
 			}
 			if (ptype == 36) {
 				int k8 = in.read16ULE();
-				byte byte0 = in.read8();
+				byte byte0 = in.read();
 				anIntArray1045[k8] = byte0;
 				if (variables[k8] != byte0) {
 					variables[k8] = byte0;

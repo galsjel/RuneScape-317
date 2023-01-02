@@ -37,12 +37,12 @@ public class BitmapFont {
 
 			if (storeOrder == 0) {
 				for (int i = 0; i < len; i++) {
-					charMask[c][i] = dat.read8();
+					charMask[c][i] = dat.read();
 				}
 			} else if (storeOrder == 1) {
 				for (int x = 0; x < w; x++) {
 					for (int y = 0; y < h; y++) {
-						charMask[c][x + (y * w)] = dat.read8();
+						charMask[c][x + (y * w)] = dat.read();
 					}
 				}
 			}

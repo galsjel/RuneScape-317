@@ -130,26 +130,26 @@ public class Buffer extends DoublyLinkedList.Node {
 	}
 
 	public void writeString(String s) {
-		writeBytes(s.getBytes(StandardCharsets.ISO_8859_1));
+		write(s.getBytes(StandardCharsets.ISO_8859_1));
 		write8('\n');
 	}
 
-	public void writeBytes(byte[] src, int off, int len) {
+	public void write(byte[] src, int off, int len) {
 		System.arraycopy(src, off, data, position, len);
 		position += len;
 	}
 
-	public void writeBytes(byte[] src) {
-		writeBytes(src, 0, src.length);
+	public void write(byte[] src) {
+		write(src, 0, src.length);
 	}
 
-	public void writeBytesA(byte[] src, int off, int len) {
+	public void writeA(byte[] src, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			data[position++] = (byte) (src[i] + 128);
 		}
 	}
 
-	public byte read8() {
+	public byte read() {
 		return data[position++];
 	}
 
@@ -296,12 +296,12 @@ public class Buffer extends DoublyLinkedList.Node {
 		return raw;
 	}
 
-	public void readBytes(byte[] dst, int off, int len) {
+	public void read(byte[] dst, int off, int len) {
 		System.arraycopy(data, position, dst, off, len);
 		position += len;
 	}
 
-	public void getBytesReversed(byte[] dst, int off, int len) {
+	public void readReversed(byte[] dst, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			dst[i] = data[position++];
 		}
@@ -336,11 +336,11 @@ public class Buffer extends DoublyLinkedList.Node {
 		int length = position;
 		position = 0;
 		byte[] raw = new byte[length];
-		readBytes(raw, 0, length);
+		read(raw, 0, length);
 		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
 		position = 0;
 		write8(encrypted.length);
-		writeBytes(encrypted, 0, encrypted.length);
+		write(encrypted, 0, encrypted.length);
 	}
 
 }

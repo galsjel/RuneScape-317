@@ -246,7 +246,7 @@ public class NPCType {
 			} else if (i == 3) {
 				desc = buffer.readStringRaw();
 			} else if (i == 12) {
-				size = buffer.read8();
+				size = buffer.read();
 			} else if (i == 13) {
 				seqStandID = buffer.read16U();
 			} else if (i == 14) {
@@ -295,9 +295,9 @@ public class NPCType {
 			} else if (i == 99) {
 				aBoolean93 = true;
 			} else if (i == 100) {
-				anInt85 = buffer.read8();
+				anInt85 = buffer.read();
 			} else if (i == 101) {
-				anInt92 = buffer.read8() * 5;
+				anInt92 = buffer.read() * 5;
 			} else if (i == 102) {
 				headicon = buffer.read16U();
 			} else if (i == 103) {

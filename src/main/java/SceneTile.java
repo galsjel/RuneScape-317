@@ -8,7 +8,7 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public final int z;
 	public final int level;
 	public final SceneLoc[] locs = new SceneLoc[5];
-	public final int[] locFlags = new int[5];
+	public final int[] locSpan = new int[5];
 	public int dataLevel;
 	public SceneTileUnderlay underlay;
 	public SceneTileOverlay overlay;
@@ -17,15 +17,15 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public SceneGroundDecoration groundDecoration;
 	public SceneObjStack objStack;
 	public int locCount;
-	public int flags;
+	public int spans;
 	/**
 	 * Used as a short circuit to prevent drawing tiles above the top level. Mostly applies to lowmem.
 	 * @see Scene#draw(int, int, int, int, int, int)
 	 */
 	public int drawLevel;
-	public boolean aBoolean1322;
-	public boolean aBoolean1323;
-	public boolean aBoolean1324;
+	public boolean drawable;
+	public boolean update;
+	public boolean containsLocs;
 	public int anInt1325;
 	public int anInt1326;
 	public int anInt1327;

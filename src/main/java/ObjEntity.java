@@ -2,12 +2,12 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ObjStackEntity extends Entity {
+public class ObjEntity extends Entity {
 
 	public int id;
 	public int amount;
 
-	public ObjStackEntity() {
+	public ObjEntity() {
 	}
 
 	@Override

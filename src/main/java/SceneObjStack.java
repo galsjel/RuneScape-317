@@ -7,9 +7,9 @@ public class SceneObjStack {
 	public int y;
 	public int x;
 	public int z;
-	public Entity entity0;
-	public Entity entity1;
-	public Entity entity2;
+	public Entity obj0;
+	public Entity obj1;
+	public Entity obj2;
 	public int bitset;
 	public int offset;
 

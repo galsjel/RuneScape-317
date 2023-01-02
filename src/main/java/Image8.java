@@ -37,7 +37,7 @@ public class Image8 {
 
 		if (pixelOrder == 0) {
 			for (int i = 0; i < pixelCount; i++) {
-				pixels[i] = dat.read8();
+				pixels[i] = dat.read();
 			}
 			return;
 		}
@@ -45,7 +45,7 @@ public class Image8 {
 		if (pixelOrder == 1) {
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
-					pixels[x + (y * width)] = dat.read8();
+					pixels[x + (y * width)] = dat.read();
 				}
 			}
 		}

@@ -19,6 +19,10 @@ public class SceneLoc {
 	public int bitset;
 	public byte info;
 
+	public boolean drawn() {
+		return cycle == Scene.cycle;
+	}
+
 	public SceneLoc() {
 	}
 

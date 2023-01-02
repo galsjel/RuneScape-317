@@ -544,12 +544,12 @@ public class ObjType {
 				members = true;
 			} else if (i == 23) {
 				maleModelId0 = buffer.read16U();
-				maleOffsetY = buffer.read8();
+				maleOffsetY = buffer.read();
 			} else if (i == 24) {
 				maleModelId1 = buffer.read16U();
 			} else if (i == 25) {
 				femaleModelId0 = buffer.read16U();
-				femaleOffsetY = buffer.read8();
+				femaleOffsetY = buffer.read();
 			} else if (i == 26) {
 				femaleModelId1 = buffer.read16U();
 			} else if ((i >= 30) && (i < 35)) {
@@ -605,9 +605,9 @@ public class ObjType {
 			} else if (i == 112) {
 				scaleY = buffer.read16U();
 			} else if (i == 113) {
-				lightAmbient = buffer.read8();
+				lightAmbient = buffer.read();
 			} else if (i == 114) {
-				lightAttenuation = buffer.read8() * 5;
+				lightAttenuation = buffer.read() * 5;
 			} else if (i == 115) {
 				team = buffer.read8U();
 			}
