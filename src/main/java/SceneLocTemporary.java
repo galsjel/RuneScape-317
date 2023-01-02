@@ -8,7 +8,7 @@ public class SceneLocTemporary extends DoublyLinkedList.Node {
 	public int rotation;
 	public int kind;
 	public int duration;
-	public int plane;
+	public int level;
 	public int classID;
 	public int localX;
 	public int localZ;

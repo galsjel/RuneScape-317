@@ -61,6 +61,9 @@ public class StringUtil {
 		return String.format("%d.%d.%d.%d", (ipv4 >> 24) & 0xff, (ipv4 >> 16) & 0xff, (ipv4 >> 8) & 0xff, ipv4 & 0xff);
 	}
 
+	public static String formatName(long name37) {
+		return formatName(fromBase37(name37));
+	}
 	public static String formatName(String s) {
 		if (s.length() > 0) {
 			char[] ac = s.toCharArray();

@@ -11,7 +11,7 @@ public class SceneBuilder {
     public static int anInt123 = (int) (Math.random() * 17.0) - 8;
     public static int anInt131;
     public static int anInt133 = (int) (Math.random() * 33.0) - 16;
-    public static int minPlane = 99;
+    public static int minLevel = 99;
     public static boolean lowmem = true;
 
     public static int method170(int i, int i_3_) {
@@ -110,11 +110,11 @@ public class SceneBuilder {
         return (hsl & 0xff80) + lightness;
     }
 
-    public static void addLoc(Scene scene, int rotation, int z, int kind, int plane, SceneCollisionMap collision, int[][][] planeHeightmap, int x, int locID, int dataPlane) {
-        int heightSW = planeHeightmap[plane][x][z];
-        int heightSE = planeHeightmap[plane][x + 1][z];
-        int heightNE = planeHeightmap[plane][x + 1][z + 1];
-        int heightNW = planeHeightmap[plane][x][z + 1];
+    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, SceneCollisionMap collision, int[][][] levelHeightmap, int x, int locID, int dataLevel) {
+        int heightSW = levelHeightmap[tileLevel][x][z];
+        int heightSE = levelHeightmap[tileLevel][x + 1][z];
+        int heightNE = levelHeightmap[tileLevel][x + 1][z + 1];
+        int heightNW = levelHeightmap[tileLevel][x][z + 1];
         int y = (heightSW + heightSE + heightNE + heightNW) >> 2;
 
         LocType loc = LocType.get(locID);
@@ -135,7 +135,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 22, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.addGroundDecoration(entity, dataPlane, x, z, y, bitset, info);
+            scene.addGroundDecoration(entity, dataLevel, x, z, y, bitset, info);
 
             if (loc.solid && loc.interactable) {
                 collision.addSolid(z, x);
@@ -167,7 +167,7 @@ public class SceneBuilder {
                     length = loc.length;
                 }
 
-                scene.add(entity, dataPlane, x, z, y, width, length, angle, bitset, info);
+                scene.add(entity, dataLevel, x, z, y, width, length, angle, bitset, info);
             }
             if (loc.solid) {
                 collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
@@ -180,7 +180,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.add(entity, dataPlane, x, z, y, 1, 1, 0, bitset, info);
+            scene.add(entity, dataLevel, x, z, y, 1, 1, 0, bitset, info);
 
             if (loc.solid) {
                 collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
@@ -194,7 +194,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 0, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
 
             if (loc.solid) {
                 collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
@@ -208,7 +208,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 1, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
 
             if (loc.solid) {
                 collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
@@ -226,7 +226,7 @@ public class SceneBuilder {
                 locB = new LocEntity(locID, nextRotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], locA, WALL_ROTATION_OCCLUDE_TYPE[nextRotation], locB, dataPlane, x, z, y, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], locA, WALL_ROTATION_OCCLUDE_TYPE[nextRotation], locB, dataLevel, x, z, y, bitset, info);
 
             if (loc.solid) {
                 collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
@@ -240,7 +240,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 3, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataPlane, x, z, y, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
 
             if (loc.solid) {
                 collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
@@ -254,7 +254,7 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
             }
 
-            scene.add(entity, dataPlane, x, z, y, 1, 1, 0, bitset, info);
+            scene.add(entity, dataLevel, x, z, y, 1, 1, 0, bitset, info);
 
             if (loc.solid) {
                 collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
@@ -292,10 +292,10 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
-                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataPlane, x, z, y, rotation * 512, 0, 0, bitset, info);
+                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataLevel, x, z, y, rotation * 512, 0, 0, bitset, info);
             } else if (kind == 5) {
                 int padding = 16;
-                int wallBitset = scene.getWallBitset(dataPlane, x, z);
+                int wallBitset = scene.getWallBitset(dataLevel, x, z);
 
                 if (wallBitset > 0) {
                     padding = LocType.get((wallBitset >> 14) & 0x7fff).decorationPadding;
@@ -309,7 +309,7 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
-                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataPlane, x, z, y, rotation * 512, anIntArray137[rotation] * padding, anIntArray144[rotation] * padding, bitset, info);
+                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, dataLevel, x, z, y, rotation * 512, anIntArray137[rotation] * padding, anIntArray144[rotation] * padding, bitset, info);
             } else if (kind == 6) {
                 Entity entity;
 
@@ -319,7 +319,7 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
-                scene.setWallDecoration(256, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(256, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
             } else if (kind == 7) {
                 Entity entity;
 
@@ -329,7 +329,7 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
-                scene.setWallDecoration(512, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(512, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
             } else if (kind == 8) {
                 Entity entity;
 
@@ -339,7 +339,7 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
                 }
 
-                scene.setWallDecoration(768, entity, dataPlane, x, z, y, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(768, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
             }
         }
     }
@@ -392,31 +392,31 @@ public class SceneBuilder {
     public final int[] anIntArray126;
     public final int[] anIntArray127;
     public final int[] anIntArray128;
-    public final int[][][] planeHeightmap;
+    public final int[][][] levelHeightmap;
     public final byte[][][] aByteArrayArrayArray130;
-    public final byte[][][] planeShademap;
-    public final int[][][] planeOccludemap;
+    public final byte[][][] levelShademap;
+    public final int[][][] levelOccludemap;
     public final byte[][][] aByteArrayArrayArray136;
-    public final int[][] planeTileLightness;
+    public final int[][] levelLightmap;
     public final byte[][][] aByteArrayArrayArray142;
     public final int maxTileX;
     public final int maxTileZ;
     public final byte[][][] aByteArrayArrayArray148;
-    public final byte[][][] planeTileFlags;
+    public final byte[][][] levelTileFlags;
 
-    public SceneBuilder(byte[][][] planeTileFlags, int maxTileZ, int maxTileX, int[][][] planeHeightmap) {
-        minPlane = 99;
+    public SceneBuilder(byte[][][] levelTileFlags, int maxTileZ, int maxTileX, int[][][] levelHeightmap) {
+        minLevel = 99;
         this.maxTileX = maxTileX;
         this.maxTileZ = maxTileZ;
-        this.planeHeightmap = planeHeightmap;
-        this.planeTileFlags = planeTileFlags;
+        this.levelHeightmap = levelHeightmap;
+        this.levelTileFlags = levelTileFlags;
         aByteArrayArrayArray142 = new byte[4][this.maxTileX][this.maxTileZ];
         aByteArrayArrayArray130 = new byte[4][this.maxTileX][this.maxTileZ];
         aByteArrayArrayArray136 = new byte[4][this.maxTileX][this.maxTileZ];
         aByteArrayArrayArray148 = new byte[4][this.maxTileX][this.maxTileZ];
-        planeOccludemap = new int[4][this.maxTileX + 1][this.maxTileZ + 1];
-        planeShademap = new byte[4][this.maxTileX + 1][this.maxTileZ + 1];
-        planeTileLightness = new int[this.maxTileX + 1][this.maxTileZ + 1];
+        levelOccludemap = new int[4][this.maxTileX + 1][this.maxTileZ + 1];
+        levelShademap = new byte[4][this.maxTileX + 1][this.maxTileZ + 1];
+        levelLightmap = new int[this.maxTileX + 1][this.maxTileZ + 1];
         anIntArray124 = new int[this.maxTileZ];
         anIntArray125 = new int[this.maxTileZ];
         anIntArray126 = new int[this.maxTileZ];
@@ -424,25 +424,24 @@ public class SceneBuilder {
         anIntArray128 = new int[this.maxTileZ];
     }
 
-    public void method171(SceneCollisionMap[] planeCollisions, Scene scene) {
-        for (int plane = 0; plane < 4; plane++) {
+    public void method171(SceneCollisionMap[] levelCollisionMaps, Scene scene) {
+        for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
-                    if ((planeTileFlags[plane][x][z] & 0x1) == 1) {
-                        int physicalPlane = plane;
+                    if ((levelTileFlags[level][x][z] & 0x1) == 1) {
+                        int trueLevel = level;
 
                         // bridge
-                        if ((planeTileFlags[1][x][z] & 0x2) == 2) {
-                            physicalPlane--;
+                        if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                            trueLevel--;
                         }
 
-                        if (physicalPlane >= 0) {
-                            planeCollisions[physicalPlane].addSolid(z, x);
+                        if (trueLevel >= 0) {
+                            levelCollisionMaps[trueLevel].addSolid(z, x);
                         }
                     }
                 }
             }
-
         }
         anInt123 += (int) (Math.random() * 5.0) - 2;
 
@@ -464,8 +463,8 @@ public class SceneBuilder {
             anInt133 = 16;
         }
 
-        for (int plane = 0; plane < 4; plane++) {
-            byte[][] shademap = planeShademap[plane];
+        for (int level = 0; level < 4; level++) {
+            byte[][] shademap = levelShademap[level];
             int lightAmbient = 96;
             int lightAttenuation = 768;
             int lightX = -50;
@@ -475,15 +474,15 @@ public class SceneBuilder {
 
             for (int z = 1; z < (maxTileZ - 1); z++) {
                 for (int x = 1; x < (maxTileX - 1); x++) {
-                    int dx = planeHeightmap[plane][x + 1][z] - planeHeightmap[plane][x - 1][z];
-                    int dz = planeHeightmap[plane][x][z + 1] - planeHeightmap[plane][x][z - 1];
+                    int dx = levelHeightmap[level][x + 1][z] - levelHeightmap[level][x - 1][z];
+                    int dz = levelHeightmap[level][x][z + 1] - levelHeightmap[level][x][z - 1];
                     int len = (int) Math.sqrt((dx * dx) + 65536 + (dz * dz));
                     int nx = (dx << 8) / len;
                     int ny = 65536 / len;
                     int nz = (dz << 8) / len;
                     int light = lightAmbient + (((lightX * nx) + (lightY * ny) + (lightZ * nz)) / lightMagnitude);
                     int shade = (shademap[x - 1][z] >> 2) + (shademap[x + 1][z] >> 3) + (shademap[x][z - 1] >> 2) + (shademap[x][z + 1] >> 3) + (shademap[x][z] >> 1);
-                    planeTileLightness[x][z] = light - shade;
+                    levelLightmap[x][z] = light - shade;
                 }
             }
 
@@ -500,7 +499,7 @@ public class SceneBuilder {
                     int x1 = x0 + 5;
 
                     if ((x1 >= 0) && (x1 < maxTileX)) {
-                        int floID = aByteArrayArrayArray142[plane][x1][z0] & 0xff;
+                        int floID = aByteArrayArrayArray142[level][x1][z0] & 0xff;
 
                         if (floID > 0) {
                             FloType flo = FloType.instances[floID - 1];
@@ -515,7 +514,7 @@ public class SceneBuilder {
                     int x2 = x0 - 5;
 
                     if ((x2 >= 0) && (x2 < maxTileX)) {
-                        int floID = aByteArrayArrayArray142[plane][x2][z0] & 0xff;
+                        int floID = aByteArrayArrayArray142[level][x2][z0] & 0xff;
 
                         if (floID > 0) {
                             FloType flo = FloType.instances[floID - 1];
@@ -556,24 +555,24 @@ public class SceneBuilder {
                             i_39_ -= anIntArray128[dz2];
                         }
 
-                        if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((planeTileFlags[0][x0][z0] & 0x2) != 0) || (((planeTileFlags[plane][x0][z0] & 0x10) == 0) && (getDrawPlane(plane, x0, z0) == anInt131)))) {
-                            if (plane < minPlane) {
-                                minPlane = plane;
+                        if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((levelTileFlags[0][x0][z0] & 0x2) != 0) || (((levelTileFlags[level][x0][z0] & 0x10) == 0) && (getDrawLevel(level, x0, z0) == anInt131)))) {
+                            if (level < minLevel) {
+                                minLevel = level;
                             }
 
-                            int i_43_ = aByteArrayArrayArray142[plane][x0][z0] & 0xff;
-                            int floID = aByteArrayArrayArray130[plane][x0][z0] & 0xff;
+                            int i_43_ = aByteArrayArrayArray142[level][x0][z0] & 0xff;
+                            int floID = aByteArrayArrayArray130[level][x0][z0] & 0xff;
 
                             if ((i_43_ > 0) || (floID > 0)) {
-                                int heightSW = planeHeightmap[plane][x0][z0];
-                                int heightSE = planeHeightmap[plane][x0 + 1][z0];
-                                int heightNE = planeHeightmap[plane][x0 + 1][z0 + 1];
-                                int heightNW = planeHeightmap[plane][x0][z0 + 1];
+                                int heightSW = levelHeightmap[level][x0][z0];
+                                int heightSE = levelHeightmap[level][x0 + 1][z0];
+                                int heightNE = levelHeightmap[level][x0 + 1][z0 + 1];
+                                int heightNW = levelHeightmap[level][x0][z0 + 1];
 
-                                int tileHeight00 = planeTileLightness[x0][z0];
-                                int tileHeight10 = planeTileLightness[x0 + 1][z0];
-                                int tileHeight11 = planeTileLightness[x0 + 1][z0 + 1];
-                                int tileHeight01 = planeTileLightness[x0][z0 + 1];
+                                int tileHeight00 = levelLightmap[x0][z0];
+                                int tileHeight10 = levelLightmap[x0 + 1][z0];
+                                int tileHeight11 = levelLightmap[x0 + 1][z0 + 1];
+                                int tileHeight01 = levelLightmap[x0][z0 + 1];
 
                                 int i_53_ = -1;
                                 int i_54_ = -1;
@@ -597,16 +596,16 @@ public class SceneBuilder {
                                     i_54_ = decimateHSL(hue, saturation, lightness);
                                 }
 
-                                if (plane > 0) {
+                                if (level > 0) {
                                     boolean bool = true;
-                                    if ((i_43_ == 0) && (aByteArrayArrayArray136[plane][x0][z0] != 0)) {
+                                    if ((i_43_ == 0) && (aByteArrayArrayArray136[level][x0][z0] != 0)) {
                                         bool = false;
                                     }
                                     if ((floID > 0) && !FloType.instances[floID - 1].aBoolean393) {
                                         bool = false;
                                     }
                                     if (bool && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
-                                        planeOccludemap[plane][x0][z0] |= 0x924;
+                                        levelOccludemap[level][x0][z0] |= 0x924;
                                     }
                                 }
 
@@ -617,10 +616,10 @@ public class SceneBuilder {
                                 }
 
                                 if (floID == 0) {
-                                    scene.setTile(plane, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), 0, 0, 0, 0, i_58_, 0);
+                                    scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), 0, 0, 0, 0, i_58_, 0);
                                 } else {
-                                    int i_59_ = aByteArrayArrayArray136[plane][x0][z0] + 1;
-                                    byte i_60_ = aByteArrayArrayArray148[plane][x0][z0];
+                                    int i_59_ = aByteArrayArrayArray136[level][x0][z0] + 1;
+                                    byte i_60_ = aByteArrayArrayArray148[level][x0][z0];
                                     FloType flo = FloType.instances[floID - 1];
                                     int textureID = flo.textureID;
                                     int rgb;
@@ -638,7 +637,7 @@ public class SceneBuilder {
                                         rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
                                     }
 
-                                    scene.setTile(plane, x0, z0, i_59_, i_60_, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
+                                    scene.setTile(level, x0, z0, i_59_, i_60_, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
                                 }
                             }
                         }
@@ -648,140 +647,154 @@ public class SceneBuilder {
 
             for (int stz = 1; stz < (maxTileZ - 1); stz++) {
                 for (int stx = 1; stx < (maxTileX - 1); stx++) {
-                    scene.setDrawPlane(plane, stx, stz, getDrawPlane(plane, stx, stz));
+                    scene.setDrawLevel(level, stx, stz, getDrawLevel(level, stx, stz));
                 }
             }
         }
 
-        scene.method305(-10, 64, -50, 768, -50);
+        scene.applyLighting(-10, 64, -50, 768, -50);
 
         for (int x = 0; x < maxTileX; x++) {
             for (int z = 0; z < maxTileZ; z++) {
-                if ((planeTileFlags[1][x][z] & 0x2) == 2) {
+                if ((levelTileFlags[1][x][z] & 0x2) == 2) {
                     scene.setBridge(x, z);
                 }
             }
         }
 
-        int i_68_ = 1;
-        int i_69_ = 2;
-        int i_70_ = 4;
-        for (int i_71_ = 0; i_71_ < 4; i_71_++) {
-            if (i_71_ > 0) {
-                i_68_ <<= 3;
-                i_69_ <<= 3;
-                i_70_ <<= 3;
+        // TODO: Find a reasonable name for these.
+        int maskA = 0b001;
+        int maskB = 0b010;
+        int maskC = 0b100;
+
+        for (int current = 0; current < 4; current++) {
+            if (current > 0) {
+                maskA <<= 3;
+                maskB <<= 3;
+                maskC <<= 3;
             }
-            for (int plane = 0; plane <= i_71_; plane++) {
-                for (int z = 0; z <= maxTileZ; z++) {
-                    for (int x = 0; x <= maxTileX; x++) {
-                        if ((planeOccludemap[plane][x][z] & i_68_) != 0) {
-                            int i_75_ = z;
-                            int i_76_ = z;
-                            int i_77_ = plane;
-                            int i_78_ = plane;
-                            for (/**/; i_75_ > 0; i_75_--) {
-                                if ((planeOccludemap[plane][x][i_75_ - 1] & i_68_) == 0) {
+
+            for (int level = 0; level <= current; level++) {
+                for (int tileZ = 0; tileZ <= maxTileZ; tileZ++) {
+                    for (int tileX = 0; tileX <= maxTileX; tileX++) {
+                        if ((levelOccludemap[level][tileX][tileZ] & maskA) != 0) {
+                            int minZ = tileZ;
+                            int maxZ = tileZ;
+                            int minLevel = level;
+                            int maxLevel = level;
+                            for (/**/; minZ > 0; minZ--) {
+                                if ((levelOccludemap[level][tileX][minZ - 1] & maskA) == 0) {
                                     break;
                                 }
                             }
-                            for (/**/; i_76_ < maxTileZ; i_76_++) {
-                                if ((planeOccludemap[plane][x][i_76_ + 1] & i_68_) == 0) {
+                            for (/**/; maxZ < maxTileZ; maxZ++) {
+                                if ((levelOccludemap[level][tileX][maxZ + 1] & maskA) == 0) {
                                     break;
                                 }
                             }
-                            while_0_:
-                            for (/**/; i_77_ > 0; i_77_--) {
-                                for (int i_79_ = i_75_; i_79_ <= i_76_; i_79_++) {
-                                    if ((planeOccludemap[i_77_ - 1][x][i_79_] & i_68_) == 0) {
-                                        break while_0_;
+
+                            find_min_level:
+                            for (/**/; minLevel > 0; minLevel--) {
+                                for (int z = minZ; z <= maxZ; z++) {
+                                    if ((levelOccludemap[minLevel - 1][tileX][z] & maskA) == 0) {
+                                        break find_min_level;
                                     }
                                 }
                             }
-                            while_1_:
-                            for (/**/; i_78_ < i_71_; i_78_++) {
-                                for (int i_80_ = i_75_; i_80_ <= i_76_; i_80_++) {
-                                    if ((planeOccludemap[i_78_ + 1][x][i_80_] & i_68_) == 0) {
-                                        break while_1_;
+
+                            find_max_level:
+                            for (/**/; maxLevel < current; maxLevel++) {
+                                for (int z = minZ; z <= maxZ; z++) {
+                                    if ((levelOccludemap[maxLevel + 1][tileX][z] & maskA) == 0) {
+                                        break find_max_level;
                                     }
                                 }
                             }
-                            int i_81_ = ((i_78_ + 1) - i_77_) * ((i_76_ - i_75_) + 1);
-                            if (i_81_ >= 8) {
-                                int i_82_ = 240;
-                                int i_83_ = planeHeightmap[i_78_][x][i_75_] - i_82_;
-                                int i_84_ = planeHeightmap[i_77_][x][i_75_];
-                                Scene.method277(i_71_, x * 128, i_84_, x * 128, (i_76_ * 128) + 128, i_83_, i_75_ * 128, 1);
-                                for (int i_85_ = i_77_; i_85_ <= i_78_; i_85_++) {
-                                    for (int i_86_ = i_75_; i_86_ <= i_76_; i_86_++) {
-                                        planeOccludemap[i_85_][x][i_86_] &= ~i_68_;
+
+                            int area = ((maxLevel + 1) - minLevel) * ((maxZ - minZ) + 1);
+
+                            if (area >= 8) {
+                                int maxY = levelHeightmap[maxLevel][tileX][minZ] - 240;
+                                int minY = levelHeightmap[minLevel][tileX][minZ];
+
+                                Scene.method277(current, tileX * 128, minY, tileX * 128, (maxZ * 128) + 128, maxY, minZ * 128, 1);
+
+                                for (int l = minLevel; l <= maxLevel; l++) {
+                                    for (int z = minZ; z <= maxZ; z++) {
+                                        levelOccludemap[l][tileX][z] &= ~maskA;
                                     }
                                 }
                             }
                         }
-                        if ((planeOccludemap[plane][x][z] & i_69_) != 0) {
-                            int i_87_ = x;
-                            int i_88_ = x;
-                            int i_89_ = plane;
-                            int i_90_ = plane;
-                            for (/**/; i_87_ > 0; i_87_--) {
-                                if ((planeOccludemap[plane][i_87_ - 1][z] & i_69_) == 0) {
+
+                        if ((levelOccludemap[level][tileX][tileZ] & maskB) != 0) {
+                            int minX = tileX;
+                            int maxX = tileX;
+                            int minLevel = level;
+                            int maxLevel = level;
+
+                            for (/**/; minX > 0; minX--) {
+                                if ((levelOccludemap[level][minX - 1][tileZ] & maskB) == 0) {
                                     break;
                                 }
                             }
-                            for (/**/; i_88_ < maxTileX; i_88_++) {
-                                if ((planeOccludemap[plane][i_88_ + 1][z] & i_69_) == 0) {
+                            for (/**/; maxX < maxTileX; maxX++) {
+                                if ((levelOccludemap[level][maxX + 1][tileZ] & maskB) == 0) {
                                     break;
                                 }
                             }
-                            while_2_:
-                            for (/**/; i_89_ > 0; i_89_--) {
-                                for (int i_91_ = i_87_; i_91_ <= i_88_; i_91_++) {
-                                    if ((planeOccludemap[i_89_ - 1][i_91_][z] & i_69_) == 0) {
-                                        break while_2_;
+
+                            find_min_level:
+                            for (/**/; minLevel > 0; minLevel--) {
+                                for (int x = minX; x <= maxX; x++) {
+                                    if ((levelOccludemap[minLevel - 1][x][tileZ] & maskB) == 0) {
+                                        break find_min_level;
                                     }
                                 }
                             }
-                            while_3_:
-                            for (/**/; i_90_ < i_71_; i_90_++) {
-                                for (int i_92_ = i_87_; i_92_ <= i_88_; i_92_++) {
-                                    if ((planeOccludemap[i_90_ + 1][i_92_][z] & i_69_) == 0) {
-                                        break while_3_;
+
+                            find_max_level:
+                            for (/**/; maxLevel < current; maxLevel++) {
+                                for (int x = minX; x <= maxX; x++) {
+                                    if ((levelOccludemap[maxLevel + 1][x][tileZ] & maskB) == 0) {
+                                        break find_max_level;
                                     }
                                 }
                             }
-                            int i_93_ = ((i_90_ + 1) - i_89_) * ((i_88_ - i_87_) + 1);
-                            if (i_93_ >= 8) {
-                                int i_94_ = 240;
-                                int i_95_ = planeHeightmap[i_90_][i_87_][z] - i_94_;
-                                int i_96_ = planeHeightmap[i_89_][i_87_][z];
-                                Scene.method277(i_71_, i_87_ * 128, i_96_, (i_88_ * 128) + 128, z * 128, i_95_, z * 128, 2);
-                                for (int i_97_ = i_89_; i_97_ <= i_90_; i_97_++) {
-                                    for (int i_98_ = i_87_; i_98_ <= i_88_; i_98_++) {
-                                        planeOccludemap[i_97_][i_98_][z] &= ~i_69_;
+
+                            int area = ((maxLevel + 1) - minLevel) * ((maxX - minX) + 1);
+
+                            if (area >= 8) {
+                                int maxY = levelHeightmap[maxLevel][minX][tileZ] - 240;
+                                int minY = levelHeightmap[minLevel][minX][tileZ];
+                                Scene.method277(current, minX * 128, minY, (maxX * 128) + 128, tileZ * 128, maxY, tileZ * 128, 2);
+                                for (int i_97_ = minLevel; i_97_ <= maxLevel; i_97_++) {
+                                    for (int i_98_ = minX; i_98_ <= maxX; i_98_++) {
+                                        levelOccludemap[i_97_][i_98_][tileZ] &= ~maskB;
                                     }
                                 }
                             }
                         }
-                        if ((planeOccludemap[plane][x][z] & i_70_) != 0) {
-                            int i_99_ = x;
-                            int i_100_ = x;
-                            int i_101_ = z;
-                            int i_102_ = z;
+
+                        if ((levelOccludemap[level][tileX][tileZ] & maskC) != 0) {
+                            int i_99_ = tileX;
+                            int i_100_ = tileX;
+                            int i_101_ = tileZ;
+                            int i_102_ = tileZ;
                             for (/**/; i_101_ > 0; i_101_--) {
-                                if ((planeOccludemap[plane][x][i_101_ - 1] & i_70_) == 0) {
+                                if ((levelOccludemap[level][tileX][i_101_ - 1] & maskC) == 0) {
                                     break;
                                 }
                             }
                             for (/**/; i_102_ < maxTileZ; i_102_++) {
-                                if ((planeOccludemap[plane][x][i_102_ + 1] & i_70_) == 0) {
+                                if ((levelOccludemap[level][tileX][i_102_ + 1] & maskC) == 0) {
                                     break;
                                 }
                             }
                             while_4_:
                             for (/**/; i_99_ > 0; i_99_--) {
                                 for (int i_103_ = i_101_; i_103_ <= i_102_; i_103_++) {
-                                    if ((planeOccludemap[plane][i_99_ - 1][i_103_] & i_70_) == 0) {
+                                    if ((levelOccludemap[level][i_99_ - 1][i_103_] & maskC) == 0) {
                                         break while_4_;
                                     }
                                 }
@@ -789,17 +802,17 @@ public class SceneBuilder {
                             while_5_:
                             for (/**/; i_100_ < maxTileX; i_100_++) {
                                 for (int i_104_ = i_101_; i_104_ <= i_102_; i_104_++) {
-                                    if ((planeOccludemap[plane][i_100_ + 1][i_104_] & i_70_) == 0) {
+                                    if ((levelOccludemap[level][i_100_ + 1][i_104_] & maskC) == 0) {
                                         break while_5_;
                                     }
                                 }
                             }
                             if ((((i_100_ - i_99_) + 1) * ((i_102_ - i_101_) + 1)) >= 4) {
-                                int i_105_ = planeHeightmap[plane][i_99_][i_101_];
-                                Scene.method277(i_71_, i_99_ * 128, i_105_, (i_100_ * 128) + 128, (i_102_ * 128) + 128, i_105_, i_101_ * 128, 4);
+                                int i_105_ = levelHeightmap[level][i_99_][i_101_];
+                                Scene.method277(current, i_99_ * 128, i_105_, (i_100_ * 128) + 128, (i_102_ * 128) + 128, i_105_, i_101_ * 128, 4);
                                 for (int i_106_ = i_99_; i_106_ <= i_100_; i_106_++) {
                                     for (int i_107_ = i_101_; i_107_ <= i_102_; i_107_++) {
-                                        planeOccludemap[plane][i_106_][i_107_] &= ~i_70_;
+                                        levelOccludemap[level][i_106_][i_107_] &= ~maskC;
                                     }
                                 }
                             }
@@ -814,35 +827,35 @@ public class SceneBuilder {
         for (int i_117_ = i; i_117_ <= (i + i_113_); i_117_++) {
             for (int i_118_ = i_116_; i_118_ <= (i_116_ + i_115_); i_118_++) {
                 if ((i_118_ >= 0) && (i_118_ < maxTileX) && (i_117_ >= 0) && (i_117_ < maxTileZ)) {
-                    planeShademap[0][i_118_][i_117_] = (byte) 127;
+                    levelShademap[0][i_118_][i_117_] = (byte) 127;
                     if ((i_118_ == i_116_) && (i_118_ > 0)) {
-                        planeHeightmap[0][i_118_][i_117_] = planeHeightmap[0][i_118_ - 1][i_117_];
+                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_ - 1][i_117_];
                     }
                     if ((i_118_ == (i_116_ + i_115_)) && (i_118_ < (maxTileX - 1))) {
-                        planeHeightmap[0][i_118_][i_117_] = planeHeightmap[0][i_118_ + 1][i_117_];
+                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_ + 1][i_117_];
                     }
                     if ((i_117_ == i) && (i_117_ > 0)) {
-                        planeHeightmap[0][i_118_][i_117_] = planeHeightmap[0][i_118_][i_117_ - 1];
+                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_][i_117_ - 1];
                     }
                     if ((i_117_ == (i + i_113_)) && (i_117_ < (maxTileZ - 1))) {
-                        planeHeightmap[0][i_118_][i_117_] = planeHeightmap[0][i_118_][i_117_ + 1];
+                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_][i_117_ + 1];
                     }
                 }
             }
         }
     }
 
-    public void method175(int z, Scene scene, SceneCollisionMap collision, int kind, int plane, int x, int locID, int rotation) {
-        if (lowmem && ((planeTileFlags[0][x][z] & 0x2) == 0) && (((planeTileFlags[plane][x][z] & 0x10) != 0) || (getDrawPlane(plane, x, z) != anInt131))) {
+    public void method175(int z, Scene scene, SceneCollisionMap collision, int kind, int level, int x, int locID, int rotation) {
+        if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != anInt131))) {
             return;
         }
-        if (plane < minPlane) {
-            minPlane = plane;
+        if (level < minLevel) {
+            minLevel = level;
         }
-        int heightmapSW = planeHeightmap[plane][x][z];
-        int heightmapSE = planeHeightmap[plane][x + 1][z];
-        int heightmapNE = planeHeightmap[plane][x + 1][z + 1];
-        int heightmapNW = planeHeightmap[plane][x][z + 1];
+        int heightmapSW = levelHeightmap[level][x][z];
+        int heightmapSE = levelHeightmap[level][x + 1][z];
+        int heightmapNE = levelHeightmap[level][x + 1][z + 1];
+        int heightmapNW = levelHeightmap[level][x][z + 1];
         int heightmapAverage = (heightmapSW + heightmapSE + heightmapNE + heightmapNW) >> 2;
         LocType type = LocType.get(locID);
         int bitset = x + (z << 7) + (locID << 14) + 0x40000000;
@@ -863,7 +876,7 @@ public class SceneBuilder {
                     entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
 
-                scene.addGroundDecoration(entity, plane, x, z, heightmapAverage, bitset, info);
+                scene.addGroundDecoration(entity, level, x, z, heightmapAverage, bitset, info);
 
                 if (type.solid && type.interactable && (collision != null)) {
                     collision.addSolid(z, x);
@@ -896,7 +909,7 @@ public class SceneBuilder {
                     height = type.length;
                 }
 
-                if (scene.add(entity, plane, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
+                if (scene.add(entity, level, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
                     Model model;
 
                     if (entity instanceof Model) {
@@ -914,8 +927,8 @@ public class SceneBuilder {
                                     shade = 30;
                                 }
 
-                                if (shade > planeShademap[plane][x + dx][z + dz]) {
-                                    planeShademap[plane][x + dx][z + dz] = (byte) shade;
+                                if (shade > levelShademap[level][x + dx][z + dz]) {
+                                    levelShademap[level][x + dx][z + dz] = (byte) shade;
                                 }
                             }
                         }
@@ -935,10 +948,10 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
-            scene.add(entity, plane, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+            scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
 
-            if ((kind >= 12) && (kind <= 17) && (kind != 13) && (plane > 0)) {
-                planeOccludemap[plane][x][z] |= 0x924;
+            if ((kind >= 12) && (kind <= 17) && (kind != 13) && (level > 0)) {
+                levelOccludemap[level][x][z] |= 0x924;
             }
 
             if (type.solid && (collision != null)) {
@@ -953,39 +966,39 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 0, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
 
             if (rotation == 0) {
                 if (type.castShadow) {
-                    planeShademap[plane][x][z] = (byte) 50;
-                    planeShademap[plane][x][z + 1] = (byte) 50;
+                    levelShademap[level][x][z] = (byte) 50;
+                    levelShademap[level][x][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    planeOccludemap[plane][x][z] |= 0x249;
+                    levelOccludemap[level][x][z] |= 0x249;
                 }
             } else if (rotation == 1) {
                 if (type.castShadow) {
-                    planeShademap[plane][x][z + 1] = (byte) 50;
-                    planeShademap[plane][x + 1][z + 1] = (byte) 50;
+                    levelShademap[level][x][z + 1] = (byte) 50;
+                    levelShademap[level][x + 1][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    planeOccludemap[plane][x][z + 1] |= 0x492;
+                    levelOccludemap[level][x][z + 1] |= 0x492;
                 }
             } else if (rotation == 2) {
                 if (type.castShadow) {
-                    planeShademap[plane][x + 1][z] = (byte) 50;
-                    planeShademap[plane][x + 1][z + 1] = (byte) 50;
+                    levelShademap[level][x + 1][z] = (byte) 50;
+                    levelShademap[level][x + 1][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    planeOccludemap[plane][x + 1][z] |= 0x249;
+                    levelOccludemap[level][x + 1][z] |= 0x249;
                 }
             } else if (rotation == 3) {
                 if (type.castShadow) {
-                    planeShademap[plane][x][z] = (byte) 50;
-                    planeShademap[plane][x + 1][z] = (byte) 50;
+                    levelShademap[level][x][z] = (byte) 50;
+                    levelShademap[level][x + 1][z] = (byte) 50;
                 }
                 if (type.occludes) {
-                    planeOccludemap[plane][x][z] |= 0x492;
+                    levelOccludemap[level][x][z] |= 0x492;
                 }
             }
 
@@ -994,7 +1007,7 @@ public class SceneBuilder {
             }
 
             if (type.decorationPadding != 16) {
-                scene.setWallDecorationOffset(plane, x, z, type.decorationPadding);
+                scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
             }
         } else if (kind == 1) {
             Entity entity;
@@ -1005,17 +1018,17 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, 1, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
 
             if (type.castShadow) {
                 if (rotation == 0) {
-                    planeShademap[plane][x][z + 1] = (byte) 50;
+                    levelShademap[level][x][z + 1] = (byte) 50;
                 } else if (rotation == 1) {
-                    planeShademap[plane][x + 1][z + 1] = (byte) 50;
+                    levelShademap[level][x + 1][z + 1] = (byte) 50;
                 } else if (rotation == 2) {
-                    planeShademap[plane][x + 1][z] = (byte) 50;
+                    levelShademap[level][x + 1][z] = (byte) 50;
                 } else if (rotation == 3) {
-                    planeShademap[plane][x][z] = (byte) 50;
+                    levelShademap[level][x][z] = (byte) 50;
                 }
             }
 
@@ -1033,27 +1046,27 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 entity_138_ = new LocEntity(locID, i_137_, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, WALL_ROTATION_OCCLUDE_TYPE[i_137_], entity_138_, plane, x, z, heightmapAverage, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, WALL_ROTATION_OCCLUDE_TYPE[i_137_], entity_138_, level, x, z, heightmapAverage, bitset, info);
             if (type.occludes) {
                 if (rotation == 0) {
-                    planeOccludemap[plane][x][z] |= 0x249;
-                    planeOccludemap[plane][x][z + 1] |= 0x492;
+                    levelOccludemap[level][x][z] |= 0x249;
+                    levelOccludemap[level][x][z + 1] |= 0x492;
                 } else if (rotation == 1) {
-                    planeOccludemap[plane][x][z + 1] |= 0x492;
-                    planeOccludemap[plane][x + 1][z] |= 0x249;
+                    levelOccludemap[level][x][z + 1] |= 0x492;
+                    levelOccludemap[level][x + 1][z] |= 0x249;
                 } else if (rotation == 2) {
-                    planeOccludemap[plane][x + 1][z] |= 0x249;
-                    planeOccludemap[plane][x][z] |= 0x492;
+                    levelOccludemap[level][x + 1][z] |= 0x249;
+                    levelOccludemap[level][x][z] |= 0x492;
                 } else if (rotation == 3) {
-                    planeOccludemap[plane][x][z] |= 0x492;
-                    planeOccludemap[plane][x][z] |= 0x249;
+                    levelOccludemap[level][x][z] |= 0x492;
+                    levelOccludemap[level][x][z] |= 0x249;
                 }
             }
             if (type.solid && (collision != null)) {
                 collision.addWall(z, rotation, x, kind, type.blocksProjectiles);
             }
             if (type.decorationPadding != 16) {
-                scene.setWallDecorationOffset(plane, x, z, type.decorationPadding);
+                scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
             }
         } else if (kind == 3) {
             Entity entity;
@@ -1062,16 +1075,16 @@ public class SceneBuilder {
             } else {
                 entity = new LocEntity(locID, rotation, 3, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
-            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, plane, x, z, heightmapAverage, bitset, info);
+            scene.setWall(WALL_ROTATION_OCCLUDE_TYPE_1[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
             if (type.castShadow) {
                 if (rotation == 0) {
-                    planeShademap[plane][x][z + 1] = (byte) 50;
+                    levelShademap[level][x][z + 1] = (byte) 50;
                 } else if (rotation == 1) {
-                    planeShademap[plane][x + 1][z + 1] = (byte) 50;
+                    levelShademap[level][x + 1][z + 1] = (byte) 50;
                 } else if (rotation == 2) {
-                    planeShademap[plane][x + 1][z] = (byte) 50;
+                    levelShademap[level][x + 1][z] = (byte) 50;
                 } else if (rotation == 3) {
-                    planeShademap[plane][x][z] = (byte) 50;
+                    levelShademap[level][x][z] = (byte) 50;
                 }
             }
             if (type.solid && (collision != null)) {
@@ -1084,7 +1097,7 @@ public class SceneBuilder {
             } else {
                 entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
-            scene.add(entity, plane, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+            scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
             if (type.solid && (collision != null)) {
                 collision.add(type.blocksProjectiles, type.width, type.length, x, z, rotation);
             }
@@ -1118,10 +1131,10 @@ public class SceneBuilder {
                 } else {
                     entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
-                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, plane, x, z, heightmapAverage, rotation * 512, 0, 0, bitset, info);
+                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, level, x, z, heightmapAverage, rotation * 512, 0, 0, bitset, info);
             } else if (kind == 5) {
                 int i_142_ = 16;
-                int i_143_ = scene.getWallBitset(plane, x, z);
+                int i_143_ = scene.getWallBitset(level, x, z);
                 if (i_143_ > 0) {
                     i_142_ = LocType.get((i_143_ >> 14) & 0x7fff).decorationPadding;
                 }
@@ -1131,7 +1144,7 @@ public class SceneBuilder {
                 } else {
                     entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
-                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, plane, x, z, heightmapAverage, rotation * 512, anIntArray137[rotation] * i_142_, anIntArray144[rotation] * i_142_, bitset, info);
+                scene.setWallDecoration(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, level, x, z, heightmapAverage, rotation * 512, anIntArray137[rotation] * i_142_, anIntArray144[rotation] * i_142_, bitset, info);
             } else if (kind == 6) {
                 Entity entity;
                 if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1139,7 +1152,7 @@ public class SceneBuilder {
                 } else {
                     entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
-                scene.setWallDecoration(256, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(256, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             } else if (kind == 7) {
                 Entity entity;
                 if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1147,7 +1160,7 @@ public class SceneBuilder {
                 } else {
                     entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
-                scene.setWallDecoration(512, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(512, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             } else if (kind == 8) {
                 Entity entity;
                 if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1155,7 +1168,7 @@ public class SceneBuilder {
                 } else {
                     entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
                 }
-                scene.setWallDecoration(768, entity, plane, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                scene.setWallDecoration(768, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
             }
         }
     }
@@ -1220,14 +1233,14 @@ public class SceneBuilder {
 
     public void method181(int i, int i_185_, Buffer buffer, int i_186_, int i_187_, int i_188_, int i_190_) {
         if ((i_186_ >= 0) && (i_186_ < 104) && (i >= 0) && (i < 104)) {
-            planeTileFlags[i_187_][i_186_][i] = (byte) 0;
+            levelTileFlags[i_187_][i_186_][i] = (byte) 0;
             for (; ; ) {
                 int i_191_ = buffer.get1U();
                 if (i_191_ == 0) {
                     if (i_187_ == 0) {
-                        planeHeightmap[0][i_186_][i] = -method172(932731 + i_186_ + i_190_, 556238 + i + i_185_) * 8;
+                        levelHeightmap[0][i_186_][i] = -method172(932731 + i_186_ + i_190_, 556238 + i + i_185_) * 8;
                     } else {
-                        planeHeightmap[i_187_][i_186_][i] = planeHeightmap[i_187_ - 1][i_186_][i] - 240;
+                        levelHeightmap[i_187_][i_186_][i] = levelHeightmap[i_187_ - 1][i_186_][i] - 240;
                         break;
                     }
                     break;
@@ -1238,9 +1251,9 @@ public class SceneBuilder {
                         i_192_ = 0;
                     }
                     if (i_187_ == 0) {
-                        planeHeightmap[0][i_186_][i] = -i_192_ * 8;
+                        levelHeightmap[0][i_186_][i] = -i_192_ * 8;
                     } else {
-                        planeHeightmap[i_187_][i_186_][i] = planeHeightmap[i_187_ - 1][i_186_][i] - (i_192_ * 8);
+                        levelHeightmap[i_187_][i_186_][i] = levelHeightmap[i_187_ - 1][i_186_][i] - (i_192_ * 8);
                         break;
                     }
                     break;
@@ -1250,7 +1263,7 @@ public class SceneBuilder {
                     aByteArrayArrayArray136[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
                     aByteArrayArrayArray148[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
                 } else if (i_191_ <= 81) {
-                    planeTileFlags[i_187_][i_186_][i] = (byte) (i_191_ - 49);
+                    levelTileFlags[i_187_][i_186_][i] = (byte) (i_191_ - 49);
                 } else {
                     aByteArrayArrayArray142[i_187_][i_186_][i] = (byte) (i_191_ - 81);
                 }
@@ -1272,14 +1285,14 @@ public class SceneBuilder {
         }
     }
 
-    public int getDrawPlane(int plane, int stx, int stz) {
-        if ((planeTileFlags[plane][stx][stz] & 0x8) != 0) {
+    public int getDrawLevel(int level, int stx, int stz) {
+        if ((levelTileFlags[level][stx][stz] & 0x8) != 0) {
             return 0;
         }
-        if ((plane > 0) && ((planeTileFlags[1][stx][stz] & 0x2) != 0)) {
-            return plane - 1;
+        if ((level > 0) && ((levelTileFlags[1][stx][stz] & 0x2) != 0)) {
+            return level - 1;
         }
-        return plane;
+        return level;
     }
 
     public void method183(SceneCollisionMap[] collisionMaps, Scene scene, int i, int i_197_, int i_198_, int i_199_, byte[] is, int i_200_, int i_201_, int i_202_) {
@@ -1310,7 +1323,7 @@ public class SceneBuilder {
                     int i_214_ = i_202_ + ZoneUtil.method158(i_207_ & 0x7, type.length, i_201_, type.width, i_208_ & 0x7);
                     if ((i_213_ > 0) && (i_214_ > 0) && (i_213_ < 103) && (i_214_ < 103)) {
                         int i_215_ = i_209_;
-                        if ((planeTileFlags[1][i_213_][i_214_] & 0x2) == 2) {
+                        if ((levelTileFlags[1][i_213_][i_214_] & 0x2) == 2) {
                             i_215_--;
                         }
                         SceneCollisionMap collisionMap = null;
@@ -1376,7 +1389,7 @@ public class SceneBuilder {
                 int i_276_ = i_269_ + i_263_;
                 if ((i_275_ > 0) && (i_276_ > 0) && (i_275_ < 103) && (i_276_ < 103)) {
                     int i_277_ = i_271_;
-                    if ((planeTileFlags[1][i_275_][i_276_] & 0x2) == 2) {
+                    if ((levelTileFlags[1][i_275_][i_276_] & 0x2) == 2) {
                         i_277_--;
                     }
                     SceneCollisionMap collisionMap = null;

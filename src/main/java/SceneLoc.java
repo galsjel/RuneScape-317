@@ -4,7 +4,7 @@
 
 public class SceneLoc {
 
-	public int plane;
+	public int level;
 	public int y;
 	public int x;
 	public int z;

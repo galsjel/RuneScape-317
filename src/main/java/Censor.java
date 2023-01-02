@@ -115,7 +115,7 @@ public class Censor {
 		return ((c >= ' ') && (c <= '\177')) || (c == ' ') || (c == '\n') || (c == '\t') || (c == '\243') || (c == '\u20AC');
 	}
 
-	public static String method497(String s, int i) {
+	public static String apply(String s) {
 		char[] ac = s.toCharArray();
 		method495(ac);
 		String s1 = (new String(ac)).trim();
@@ -123,9 +123,6 @@ public class Censor {
 		String s2 = s1.toLowerCase();
 		method505(ac);
 		method500(ac);
-		if (i != 0) {
-			throw new NullPointerException();
-		}
 		method501(ac);
 		method514(ac);
 		for (String value : aStringArray626) {

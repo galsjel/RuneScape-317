@@ -18,7 +18,7 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public SceneObjStack objStack;
 	public int locCount;
 	public int flags;
-	public int drawPlane;
+	public int drawLevel;
 	public boolean aBoolean1322;
 	public boolean aBoolean1323;
 	public boolean aBoolean1324;

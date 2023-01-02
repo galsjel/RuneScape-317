@@ -69,7 +69,7 @@ public class Component {
 			}
 
 			if (c.type == 0) {
-				c.scrollHeight = in.get2U();
+				c.scrollableHeight = in.get2U();
 				c.hidden = in.get1U() == 1;
 				int childCount = in.get2U();
 				c.children = new int[childCount];
@@ -283,6 +283,10 @@ public class Component {
 	public boolean fill;
 	public BitmapFont font;
 	public int height;
+	/**
+	 * Hides this component. Only works for parent components by default.
+	 * @see Game#drawParentComponent(Component, int, int, int)
+	 */
 	public boolean hidden;
 	public int hoverColor;
 	public int id;
@@ -309,7 +313,7 @@ public class Component {
 	public int[] scriptComparator;
 	public int[] scriptOperand;
 	public int[][] scripts;
-	public int scrollHeight;
+	public int scrollableHeight;
 	public int scrollY;
 	public int seqCycle;
 	public int seqFrame;

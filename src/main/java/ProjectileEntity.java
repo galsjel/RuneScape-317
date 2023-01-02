@@ -14,7 +14,7 @@ public class ProjectileEntity extends Entity {
 	public final int arc;
 	public final int target;
 	public final SpotAnimType spotanim;
-	public final int plane;
+	public final int level;
 	public double velocityX;
 	public double velocityZ;
 	public double velocity;
@@ -29,9 +29,9 @@ public class ProjectileEntity extends Entity {
 	public int yaw;
 	public int pitch;
 
-	public ProjectileEntity(int peakPitch, int offsetY, int startCycle, int lastCycle, int arc, int plane, int srcY, int srcZ, int srcX, int target, int spotanim) {
+	public ProjectileEntity(int peakPitch, int offsetY, int startCycle, int lastCycle, int arc, int level, int srcY, int srcZ, int srcX, int target, int spotanim) {
 		this.spotanim = SpotAnimType.instances[spotanim];
-		this.plane = plane;
+		this.level = level;
 		this.srcX = srcX;
 		this.srcZ = srcZ;
 		this.srcY = srcY;

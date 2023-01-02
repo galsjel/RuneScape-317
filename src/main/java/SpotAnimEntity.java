@@ -4,7 +4,7 @@
 
 public class SpotAnimEntity extends Entity {
 
-	public final int plane;
+	public final int level;
 	public final int x;
 	public final int z;
 	public final int y;
@@ -14,9 +14,9 @@ public class SpotAnimEntity extends Entity {
 	public int seqFrame;
 	public int seqCycle;
 
-	public SpotAnimEntity(int plane, int cycle, int delay, int id, int y, int z, int x) {
+	public SpotAnimEntity(int level, int cycle, int delay, int id, int y, int z, int x) {
 		type = SpotAnimType.instances[id];
-		this.plane = plane;
+		this.level = level;
 		this.x = x;
 		this.z = z;
 		this.y = y;
