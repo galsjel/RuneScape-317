@@ -27,7 +27,7 @@ public class FloType {
 	public int rgb;
 	public int textureID = -1;
 	public boolean unusedBool = false;
-	public boolean aBoolean393 = true;
+	public boolean occludes = true;
 	public int hue;
 	public int saturation;
 	public int lightness;
@@ -52,7 +52,7 @@ public class FloType {
 			} else if (i == 3) {
 				unusedBool = true;
 			} else if (i == 5) {
-				aBoolean393 = false;
+				occludes = false;
 			} else if (i == 6) {
 				unusedString = buffer.readString();
 			} else if (i == 7) {

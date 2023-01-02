@@ -310,7 +310,7 @@ public class Model extends Entity {
 	 */
 	public boolean pickable = false;
 	/**
-	 * A storage for the original vertex normals to give {@link Scene#method308(Model, Model, int, int, int, boolean)}
+	 * A storage for the original vertex normals to give {@link Scene#mergeNormals(Model, Model, int, int, int, boolean)}
 	 * a reference.
 	 */
 	public VertexNormal[] vertexNormalOriginal;

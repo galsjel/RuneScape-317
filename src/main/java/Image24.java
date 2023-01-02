@@ -19,12 +19,12 @@ public class Image24 extends DoublyLinkedList.Node {
 		cropX = cropY = 0;
 	}
 
-	public Image24(byte[] abyte0, java.awt.Component component) {
+	public Image24(byte[] src, java.awt.Component component) {
 		try {
-			java.awt.Image image = Toolkit.getDefaultToolkit().createImage(abyte0);
-			MediaTracker mediatracker = new MediaTracker(component);
-			mediatracker.addImage(image, 0);
-			mediatracker.waitForAll();
+			java.awt.Image image = Toolkit.getDefaultToolkit().createImage(src);
+			MediaTracker tracker = new MediaTracker(component);
+			tracker.addImage(image, 0);
+			tracker.waitForAll();
 			width = image.getWidth(component);
 			height = image.getHeight(component);
 			cropW = width;
@@ -40,41 +40,41 @@ public class Image24 extends DoublyLinkedList.Node {
 	}
 
 	public Image24(FileArchive archive, String file, int index) throws IOException {
-		Buffer buffer = new Buffer(archive.read(file + ".dat"));
-		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
-		buffer_1.position = buffer.read16U();
-		cropW = buffer_1.read16U();
-		cropH = buffer_1.read16U();
-		int j = buffer_1.read8U();
-		int[] ai = new int[j];
-		for (int k = 0; k < (j - 1); k++) {
-			ai[k + 1] = buffer_1.read24();
-			if (ai[k + 1] == 0) {
-				ai[k + 1] = 1;
+		Buffer dat = new Buffer(archive.read(file + ".dat"));
+		Buffer idx = new Buffer(archive.read("index.dat"));
+		idx.position = dat.read16U();
+		cropW = idx.read16U();
+		cropH = idx.read16U();
+		int paletteSize = idx.read8U();
+		int[] palette = new int[paletteSize];
+		for (int k = 0; k < (paletteSize - 1); k++) {
+			palette[k + 1] = idx.read24();
+			if (palette[k + 1] == 0) {
+				palette[k + 1] = 1;
 			}
 		}
-		for (int l = 0; l < index; l++) {
-			buffer_1.position += 2;
-			buffer.position += buffer_1.read16U() * buffer_1.read16U();
-			buffer_1.position++;
+		for (int i = 0; i < index; i++) {
+			idx.position += 2;
+			dat.position += idx.read16U() * idx.read16U();
+			idx.position++;
 		}
-		cropX = buffer_1.read8U();
-		cropY = buffer_1.read8U();
-		width = buffer_1.read16U();
-		height = buffer_1.read16U();
-		int layout = buffer_1.read8U();
+		cropX = idx.read8U();
+		cropY = idx.read8U();
+		width = idx.read16U();
+		height = idx.read16U();
+		int layout = idx.read8U();
 		int pixelLen = width * height;
 		pixels = new int[pixelLen];
 		if (layout == 0) {
-			for (int k1 = 0; k1 < pixelLen; k1++) {
-				pixels[k1] = ai[buffer.read8U()];
+			for (int i = 0; i < pixelLen; i++) {
+				pixels[i] = palette[dat.read8U()];
 			}
 			return;
 		}
 		if (layout == 1) {
-			for (int l1 = 0; l1 < width; l1++) {
-				for (int i2 = 0; i2 < height; i2++) {
-					pixels[l1 + (i2 * width)] = ai[buffer.read8U()];
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					pixels[x + (y * width)] = palette[dat.read8U()];
 				}
 			}
 		}
@@ -170,14 +170,14 @@ public class Image24 extends DoublyLinkedList.Node {
 	public void copyPixels(int dstOff, int w, int h, int srcStep, int srcOff, int dstStep, int[] src, int[] dst) {
 		int quarterWidth = -(w >> 2);
 		w = -(w & 3);
-		for (int i2 = -h; i2 < 0; i2++) {
-			for (int j2 = quarterWidth; j2 < 0; j2++) {
+		for (int y = -h; y < 0; y++) {
+			for (int i = quarterWidth; i < 0; i++) {
 				dst[dstOff++] = src[srcOff++];
 				dst[dstOff++] = src[srcOff++];
 				dst[dstOff++] = src[srcOff++];
 				dst[dstOff++] = src[srcOff++];
 			}
-			for (int k2 = w; k2 < 0; k2++) {
+			for (int i = w; i < 0; i++) {
 				dst[dstOff++] = src[srcOff++];
 			}
 			dstOff += dstStep;
@@ -195,23 +195,23 @@ public class Image24 extends DoublyLinkedList.Node {
 		int dstStep = Draw2D.width - w;
 		int srcStep = 0;
 		if (y < Draw2D.top) {
-			int j2 = Draw2D.top - y;
-			h -= j2;
+			int trim = Draw2D.top - y;
+			h -= trim;
 			y = Draw2D.top;
-			srcOff += j2 * w;
-			dstOff += j2 * Draw2D.width;
+			srcOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
 		if ((y + h) > Draw2D.bottom) {
 			h -= (y + h) - Draw2D.bottom;
 		}
 		if (x < Draw2D.left) {
-			int k2 = Draw2D.left - x;
-			w -= k2;
+			int trim = Draw2D.left - x;
+			w -= trim;
 			x = Draw2D.left;
-			srcOff += k2;
-			dstOff += k2;
-			srcStep += k2;
-			dstStep += k2;
+			srcOff += trim;
+			dstOff += trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
 		if ((x + w) > Draw2D.right) {
 			int trim = (x + w) - Draw2D.right;
@@ -271,43 +271,43 @@ public class Image24 extends DoublyLinkedList.Node {
 	public void draw(int x, int y, int alpha) {
 		x += cropX;
 		y += cropY;
-		int i1 = x + (y * Draw2D.width);
-		int j1 = 0;
-		int k1 = height;
+		int dstOff = x + (y * Draw2D.width);
+		int srcOff = 0;
+		int h = height;
 		int w = width;
-		int i2 = Draw2D.width - w;
-		int j2 = 0;
+		int dstStep = Draw2D.width - w;
+		int srcStep = 0;
 		if (y < Draw2D.top) {
-			int k2 = Draw2D.top - y;
-			k1 -= k2;
+			int trim = Draw2D.top - y;
+			h -= trim;
 			y = Draw2D.top;
-			j1 += k2 * w;
-			i1 += k2 * Draw2D.width;
+			srcOff += trim * w;
+			dstOff += trim * Draw2D.width;
 		}
-		if ((y + k1) > Draw2D.bottom) {
-			k1 -= (y + k1) - Draw2D.bottom;
+		if ((y + h) > Draw2D.bottom) {
+			h -= (y + h) - Draw2D.bottom;
 		}
 		if (x < Draw2D.left) {
-			int l2 = Draw2D.left - x;
-			w -= l2;
+			int trim = Draw2D.left - x;
+			w -= trim;
 			x = Draw2D.left;
-			j1 += l2;
-			i1 += l2;
-			j2 += l2;
-			i2 += l2;
+			srcOff += trim;
+			dstOff += trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
 		if ((x + w) > Draw2D.right) {
-			int i3 = (x + w) - Draw2D.right;
-			w -= i3;
-			j2 += i3;
-			i2 += i3;
+			int trim = (x + w) - Draw2D.right;
+			w -= trim;
+			srcStep += trim;
+			dstStep += trim;
 		}
-		if ((w > 0) && (k1 > 0)) {
-			copyPixelsAlpha(j1, w, Draw2D.pixels, pixels, j2, k1, i2, alpha, i1);
+		if ((w > 0) && (h > 0)) {
+			copyPixelsAlpha(srcOff, w, Draw2D.pixels, pixels, srcStep, h, dstStep, alpha, dstOff);
 		}
 	}
 
-	public void copyPixelsAlpha(int srcOff, int w, int[] dst, int[] src, int srcstep, int h, int dstStep, int alpha, int dstOff) {
+	public void copyPixelsAlpha(int srcOff, int w, int[] dst, int[] src, int srcStep, int h, int dstStep, int alpha, int dstOff) {
 		int invAlpha = 256 - alpha;
 		for (int k2 = -h; k2 < 0; k2++) {
 			for (int l2 = -w; l2 < 0; l2++) {
@@ -320,7 +320,7 @@ public class Image24 extends DoublyLinkedList.Node {
 				}
 			}
 			dstOff += dstStep;
-			srcOff += srcstep;
+			srcOff += srcStep;
 		}
 	}
 
@@ -431,7 +431,7 @@ public class Image24 extends DoublyLinkedList.Node {
 		w = -(w & 3);
 		for (int y = -h; y < 0; y++) {
 			int rgb;
-			for (int k2 = quarterW; k2 < 0; k2++) {
+			for (int i = quarterW; i < 0; i++) {
 				rgb = src[srcOff++];
 				if ((rgb != 0) && (mask[dstOff] == 0)) {
 					dst[dstOff++] = rgb;
@@ -457,7 +457,7 @@ public class Image24 extends DoublyLinkedList.Node {
 					dstOff++;
 				}
 			}
-			for (int l2 = w; l2 < 0; l2++) {
+			for (int i = w; i < 0; i++) {
 				rgb = src[srcOff++];
 				if ((rgb != 0) && (mask[dstOff] == 0)) {
 					dst[dstOff++] = rgb;
@@ -469,5 +469,4 @@ public class Image24 extends DoublyLinkedList.Node {
 			srcOff += srcStep;
 		}
 	}
-
 }

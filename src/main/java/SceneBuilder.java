@@ -8,9 +8,9 @@ public class SceneBuilder {
     public static final int[] WALL_ROTATION_OCCLUDE_TYPE_1 = {16, 32, 64, 128};
     public static final int[] anIntArray144 = {0, -1, 0, 1};
     public static final int[] WALL_ROTATION_OCCLUDE_TYPE = {1, 2, 4, 8};
-    public static int anInt123 = (int) (Math.random() * 17.0) - 8;
+    public static int randomHueOffset = (int) (Math.random() * 17.0) - 8;
     public static int anInt131;
-    public static int anInt133 = (int) (Math.random() * 33.0) - 16;
+    public static int randomLightnessOffset = (int) (Math.random() * 33.0) - 16;
     public static int minLevel = 99;
     public static boolean lowmem = true;
 
@@ -387,21 +387,21 @@ public class SceneBuilder {
         return bool;
     }
 
-    public final int[] anIntArray124;
-    public final int[] anIntArray125;
-    public final int[] anIntArray126;
-    public final int[] anIntArray127;
-    public final int[] anIntArray128;
+    public final int[] blendChroma;
+    public final int[] blendSaturation;
+    public final int[] blendLightness;
+    public final int[] blendLuminance;
+    public final int[] blendMagnitude;
     public final int[][][] levelHeightmap;
-    public final byte[][][] aByteArrayArrayArray130;
+    public final byte[][][] levelTileOverlayIDs;
     public final byte[][][] levelShademap;
     public final int[][][] levelOccludemap;
-    public final byte[][][] aByteArrayArrayArray136;
+    public final byte[][][] levelTileOverlayShape;
     public final int[][] levelLightmap;
-    public final byte[][][] aByteArrayArrayArray142;
+    public final byte[][][] levelTileUnderlayIDs;
     public final int maxTileX;
     public final int maxTileZ;
-    public final byte[][][] aByteArrayArrayArray148;
+    public final byte[][][] levelTileOverlayRotation;
     public final byte[][][] levelTileFlags;
 
     public SceneBuilder(byte[][][] levelTileFlags, int maxTileZ, int maxTileX, int[][][] levelHeightmap) {
@@ -410,24 +410,41 @@ public class SceneBuilder {
         this.maxTileZ = maxTileZ;
         this.levelHeightmap = levelHeightmap;
         this.levelTileFlags = levelTileFlags;
-        aByteArrayArrayArray142 = new byte[4][this.maxTileX][this.maxTileZ];
-        aByteArrayArrayArray130 = new byte[4][this.maxTileX][this.maxTileZ];
-        aByteArrayArrayArray136 = new byte[4][this.maxTileX][this.maxTileZ];
-        aByteArrayArrayArray148 = new byte[4][this.maxTileX][this.maxTileZ];
+        levelTileUnderlayIDs = new byte[4][this.maxTileX][this.maxTileZ];
+        levelTileOverlayIDs = new byte[4][this.maxTileX][this.maxTileZ];
+        levelTileOverlayShape = new byte[4][this.maxTileX][this.maxTileZ];
+        levelTileOverlayRotation = new byte[4][this.maxTileX][this.maxTileZ];
         levelOccludemap = new int[4][this.maxTileX + 1][this.maxTileZ + 1];
         levelShademap = new byte[4][this.maxTileX + 1][this.maxTileZ + 1];
         levelLightmap = new int[this.maxTileX + 1][this.maxTileZ + 1];
-        anIntArray124 = new int[this.maxTileZ];
-        anIntArray125 = new int[this.maxTileZ];
-        anIntArray126 = new int[this.maxTileZ];
-        anIntArray127 = new int[this.maxTileZ];
-        anIntArray128 = new int[this.maxTileZ];
+        blendChroma = new int[this.maxTileZ];
+        blendSaturation = new int[this.maxTileZ];
+        blendLightness = new int[this.maxTileZ];
+        blendLuminance = new int[this.maxTileZ];
+        blendMagnitude = new int[this.maxTileZ];
     }
 
-    public void method171(SceneCollisionMap[] levelCollisionMaps, Scene scene) {
+    public void build(SceneCollisionMap[] levelCollisionMaps, Scene scene) {
+        applyBlockFlags(levelCollisionMaps);
+        randomize();
+
+        for (int level = 0; level < 4; level++) {
+            buildTerrainLighting(level);
+            buildTiles(scene, level);
+            updateDrawLevels(scene, level);
+        }
+
+        scene.buildModels(64, 768, -50, -10, -50);
+
+        buildBridges(scene);
+        buildOccluders();
+    }
+
+    private void applyBlockFlags(SceneCollisionMap[] levelCollisionMaps) {
         for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
+                    // solid?
                     if ((levelTileFlags[level][x][z] & 0x1) == 1) {
                         int trueLevel = level;
 
@@ -440,220 +457,232 @@ public class SceneBuilder {
                             levelCollisionMaps[trueLevel].addSolid(z, x);
                         }
                     }
+
                 }
             }
         }
-        anInt123 += (int) (Math.random() * 5.0) - 2;
+    }
 
-        if (anInt123 < -8) {
-            anInt123 = -8;
+    private static void randomize() {
+        randomHueOffset += (int) (Math.random() * 5.0) - 2;
+
+        if (randomHueOffset < -8) {
+            randomHueOffset = -8;
         }
 
-        if (anInt123 > 8) {
-            anInt123 = 8;
+        if (randomHueOffset > 8) {
+            randomHueOffset = 8;
         }
 
-        anInt133 += (int) (Math.random() * 5.0) - 2;
+        randomLightnessOffset += (int) (Math.random() * 5.0) - 2;
 
-        if (anInt133 < -16) {
-            anInt133 = -16;
+        if (randomLightnessOffset < -16) {
+            randomLightnessOffset = -16;
         }
 
-        if (anInt133 > 16) {
-            anInt133 = 16;
+        if (randomLightnessOffset > 16) {
+            randomLightnessOffset = 16;
         }
+    }
 
-        for (int level = 0; level < 4; level++) {
-            byte[][] shademap = levelShademap[level];
-            int lightAmbient = 96;
-            int lightAttenuation = 768;
-            int lightX = -50;
-            int lightY = -10;
-            int lightZ = -50;
-            int lightMagnitude = (lightAttenuation * (int) Math.sqrt((lightX * lightX) + (lightY * lightY) + (lightZ * lightZ))) >> 8;
-
-            for (int z = 1; z < (maxTileZ - 1); z++) {
-                for (int x = 1; x < (maxTileX - 1); x++) {
-                    int dx = levelHeightmap[level][x + 1][z] - levelHeightmap[level][x - 1][z];
-                    int dz = levelHeightmap[level][x][z + 1] - levelHeightmap[level][x][z - 1];
-                    int len = (int) Math.sqrt((dx * dx) + 65536 + (dz * dz));
-                    int nx = (dx << 8) / len;
-                    int ny = 65536 / len;
-                    int nz = (dz << 8) / len;
-                    int light = lightAmbient + (((lightX * nx) + (lightY * ny) + (lightZ * nz)) / lightMagnitude);
-                    int shade = (shademap[x - 1][z] >> 2) + (shademap[x + 1][z] >> 3) + (shademap[x][z - 1] >> 2) + (shademap[x][z + 1] >> 3) + (shademap[x][z] >> 1);
-                    levelLightmap[x][z] = light - shade;
-                }
+    private void updateDrawLevels(Scene scene, int level) {
+        for (int stz = 1; stz < (maxTileZ - 1); stz++) {
+            for (int stx = 1; stx < (maxTileX - 1); stx++) {
+                scene.setDrawLevel(level, stx, stz, getDrawLevel(level, stx, stz));
             }
+        }
+    }
 
-            for (int z = 0; z < maxTileZ; z++) {
-                anIntArray124[z] = 0;
-                anIntArray125[z] = 0;
-                anIntArray126[z] = 0;
-                anIntArray127[z] = 0;
-                anIntArray128[z] = 0;
-            }
+    private void buildTiles(Scene scene, int level) {
+        for (int z = 0; z < maxTileZ; z++) {
+            blendChroma[z] = 0;
+            blendSaturation[z] = 0;
+            blendLightness[z] = 0;
+            blendLuminance[z] = 0;
+            blendMagnitude[z] = 0;
+        }
 
-            for (int x0 = -5; x0 < (maxTileX + 5); x0++) {
-                for (int z0 = 0; z0 < maxTileZ; z0++) {
-                    int x1 = x0 + 5;
+        for (int x0 = -5; x0 < (maxTileX + 5); x0++) {
+            for (int z0 = 0; z0 < maxTileZ; z0++) {
+                int x1 = x0 + 5;
 
-                    if ((x1 >= 0) && (x1 < maxTileX)) {
-                        int floID = aByteArrayArrayArray142[level][x1][z0] & 0xff;
+                if ((x1 >= 0) && (x1 < maxTileX)) {
+                    int floID = levelTileUnderlayIDs[level][x1][z0] & 0xff;
 
-                        if (floID > 0) {
-                            FloType flo = FloType.instances[floID - 1];
-                            anIntArray124[z0] += flo.chroma;
-                            anIntArray125[z0] += flo.saturation;
-                            anIntArray126[z0] += flo.lightness;
-                            anIntArray127[z0] += flo.luminance;
-                            anIntArray128[z0]++;
-                        }
-                    }
-
-                    int x2 = x0 - 5;
-
-                    if ((x2 >= 0) && (x2 < maxTileX)) {
-                        int floID = aByteArrayArrayArray142[level][x2][z0] & 0xff;
-
-                        if (floID > 0) {
-                            FloType flo = FloType.instances[floID - 1];
-                            anIntArray124[z0] -= flo.chroma;
-                            anIntArray125[z0] -= flo.saturation;
-                            anIntArray126[z0] -= flo.lightness;
-                            anIntArray127[z0] -= flo.luminance;
-                            anIntArray128[z0]--;
-                        }
+                    if (floID > 0) {
+                        FloType flo = FloType.instances[floID - 1];
+                        blendChroma[z0] += flo.chroma;
+                        blendSaturation[z0] += flo.saturation;
+                        blendLightness[z0] += flo.lightness;
+                        blendLuminance[z0] += flo.luminance;
+                        blendMagnitude[z0]++;
                     }
                 }
 
-                if ((x0 >= 1) && (x0 < (maxTileX - 1))) {
-                    int i_35_ = 0;
-                    int i_36_ = 0;
-                    int i_37_ = 0;
-                    int i_38_ = 0;
-                    int i_39_ = 0;
+                int x2 = x0 - 5;
 
-                    for (int z0 = -5; z0 < (maxTileZ + 5); z0++) {
-                        int dz1 = z0 + 5;
+                if ((x2 >= 0) && (x2 < maxTileX)) {
+                    int floID = levelTileUnderlayIDs[level][x2][z0] & 0xff;
 
-                        if ((dz1 >= 0) && (dz1 < maxTileZ)) {
-                            i_35_ += anIntArray124[dz1];
-                            i_36_ += anIntArray125[dz1];
-                            i_37_ += anIntArray126[dz1];
-                            i_38_ += anIntArray127[dz1];
-                            i_39_ += anIntArray128[dz1];
+                    if (floID > 0) {
+                        FloType flo = FloType.instances[floID - 1];
+                        blendChroma[z0] -= flo.chroma;
+                        blendSaturation[z0] -= flo.saturation;
+                        blendLightness[z0] -= flo.lightness;
+                        blendLuminance[z0] -= flo.luminance;
+                        blendMagnitude[z0]--;
+                    }
+                }
+            }
+
+            if ((x0 >= 1) && (x0 < (maxTileX - 1))) {
+                int hueAccumulator = 0;
+                int saturationAccumulator = 0;
+                int lightnessAccumulator = 0;
+                int luminanceAccumulator = 0;
+                int magnitudeAccumulator = 0;
+
+                for (int z0 = -5; z0 < (maxTileZ + 5); z0++) {
+                    int dz1 = z0 + 5;
+
+                    if ((dz1 >= 0) && (dz1 < maxTileZ)) {
+                        hueAccumulator += blendChroma[dz1];
+                        saturationAccumulator += blendSaturation[dz1];
+                        lightnessAccumulator += blendLightness[dz1];
+                        luminanceAccumulator += blendLuminance[dz1];
+                        magnitudeAccumulator += blendMagnitude[dz1];
+                    }
+
+                    int dz2 = z0 - 5;
+
+                    if ((dz2 >= 0) && (dz2 < maxTileZ)) {
+                        hueAccumulator -= blendChroma[dz2];
+                        saturationAccumulator -= blendSaturation[dz2];
+                        lightnessAccumulator -= blendLightness[dz2];
+                        luminanceAccumulator -= blendLuminance[dz2];
+                        magnitudeAccumulator -= blendMagnitude[dz2];
+                    }
+
+                    if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((levelTileFlags[0][x0][z0] & 0x2) != 0) || (((levelTileFlags[level][x0][z0] & 0x10) == 0) && (getDrawLevel(level, x0, z0) == anInt131)))) {
+                        if (level < minLevel) {
+                            minLevel = level;
                         }
 
-                        int dz2 = z0 - 5;
+                        int underlayID = levelTileUnderlayIDs[level][x0][z0] & 0xff;
+                        int overlayID = levelTileOverlayIDs[level][x0][z0] & 0xff;
 
-                        if ((dz2 >= 0) && (dz2 < maxTileZ)) {
-                            i_35_ -= anIntArray124[dz2];
-                            i_36_ -= anIntArray125[dz2];
-                            i_37_ -= anIntArray126[dz2];
-                            i_38_ -= anIntArray127[dz2];
-                            i_39_ -= anIntArray128[dz2];
-                        }
+                        if ((underlayID > 0) || (overlayID > 0)) {
+                            int heightSW = levelHeightmap[level][x0][z0];
+                            int heightSE = levelHeightmap[level][x0 + 1][z0];
+                            int heightNE = levelHeightmap[level][x0 + 1][z0 + 1];
+                            int heightNW = levelHeightmap[level][x0][z0 + 1];
 
-                        if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((levelTileFlags[0][x0][z0] & 0x2) != 0) || (((levelTileFlags[level][x0][z0] & 0x10) == 0) && (getDrawLevel(level, x0, z0) == anInt131)))) {
-                            if (level < minLevel) {
-                                minLevel = level;
+                            int lightSW = levelLightmap[x0][z0];
+                            int lightSE = levelLightmap[x0 + 1][z0];
+                            int lightNE = levelLightmap[x0 + 1][z0 + 1];
+                            int lightNW = levelLightmap[x0][z0 + 1];
+
+                            int baseColor = -1;
+                            int tintColor = -1;
+
+                            if (underlayID > 0) {
+                                int hue = (hueAccumulator * 256) / luminanceAccumulator;
+                                int saturation = saturationAccumulator / magnitudeAccumulator;
+                                int lightness = lightnessAccumulator / magnitudeAccumulator;
+
+                                baseColor = decimateHSL(hue, saturation, lightness);
+
+                                hue = (hue + randomHueOffset) & 0xff;
+                                lightness += randomLightnessOffset;
+
+                                if (lightness < 0) {
+                                    lightness = 0;
+                                } else if (lightness > 255) {
+                                    lightness = 255;
+                                }
+
+                                tintColor = decimateHSL(hue, saturation, lightness);
                             }
 
-                            int i_43_ = aByteArrayArrayArray142[level][x0][z0] & 0xff;
-                            int floID = aByteArrayArrayArray130[level][x0][z0] & 0xff;
+                            if (level > 0) {
+                                boolean occludes = true;
 
-                            if ((i_43_ > 0) || (floID > 0)) {
-                                int heightSW = levelHeightmap[level][x0][z0];
-                                int heightSE = levelHeightmap[level][x0 + 1][z0];
-                                int heightNE = levelHeightmap[level][x0 + 1][z0 + 1];
-                                int heightNW = levelHeightmap[level][x0][z0 + 1];
-
-                                int tileHeight00 = levelLightmap[x0][z0];
-                                int tileHeight10 = levelLightmap[x0 + 1][z0];
-                                int tileHeight11 = levelLightmap[x0 + 1][z0 + 1];
-                                int tileHeight01 = levelLightmap[x0][z0 + 1];
-
-                                int i_53_ = -1;
-                                int i_54_ = -1;
-
-                                if (i_43_ > 0) {
-                                    int hue = (i_35_ * 256) / i_38_;
-                                    int saturation = i_36_ / i_39_;
-                                    int lightness = i_37_ / i_39_;
-
-                                    i_53_ = decimateHSL(hue, saturation, lightness);
-
-                                    hue = (hue + anInt123) & 0xff;
-                                    lightness += anInt133;
-
-                                    if (lightness < 0) {
-                                        lightness = 0;
-                                    } else if (lightness > 255) {
-                                        lightness = 255;
-                                    }
-
-                                    i_54_ = decimateHSL(hue, saturation, lightness);
+                                if ((underlayID == 0) && (levelTileOverlayShape[level][x0][z0] != 0)) {
+                                    occludes = false;
                                 }
 
-                                if (level > 0) {
-                                    boolean bool = true;
-                                    if ((i_43_ == 0) && (aByteArrayArrayArray136[level][x0][z0] != 0)) {
-                                        bool = false;
-                                    }
-                                    if ((floID > 0) && !FloType.instances[floID - 1].aBoolean393) {
-                                        bool = false;
-                                    }
-                                    if (bool && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
-                                        levelOccludemap[level][x0][z0] |= 0x924;
-                                    }
+                                if ((overlayID > 0) && !FloType.instances[overlayID - 1].occludes) {
+                                    occludes = false;
                                 }
 
-                                int i_58_ = 0;
-
-                                if (i_53_ != -1) {
-                                    i_58_ = Draw3D.palette[mulHSL(i_54_, 96)];
+                                // occludes && flat
+                                if (occludes && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
+                                    levelOccludemap[level][x0][z0] |= 0b100_100_100_100;
                                 }
+                            }
 
-                                if (floID == 0) {
-                                    scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), 0, 0, 0, 0, i_58_, 0);
+                            int shadeColor = 0;
+
+                            if (baseColor != -1) {
+                                shadeColor = Draw3D.palette[mulHSL(tintColor, 96)];
+                            }
+
+                            if (overlayID == 0) {
+                                scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), 0, 0, 0, 0, shadeColor, 0);
+                            } else {
+                                int shape = levelTileOverlayShape[level][x0][z0] + 1;
+                                byte rotation = levelTileOverlayRotation[level][x0][z0];
+                                FloType flo = FloType.instances[overlayID - 1];
+                                int textureID = flo.textureID;
+                                int rgb;
+                                int hsl;
+
+                                if (textureID >= 0) {
+                                    rgb = Draw3D.getAverageTextureRGB(textureID);
+                                    hsl = -1;
+                                } else if (flo.rgb == 16711935) {
+                                    rgb = 0;
+                                    hsl = -2;
+                                    textureID = -1;
                                 } else {
-                                    int i_59_ = aByteArrayArrayArray136[level][x0][z0] + 1;
-                                    byte i_60_ = aByteArrayArrayArray148[level][x0][z0];
-                                    FloType flo = FloType.instances[floID - 1];
-                                    int textureID = flo.textureID;
-                                    int rgb;
-                                    int hsl;
-
-                                    if (textureID >= 0) {
-                                        rgb = Draw3D.getAverageTextureRGB(textureID);
-                                        hsl = -1;
-                                    } else if (flo.rgb == 16711935) {
-                                        rgb = 0;
-                                        hsl = -2;
-                                        textureID = -1;
-                                    } else {
-                                        hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
-                                        rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
-                                    }
-
-                                    scene.setTile(level, x0, z0, i_59_, i_60_, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(i_53_, tileHeight00), mulHSL(i_53_, tileHeight10), mulHSL(i_53_, tileHeight11), mulHSL(i_53_, tileHeight01), adjustLightness(hsl, tileHeight00), adjustLightness(hsl, tileHeight10), adjustLightness(hsl, tileHeight11), adjustLightness(hsl, tileHeight01), i_58_, rgb);
+                                    hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
+                                    rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
                                 }
+
+                                scene.setTile(level, x0, z0, shape, rotation, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), adjustLightness(hsl, lightSW), adjustLightness(hsl, lightSE), adjustLightness(hsl, lightNE), adjustLightness(hsl, lightNW), shadeColor, rgb);
                             }
                         }
                     }
                 }
             }
+        }
+    }
 
-            for (int stz = 1; stz < (maxTileZ - 1); stz++) {
-                for (int stx = 1; stx < (maxTileX - 1); stx++) {
-                    scene.setDrawLevel(level, stx, stz, getDrawLevel(level, stx, stz));
-                }
+    private void buildTerrainLighting(int level) {
+        byte[][] shademap = levelShademap[level];
+        int lightAmbient = 96;
+        int lightAttenuation = 768;
+        int lightX = -50;
+        int lightY = -10;
+        int lightZ = -50;
+        int lightMagnitude = (lightAttenuation * (int) Math.sqrt((lightX * lightX) + (lightY * lightY) + (lightZ * lightZ))) >> 8;
+
+        for (int z = 1; z < (maxTileZ - 1); z++) {
+            for (int x = 1; x < (maxTileX - 1); x++) {
+                int dx = levelHeightmap[level][x + 1][z] - levelHeightmap[level][x - 1][z];
+                int dz = levelHeightmap[level][x][z + 1] - levelHeightmap[level][x][z - 1];
+                int len = (int) Math.sqrt((dx * dx) + 65536 + (dz * dz));
+                int nx = (dx << 8) / len;
+                int ny = 65536 / len;
+                int nz = (dz << 8) / len;
+                int light = lightAmbient + (((lightX * nx) + (lightY * ny) + (lightZ * nz)) / lightMagnitude);
+                int shade = (shademap[x - 1][z] >> 2) + (shademap[x + 1][z] >> 3) + (shademap[x][z - 1] >> 2) + (shademap[x][z + 1] >> 3) + (shademap[x][z] >> 1);
+                levelLightmap[x][z] = light - shade;
             }
         }
+    }
 
-        scene.applyLighting(-10, 64, -50, 768, -50);
-
+    private void buildBridges(Scene scene) {
         for (int x = 0; x < maxTileX; x++) {
             for (int z = 0; z < maxTileZ; z++) {
                 if ((levelTileFlags[1][x][z] & 0x2) == 2) {
@@ -661,162 +690,183 @@ public class SceneBuilder {
                 }
             }
         }
+    }
 
-        // TODO: Find a reasonable name for these.
-        int maskA = 0b001;
-        int maskB = 0b010;
-        int maskC = 0b100;
+    private void buildOccluders() {
+        int wall0 = 0b001; // this flag is set by walls with rotation 0 or 2
+        int wall1 = 0b010; // this flag is set by walls with rotation 1 or 3
+        int floor = 0b100; // this flag is set by floors which are flat
 
-        for (int current = 0; current < 4; current++) {
-            if (current > 0) {
-                maskA <<= 3;
-                maskB <<= 3;
-                maskC <<= 3;
+        for (int top = 0; top < 4; top++) {
+            if (top > 0) {
+                wall0 <<= 3;
+                wall1 <<= 3;
+                floor <<= 3;
             }
 
-            for (int level = 0; level <= current; level++) {
+            for (int level = 0; level <= top; level++) {
                 for (int tileZ = 0; tileZ <= maxTileZ; tileZ++) {
                     for (int tileX = 0; tileX <= maxTileX; tileX++) {
-                        if ((levelOccludemap[level][tileX][tileZ] & maskA) != 0) {
-                            int minZ = tileZ;
-                            int maxZ = tileZ;
-                            int minLevel = level;
-                            int maxLevel = level;
-                            for (/**/; minZ > 0; minZ--) {
-                                if ((levelOccludemap[level][tileX][minZ - 1] & maskA) == 0) {
-                                    break;
-                                }
-                            }
-                            for (/**/; maxZ < maxTileZ; maxZ++) {
-                                if ((levelOccludemap[level][tileX][maxZ + 1] & maskA) == 0) {
-                                    break;
-                                }
-                            }
+                        buildWallOccluders0(wall0, top, level, tileX, tileZ);
+                        buildWallOccluders1(wall1, top, level, tileX, tileZ);
+                        buildFloorOccluders(floor, top, level, tileX, tileZ);
+                    }
+                }
+            }
+        }
+    }
 
-                            find_min_level:
-                            for (/**/; minLevel > 0; minLevel--) {
-                                for (int z = minZ; z <= maxZ; z++) {
-                                    if ((levelOccludemap[minLevel - 1][tileX][z] & maskA) == 0) {
-                                        break find_min_level;
-                                    }
-                                }
-                            }
+    private void buildFloorOccluders(int floor, int top, int level, int tileX, int tileZ) {
+        if ((levelOccludemap[level][tileX][tileZ] & floor) != 0) {
+            int minTileX = tileX;
+            int maxTileX = tileX;
+            int minTileZ = tileZ;
+            int maxTileZ = tileZ;
 
-                            find_max_level:
-                            for (/**/; maxLevel < current; maxLevel++) {
-                                for (int z = minZ; z <= maxZ; z++) {
-                                    if ((levelOccludemap[maxLevel + 1][tileX][z] & maskA) == 0) {
-                                        break find_max_level;
-                                    }
-                                }
-                            }
+            for (/**/; minTileZ > 0; minTileZ--) {
+                if ((levelOccludemap[level][tileX][minTileZ - 1] & floor) == 0) {
+                    break;
+                }
+            }
+            for (/**/; maxTileZ < this.maxTileZ; maxTileZ++) {
+                if ((levelOccludemap[level][tileX][maxTileZ + 1] & floor) == 0) {
+                    break;
+                }
+            }
 
-                            int area = ((maxLevel + 1) - minLevel) * ((maxZ - minZ) + 1);
+            find_min_tile_x:
+            for (/**/; minTileX > 0; minTileX--) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[level][minTileX - 1][z] & floor) == 0) {
+                        break find_min_tile_x;
+                    }
+                }
+            }
 
-                            if (area >= 8) {
-                                int maxY = levelHeightmap[maxLevel][tileX][minZ] - 240;
-                                int minY = levelHeightmap[minLevel][tileX][minZ];
+            find_max_tile_x:
+            for (/**/; maxTileX < this.maxTileX; maxTileX++) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[level][maxTileX + 1][z] & floor) == 0) {
+                        break find_max_tile_x;
+                    }
+                }
+            }
 
-                                Scene.method277(current, tileX * 128, minY, tileX * 128, (maxZ * 128) + 128, maxY, minZ * 128, 1);
+            if ((((maxTileX - minTileX) + 1) * ((maxTileZ - minTileZ) + 1)) >= 4) {
+                int y = levelHeightmap[level][minTileX][minTileZ];
 
-                                for (int l = minLevel; l <= maxLevel; l++) {
-                                    for (int z = minZ; z <= maxZ; z++) {
-                                        levelOccludemap[l][tileX][z] &= ~maskA;
-                                    }
-                                }
-                            }
-                        }
+                Scene.addOccluder(top, minTileX * 128, y, (maxTileX * 128) + 128, (maxTileZ * 128) + 128, y, minTileZ * 128, 4);
 
-                        if ((levelOccludemap[level][tileX][tileZ] & maskB) != 0) {
-                            int minX = tileX;
-                            int maxX = tileX;
-                            int minLevel = level;
-                            int maxLevel = level;
+                for (int x = minTileX; x <= maxTileX; x++) {
+                    for (int z = minTileZ; z <= maxTileZ; z++) {
+                        levelOccludemap[level][x][z] &= ~floor;
+                    }
+                }
+            }
+        }
+    }
 
-                            for (/**/; minX > 0; minX--) {
-                                if ((levelOccludemap[level][minX - 1][tileZ] & maskB) == 0) {
-                                    break;
-                                }
-                            }
-                            for (/**/; maxX < maxTileX; maxX++) {
-                                if ((levelOccludemap[level][maxX + 1][tileZ] & maskB) == 0) {
-                                    break;
-                                }
-                            }
+    private void buildWallOccluders1(int wall1, int top, int level, int tileX, int tileZ) {
+        if ((levelOccludemap[level][tileX][tileZ] & wall1) != 0) {
+            int minTileX = tileX;
+            int maxTileX = tileX;
+            int minLevel = level;
+            int maxLevel = level;
 
-                            find_min_level:
-                            for (/**/; minLevel > 0; minLevel--) {
-                                for (int x = minX; x <= maxX; x++) {
-                                    if ((levelOccludemap[minLevel - 1][x][tileZ] & maskB) == 0) {
-                                        break find_min_level;
-                                    }
-                                }
-                            }
+            for (/**/; minTileX > 0; minTileX--) {
+                if ((levelOccludemap[level][minTileX - 1][tileZ] & wall1) == 0) {
+                    break;
+                }
+            }
+            for (/**/; maxTileX < this.maxTileX; maxTileX++) {
+                if ((levelOccludemap[level][maxTileX + 1][tileZ] & wall1) == 0) {
+                    break;
+                }
+            }
 
-                            find_max_level:
-                            for (/**/; maxLevel < current; maxLevel++) {
-                                for (int x = minX; x <= maxX; x++) {
-                                    if ((levelOccludemap[maxLevel + 1][x][tileZ] & maskB) == 0) {
-                                        break find_max_level;
-                                    }
-                                }
-                            }
+            find_min_level:
+            for (/**/; minLevel > 0; minLevel--) {
+                for (int x = minTileX; x <= maxTileX; x++) {
+                    if ((levelOccludemap[minLevel - 1][x][tileZ] & wall1) == 0) {
+                        break find_min_level;
+                    }
+                }
+            }
 
-                            int area = ((maxLevel + 1) - minLevel) * ((maxX - minX) + 1);
+            find_max_level:
+            for (/**/; maxLevel < top; maxLevel++) {
+                for (int x = minTileX; x <= maxTileX; x++) {
+                    if ((levelOccludemap[maxLevel + 1][x][tileZ] & wall1) == 0) {
+                        break find_max_level;
+                    }
+                }
+            }
 
-                            if (area >= 8) {
-                                int maxY = levelHeightmap[maxLevel][minX][tileZ] - 240;
-                                int minY = levelHeightmap[minLevel][minX][tileZ];
-                                Scene.method277(current, minX * 128, minY, (maxX * 128) + 128, tileZ * 128, maxY, tileZ * 128, 2);
-                                for (int i_97_ = minLevel; i_97_ <= maxLevel; i_97_++) {
-                                    for (int i_98_ = minX; i_98_ <= maxX; i_98_++) {
-                                        levelOccludemap[i_97_][i_98_][tileZ] &= ~maskB;
-                                    }
-                                }
-                            }
-                        }
+            int area = ((maxLevel + 1) - minLevel) * ((maxTileX - minTileX) + 1);
 
-                        if ((levelOccludemap[level][tileX][tileZ] & maskC) != 0) {
-                            int i_99_ = tileX;
-                            int i_100_ = tileX;
-                            int i_101_ = tileZ;
-                            int i_102_ = tileZ;
-                            for (/**/; i_101_ > 0; i_101_--) {
-                                if ((levelOccludemap[level][tileX][i_101_ - 1] & maskC) == 0) {
-                                    break;
-                                }
-                            }
-                            for (/**/; i_102_ < maxTileZ; i_102_++) {
-                                if ((levelOccludemap[level][tileX][i_102_ + 1] & maskC) == 0) {
-                                    break;
-                                }
-                            }
-                            while_4_:
-                            for (/**/; i_99_ > 0; i_99_--) {
-                                for (int i_103_ = i_101_; i_103_ <= i_102_; i_103_++) {
-                                    if ((levelOccludemap[level][i_99_ - 1][i_103_] & maskC) == 0) {
-                                        break while_4_;
-                                    }
-                                }
-                            }
-                            while_5_:
-                            for (/**/; i_100_ < maxTileX; i_100_++) {
-                                for (int i_104_ = i_101_; i_104_ <= i_102_; i_104_++) {
-                                    if ((levelOccludemap[level][i_100_ + 1][i_104_] & maskC) == 0) {
-                                        break while_5_;
-                                    }
-                                }
-                            }
-                            if ((((i_100_ - i_99_) + 1) * ((i_102_ - i_101_) + 1)) >= 4) {
-                                int i_105_ = levelHeightmap[level][i_99_][i_101_];
-                                Scene.method277(current, i_99_ * 128, i_105_, (i_100_ * 128) + 128, (i_102_ * 128) + 128, i_105_, i_101_ * 128, 4);
-                                for (int i_106_ = i_99_; i_106_ <= i_100_; i_106_++) {
-                                    for (int i_107_ = i_101_; i_107_ <= i_102_; i_107_++) {
-                                        levelOccludemap[level][i_106_][i_107_] &= ~maskC;
-                                    }
-                                }
-                            }
-                        }
+            if (area >= 8) {
+                int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
+                int maxY = levelHeightmap[minLevel][minTileX][tileZ];
+
+                Scene.addOccluder(top, minTileX * 128, maxY, (maxTileX * 128) + 128, tileZ * 128, minY, tileZ * 128, 2);
+
+                for (int l = minLevel; l <= maxLevel; l++) {
+                    for (int x = minTileX; x <= maxTileX; x++) {
+                        levelOccludemap[l][x][tileZ] &= ~wall1;
+                    }
+                }
+            }
+        }
+    }
+
+    private void buildWallOccluders0(int wall0, int top, int level, int tileX, int tileZ) {
+        if ((levelOccludemap[level][tileX][tileZ] & wall0) != 0) {
+            int minTileZ = tileZ;
+            int maxTileZ = tileZ;
+            int minLevel = level;
+            int maxLevel = level;
+
+            for (/**/; minTileZ > 0; minTileZ--) {
+                if ((levelOccludemap[level][tileX][minTileZ - 1] & wall0) == 0) {
+                    break;
+                }
+            }
+
+            for (/**/; maxTileZ < this.maxTileZ; maxTileZ++) {
+                if ((levelOccludemap[level][tileX][maxTileZ + 1] & wall0) == 0) {
+                    break;
+                }
+            }
+
+            find_min_level:
+            for (/**/; minLevel > 0; minLevel--) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[minLevel - 1][tileX][z] & wall0) == 0) {
+                        break find_min_level;
+                    }
+                }
+            }
+
+            find_max_level:
+            for (/**/; maxLevel < top; maxLevel++) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[maxLevel + 1][tileX][z] & wall0) == 0) {
+                        break find_max_level;
+                    }
+                }
+            }
+
+            int area = ((maxLevel + 1) - minLevel) * ((maxTileZ - minTileZ) + 1);
+
+            if (area >= 8) {
+                int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
+                int maxY = levelHeightmap[minLevel][tileX][minTileZ];
+
+                Scene.addOccluder(top, tileX * 128, maxY, tileX * 128, (maxTileZ * 128) + 128, minY, minTileZ * 128, 1);
+
+                for (int l = minLevel; l <= maxLevel; l++) {
+                    for (int z = minTileZ; z <= maxTileZ; z++) {
+                        levelOccludemap[l][tileX][z] &= ~wall0;
                     }
                 }
             }
@@ -951,7 +1001,7 @@ public class SceneBuilder {
             scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
 
             if ((kind >= 12) && (kind <= 17) && (kind != 13) && (level > 0)) {
-                levelOccludemap[level][x][z] |= 0x924;
+                levelOccludemap[level][x][z] |= 0b100_100_100_100;
             }
 
             if (type.solid && (collision != null)) {
@@ -974,7 +1024,7 @@ public class SceneBuilder {
                     levelShademap[level][x][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    levelOccludemap[level][x][z] |= 0x249;
+                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
                 }
             } else if (rotation == 1) {
                 if (type.castShadow) {
@@ -982,7 +1032,7 @@ public class SceneBuilder {
                     levelShademap[level][x + 1][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    levelOccludemap[level][x][z + 1] |= 0x492;
+                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
                 }
             } else if (rotation == 2) {
                 if (type.castShadow) {
@@ -990,7 +1040,7 @@ public class SceneBuilder {
                     levelShademap[level][x + 1][z + 1] = (byte) 50;
                 }
                 if (type.occludes) {
-                    levelOccludemap[level][x + 1][z] |= 0x249;
+                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
                 }
             } else if (rotation == 3) {
                 if (type.castShadow) {
@@ -998,7 +1048,7 @@ public class SceneBuilder {
                     levelShademap[level][x + 1][z] = (byte) 50;
                 }
                 if (type.occludes) {
-                    levelOccludemap[level][x][z] |= 0x492;
+                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
                 }
             }
 
@@ -1049,17 +1099,17 @@ public class SceneBuilder {
             scene.setWall(WALL_ROTATION_OCCLUDE_TYPE[rotation], entity, WALL_ROTATION_OCCLUDE_TYPE[i_137_], entity_138_, level, x, z, heightmapAverage, bitset, info);
             if (type.occludes) {
                 if (rotation == 0) {
-                    levelOccludemap[level][x][z] |= 0x249;
-                    levelOccludemap[level][x][z + 1] |= 0x492;
+                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
+                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
                 } else if (rotation == 1) {
-                    levelOccludemap[level][x][z + 1] |= 0x492;
-                    levelOccludemap[level][x + 1][z] |= 0x249;
+                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
+                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
                 } else if (rotation == 2) {
-                    levelOccludemap[level][x + 1][z] |= 0x249;
-                    levelOccludemap[level][x][z] |= 0x492;
+                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
+                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
                 } else if (rotation == 3) {
-                    levelOccludemap[level][x][z] |= 0x492;
-                    levelOccludemap[level][x][z] |= 0x249;
+                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
+                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
                 }
             }
             if (type.solid && (collision != null)) {
@@ -1259,13 +1309,13 @@ public class SceneBuilder {
                     break;
                 }
                 if (i_191_ <= 49) {
-                    aByteArrayArrayArray130[i_187_][i_186_][i] = buffer.read8();
-                    aByteArrayArrayArray136[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
-                    aByteArrayArrayArray148[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
+                    levelTileOverlayIDs[i_187_][i_186_][i] = buffer.read8();
+                    levelTileOverlayShape[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
+                    levelTileOverlayRotation[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
                 } else if (i_191_ <= 81) {
                     levelTileFlags[i_187_][i_186_][i] = (byte) (i_191_ - 49);
                 } else {
-                    aByteArrayArrayArray142[i_187_][i_186_][i] = (byte) (i_191_ - 81);
+                    levelTileUnderlayIDs[i_187_][i_186_][i] = (byte) (i_191_ - 81);
                 }
             }
         } else {

@@ -4,213 +4,259 @@
 
 public class SceneTileOverlay {
 
-	public static final int[][] anIntArrayArray696 = {{1, 3, 5, 7}, {1, 3, 5, 7}, {1, 3, 5, 7}, {1, 3, 5, 7, 6}, {1, 3, 5, 7, 6}, {1, 3, 5, 7, 6}, {1, 3, 5, 7, 6}, {1, 3, 5, 7, 2, 6}, {1, 3, 5, 7, 2, 8}, {1, 3, 5, 7, 2, 8}, {1, 3, 5, 7, 11, 12}, {1, 3, 5, 7, 11, 12}, {1, 3, 5, 7, 13, 14}};
-	public static final int[][] anIntArrayArray697 = {{0, 1, 2, 3, 0, 0, 1, 3}, {1, 1, 2, 3, 1, 0, 1, 3}, {0, 1, 2, 3, 1, 0, 1, 3}, {0, 0, 1, 2, 0, 0, 2, 4, 1, 0, 4, 3}, {0, 0, 1, 4, 0, 0, 4, 3, 1, 1, 2, 4}, {0, 0, 4, 3, 1, 0, 1, 2, 1, 0, 2, 4}, {0, 1, 2, 4, 1, 0, 1, 4, 1, 0, 4, 3}, {0, 4, 1, 2, 0, 4, 2, 5, 1, 0, 4, 5, 1, 0, 5, 3}, {0, 4, 1, 2, 0, 4, 2, 3, 0, 4, 3, 5, 1, 0, 4, 5}, {0, 0, 4, 5, 1, 4, 1, 2, 1, 4, 2, 3, 1, 4, 3, 5}, {0, 0, 1, 5, 0, 1, 4, 5, 0, 1, 2, 4, 1, 0, 5, 3, 1, 5, 4, 3, 1, 4, 2, 3}, {1, 0, 1, 5, 1, 1, 4, 5, 1, 1, 2, 4, 0, 0, 5, 3, 0, 5, 4, 3, 0, 4, 2, 3}, {1, 0, 5, 4, 1, 0, 1, 5, 0, 0, 4, 3, 0, 4, 5, 3, 0, 5, 2, 3, 0, 1, 2, 5}};
-	public static final int[] anIntArray688 = new int[6];
-	public static final int[] anIntArray689 = new int[6];
-	public static final int[] anIntArray690 = new int[6];
-	public static final int[] anIntArray691 = new int[6];
-	public static final int[] anIntArray692 = new int[6];
-	public final int[] anIntArray673;
-	public final int[] anIntArray674;
-	public final int[] anIntArray675;
-	public final int[] anIntArray676;
-	public final int[] anIntArray677;
-	public final int[] anIntArray678;
-	public final int[] anIntArray679;
-	public final int[] anIntArray680;
-	public final int[] anIntArray681;
-	public final boolean aBoolean683;
-	public final int shape;
-	public final int angle;
-	public final int backgroundRGB;
-	public final int foregroundRGB;
-	public int[] anIntArray682;
+    public static final int[][] SHAPE_POINTS = {
+			{1, 3, 5, 7},
+			{1, 3, 5, 7},
+			{1, 3, 5, 7},
+			{1, 3, 5, 7, 6},
+			{1, 3, 5, 7, 6},
+			{1, 3, 5, 7, 6},
+			{1, 3, 5, 7, 6},
+			{1, 3, 5, 7, 2, 6},
+			{1, 3, 5, 7, 2, 8},
+			{1, 3, 5, 7, 2, 8},
+			{1, 3, 5, 7, 11, 12},
+			{1, 3, 5, 7, 11, 12},
+			{1, 3, 5, 7, 13, 14},
+	};
+    public static final int[][] SHAPE_PATHS = {
+            {0, 1, 2, 3, 0, 0, 1, 3},
+            {1, 1, 2, 3, 1, 0, 1, 3},
+            {0, 1, 2, 3, 1, 0, 1, 3},
+            {0, 0, 1, 2, 0, 0, 2, 4, 1, 0, 4, 3},
+            {0, 0, 1, 4, 0, 0, 4, 3, 1, 1, 2, 4},
+            {0, 0, 4, 3, 1, 0, 1, 2, 1, 0, 2, 4},
+            {0, 1, 2, 4, 1, 0, 1, 4, 1, 0, 4, 3},
+            {0, 4, 1, 2, 0, 4, 2, 5, 1, 0, 4, 5, 1, 0, 5, 3},
+            {0, 4, 1, 2, 0, 4, 2, 3, 0, 4, 3, 5, 1, 0, 4, 5},
+            {0, 0, 4, 5, 1, 4, 1, 2, 1, 4, 2, 3, 1, 4, 3, 5},
+            {0, 0, 1, 5, 0, 1, 4, 5, 0, 1, 2, 4, 1, 0, 5, 3, 1, 5, 4, 3, 1, 4, 2, 3},
+            {1, 0, 1, 5, 1, 1, 4, 5, 1, 1, 2, 4, 0, 0, 5, 3, 0, 5, 4, 3, 0, 4, 2, 3},
+            {1, 0, 5, 4, 1, 0, 1, 5, 0, 0, 4, 3, 0, 4, 5, 3, 0, 5, 2, 3, 0, 1, 2, 5},
+    };
 
-	public SceneTileOverlay(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3, int j3, int k3, int l3, int i4, int k4, int l4) {
-		aBoolean683 = (i3 == l2) && (i3 == l) && (i3 == k2);
-		shape = j3;
-		angle = k1;
-		backgroundRGB = i2;
-		foregroundRGB = l4;
-		char c = '\200';
-		int i5 = c / 2;
-		int j5 = c / 4;
-		int k5 = (c * 3) / 4;
-		int[] ai = anIntArrayArray696[j3];
-		int l5 = ai.length;
-		anIntArray673 = new int[l5];
-		anIntArray674 = new int[l5];
-		anIntArray675 = new int[l5];
-		int[] ai1 = new int[l5];
-		int[] ai2 = new int[l5];
-		int i6 = k4 * c;
-		int j6 = i * c;
-		for (int k6 = 0; k6 < l5; k6++) {
-			int l6 = ai[k6];
-			if (((l6 & 1) == 0) && (l6 <= 8)) {
-				l6 = ((l6 - k1 - k1 - 1) & 7) + 1;
-			}
-			if ((l6 > 8) && (l6 <= 12)) {
-				l6 = ((l6 - 9 - k1) & 3) + 9;
-			}
-			if ((l6 > 12) && (l6 <= 16)) {
-				l6 = ((l6 - 13 - k1) & 3) + 13;
-			}
-			int i7;
-			int k7;
-			int i8;
-			int k8;
-			int j9;
-			if (l6 == 1) {
-				i7 = i6;
-				k7 = j6;
-				i8 = i3;
-				k8 = l1;
-				j9 = j;
-			} else if (l6 == 2) {
-				i7 = i6 + i5;
-				k7 = j6;
-				i8 = (i3 + l2) >> 1;
-				k8 = (l1 + i4) >> 1;
-				j9 = (j + l3) >> 1;
-			} else if (l6 == 3) {
-				i7 = i6 + c;
-				k7 = j6;
-				i8 = l2;
-				k8 = i4;
-				j9 = l3;
-			} else if (l6 == 4) {
-				i7 = i6 + c;
-				k7 = j6 + i5;
-				i8 = (l2 + l) >> 1;
-				k8 = (i4 + j2) >> 1;
-				j9 = (l3 + j1) >> 1;
-			} else if (l6 == 5) {
-				i7 = i6 + c;
-				k7 = j6 + c;
-				i8 = l;
-				k8 = j2;
-				j9 = j1;
-			} else if (l6 == 6) {
-				i7 = i6 + i5;
-				k7 = j6 + c;
-				i8 = (l + k2) >> 1;
-				k8 = (j2 + k) >> 1;
-				j9 = (j1 + k3) >> 1;
-			} else if (l6 == 7) {
-				i7 = i6;
-				k7 = j6 + c;
-				i8 = k2;
-				k8 = k;
-				j9 = k3;
-			} else if (l6 == 8) {
-				i7 = i6;
-				k7 = j6 + i5;
-				i8 = (k2 + i3) >> 1;
-				k8 = (k + l1) >> 1;
-				j9 = (k3 + j) >> 1;
-			} else if (l6 == 9) {
-				i7 = i6 + i5;
-				k7 = j6 + j5;
-				i8 = (i3 + l2) >> 1;
-				k8 = (l1 + i4) >> 1;
-				j9 = (j + l3) >> 1;
-			} else if (l6 == 10) {
-				i7 = i6 + k5;
-				k7 = j6 + i5;
-				i8 = (l2 + l) >> 1;
-				k8 = (i4 + j2) >> 1;
-				j9 = (l3 + j1) >> 1;
-			} else if (l6 == 11) {
-				i7 = i6 + i5;
-				k7 = j6 + k5;
-				i8 = (l + k2) >> 1;
-				k8 = (j2 + k) >> 1;
-				j9 = (j1 + k3) >> 1;
-			} else if (l6 == 12) {
-				i7 = i6 + j5;
-				k7 = j6 + i5;
-				i8 = (k2 + i3) >> 1;
-				k8 = (k + l1) >> 1;
-				j9 = (k3 + j) >> 1;
-			} else if (l6 == 13) {
-				i7 = i6 + j5;
-				k7 = j6 + j5;
-				i8 = i3;
-				k8 = l1;
-				j9 = j;
-			} else if (l6 == 14) {
-				i7 = i6 + k5;
-				k7 = j6 + j5;
-				i8 = l2;
-				k8 = i4;
-				j9 = l3;
-			} else if (l6 == 15) {
-				i7 = i6 + k5;
-				k7 = j6 + k5;
-				i8 = l;
-				k8 = j2;
-				j9 = j1;
-			} else {
-				i7 = i6 + j5;
-				k7 = j6 + k5;
-				i8 = k2;
-				k8 = k;
-				j9 = k3;
-			}
-			anIntArray673[k6] = i7;
-			anIntArray674[k6] = i8;
-			anIntArray675[k6] = k7;
-			ai1[k6] = k8;
-			ai2[k6] = j9;
-		}
-		int[] ai3 = anIntArrayArray697[j3];
-		int j7 = ai3.length / 4;
-		anIntArray679 = new int[j7];
-		anIntArray680 = new int[j7];
-		anIntArray681 = new int[j7];
-		anIntArray676 = new int[j7];
-		anIntArray677 = new int[j7];
-		anIntArray678 = new int[j7];
-		if (i1 != -1) {
-			anIntArray682 = new int[j7];
-		}
-		int l7 = 0;
-		for (int j8 = 0; j8 < j7; j8++) {
-			int l8 = ai3[l7];
-			int k9 = ai3[l7 + 1];
-			int i10 = ai3[l7 + 2];
-			int k10 = ai3[l7 + 3];
-			l7 += 4;
-			if (k9 < 4) {
-				k9 = (k9 - k1) & 3;
-			}
-			if (i10 < 4) {
-				i10 = (i10 - k1) & 3;
-			}
-			if (k10 < 4) {
-				k10 = (k10 - k1) & 3;
-			}
-			anIntArray679[j8] = k9;
-			anIntArray680[j8] = i10;
-			anIntArray681[j8] = k10;
-			if (l8 == 0) {
-				anIntArray676[j8] = ai1[k9];
-				anIntArray677[j8] = ai1[i10];
-				anIntArray678[j8] = ai1[k10];
-				if (anIntArray682 != null) {
-					anIntArray682[j8] = -1;
-				}
-			} else {
-				anIntArray676[j8] = ai2[k9];
-				anIntArray677[j8] = ai2[i10];
-				anIntArray678[j8] = ai2[k10];
-				if (anIntArray682 != null) {
-					anIntArray682[j8] = i1;
-				}
-			}
-		}
-	}
+    public static final int[] tmpScreenX = new int[6];
+    public static final int[] tmpScreenY = new int[6];
+    public static final int[] tmpViewspaceX = new int[6];
+    public static final int[] tmpViewspaceY = new int[6];
+    public static final int[] tmpViewspaceZ = new int[6];
+    public final int[] vertexX;
+    public final int[] vertexY;
+    public final int[] vertexZ;
+    public final int[] triangleColorA;
+    public final int[] triangleColorB;
+    public final int[] triangleColorC;
+    public final int[] triangleVertexA;
+    public final int[] triangleVertexB;
+    public final int[] triangleVertexC;
+    public final boolean flat;
+    public final int shape;
+    public final int rotation;
+    public final int backgroundRGB;
+    public final int foregroundRGB;
+    public int[] triangleTextureIDs;
+
+    public SceneTileOverlay(int tileZ, int southwestColor2, int northwestColor1, int northeastY, int textureID, int northeastColor2, int rotation, int southwestColor1, int backgroundRGB, int northeastColor1, int northwestY, int southeastY, int southwestY, int shape, int northwestColor2, int southeastColor2, int southeastColor1, int tileX, int foregroundRGB) {
+        flat = (southwestY == southeastY) && (southwestY == northeastY) && (southwestY == northwestY);
+        this.shape = shape;
+        this.rotation = rotation;
+        this.backgroundRGB = backgroundRGB;
+        this.foregroundRGB = foregroundRGB;
+
+        final int ONE = 128;
+        final int HALF = ONE / 2;
+        final int QUARTER = ONE / 4;
+        final int THREE_QUARTER = (ONE * 3) / 4;
+
+        int[] points = SHAPE_POINTS[shape];
+        int vertexCount = points.length;
+        vertexX = new int[vertexCount];
+        vertexY = new int[vertexCount];
+        vertexZ = new int[vertexCount];
+        int[] primaryColors = new int[vertexCount];
+        int[] secondaryColors = new int[vertexCount];
+
+        int sceneX = tileX * ONE;
+        int sceneZ = tileZ * ONE;
+
+        for (int v = 0; v < vertexCount; v++) {
+            int type = points[v];
+
+            if (((type & 1) == 0) && (type <= 8)) {
+                type = ((type - rotation - rotation - 1) & 7) + 1;
+            }
+
+            if ((type > 8) && (type <= 12)) {
+                type = ((type - 9 - rotation) & 3) + 9;
+            }
+
+            if ((type > 12) && (type <= 16)) {
+                type = ((type - 13 - rotation) & 3) + 13;
+            }
+
+            int x;
+            int z;
+            int y;
+            int color1;
+            int color2;
+            if (type == 1) {
+                x = sceneX;
+                z = sceneZ;
+                y = southwestY;
+                color1 = southwestColor1;
+                color2 = southwestColor2;
+            } else if (type == 2) {
+                x = sceneX + HALF;
+                z = sceneZ;
+                y = (southwestY + southeastY) >> 1;
+                color1 = (southwestColor1 + southeastColor1) >> 1;
+                color2 = (southwestColor2 + southeastColor2) >> 1;
+            } else if (type == 3) {
+                x = sceneX + ONE;
+                z = sceneZ;
+                y = southeastY;
+                color1 = southeastColor1;
+                color2 = southeastColor2;
+            } else if (type == 4) {
+                x = sceneX + ONE;
+                z = sceneZ + HALF;
+                y = (southeastY + northeastY) >> 1;
+                color1 = (southeastColor1 + northeastColor1) >> 1;
+                color2 = (southeastColor2 + northeastColor2) >> 1;
+            } else if (type == 5) {
+                x = sceneX + ONE;
+                z = sceneZ + ONE;
+                y = northeastY;
+                color1 = northeastColor1;
+                color2 = northeastColor2;
+            } else if (type == 6) {
+                x = sceneX + HALF;
+                z = sceneZ + ONE;
+                y = (northeastY + northwestY) >> 1;
+                color1 = (northeastColor1 + northwestColor1) >> 1;
+                color2 = (northeastColor2 + northwestColor2) >> 1;
+            } else if (type == 7) {
+                x = sceneX;
+                z = sceneZ + ONE;
+                y = northwestY;
+                color1 = northwestColor1;
+                color2 = northwestColor2;
+            } else if (type == 8) {
+                x = sceneX;
+                z = sceneZ + HALF;
+                y = (northwestY + southwestY) >> 1;
+                color1 = (northwestColor1 + southwestColor1) >> 1;
+                color2 = (northwestColor2 + southwestColor2) >> 1;
+            } else if (type == 9) {
+                x = sceneX + HALF;
+                z = sceneZ + QUARTER;
+                y = (southwestY + southeastY) >> 1;
+                color1 = (southwestColor1 + southeastColor1) >> 1;
+                color2 = (southwestColor2 + southeastColor2) >> 1;
+            } else if (type == 10) {
+                x = sceneX + THREE_QUARTER;
+                z = sceneZ + HALF;
+                y = (southeastY + northeastY) >> 1;
+                color1 = (southeastColor1 + northeastColor1) >> 1;
+                color2 = (southeastColor2 + northeastColor2) >> 1;
+            } else if (type == 11) {
+                x = sceneX + HALF;
+                z = sceneZ + THREE_QUARTER;
+                y = (northeastY + northwestY) >> 1;
+                color1 = (northeastColor1 + northwestColor1) >> 1;
+                color2 = (northeastColor2 + northwestColor2) >> 1;
+            } else if (type == 12) {
+                x = sceneX + QUARTER;
+                z = sceneZ + HALF;
+                y = (northwestY + southwestY) >> 1;
+                color1 = (northwestColor1 + southwestColor1) >> 1;
+                color2 = (northwestColor2 + southwestColor2) >> 1;
+            } else if (type == 13) {
+                x = sceneX + QUARTER;
+                z = sceneZ + QUARTER;
+                y = southwestY;
+                color1 = southwestColor1;
+                color2 = southwestColor2;
+            } else if (type == 14) {
+                x = sceneX + THREE_QUARTER;
+                z = sceneZ + QUARTER;
+                y = southeastY;
+                color1 = southeastColor1;
+                color2 = southeastColor2;
+            } else if (type == 15) {
+                x = sceneX + THREE_QUARTER;
+                z = sceneZ + THREE_QUARTER;
+                y = northeastY;
+                color1 = northeastColor1;
+                color2 = northeastColor2;
+            } else {
+                x = sceneX + QUARTER;
+                z = sceneZ + THREE_QUARTER;
+                y = northwestY;
+                color1 = northwestColor1;
+                color2 = northwestColor2;
+            }
+            vertexX[v] = x;
+            vertexY[v] = y;
+            vertexZ[v] = z;
+            primaryColors[v] = color1;
+            secondaryColors[v] = color2;
+        }
+
+        int[] paths = SHAPE_PATHS[shape];
+        int triangleCount = paths.length / 4;
+        triangleVertexA = new int[triangleCount];
+        triangleVertexB = new int[triangleCount];
+        triangleVertexC = new int[triangleCount];
+        triangleColorA = new int[triangleCount];
+        triangleColorB = new int[triangleCount];
+        triangleColorC = new int[triangleCount];
+
+        if (textureID != -1) {
+            triangleTextureIDs = new int[triangleCount];
+        }
+
+        int index = 0;
+        for (int i = 0; i < triangleCount; i++) {
+            int color = paths[index];
+            int a = paths[index + 1];
+            int b = paths[index + 2];
+            int c = paths[index + 3];
+
+            index += 4;
+
+            if (a < 4) {
+                a = (a - rotation) & 3;
+            }
+
+            if (b < 4) {
+                b = (b - rotation) & 3;
+            }
+
+            if (c < 4) {
+                c = (c - rotation) & 3;
+            }
+
+            triangleVertexA[i] = a;
+            triangleVertexB[i] = b;
+            triangleVertexC[i] = c;
+
+            if (color == 0) {
+                triangleColorA[i] = primaryColors[a];
+                triangleColorB[i] = primaryColors[b];
+                triangleColorC[i] = primaryColors[c];
+                if (triangleTextureIDs != null) {
+                    triangleTextureIDs[i] = -1;
+                }
+            } else {
+                triangleColorA[i] = secondaryColors[a];
+                triangleColorB[i] = secondaryColors[b];
+                triangleColorC[i] = secondaryColors[c];
+                if (triangleTextureIDs != null) {
+                    triangleTextureIDs[i] = textureID;
+                }
+            }
+        }
+    }
 
 }

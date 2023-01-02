@@ -944,21 +944,21 @@ public class Game extends GameShell {
 			imageRedstone2 = new Image8(archiveMedia, "redstone2", 0);
 			imageRedstone3 = new Image8(archiveMedia, "redstone3", 0);
 			imageRedstone1h = new Image8(archiveMedia, "redstone1", 0);
-			imageRedstone1h.flipH();
+			imageRedstone1h.flipHorizontally();
 			imageRedstone2h = new Image8(archiveMedia, "redstone2", 0);
-			imageRedstone2h.flipH();
+			imageRedstone2h.flipHorizontally();
 			imageRedstone1v = new Image8(archiveMedia, "redstone1", 0);
-			imageRedstone1v.flipV();
+			imageRedstone1v.flipVertically();
 			imageRedstone2v = new Image8(archiveMedia, "redstone2", 0);
-			imageRedstone2v.flipV();
+			imageRedstone2v.flipVertically();
 			imageRedstone3v = new Image8(archiveMedia, "redstone3", 0);
-			imageRedstone3v.flipV();
+			imageRedstone3v.flipVertically();
 			imageRedstone1hv = new Image8(archiveMedia, "redstone1", 0);
-			imageRedstone1hv.flipH();
-			imageRedstone1hv.flipV();
+			imageRedstone1hv.flipHorizontally();
+			imageRedstone1hv.flipVertically();
 			imageRedstone2hv = new Image8(archiveMedia, "redstone2", 0);
-			imageRedstone2hv.flipH();
-			imageRedstone2hv.flipV();
+			imageRedstone2hv.flipHorizontally();
+			imageRedstone2hv.flipVertically();
 			for (int i = 0; i < 2; i++) {
 				imageModIcons[i] = new Image8(archiveMedia, "mod_icons", i);
 			}
@@ -1061,14 +1061,7 @@ public class Game extends GameShell {
 			Draw3D.init3D(512, 334);
 			areaViewportOffsets = Draw3D.lineOffset;
 
-			int[] ai = new int[9];
-			for (int i = 0; i < 9; i++) {
-				int angle = 128 + (i * 32) + 15;
-				int l8 = 600 + (angle * 3);
-				ai[i] = (l8 * Draw3D.sin[angle]) >> 16;
-			}
-
-			Scene.method310(500, 800, 512, 334, ai);
+			Scene.init(512, 334);
 			Censor.method487(archiveWordenc);
 
 			mouseRecorder = new MouseRecorder(this);
@@ -1768,7 +1761,7 @@ public class Game extends GameShell {
 				}
 			}
 			out.writeOp(0);
-			sceneBuilder.method171(levelCollisionMap, scene);
+			sceneBuilder.build(levelCollisionMap, scene);
 			areaViewport.bind();
 			out.writeOp(0);
 			int k3 = SceneBuilder.minLevel;

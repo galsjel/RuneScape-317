@@ -4,12 +4,12 @@
 
 public class SceneTile extends DoublyLinkedList.Node {
 
-	public final int anInt1308;
-	public final int anInt1309;
-	public final int anInt1310;
+	public final int x;
+	public final int z;
+	public final int level;
 	public final SceneLoc[] locs = new SceneLoc[5];
 	public final int[] locFlags = new int[5];
-	public int anInt1307;
+	public int dataLevel;
 	public SceneTileUnderlay underlay;
 	public SceneTileOverlay overlay;
 	public SceneWall wall;
@@ -18,6 +18,10 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public SceneObjStack objStack;
 	public int locCount;
 	public int flags;
+	/**
+	 * Used as a short circuit to prevent drawing tiles above the top level. Mostly applies to lowmem.
+	 * @see Scene#draw(int, int, int, int, int, int)
+	 */
 	public int drawLevel;
 	public boolean aBoolean1322;
 	public boolean aBoolean1323;
@@ -28,10 +32,10 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public int anInt1328;
 	public SceneTile bridge;
 
-	public SceneTile(int i, int j, int k) {
-		anInt1310 = anInt1307 = i;
-		anInt1308 = j;
-		anInt1309 = k;
+	public SceneTile(int level, int x, int z) {
+		this.level = dataLevel = level;
+		this.x = x;
+		this.z = z;
 	}
 
 }

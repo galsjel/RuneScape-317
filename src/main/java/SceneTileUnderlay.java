@@ -4,23 +4,22 @@
 
 public class SceneTileUnderlay {
 
-	public final int anInt716;
-	public final int anInt717;
-	public final int anInt718;
-	public final int anInt719;
-	public final int anInt720;
+	public final int southwestColor;
+	public final int southeastColor;
+	public final int northeastColor;
+	public final int northwestColor;
+	public final int textureID;
 	public final int rgb;
-	public boolean aBoolean721;
+	public boolean flat;
 
-	public SceneTileUnderlay(int i, int j, int k, int l, int i1, int j1, boolean flag) {
-		aBoolean721 = true;
-		anInt716 = i;
-		anInt717 = j;
-		anInt718 = k;
-		anInt719 = l;
-		anInt720 = i1;
-		rgb = j1;
-		aBoolean721 = flag;
+	public SceneTileUnderlay(int southwestColor, int southeastColor, int northeastColor, int northwestColor, int textureID, int rgb, boolean flat) {
+		this.southwestColor = southwestColor;
+		this.southeastColor = southeastColor;
+		this.northeastColor = northeastColor;
+		this.northwestColor = northwestColor;
+		this.textureID = textureID;
+		this.rgb = rgb;
+		this.flat = flat;
 	}
 
 }
