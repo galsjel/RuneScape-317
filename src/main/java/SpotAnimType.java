@@ -14,7 +14,7 @@ public class SpotAnimType {
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("spotanim.dat"));
-		count = buffer.get2U();
+		count = buffer.read16U();
 
 		if (instances == null) {
 			instances = new SpotAnimType[count];
@@ -46,31 +46,31 @@ public class SpotAnimType {
 
 	public void read(Buffer buffer) {
 		do {
-			int i = buffer.get1U();
+			int i = buffer.read8U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				modelID = buffer.get2U();
+				modelID = buffer.read16U();
 			} else if (i == 2) {
-				seqID = buffer.get2U();
+				seqID = buffer.read16U();
 				if (SeqType.instances != null) {
 					seq = SeqType.instances[seqID];
 				}
 			} else if (i == 4) {
-				scaleXY = buffer.get2U();
+				scaleXY = buffer.read16U();
 			} else if (i == 5) {
-				scaleZ = buffer.get2U();
+				scaleZ = buffer.read16U();
 			} else if (i == 6) {
-				rotation = buffer.get2U();
+				rotation = buffer.read16U();
 			} else if (i == 7) {
-				lightAmbient = buffer.get1U();
+				lightAmbient = buffer.read8U();
 			} else if (i == 8) {
-				lightAttenuation = buffer.get1U();
+				lightAttenuation = buffer.read8U();
 			} else if ((i >= 40) && (i < 50)) {
-				colorSrc[i - 40] = buffer.get2U();
+				colorSrc[i - 40] = buffer.read16U();
 			} else if ((i >= 50) && (i < 60)) {
-				colorDst[i - 50] = buffer.get2U();
+				colorDst[i - 50] = buffer.read16U();
 			} else {
 				System.out.println("Error unrecognised spotanim config code: " + i);
 			}

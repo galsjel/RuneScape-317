@@ -67,38 +67,38 @@ public class SeqTransform {
 
 		int offset = 0;
 		header.position = offset;
-		offset += offsets.get2U() + 2;
+		offset += offsets.read16U() + 2;
 
 		tran1.position = offset;
-		offset += offsets.get2U();
+		offset += offsets.read16U();
 
 		tran2.position = offset;
-		offset += offsets.get2U();
+		offset += offsets.read16U();
 
 		del.position = offset;
-		offset += offsets.get2U();
+		offset += offsets.read16U();
 
 		skel.position = offset;
 
 		SeqSkeleton skeleton = new SeqSkeleton(skel);
 
-		int frameCount = header.get2U();
+		int frameCount = header.read16U();
 		int[] bases = new int[500];
 		int[] x = new int[500];
 		int[] y = new int[500];
 		int[] z = new int[500];
 
 		for (int i = 0; i < frameCount; i++) {
-			SeqTransform transform = instances[header.get2U()] = new SeqTransform();
-			transform.delay = del.get1U();
+			SeqTransform transform = instances[header.read16U()] = new SeqTransform();
+			transform.delay = del.read8U();
 			transform.skeleton = skeleton;
 
-			int baseCount = header.get1U();
+			int baseCount = header.read8U();
 			int lastBase = -1;
 			int length = 0;
 
 			for (int base = 0; base < baseCount; base++) {
-				int flags = tran1.get1U();
+				int flags = tran1.read8U();
 
 				if (flags <= 0) {
 					continue;
@@ -127,19 +127,19 @@ public class SeqTransform {
 				}
 
 				if ((flags & 1) != 0) {
-					x[length] = tran2.getSmart();
+					x[length] = tran2.readSmart();
 				} else {
 					x[length] = defaultValue;
 				}
 
 				if ((flags & 2) != 0) {
-					y[length] = tran2.getSmart();
+					y[length] = tran2.readSmart();
 				} else {
 					y[length] = defaultValue;
 				}
 
 				if ((flags & 4) != 0) {
-					z[length] = tran2.getSmart();
+					z[length] = tran2.readSmart();
 				} else {
 					z[length] = defaultValue;
 				}

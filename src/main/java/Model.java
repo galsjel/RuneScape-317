@@ -113,19 +113,19 @@ public class Model extends Entity {
 		buffer.position = src.length - 18;
 		Header header = headers[id] = new Header();
 		header.data = src;
-		header.vertexCount = buffer.get2U();
-		header.faceCount = buffer.get2U();
-		header.texturedFaceCount = buffer.get1U();
-		int k = buffer.get1U();
-		int l = buffer.get1U();
-		int i1 = buffer.get1U();
-		int j1 = buffer.get1U();
-		int k1 = buffer.get1U();
-		int l1 = buffer.get2U();
-		int i2 = buffer.get2U();
+		header.vertexCount = buffer.read16U();
+		header.faceCount = buffer.read16U();
+		header.texturedFaceCount = buffer.read8U();
+		int k = buffer.read8U();
+		int l = buffer.read8U();
+		int i1 = buffer.read8U();
+		int j1 = buffer.read8U();
+		int k1 = buffer.read8U();
+		int l1 = buffer.read16U();
+		int i2 = buffer.read16U();
 		//noinspection unused
-		int j2 = buffer.get2U();
-		int k2 = buffer.get2U();
+		int j2 = buffer.read16U();
+		int k2 = buffer.read16U();
 		int offset = 0;
 		header.obPoint1Position = offset;
 		offset += header.vertexCount;
@@ -390,22 +390,22 @@ public class Model extends Entity {
 		int z = 0;
 
 		for (int v = 0; v < vertexCount; v++) {
-			int flags = buf0.get1U();
+			int flags = buf0.read8U();
 
 			int dx = 0;
 			int dy = 0;
 			int dz = 0;
 
 			if ((flags & 1) != 0) {
-				dx = buf1.getSmart();
+				dx = buf1.readSmart();
 			}
 
 			if ((flags & 2) != 0) {
-				dy = buf2.getSmart();
+				dy = buf2.readSmart();
 			}
 
 			if ((flags & 4) != 0) {
-				dz = buf3.getSmart();
+				dz = buf3.readSmart();
 			}
 
 			vertexX[v] = x + dx;
@@ -417,7 +417,7 @@ public class Model extends Entity {
 			z = vertexZ[v];
 
 			if (vertexLabel != null) {
-				vertexLabel[v] = buf4.get1U();
+				vertexLabel[v] = buf4.read8U();
 			}
 		}
 
@@ -428,22 +428,22 @@ public class Model extends Entity {
 		buf4.position = header.obFace5Position;
 
 		for (int face = 0; face < faceCount; face++) {
-			faceColor[face] = buf0.get2U();
+			faceColor[face] = buf0.read16U();
 
 			if (faceInfo != null) {
-				faceInfo[face] = buf1.get1U();
+				faceInfo[face] = buf1.read8U();
 			}
 
 			if (facePriority != null) {
-				facePriority[face] = buf2.get1U();
+				facePriority[face] = buf2.read8U();
 			}
 
 			if (faceAlpha != null) {
-				faceAlpha[face] = buf3.get1U();
+				faceAlpha[face] = buf3.read8U();
 			}
 
 			if (faceLabel != null) {
-				faceLabel[face] = buf4.get1U();
+				faceLabel[face] = buf4.read8U();
 			}
 		}
 
@@ -456,7 +456,7 @@ public class Model extends Entity {
 		int last = 0;
 
 		for (int face = 0; face < faceCount; face++) {
-			int orientation = buf1.get1U();
+			int orientation = buf1.read8U();
 
 			// fancy shmansy compression type stuff.
 			// vertex indices stored as deltas, with some faces
@@ -464,11 +464,11 @@ public class Model extends Entity {
 
 			// new a, b, c
 			if (orientation == 1) {
-				a = buf0.getSmart() + last;
+				a = buf0.readSmart() + last;
 				last = a;
-				b = buf0.getSmart() + last;
+				b = buf0.readSmart() + last;
 				last = b;
-				c = buf0.getSmart() + last;
+				c = buf0.readSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -478,7 +478,7 @@ public class Model extends Entity {
 			// reuse a, c, new b
 			if (orientation == 2) {
 				b = c;
-				c = buf0.getSmart() + last;
+				c = buf0.readSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -488,7 +488,7 @@ public class Model extends Entity {
 			// reuse c, b, new a
 			if (orientation == 3) {
 				a = c;
-				c = buf0.getSmart() + last;
+				c = buf0.readSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -500,7 +500,7 @@ public class Model extends Entity {
 				int a_ = a;
 				a = b;
 				b = a_;
-				c = buf0.getSmart() + last;
+				c = buf0.readSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
 				faceVertexB[face] = b;
@@ -511,9 +511,9 @@ public class Model extends Entity {
 		buf0.position = header.obAxisPosition;
 
 		for (int face = 0; face < texturedFaceCount; face++) {
-			texturedVertexA[face] = buf0.get2U();
-			texturedVertexB[face] = buf0.get2U();
-			texturedVertexC[face] = buf0.get2U();
+			texturedVertexA[face] = buf0.read16U();
+			texturedVertexB[face] = buf0.read16U();
+			texturedVertexC[face] = buf0.read16U();
 		}
 	}
 

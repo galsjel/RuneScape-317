@@ -27,12 +27,12 @@ public class ObjType {
 	public static void unpack(FileArchive archive) throws IOException {
 		dat = new Buffer(archive.read("obj.dat"));
 		Buffer idx = new Buffer(archive.read("obj.idx"));
-		count = idx.get2U();
+		count = idx.read16U();
 		typeOffset = new int[count];
 		int i = 2;
 		for (int j = 0; j < count; j++) {
 			typeOffset[j] = i;
-			i += idx.get2U();
+			i += idx.read16U();
 		}
 		cached = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -508,55 +508,55 @@ public class ObjType {
 
 	public void read(Buffer buffer) {
 		do {
-			int i = buffer.get1U();
+			int i = buffer.read8U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				modelID = buffer.get2U();
+				modelID = buffer.read16U();
 			} else if (i == 2) {
-				name = buffer.getString();
+				name = buffer.readString();
 			} else if (i == 3) {
-				examine = buffer.getStringRaw();
+				examine = buffer.readStringRaw();
 			} else if (i == 4) {
-				iconZoom = buffer.get2U();
+				iconZoom = buffer.read16U();
 			} else if (i == 5) {
-				iconPitch = buffer.get2U();
+				iconPitch = buffer.read16U();
 			} else if (i == 6) {
-				iconYaw = buffer.get2U();
+				iconYaw = buffer.read16U();
 			} else if (i == 7) {
-				iconOffsetX = buffer.get2U();
+				iconOffsetX = buffer.read16U();
 				if (iconOffsetX > 32767) {
 					iconOffsetX -= 0x10000;
 				}
 			} else if (i == 8) {
-				iconOffsetY = buffer.get2U();
+				iconOffsetY = buffer.read16U();
 				if (iconOffsetY > 32767) {
 					iconOffsetY -= 0x10000;
 				}
 			} else if (i == 10) {
-				unusedInt = buffer.get2U();
+				unusedInt = buffer.read16U();
 			} else if (i == 11) {
 				stackable = true;
 			} else if (i == 12) {
-				cost = buffer.get4();
+				cost = buffer.read32();
 			} else if (i == 16) {
 				members = true;
 			} else if (i == 23) {
-				maleModelId0 = buffer.get2U();
-				maleOffsetY = buffer.get1();
+				maleModelId0 = buffer.read16U();
+				maleOffsetY = buffer.read8();
 			} else if (i == 24) {
-				maleModelId1 = buffer.get2U();
+				maleModelId1 = buffer.read16U();
 			} else if (i == 25) {
-				femaleModelId0 = buffer.get2U();
-				femaleOffsetY = buffer.get1();
+				femaleModelId0 = buffer.read16U();
+				femaleOffsetY = buffer.read8();
 			} else if (i == 26) {
-				femaleModelId1 = buffer.get2U();
+				femaleModelId1 = buffer.read16U();
 			} else if ((i >= 30) && (i < 35)) {
 				if (groundOptions == null) {
 					groundOptions = new String[5];
 				}
-				groundOptions[i - 30] = buffer.getString();
+				groundOptions[i - 30] = buffer.readString();
 				if (groundOptions[i - 30].equalsIgnoreCase("hidden")) {
 					groundOptions[i - 30] = null;
 				}
@@ -564,52 +564,52 @@ public class ObjType {
 				if (inventoryOptions == null) {
 					inventoryOptions = new String[5];
 				}
-				inventoryOptions[i - 35] = buffer.getString();
+				inventoryOptions[i - 35] = buffer.readString();
 			} else if (i == 40) {
-				int j = buffer.get1U();
+				int j = buffer.read8U();
 				srcColor = new int[j];
 				dstColor = new int[j];
 				for (int k = 0; k < j; k++) {
-					srcColor[k] = buffer.get2U();
-					dstColor[k] = buffer.get2U();
+					srcColor[k] = buffer.read16U();
+					dstColor[k] = buffer.read16U();
 				}
 			} else if (i == 78) {
-				maleModelId2 = buffer.get2U();
+				maleModelId2 = buffer.read16U();
 			} else if (i == 79) {
-				femaleModelId2 = buffer.get2U();
+				femaleModelId2 = buffer.read16U();
 			} else if (i == 90) {
-				maleHeadModelId0 = buffer.get2U();
+				maleHeadModelId0 = buffer.read16U();
 			} else if (i == 91) {
-				femaleHeadModel0 = buffer.get2U();
+				femaleHeadModel0 = buffer.read16U();
 			} else if (i == 92) {
-				maleHeadModelId1 = buffer.get2U();
+				maleHeadModelId1 = buffer.read16U();
 			} else if (i == 93) {
-				femaleHeadModel1 = buffer.get2U();
+				femaleHeadModel1 = buffer.read16U();
 			} else if (i == 95) {
-				iconRoll = buffer.get2U();
+				iconRoll = buffer.read16U();
 			} else if (i == 97) {
-				linkedID = buffer.get2U();
+				linkedID = buffer.read16U();
 			} else if (i == 98) {
-				certificateID = buffer.get2U();
+				certificateID = buffer.read16U();
 			} else if ((i >= 100) && (i < 110)) {
 				if (stackIDs == null) {
 					stackIDs = new int[10];
 					stackAmount = new int[10];
 				}
-				stackIDs[i - 100] = buffer.get2U();
-				stackAmount[i - 100] = buffer.get2U();
+				stackIDs[i - 100] = buffer.read16U();
+				stackAmount[i - 100] = buffer.read16U();
 			} else if (i == 110) {
-				scaleX = buffer.get2U();
+				scaleX = buffer.read16U();
 			} else if (i == 111) {
-				scaleZ = buffer.get2U();
+				scaleZ = buffer.read16U();
 			} else if (i == 112) {
-				scaleY = buffer.get2U();
+				scaleY = buffer.read16U();
 			} else if (i == 113) {
-				lightAmbient = buffer.get1();
+				lightAmbient = buffer.read8();
 			} else if (i == 114) {
-				lightAttenuation = buffer.get1() * 5;
+				lightAttenuation = buffer.read8() * 5;
 			} else if (i == 115) {
-				team = buffer.get1U();
+				team = buffer.read8U();
 			}
 		} while (true);
 	}

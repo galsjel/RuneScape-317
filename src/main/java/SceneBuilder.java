@@ -35,7 +35,7 @@ public class SceneBuilder {
     public static void method173(Buffer buffer, OnDemand onDemand) {
         int i_110_ = -1;
         for (; ; ) {
-            int i_111_ = buffer.getSmartU();
+            int i_111_ = buffer.readSmartU();
             if (i_111_ == 0) {
                 break;
             }
@@ -43,11 +43,11 @@ public class SceneBuilder {
             LocType type = LocType.get(i_110_);
             type.method574(onDemand);
             for (; ; ) {
-                int i_112_ = buffer.getSmartU();
+                int i_112_ = buffer.readSmartU();
                 if (i_112_ == 0) {
                     break;
                 }
-                buffer.get1U();
+                buffer.read8U();
             }
         }
     }
@@ -349,7 +349,7 @@ public class SceneBuilder {
         Buffer buffer = new Buffer(is);
         int i_252_ = -1;
         for (; ; ) {
-            int i_253_ = buffer.getSmartU();
+            int i_253_ = buffer.readSmartU();
             if (i_253_ == 0) {
                 break;
             }
@@ -358,20 +358,20 @@ public class SceneBuilder {
             boolean bool_255_ = false;
             for (; ; ) {
                 if (bool_255_) {
-                    int i_256_ = buffer.getSmartU();
+                    int i_256_ = buffer.readSmartU();
                     if (i_256_ == 0) {
                         break;
                     }
-                    buffer.get1U();
+                    buffer.read8U();
                 } else {
-                    int i_257_ = buffer.getSmartU();
+                    int i_257_ = buffer.readSmartU();
                     if (i_257_ == 0) {
                         break;
                     }
                     i_254_ += i_257_ - 1;
                     int i_258_ = i_254_ & 0x3f;
                     int i_259_ = (i_254_ >> 6) & 0x3f;
-                    int i_260_ = buffer.get1U() >> 2;
+                    int i_260_ = buffer.read8U() >> 2;
                     int i_261_ = i_259_ + i;
                     int i_262_ = i_258_ + i_250_;
                     if ((i_261_ > 0) && (i_262_ > 0) && (i_261_ < 103) && (i_262_ < 103)) {
@@ -1235,7 +1235,7 @@ public class SceneBuilder {
         if ((i_186_ >= 0) && (i_186_ < 104) && (i >= 0) && (i < 104)) {
             levelTileFlags[i_187_][i_186_][i] = (byte) 0;
             for (; ; ) {
-                int i_191_ = buffer.get1U();
+                int i_191_ = buffer.read8U();
                 if (i_191_ == 0) {
                     if (i_187_ == 0) {
                         levelHeightmap[0][i_186_][i] = -method172(932731 + i_186_ + i_190_, 556238 + i + i_185_) * 8;
@@ -1246,7 +1246,7 @@ public class SceneBuilder {
                     break;
                 }
                 if (i_191_ == 1) {
-                    int i_192_ = buffer.get1U();
+                    int i_192_ = buffer.read8U();
                     if (i_192_ == 1) {
                         i_192_ = 0;
                     }
@@ -1259,7 +1259,7 @@ public class SceneBuilder {
                     break;
                 }
                 if (i_191_ <= 49) {
-                    aByteArrayArrayArray130[i_187_][i_186_][i] = buffer.get1();
+                    aByteArrayArrayArray130[i_187_][i_186_][i] = buffer.read8();
                     aByteArrayArrayArray136[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
                     aByteArrayArrayArray148[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
                 } else if (i_191_ <= 81) {
@@ -1270,16 +1270,16 @@ public class SceneBuilder {
             }
         } else {
             for (; ; ) {
-                int i_193_ = buffer.get1U();
+                int i_193_ = buffer.read8U();
                 if (i_193_ == 0) {
                     break;
                 }
                 if (i_193_ == 1) {
-                    buffer.get1U();
+                    buffer.read8U();
                     break;
                 }
                 if (i_193_ <= 49) {
-                    buffer.get1U();
+                    buffer.read8U();
                 }
             }
         }
@@ -1299,14 +1299,14 @@ public class SceneBuilder {
         Buffer buffer = new Buffer(is);
         int i_203_ = -1;
         for (; ; ) {
-            int i_204_ = buffer.getSmartU();
+            int i_204_ = buffer.readSmartU();
             if (i_204_ == 0) {
                 break;
             }
             i_203_ += i_204_;
             int i_205_ = 0;
             for (; ; ) {
-                int i_206_ = buffer.getSmartU();
+                int i_206_ = buffer.readSmartU();
                 if (i_206_ == 0) {
                     break;
                 }
@@ -1314,7 +1314,7 @@ public class SceneBuilder {
                 int i_207_ = i_205_ & 0x3f;
                 int i_208_ = (i_205_ >> 6) & 0x3f;
                 int i_209_ = i_205_ >> 12;
-                int i_210_ = buffer.get1U();
+                int i_210_ = buffer.read8U();
                 int i_211_ = i_210_ >> 2;
                 int i_212_ = i_210_ & 0x3;
                 if ((i_209_ == i) && (i_208_ >= i_200_) && (i_208_ < (i_200_ + 8)) && (i_207_ >= i_198_) && (i_207_ < (i_198_ + 8))) {
@@ -1367,14 +1367,14 @@ public class SceneBuilder {
         Buffer buffer = new Buffer(is);
         int i_265_ = -1;
         for (; ; ) {
-            int i_266_ = buffer.getSmartU();
+            int i_266_ = buffer.readSmartU();
             if (i_266_ == 0) {
                 break;
             }
             i_265_ += i_266_;
             int i_267_ = 0;
             for (; ; ) {
-                int i_268_ = buffer.getSmartU();
+                int i_268_ = buffer.readSmartU();
                 if (i_268_ == 0) {
                     break;
                 }
@@ -1382,7 +1382,7 @@ public class SceneBuilder {
                 int i_269_ = i_267_ & 0x3f;
                 int i_270_ = (i_267_ >> 6) & 0x3f;
                 int i_271_ = i_267_ >> 12;
-                int i_272_ = buffer.get1U();
+                int i_272_ = buffer.read8U();
                 int i_273_ = i_272_ >> 2;
                 int i_274_ = i_272_ & 0x3;
                 int i_275_ = i_270_ + i;

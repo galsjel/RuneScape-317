@@ -33,13 +33,13 @@ public class NPCType {
 	public static void unpack(FileArchive archive) throws IOException {
 		dat = new Buffer(archive.read("npc.dat"));
 		Buffer buffer = new Buffer(archive.read("npc.idx"));
-		count = buffer.get2U();
+		count = buffer.read16U();
 		offsets = new int[count];
 
 		int offset = 2;
 		for (int i = 0; i < count; i++) {
 			offsets[i] = offset;
-			offset += buffer.get2U();
+			offset += buffer.read16U();
 		}
 
 		cache = new NPCType[20];
@@ -231,90 +231,90 @@ public class NPCType {
 
 	public void read(Buffer buffer) {
 		do {
-			int i = buffer.get1U();
+			int i = buffer.read8U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				int j = buffer.get1U();
+				int j = buffer.read8U();
 				modelIDs = new int[j];
 				for (int j1 = 0; j1 < j; j1++) {
-					modelIDs[j1] = buffer.get2U();
+					modelIDs[j1] = buffer.read16U();
 				}
 			} else if (i == 2) {
-				name = buffer.getString();
+				name = buffer.readString();
 			} else if (i == 3) {
-				desc = buffer.getStringRaw();
+				desc = buffer.readStringRaw();
 			} else if (i == 12) {
-				size = buffer.get1();
+				size = buffer.read8();
 			} else if (i == 13) {
-				seqStandID = buffer.get2U();
+				seqStandID = buffer.read16U();
 			} else if (i == 14) {
-				seqWalkID = buffer.get2U();
+				seqWalkID = buffer.read16U();
 			} else if (i == 17) {
-				seqWalkID = buffer.get2U();
-				seqTurnAroundID = buffer.get2U();
-				seqTurnLeftID = buffer.get2U();
-				seqTurnRightID = buffer.get2U();
+				seqWalkID = buffer.read16U();
+				seqTurnAroundID = buffer.read16U();
+				seqTurnLeftID = buffer.read16U();
+				seqTurnRightID = buffer.read16U();
 			} else if ((i >= 30) && (i < 40)) {
 				if (op == null) {
 					op = new String[5];
 				}
-				op[i - 30] = buffer.getString();
+				op[i - 30] = buffer.readString();
 				if (op[i - 30].equalsIgnoreCase("hidden")) {
 					op[i - 30] = null;
 				}
 			} else if (i == 40) {
-				int k = buffer.get1U();
+				int k = buffer.read8U();
 				colorSrc = new int[k];
 				colorDst = new int[k];
 				for (int k1 = 0; k1 < k; k1++) {
-					colorSrc[k1] = buffer.get2U();
-					colorDst[k1] = buffer.get2U();
+					colorSrc[k1] = buffer.read16U();
+					colorDst[k1] = buffer.read16U();
 				}
 			} else if (i == 60) {
-				int l = buffer.get1U();
+				int l = buffer.read8U();
 				headModelIDs = new int[l];
 				for (int l1 = 0; l1 < l; l1++) {
-					headModelIDs[l1] = buffer.get2U();
+					headModelIDs[l1] = buffer.read16U();
 				}
 			} else if (i == 90) {
-				unusedInt2 = buffer.get2U();
+				unusedInt2 = buffer.read16U();
 			} else if (i == 91) {
-				unusedInt0 = buffer.get2U();
+				unusedInt0 = buffer.read16U();
 			} else if (i == 92) {
-				unusedInt1 = buffer.get2U();
+				unusedInt1 = buffer.read16U();
 			} else if (i == 93) {
 				aBoolean87 = false;
 			} else if (i == 95) {
-				level = buffer.get2U();
+				level = buffer.read16U();
 			} else if (i == 97) {
-				anInt91 = buffer.get2U();
+				anInt91 = buffer.read16U();
 			} else if (i == 98) {
-				anInt86 = buffer.get2U();
+				anInt86 = buffer.read16U();
 			} else if (i == 99) {
 				aBoolean93 = true;
 			} else if (i == 100) {
-				anInt85 = buffer.get1();
+				anInt85 = buffer.read8();
 			} else if (i == 101) {
-				anInt92 = buffer.get1() * 5;
+				anInt92 = buffer.read8() * 5;
 			} else if (i == 102) {
-				headicon = buffer.get2U();
+				headicon = buffer.read16U();
 			} else if (i == 103) {
-				turnSpeed = buffer.get2U();
+				turnSpeed = buffer.read16U();
 			} else if (i == 106) {
-				varbitID = buffer.get2U();
+				varbitID = buffer.read16U();
 				if (varbitID == 65535) {
 					varbitID = -1;
 				}
-				varpID = buffer.get2U();
+				varpID = buffer.read16U();
 				if (varpID == 65535) {
 					varpID = -1;
 				}
-				int i1 = buffer.get1U();
+				int i1 = buffer.read8U();
 				overrides = new int[i1 + 1];
 				for (int i2 = 0; i2 <= i1; i2++) {
-					overrides[i2] = buffer.get2U();
+					overrides[i2] = buffer.read16U();
 					if (overrides[i2] == 65535) {
 						overrides[i2] = -1;
 					}

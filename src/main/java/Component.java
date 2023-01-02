@@ -17,94 +17,94 @@ public class Component {
 		Buffer in = new Buffer(config.read("data"));
 
 		int parentID = -1;
-		int count = in.get2U();
+		int count = in.read16U();
 
 		instances = new Component[count];
 
 		while (in.position < in.data.length) {
-			int id = in.get2U();
+			int id = in.read16U();
 
 			if (id == 65535) {
-				parentID = in.get2U();
-				id = in.get2U();
+				parentID = in.read16U();
+				id = in.read16U();
 			}
 
 			Component c = instances[id] = new Component();
 			c.id = id;
 			c.parentID = parentID;
-			c.type = in.get1U();
-			c.optionType = in.get1U();
-			c.contentType = in.get2U();
-			c.width = in.get2U();
-			c.height = in.get2U();
-			c.transparency = (byte) in.get1U();
-			c.delegateHover = in.get1U();
+			c.type = in.read8U();
+			c.optionType = in.read8U();
+			c.contentType = in.read16U();
+			c.width = in.read16U();
+			c.height = in.read16U();
+			c.transparency = (byte) in.read8U();
+			c.delegateHover = in.read8U();
 
 			if (c.delegateHover != 0) {
-				c.delegateHover = ((c.delegateHover - 1) << 8) + in.get1U();
+				c.delegateHover = ((c.delegateHover - 1) << 8) + in.read8U();
 			} else {
 				c.delegateHover = -1;
 			}
 
-			int comparatorCount = in.get1U();
+			int comparatorCount = in.read8U();
 			if (comparatorCount > 0) {
 				c.scriptComparator = new int[comparatorCount];
 				c.scriptOperand = new int[comparatorCount];
 				for (int i = 0; i < comparatorCount; i++) {
-					c.scriptComparator[i] = in.get1U();
-					c.scriptOperand[i] = in.get2U();
+					c.scriptComparator[i] = in.read8U();
+					c.scriptOperand[i] = in.read16U();
 				}
 			}
 
-			int scriptCount = in.get1U();
+			int scriptCount = in.read8U();
 			if (scriptCount > 0) {
 				c.scripts = new int[scriptCount][];
 				for (int scriptID = 0; scriptID < scriptCount; scriptID++) {
-					int length = in.get2U();
+					int length = in.read16U();
 					c.scripts[scriptID] = new int[length];
 					for (int i = 0; i < length; i++) {
-						c.scripts[scriptID][i] = in.get2U();
+						c.scripts[scriptID][i] = in.read16U();
 					}
 				}
 			}
 
 			if (c.type == 0) {
-				c.scrollableHeight = in.get2U();
-				c.hidden = in.get1U() == 1;
-				int childCount = in.get2U();
+				c.scrollableHeight = in.read16U();
+				c.hidden = in.read8U() == 1;
+				int childCount = in.read16U();
 				c.children = new int[childCount];
 				c.childX = new int[childCount];
 				c.childY = new int[childCount];
 				for (int i = 0; i < childCount; i++) {
-					c.children[i] = in.get2U();
-					c.childX[i] = in.get2();
-					c.childY[i] = in.get2();
+					c.children[i] = in.read16U();
+					c.childX[i] = in.read16();
+					c.childY[i] = in.read16();
 				}
 			}
 
 			if (c.type == 1) {
-				c.unusedInt = in.get2U();
-				c.unusedBool = in.get1U() == 1;
+				c.unusedInt = in.read16U();
+				c.unusedBool = in.read8U() == 1;
 			}
 
 			if (c.type == 2) {
 				c.invSlotObjID = new int[c.width * c.height];
 				c.invSlotAmount = new int[c.width * c.height];
-				c.invDraggable = in.get1U() == 1;
-				c.aBoolean249 = in.get1U() == 1;
-				c.invUsable = in.get1U() == 1;
-				c.invMoveReplaces = in.get1U() == 1;
-				c.invMarginX = in.get1U();
-				c.invMarginY = in.get1U();
+				c.invDraggable = in.read8U() == 1;
+				c.aBoolean249 = in.read8U() == 1;
+				c.invUsable = in.read8U() == 1;
+				c.invMoveReplaces = in.read8U() == 1;
+				c.invMarginX = in.read8U();
+				c.invMarginY = in.read8U();
 				c.invSlotX = new int[20];
 				c.invSlotY = new int[20];
 				c.invSlotImage = new Image24[20];
 				for (int j2 = 0; j2 < 20; j2++) {
-					int k3 = in.get1U();
+					int k3 = in.read8U();
 					if (k3 == 1) {
-						c.invSlotX[j2] = in.get2();
-						c.invSlotY[j2] = in.get2();
-						String s1 = in.getString();
+						c.invSlotX[j2] = in.read16();
+						c.invSlotY[j2] = in.read16();
+						String s1 = in.readString();
 						if ((media != null) && (s1.length() > 0)) {
 							int i5 = s1.lastIndexOf(",");
 							c.invSlotImage[j2] = getImage(Integer.parseInt(s1.substring(i5 + 1)), media, s1.substring(0, i5));
@@ -113,7 +113,7 @@ public class Component {
 				}
 				c.invOptions = new String[5];
 				for (int i = 0; i < 5; i++) {
-					c.invOptions[i] = in.getString();
+					c.invOptions[i] = in.readString();
 					if (c.invOptions[i].length() == 0) {
 						c.invOptions[i] = null;
 					}
@@ -121,40 +121,40 @@ public class Component {
 			}
 
 			if (c.type == 3) {
-				c.fill = in.get1U() == 1;
+				c.fill = in.read8U() == 1;
 			}
 
 			if ((c.type == 4) || (c.type == 1)) {
-				c.center = in.get1U() == 1;
-				int fontID = in.get1U();
+				c.center = in.read8U() == 1;
+				int fontID = in.read8U();
 				if (fonts != null) {
 					c.font = fonts[fontID];
 				}
-				c.shadow = in.get1U() == 1;
+				c.shadow = in.read8U() == 1;
 			}
 
 			if (c.type == 4) {
-				c.text = in.getString();
-				c.activeText = in.getString();
+				c.text = in.readString();
+				c.activeText = in.readString();
 			}
 
 			if ((c.type == 1) || (c.type == 3) || (c.type == 4)) {
-				c.color = in.get4();
+				c.color = in.read32();
 			}
 
 			if ((c.type == 3) || (c.type == 4)) {
-				c.activeColor = in.get4();
-				c.hoverColor = in.get4();
-				c.activeHoverColor = in.get4();
+				c.activeColor = in.read32();
+				c.hoverColor = in.read32();
+				c.activeHoverColor = in.read32();
 			}
 
 			if (c.type == 5) {
-				String s = in.getString();
+				String s = in.readString();
 				if ((media != null) && (s.length() > 0)) {
 					int comma = s.lastIndexOf(",");
 					c.image = getImage(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
 				}
-				s = in.getString();
+				s = in.readString();
 				if ((media != null) && (s.length() > 0)) {
 					int comma = s.lastIndexOf(",");
 					c.activeImage = getImage(Integer.parseInt(s.substring(comma + 1)), media, s.substring(0, comma));
@@ -162,53 +162,53 @@ public class Component {
 			}
 
 			if (c.type == 6) {
-				int tmp = in.get1U();
+				int tmp = in.read8U();
 				if (tmp != 0) {
 					c.modelCategory = 1;
-					c.modelID = ((tmp - 1) << 8) + in.get1U();
+					c.modelID = ((tmp - 1) << 8) + in.read8U();
 				}
 
-				tmp = in.get1U();
+				tmp = in.read8U();
 				if (tmp != 0) {
 					c.activeModelCategory = 1;
-					c.activeModelID = ((tmp - 1) << 8) + in.get1U();
+					c.activeModelID = ((tmp - 1) << 8) + in.read8U();
 				}
 
-				tmp = in.get1U();
+				tmp = in.read8U();
 				if (tmp != 0) {
-					c.seqID = ((tmp - 1) << 8) + in.get1U();
+					c.seqID = ((tmp - 1) << 8) + in.read8U();
 				} else {
 					c.seqID = -1;
 				}
 
-				tmp = in.get1U();
+				tmp = in.read8U();
 				if (tmp != 0) {
-					c.activeSeqID = ((tmp - 1) << 8) + in.get1U();
+					c.activeSeqID = ((tmp - 1) << 8) + in.read8U();
 				} else {
 					c.activeSeqID = -1;
 				}
 
-				c.modelZoom = in.get2U();
-				c.modelPitch = in.get2U();
-				c.modelYaw = in.get2U();
+				c.modelZoom = in.read16U();
+				c.modelPitch = in.read16U();
+				c.modelYaw = in.read16U();
 			}
 
 			if (c.type == 7) {
 				c.invSlotObjID = new int[c.width * c.height];
 				c.invSlotAmount = new int[c.width * c.height];
-				c.center = in.get1U() == 1;
-				int fontID = in.get1U();
+				c.center = in.read8U() == 1;
+				int fontID = in.read8U();
 				if (fonts != null) {
 					c.font = fonts[fontID];
 				}
-				c.shadow = in.get1U() == 1;
-				c.color = in.get4();
-				c.invMarginX = in.get2();
-				c.invMarginY = in.get2();
-				c.aBoolean249 = in.get1U() == 1;
+				c.shadow = in.read8U() == 1;
+				c.color = in.read32();
+				c.invMarginX = in.read16();
+				c.invMarginY = in.read16();
+				c.aBoolean249 = in.read8U() == 1;
 				c.invOptions = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
-					c.invOptions[k4] = in.getString();
+					c.invOptions[k4] = in.readString();
 					if (c.invOptions[k4].length() == 0) {
 						c.invOptions[k4] = null;
 					}
@@ -216,17 +216,17 @@ public class Component {
 			}
 
 			if (c.type == 8) {
-				c.spellAction = in.getString();
+				c.spellAction = in.readString();
 			}
 
 			if ((c.optionType == 2) || (c.type == 2)) {
-				c.spellAction = in.getString();
-				c.spellName = in.getString();
-				c.spellFlags = in.get2U();
+				c.spellAction = in.readString();
+				c.spellName = in.readString();
+				c.spellFlags = in.read16U();
 			}
 
 			if ((c.optionType == 1) || (c.optionType == 4) || (c.optionType == 5) || (c.optionType == 6)) {
-				c.option = in.getString();
+				c.option = in.readString();
 				if (c.option.length() == 0) {
 					if (c.optionType == 1) {
 						c.option = "Ok";

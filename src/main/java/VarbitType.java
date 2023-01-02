@@ -10,7 +10,7 @@ public class VarbitType {
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("varbit.dat"));
-		int count = buffer.get2U();
+		int count = buffer.read16U();
 
 		if (instances == null) {
 			instances = new VarbitType[count];
@@ -49,21 +49,21 @@ public class VarbitType {
 
 	public void read(Buffer buffer) {
 		do {
-			int op = buffer.get1U();
+			int op = buffer.read8U();
 			if (op == 0) {
 				return;
 			} else if (op == 1) {
-				varp = buffer.get2U();
-				lsb = buffer.get1U();
-				msb = buffer.get1U();
+				varp = buffer.read16U();
+				lsb = buffer.read8U();
+				msb = buffer.read8U();
 			} else if (op == 10) {
-				unusedString = buffer.getString();
+				unusedString = buffer.readString();
 			} else if (op == 2) {
 				unusedBool = true;
 			} else if (op == 3) {
-				unusedInt0 = buffer.get4();
+				unusedInt0 = buffer.read32();
 			} else if (op == 4) {
-				unusedInt1 = buffer.get4();
+				unusedInt1 = buffer.read32();
 			} else {
 				System.out.println("Error unrecognised config code: " + op);
 			}

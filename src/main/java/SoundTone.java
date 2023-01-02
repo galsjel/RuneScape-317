@@ -277,7 +277,7 @@ public class SoundTone {
 		amplitudeBase = new SoundEnvelope();
 		amplitudeBase.read(buffer);
 
-		if (buffer.get1U() != 0) {
+		if (buffer.read8U() != 0) {
 			buffer.position--;
 			frequencyModRate = new SoundEnvelope();
 			frequencyModRate.read(buffer);
@@ -285,7 +285,7 @@ public class SoundTone {
 			frequencyModRange.read(buffer);
 		}
 
-		if (buffer.get1U() != 0) {
+		if (buffer.read8U() != 0) {
 			buffer.position--;
 			amplitudeModRate = new SoundEnvelope();
 			amplitudeModRate.read(buffer);
@@ -293,7 +293,7 @@ public class SoundTone {
 			amplitudeModRange.read(buffer);
 		}
 
-		if (buffer.get1U() != 0) {
+		if (buffer.read8U() != 0) {
 			buffer.position--;
 			release = new SoundEnvelope();
 			release.read(buffer);
@@ -302,22 +302,22 @@ public class SoundTone {
 		}
 
 		for (int i = 0; i < 10; i++) {
-			int volume = buffer.getSmartU();
+			int volume = buffer.readSmartU();
 
 			if (volume == 0) {
 				break;
 			}
 
 			harmonicVolume[i] = volume;
-			harmonicSemitone[i] = buffer.getSmart();
-			harmonicDelay[i] = buffer.getSmartU();
+			harmonicSemitone[i] = buffer.readSmart();
+			harmonicDelay[i] = buffer.readSmartU();
 		}
 
-		reverbDelay = buffer.getSmartU();
-		reverbVolume = buffer.getSmartU();
+		reverbDelay = buffer.readSmartU();
+		reverbVolume = buffer.readSmartU();
 
-		length = buffer.get2U();
-		start = buffer.get2U();
+		length = buffer.read16U();
+		start = buffer.read16U();
 
 		filter = new SoundFilter();
 		filterRange = new SoundEnvelope();

@@ -36,17 +36,17 @@ public class SeqSkeleton {
      * @param in the input
      */
     public SeqSkeleton(Buffer in) {
-        final int length = in.get1U();
+        final int length = in.read8U();
         baseTypes = new int[length];
         baseLabels = new int[length][];
         for (int group = 0; group < length; group++) {
-            baseTypes[group] = in.get1U();
+            baseTypes[group] = in.read8U();
         }
         for (int group = 0; group < length; group++) {
-            int count = in.get1U();
+            int count = in.read8U();
             baseLabels[group] = new int[count];
             for (int child = 0; child < count; child++) {
-                baseLabels[group][child] = in.get1U();
+                baseLabels[group][child] = in.read8U();
             }
         }
     }

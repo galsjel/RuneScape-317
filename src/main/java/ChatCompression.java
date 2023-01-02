@@ -19,7 +19,7 @@ public class ChatCompression {
 		int carry = -1;
 
 		for (int i = 0; i < expectedLength; i++) {
-			int value = buffer.get1U();
+			int value = buffer.read8U();
 			int nibble = (value >> 4) & 0xf;
 
 			if (carry == -1) {
@@ -92,19 +92,19 @@ public class ChatCompression {
 				if (index < 13) {
 					carry = index;
 				} else {
-					dst.put1(index);
+					dst.write8(index);
 				}
 			} else if (index < 13) {
-				dst.put1((carry << 4) + index);
+				dst.write8((carry << 4) + index);
 				carry = -1;
 			} else {
-				dst.put1((carry << 4) + (index >> 4));
+				dst.write8((carry << 4) + (index >> 4));
 				carry = index & 0xf;
 			}
 		}
 
 		if (carry != -1) {
-			dst.put1(carry << 4);
+			dst.write8(carry << 4);
 		}
 	}
 

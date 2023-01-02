@@ -14,7 +14,7 @@ public class VarpType {
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("varp.dat"));
 		anInt702 = 0;
-		anInt700 = buffer.get2U();
+		anInt700 = buffer.read16U();
 		if (instances == null) {
 			instances = new VarpType[anInt700];
 		}
@@ -49,33 +49,33 @@ public class VarpType {
 
 	public void read(Buffer buffer, int i) {
 		do {
-			int op = buffer.get1U();
+			int op = buffer.read8U();
 			if (op == 0) {
 				return;
 			} else if (op == 1) {
-				unusedInt0 = buffer.get1U();
+				unusedInt0 = buffer.read8U();
 			} else if (op == 2) {
-				unusedInt1 = buffer.get1U();
+				unusedInt1 = buffer.read8U();
 			} else if (op == 3) {
 				unusedBool0 = true;
 				anIntArray703[anInt702++] = i;
 			} else if (op == 4) {
 				unusedBool1 = false;
 			} else if (op == 5) {
-				anInt709 = buffer.get2U();
+				anInt709 = buffer.read16U();
 			} else if (op == 6) {
 				unusedBool2 = true;
 			} else if (op == 7) {
-				unusedInt2 = buffer.get4();
+				unusedInt2 = buffer.read32();
 			} else if (op == 8) {
 				unusedInt3 = 1;
 				unusedBool3 = true;
 			} else if (op == 10) {
-				unusedString = buffer.getString();
+				unusedString = buffer.readString();
 			} else if (op == 11) {
 				unusedBool3 = true;
 			} else if (op == 12) {
-				unusedInt4 = buffer.get4();
+				unusedInt4 = buffer.read32();
 			} else if (op == 13) {
 				unusedInt3 = 2;
 			} else {

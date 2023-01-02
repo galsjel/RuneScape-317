@@ -116,24 +116,24 @@ public class PlayerEntity extends PathingEntity {
 
 	public void method451(Buffer buffer) {
 		buffer.position = 0;
-		gender = buffer.get1U();
-		headicons = buffer.get1U();
+		gender = buffer.read8U();
+		headicons = buffer.read8U();
 		npcType = null;
 		team = 0;
 
 		for (int part = 0; part < 12; part++) {
-			int msb = buffer.get1U();
+			int msb = buffer.read8U();
 
 			if (msb == 0) {
 				appearances[part] = 0;
 				continue;
 			}
 
-			int lsb = buffer.get1U();
+			int lsb = buffer.read8U();
 			appearances[part] = (msb << 8) + lsb;
 
 			if ((part == 0) && (appearances[0] == 65535)) {
-				npcType = NPCType.get(buffer.get2U());
+				npcType = NPCType.get(buffer.read16U());
 				break;
 			}
 
@@ -147,7 +147,7 @@ public class PlayerEntity extends PathingEntity {
 		}
 
 		for (int part = 0; part < 5; part++) {
-			int color = buffer.get1U();
+			int color = buffer.read8U();
 
 			if ((color < 0) || (color >= Game.designPartColor[part].length)) {
 				color = 0;
@@ -156,37 +156,37 @@ public class PlayerEntity extends PathingEntity {
 			colors[part] = color;
 		}
 
-		super.seqStandID = buffer.get2U();
+		super.seqStandID = buffer.read16U();
 		if (super.seqStandID == 65535) {
 			super.seqStandID = -1;
 		}
-		super.seqTurnID = buffer.get2U();
+		super.seqTurnID = buffer.read16U();
 		if (super.seqTurnID == 65535) {
 			super.seqTurnID = -1;
 		}
-		super.seqWalkID = buffer.get2U();
+		super.seqWalkID = buffer.read16U();
 		if (super.seqWalkID == 65535) {
 			super.seqWalkID = -1;
 		}
-		super.seqTurnAroundID = buffer.get2U();
+		super.seqTurnAroundID = buffer.read16U();
 		if (super.seqTurnAroundID == 65535) {
 			super.seqTurnAroundID = -1;
 		}
-		super.seqTurnLeftID = buffer.get2U();
+		super.seqTurnLeftID = buffer.read16U();
 		if (super.seqTurnLeftID == 65535) {
 			super.seqTurnLeftID = -1;
 		}
-		super.seqTurnRightID = buffer.get2U();
+		super.seqTurnRightID = buffer.read16U();
 		if (super.seqTurnRightID == 65535) {
 			super.seqTurnRightID = -1;
 		}
-		super.seqRunID = buffer.get2U();
+		super.seqRunID = buffer.read16U();
 		if (super.seqRunID == 65535) {
 			super.seqRunID = -1;
 		}
-		name = StringUtil.formatName(StringUtil.fromBase37(buffer.get8()));
-		combatLevel = buffer.get1U();
-		skillLevel = buffer.get2U();
+		name = StringUtil.formatName(StringUtil.fromBase37(buffer.read64()));
+		combatLevel = buffer.read8U();
+		skillLevel = buffer.read16U();
 		visible = true;
 
 		appearanceHashcode = 0L;

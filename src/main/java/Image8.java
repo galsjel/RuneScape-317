@@ -14,36 +14,36 @@ public class Image8 {
 	public Image8(FileArchive archive, String s, int i) throws IOException {
 		Buffer buffer = new Buffer(archive.read(s + ".dat"));
 		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
-		buffer_1.position = buffer.get2U();
-		cropW = buffer_1.get2U();
-		cropH = buffer_1.get2U();
-		int j = buffer_1.get1U();
+		buffer_1.position = buffer.read16U();
+		cropW = buffer_1.read16U();
+		cropH = buffer_1.read16U();
+		int j = buffer_1.read8U();
 		palette = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
-			palette[k + 1] = buffer_1.get3();
+			palette[k + 1] = buffer_1.read24();
 		}
 		for (int l = 0; l < i; l++) {
 			buffer_1.position += 2;
-			buffer.position += buffer_1.get2U() * buffer_1.get2U();
+			buffer.position += buffer_1.read16U() * buffer_1.read16U();
 			buffer_1.position++;
 		}
-		cropX = buffer_1.get1U();
-		cropY = buffer_1.get1U();
-		width = buffer_1.get2U();
-		height = buffer_1.get2U();
-		int i1 = buffer_1.get1U();
+		cropX = buffer_1.read8U();
+		cropY = buffer_1.read8U();
+		width = buffer_1.read16U();
+		height = buffer_1.read16U();
+		int i1 = buffer_1.read8U();
 		int j1 = width * height;
 		pixels = new byte[j1];
 		if (i1 == 0) {
 			for (int k1 = 0; k1 < j1; k1++) {
-				pixels[k1] = buffer.get1();
+				pixels[k1] = buffer.read8();
 			}
 			return;
 		}
 		if (i1 == 1) {
 			for (int l1 = 0; l1 < width; l1++) {
 				for (int i2 = 0; i2 < height; i2++) {
-					pixels[l1 + (i2 * width)] = buffer.get1();
+					pixels[l1 + (i2 * width)] = buffer.read8();
 				}
 			}
 		}

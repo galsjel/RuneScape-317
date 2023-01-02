@@ -190,7 +190,7 @@ public class OnDemand implements Runnable {
 			storeFilePriorities[i] = new byte[count];
 
 			for (int l = 0; l < count; l++) {
-				storeFileVersions[i][l] = buffer.get2U();
+				storeFileVersions[i][l] = buffer.read16U();
 			}
 		}
 
@@ -202,7 +202,7 @@ public class OnDemand implements Runnable {
 			Buffer buffer = new Buffer(data);
 			storeFileChecksums[i] = new int[count];
 			for (int l1 = 0; l1 < count; l1++) {
-				storeFileChecksums[i][l1] = buffer.get4();
+				storeFileChecksums[i][l1] = buffer.read32();
 			}
 		}
 
@@ -229,10 +229,10 @@ public class OnDemand implements Runnable {
 		mapPrefetched = new int[count];
 
 		for (int i2 = 0; i2 < count; i2++) {
-			mapIndex[i2] = buffer.get2U();
-			mapLandFile[i2] = buffer.get2U();
-			mapLocFile[i2] = buffer.get2U();
-			mapPrefetched[i2] = buffer.get1U();
+			mapIndex[i2] = buffer.read16U();
+			mapLandFile[i2] = buffer.read16U();
+			mapLocFile[i2] = buffer.read16U();
+			mapPrefetched[i2] = buffer.read8U();
 		}
 
 		data = versionlist.read("anim_index");
@@ -241,7 +241,7 @@ public class OnDemand implements Runnable {
 		animIndex = new int[count];
 
 		for (int j2 = 0; j2 < count; j2++) {
-			animIndex[j2] = buffer.get2U();
+			animIndex[j2] = buffer.read16U();
 		}
 
 		data = versionlist.read("midi_index");
@@ -250,7 +250,7 @@ public class OnDemand implements Runnable {
 		midiIndex = new int[count];
 
 		for (int k2 = 0; k2 < count; k2++) {
-			midiIndex[k2] = buffer.get1U();
+			midiIndex[k2] = buffer.read8U();
 		}
 
 		this.game = game;

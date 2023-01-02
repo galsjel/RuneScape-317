@@ -16,33 +16,33 @@ public class BitmapFont {
 	public BitmapFont(FileArchive archive, String name, boolean quill) throws IOException {
 		Buffer dat = new Buffer(archive.read(name + ".dat"));
 		Buffer idx = new Buffer(archive.read("index.dat"));
-		idx.position = dat.get2U() + 4;
+		idx.position = dat.read16U() + 4;
 
-		int k = idx.get1U();
+		int k = idx.read8U();
 
 		if (k > 0) {
 			idx.position += 3 * (k - 1);
 		}
 
 		for (int c = 0; c < 256; c++) {
-			charOffsetX[c] = idx.get1U();
-			charOffsetY[c] = idx.get1U();
+			charOffsetX[c] = idx.read8U();
+			charOffsetY[c] = idx.read8U();
 
-			int w = charMaskWidth[c] = idx.get2U();
-			int h = charMaskHeight[c] = idx.get2U();
-			int storeOrder = idx.get1U();
+			int w = charMaskWidth[c] = idx.read16U();
+			int h = charMaskHeight[c] = idx.read16U();
+			int storeOrder = idx.read8U();
 
 			int len = w * h;
 			charMask[c] = new byte[len];
 
 			if (storeOrder == 0) {
 				for (int i = 0; i < len; i++) {
-					charMask[c][i] = dat.get1();
+					charMask[c][i] = dat.read8();
 				}
 			} else if (storeOrder == 1) {
 				for (int x = 0; x < w; x++) {
 					for (int y = 0; y < h; y++) {
-						charMask[c][x + (y * w)] = dat.get1();
+						charMask[c][x + (y * w)] = dat.read8();
 					}
 				}
 			}

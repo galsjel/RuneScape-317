@@ -11,7 +11,7 @@ public class SeqType {
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("seq.dat"));
-		count = buffer.get2U();
+		count = buffer.read16U();
 		if (instances == null) {
 			instances = new SeqType[count];
 		}
@@ -131,49 +131,49 @@ public class SeqType {
 
 	public void load(Buffer buffer) {
 		do {
-			int op = buffer.get1U();
+			int op = buffer.read8U();
 			if (op == 0) {
 				break;
 			} else if (op == 1) {
-				frameCount = buffer.get1U();
+				frameCount = buffer.read8U();
 				transformIndices = new int[frameCount];
 				auxiliaryTransformIndices = new int[frameCount];
 				frameDuration = new int[frameCount];
 				for (int f = 0; f < frameCount; f++) {
-					transformIndices[f] = buffer.get2U();
-					auxiliaryTransformIndices[f] = buffer.get2U();
+					transformIndices[f] = buffer.read16U();
+					auxiliaryTransformIndices[f] = buffer.read16U();
 					if (auxiliaryTransformIndices[f] == 65535) {
 						auxiliaryTransformIndices[f] = -1;
 					}
-					frameDuration[f] = buffer.get2U();
+					frameDuration[f] = buffer.read16U();
 				}
 			} else if (op == 2) {
-				loopFrameCount = buffer.get2U();
+				loopFrameCount = buffer.read16U();
 			} else if (op == 3) {
-				int count = buffer.get1U();
+				int count = buffer.read8U();
 				mask = new int[count + 1];
 				for (int l = 0; l < count; l++) {
-					mask[l] = buffer.get1U();
+					mask[l] = buffer.read8U();
 				}
 				mask[count] = 9999999;
 			} else if (op == 4) {
 				forwardRenderPadding = true;
 			} else if (op == 5) {
-				priority = buffer.get1U();
+				priority = buffer.read8U();
 			} else if (op == 6) {
-				rightHandOverride = buffer.get2U();
+				rightHandOverride = buffer.read16U();
 			} else if (op == 7) {
-				leftHandOverride = buffer.get2U();
+				leftHandOverride = buffer.read16U();
 			} else if (op == 8) {
-				loopCount = buffer.get1U();
+				loopCount = buffer.read8U();
 			} else if (op == 9) {
-				moveStyle = buffer.get1U();
+				moveStyle = buffer.read8U();
 			} else if (op == 10) {
-				idleStyle = buffer.get1U();
+				idleStyle = buffer.read8U();
 			} else if (op == 11) {
-				replayStyle = buffer.get1U();
+				replayStyle = buffer.read8U();
 			} else if (op == 12) {
-				unusedInt = buffer.get4();
+				unusedInt = buffer.read32();
 			} else {
 				System.out.println("Error unrecognised seq config code: " + op);
 			}

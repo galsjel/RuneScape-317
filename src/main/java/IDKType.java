@@ -11,7 +11,7 @@ public class IDKType {
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("idk.dat"));
-		count = buffer.get2U();
+		count = buffer.read16U();
 		if (instances == null) {
 			instances = new IDKType[count];
 		}
@@ -35,26 +35,26 @@ public class IDKType {
 
 	public void method536(Buffer buffer) {
 		do {
-			int i = buffer.get1U();
+			int i = buffer.read8U();
 			if (i == 0) {
 				return;
 			}
 			if (i == 1) {
-				type = buffer.get1U();
+				type = buffer.read8U();
 			} else if (i == 2) {
-				int j = buffer.get1U();
+				int j = buffer.read8U();
 				modelIDs = new int[j];
 				for (int k = 0; k < j; k++) {
-					modelIDs[k] = buffer.get2U();
+					modelIDs[k] = buffer.read16U();
 				}
 			} else if (i == 3) {
 				selectable = true;
 			} else if ((i >= 40) && (i < 50)) {
-				colorSrc[i - 40] = buffer.get2U();
+				colorSrc[i - 40] = buffer.read16U();
 			} else if ((i >= 50) && (i < 60)) {
-				colorDst[i - 50] = buffer.get2U();
+				colorDst[i - 50] = buffer.read16U();
 			} else if ((i >= 60) && (i < 70)) {
-				headModelIDs[i - 60] = buffer.get2U();
+				headModelIDs[i - 60] = buffer.read16U();
 			} else {
 				System.out.println("Error unrecognised config code: " + i);
 			}

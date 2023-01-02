@@ -12,7 +12,7 @@ public class SoundTrack {
 		SoundTone.init();
 
 		do {
-			int id = src.get2U();
+			int id = src.read16U();
 			if (id == 65535) {
 				return;
 			}
@@ -41,14 +41,14 @@ public class SoundTrack {
 
 	public void read(Buffer buffer) {
 		for (int tone = 0; tone < 10; tone++) {
-			if (buffer.get1U() != 0) {
+			if (buffer.read8U() != 0) {
 				buffer.position--;
 				tones[tone] = new SoundTone();
 				tones[tone].read(buffer);
 			}
 		}
-		loopBegin = buffer.get2U();
-		loopEnd = buffer.get2U();
+		loopBegin = buffer.read16U();
+		loopEnd = buffer.read16U();
 	}
 
 	public int trim() {
@@ -88,19 +88,19 @@ public class SoundTrack {
 	public Buffer getWaveform(int loopCount) {
 		int length = generate(loopCount);
 		buffer.position = 0;
-		buffer.put4(0x52494646); // "RIFF" ChunkID
-		buffer.put4LE(36 + length); // ChunkSize
-		buffer.put4(0x57415645); // "WAVE" format
-		buffer.put4(0x666d7420); // "fmt " chunk id
-		buffer.put4LE(16); // chunk size
-		buffer.put2LE(1); // audio format
-		buffer.put2LE(1);  // num channels
-		buffer.put4LE(22050); // sample rate
-		buffer.put4LE(22050); // byte rate
-		buffer.put2LE(1); // block align
-		buffer.put2LE(8); // bits per sample
-		buffer.put4(0x64617461); // "data"
-		buffer.put4LE(length);
+		buffer.write32(0x52494646); // "RIFF" ChunkID
+		buffer.write32LE(36 + length); // ChunkSize
+		buffer.write32(0x57415645); // "WAVE" format
+		buffer.write32(0x666d7420); // "fmt " chunk id
+		buffer.write32LE(16); // chunk size
+		buffer.write16LE(1); // audio format
+		buffer.write16LE(1);  // num channels
+		buffer.write32LE(22050); // sample rate
+		buffer.write32LE(22050); // byte rate
+		buffer.write16LE(1); // block align
+		buffer.write16LE(8); // bits per sample
+		buffer.write32(0x64617461); // "data"
+		buffer.write32LE(length);
 		buffer.position += length;
 		return buffer;
 	}

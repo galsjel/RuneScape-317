@@ -42,39 +42,39 @@ public class Image24 extends DoublyLinkedList.Node {
 	public Image24(FileArchive archive, String file, int index) throws IOException {
 		Buffer buffer = new Buffer(archive.read(file + ".dat"));
 		Buffer buffer_1 = new Buffer(archive.read("index.dat"));
-		buffer_1.position = buffer.get2U();
-		cropW = buffer_1.get2U();
-		cropH = buffer_1.get2U();
-		int j = buffer_1.get1U();
+		buffer_1.position = buffer.read16U();
+		cropW = buffer_1.read16U();
+		cropH = buffer_1.read16U();
+		int j = buffer_1.read8U();
 		int[] ai = new int[j];
 		for (int k = 0; k < (j - 1); k++) {
-			ai[k + 1] = buffer_1.get3();
+			ai[k + 1] = buffer_1.read24();
 			if (ai[k + 1] == 0) {
 				ai[k + 1] = 1;
 			}
 		}
 		for (int l = 0; l < index; l++) {
 			buffer_1.position += 2;
-			buffer.position += buffer_1.get2U() * buffer_1.get2U();
+			buffer.position += buffer_1.read16U() * buffer_1.read16U();
 			buffer_1.position++;
 		}
-		cropX = buffer_1.get1U();
-		cropY = buffer_1.get1U();
-		width = buffer_1.get2U();
-		height = buffer_1.get2U();
-		int layout = buffer_1.get1U();
+		cropX = buffer_1.read8U();
+		cropY = buffer_1.read8U();
+		width = buffer_1.read16U();
+		height = buffer_1.read16U();
+		int layout = buffer_1.read8U();
 		int pixelLen = width * height;
 		pixels = new int[pixelLen];
 		if (layout == 0) {
 			for (int k1 = 0; k1 < pixelLen; k1++) {
-				pixels[k1] = ai[buffer.get1U()];
+				pixels[k1] = ai[buffer.read8U()];
 			}
 			return;
 		}
 		if (layout == 1) {
 			for (int l1 = 0; l1 < width; l1++) {
 				for (int i2 = 0; i2 < height; i2++) {
-					pixels[l1 + (i2 * width)] = ai[buffer.get1U()];
+					pixels[l1 + (i2 * width)] = ai[buffer.read8U()];
 				}
 			}
 		}

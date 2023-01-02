@@ -5,8 +5,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * A {@link Buffer} encapsulates a finite amount of data and provides methods for reading and writing to that data.
- * The <code>put()</code> and <code>get()</code> methods describe the type of data they use by attributes in their
- * suffix. The naming convention is <code>put[type][U:unsigned][endianness][modifier]</code>.
+ * The <code>write()</code> and <code>read()</code> methods describe the type of data they use by attributes in their
+ * suffix. The naming convention is <code>(read|write)[type][U:unsigned][endianness][modifier]</code>.
  * <p>
  * <b>Types:</b><br/>
  * # — the number of bytes<br/>
@@ -22,9 +22,9 @@ import java.nio.charset.StandardCharsets;
  * Note: ME and RME are not standard, and are a form of obfuscation similar to the <i>modifier</i> attribute.<br/>
  * <p>
  * <b>Modifiers:</b><br/>
- * A — put(v + 128) — get returns (v - 128)<br/>
- * C — put(-v) — get returns (-v)<br/>
- * S — put(128 - v) — get returns (128 - v)<br/>
+ * A — put(v + 128) — read returns (v - 128)<br/>
+ * C — put(-v) — read returns (-v)<br/>
+ * S — put(128 - v) — read returns (128 - v)<br/>
  */
 public class Buffer extends DoublyLinkedList.Node {
 
@@ -58,67 +58,67 @@ public class Buffer extends DoublyLinkedList.Node {
 		position = 0;
 	}
 
-	public void putOp(int i) {
+	public void writeOp(int i) {
 		data[position++] = (byte) (i + random.nextInt());
 	}
 
-	public void putSize1(int i) {
+	public void writeSize(int i) {
 		data[position - i - 1] = (byte) i;
 	}
 
-	public void put1(int i) {
+	public void write8(int i) {
 		data[position++] = (byte) i;
 	}
 
-	public void put1C(int i) {
+	public void write8C(int i) {
 		data[position++] = (byte) (-i);
 	}
 
-	public void put1S(int j) {
+	public void write8S(int j) {
 		data[position++] = (byte) (128 - j);
 	}
 
-	public void put2(int i) {
+	public void write16(int i) {
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put2A(int j) {
+	public void write16A(int j) {
 		data[position++] = (byte) (j >> 8);
 		data[position++] = (byte) (j + 128);
 	}
 
-	public void put2LE(int i) {
+	public void write16LE(int i) {
 		data[position++] = (byte) i;
 		data[position++] = (byte) (i >> 8);
 	}
 
-	public void put2LEA(int j) {
+	public void write16LEA(int j) {
 		data[position++] = (byte) (j + 128);
 		data[position++] = (byte) (j >> 8);
 	}
 
-	public void put3(int i) {
+	public void write24(int i) {
 		data[position++] = (byte) (i >> 16);
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put4(int i) {
+	public void write32(int i) {
 		data[position++] = (byte) (i >> 24);
 		data[position++] = (byte) (i >> 16);
 		data[position++] = (byte) (i >> 8);
 		data[position++] = (byte) i;
 	}
 
-	public void put4LE(int j) {
+	public void write32LE(int j) {
 		data[position++] = (byte) j;
 		data[position++] = (byte) (j >> 8);
 		data[position++] = (byte) (j >> 16);
 		data[position++] = (byte) (j >> 24);
 	}
 
-	public void put8(long l) {
+	public void write64(long l) {
 		data[position++] = (byte) (int) (l >> 56);
 		data[position++] = (byte) (int) (l >> 48);
 		data[position++] = (byte) (int) (l >> 40);
@@ -129,51 +129,51 @@ public class Buffer extends DoublyLinkedList.Node {
 		data[position++] = (byte) (int) l;
 	}
 
-	public void put(String s) {
-		put(s.getBytes(StandardCharsets.ISO_8859_1));
-		put1('\n');
+	public void writeString(String s) {
+		writeBytes(s.getBytes(StandardCharsets.ISO_8859_1));
+		write8('\n');
 	}
 
-	public void put(byte[] src, int off, int len) {
+	public void writeBytes(byte[] src, int off, int len) {
 		System.arraycopy(src, off, data, position, len);
 		position += len;
 	}
 
-	public void put(byte[] src) {
-		put(src, 0, src.length);
+	public void writeBytes(byte[] src) {
+		writeBytes(src, 0, src.length);
 	}
 
-	public void putA(byte[] src, int off, int len) {
+	public void writeBytesA(byte[] src, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			data[position++] = (byte) (src[i] + 128);
 		}
 	}
 
-	public byte get1() {
+	public byte read8() {
 		return data[position++];
 	}
 
-	public byte get1C() {
+	public byte read8C() {
 		return (byte) (-data[position++]);
 	}
 
-	public byte get1S() {
+	public byte read8S() {
 		return (byte) (128 - data[position++]);
 	}
 
-	public int get1U() {
+	public int read8U() {
 		return data[position++] & 0xff;
 	}
 
-	public int get1UA() {
+	public int read8UA() {
 		return (data[position++] - 128) & 0xff;
 	}
 
-	public int get1UC() {
+	public int read8UC() {
 		return -data[position++] & 0xff;
 	}
 
-	public int get1US() {
+	public int read8US() {
 		return (128 - data[position++]) & 0xff;
 	}
 
@@ -182,12 +182,12 @@ public class Buffer extends DoublyLinkedList.Node {
 	 *
 	 * @return the value.
 	 */
-	public int getSmart() {
+	public int readSmart() {
 		int i = data[position] & 0xff;
 		if (i < 128) {
-			return get1U() - 64;
+			return read8U() - 64;
 		} else {
-			return get2U() - 49152;
+			return read16U() - 49152;
 		}
 	}
 
@@ -196,36 +196,36 @@ public class Buffer extends DoublyLinkedList.Node {
 	 *
 	 * @return the value.
 	 */
-	public int getSmartU() {
+	public int readSmartU() {
 		int i = data[position] & 0xff;
 		if (i < 128) {
-			return get1U();
+			return read8U();
 		} else {
-			return get2U() - 32768;
+			return read16U() - 32768;
 		}
 	}
 
-	public int get2U() {
+	public int read16U() {
 		position += 2;
 		return ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int get2UA() {
+	public int read16UA() {
 		position += 2;
 		return ((data[position - 2] & 0xff) << 8) + ((data[position - 1] - 128) & 0xff);
 	}
 
-	public int get2ULE() {
+	public int read16ULE() {
 		position += 2;
 		return ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 	}
 
-	public int get2ULEA() {
+	public int read16ULEA() {
 		position += 2;
 		return ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
 	}
 
-	public int get2() {
+	public int read16() {
 		position += 2;
 		int i = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 		if (i > 32767) {
@@ -234,7 +234,7 @@ public class Buffer extends DoublyLinkedList.Node {
 		return i;
 	}
 
-	public int get2LE() {
+	public int read16LE() {
 		position += 2;
 		int j = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 		if (j > 0x7fff) {
@@ -243,7 +243,7 @@ public class Buffer extends DoublyLinkedList.Node {
 		return j;
 	}
 
-	public int get2LEA() {
+	public int read16LEA() {
 		position += 2;
 		int j = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
 		if (j > 0x7fff) {
@@ -252,40 +252,40 @@ public class Buffer extends DoublyLinkedList.Node {
 		return j;
 	}
 
-	public int get3() {
+	public int read24() {
 		position += 3;
 		return ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int get4() {
+	public int read32() {
 		position += 4;
 		return ((data[position - 4] & 0xff) << 24) + ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
 	}
 
-	public int get4ME() {
+	public int read32ME() {
 		position += 4;
 		return ((data[position - 3] & 0xff) << 24) + ((data[position - 4] & 0xff) << 16) + ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
 	}
 
-	public int get4RME() {
+	public int read32RME() {
 		position += 4;
 		return ((data[position - 2] & 0xff) << 24) + ((data[position - 1] & 0xff) << 16) + ((data[position - 4] & 0xff) << 8) + (data[position - 3] & 0xff);
 	}
 
-	public long get8() {
-		long l = (long) get4() & 0xffffffffL;
-		long l1 = (long) get4() & 0xffffffffL;
+	public long read64() {
+		long l = (long) read32() & 0xffffffffL;
+		long l1 = (long) read32() & 0xffffffffL;
 		return (l << 32) + l1;
 	}
 
-	public String getString() {
+	public String readString() {
 		int start = position;
 		while (data[position++] != '\n') {
 		}
 		return new String(data, start, position - start - 1);
 	}
 
-	public byte[] getStringRaw() {
+	public byte[] readStringRaw() {
 		int start = position;
 		while (data[position++] != '\n') {
 		}
@@ -296,12 +296,12 @@ public class Buffer extends DoublyLinkedList.Node {
 		return raw;
 	}
 
-	public void get(byte[] dst, int off, int len) {
+	public void readBytes(byte[] dst, int off, int len) {
 		System.arraycopy(data, position, dst, off, len);
 		position += len;
 	}
 
-	public void getReversed(byte[] dst, int off, int len) {
+	public void getBytesReversed(byte[] dst, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			dst[i] = data[position++];
 		}
@@ -311,7 +311,7 @@ public class Buffer extends DoublyLinkedList.Node {
 		bitPosition = position * 8;
 	}
 
-	public int getBits(int n) {
+	public int readN(int n) {
 		int bytePos = bitPosition >> 3;
 		int remaining = 8 - (bitPosition & 7);
 		int value = 0;
@@ -336,11 +336,11 @@ public class Buffer extends DoublyLinkedList.Node {
 		int length = position;
 		position = 0;
 		byte[] raw = new byte[length];
-		get(raw, 0, length);
+		readBytes(raw, 0, length);
 		byte[] encrypted = new BigInteger(raw).modPow(exponent, modulus).toByteArray();
 		position = 0;
-		put1(encrypted.length);
-		put(encrypted, 0, encrypted.length);
+		write8(encrypted.length);
+		writeBytes(encrypted, 0, encrypted.length);
 	}
 
 }

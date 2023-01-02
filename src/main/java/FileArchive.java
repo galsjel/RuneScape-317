@@ -24,8 +24,8 @@ public class FileArchive {
 	public void load(byte[] src) throws IOException {
 		Buffer buffer = new Buffer(src);
 
-		int unpackedSize = buffer.get3();
-		int packedSize = buffer.get3();
+		int unpackedSize = buffer.read24();
+		int packedSize = buffer.read24();
 
 		if (packedSize != unpackedSize) {
 			data = new byte[unpackedSize];
@@ -37,7 +37,7 @@ public class FileArchive {
 			unpacked = false;
 		}
 
-		fileCount = buffer.get2U();
+		fileCount = buffer.read16U();
 		fileHash = new int[fileCount];
 		fileSizeInflated = new int[fileCount];
 		fileSizeDeflated = new int[fileCount];
@@ -46,9 +46,9 @@ public class FileArchive {
 		int offset = buffer.position + (fileCount * 10);
 
 		for (int file = 0; file < fileCount; file++) {
-			fileHash[file] = buffer.get4();
-			fileSizeInflated[file] = buffer.get3();
-			fileSizeDeflated[file] = buffer.get3();
+			fileHash[file] = buffer.read32();
+			fileSizeInflated[file] = buffer.read24();
+			fileSizeDeflated[file] = buffer.read24();
 			fileOffset[file] = offset;
 			offset += fileSizeDeflated[file];
 		}
