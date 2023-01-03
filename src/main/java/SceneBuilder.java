@@ -7,7 +7,7 @@ public class SceneBuilder {
     public static final int[] anIntArray137 = {1, 0, -1, 0};
     public static final int[] anIntArray144 = {0, -1, 0, 1};
     public static int randomHueOffset = (int) (Math.random() * 17.0) - 8;
-    public static int anInt131;
+    public static int level;
     public static int randomLightnessOffset = (int) (Math.random() * 33.0) - 16;
     public static int minLevel = 99;
     public static boolean lowmem = true;
@@ -342,47 +342,66 @@ public class SceneBuilder {
         }
     }
 
-    public static boolean method189(int i, byte[] is, int i_250_) {
-        boolean bool = true;
-        Buffer buffer = new Buffer(is);
-        int i_252_ = -1;
+    /**
+     * Reads the Locs from the provided data and determines if their models are available. The origin coordinate is used
+     * to determine if a loc would be excluded from the scene, therefor not required to be validated. The chain of calls
+     * eventually invokes {@link Model#validate(int)} which causes the {@link OnDemand} to do its job.
+     * @param data the data
+     * @param originX the region origin x in the scene.
+     * @param originZ the region origin z in the scene.
+     * @return <code>true</code> if all locs are valid.
+     */
+    public static boolean validateLocs(byte[] data, int originX, int originZ) {
+        boolean ok = true;
+        Buffer buffer = new Buffer(data);
+        int locID = -1;
+
         for (; ; ) {
-            int i_253_ = buffer.readSmartU();
-            if (i_253_ == 0) {
+            int idDelta = buffer.readSmartU();
+            if (idDelta == 0) {
                 break;
             }
-            i_252_ += i_253_;
-            int i_254_ = 0;
-            boolean bool_255_ = false;
+
+            locID += idDelta;
+
+            int coordinate = 0;
+            boolean skip = false;
+
+            // this loop is for the same Loc ID.
             for (; ; ) {
-                if (bool_255_) {
-                    int i_256_ = buffer.readSmartU();
-                    if (i_256_ == 0) {
+                if (skip) {
+                    if (buffer.readSmartU() == 0) {
                         break;
                     }
                     buffer.read8U();
                 } else {
-                    int i_257_ = buffer.readSmartU();
-                    if (i_257_ == 0) {
+                    int coordinateDelta = buffer.readSmartU();
+
+                    if (coordinateDelta == 0) {
                         break;
                     }
-                    i_254_ += i_257_ - 1;
-                    int i_258_ = i_254_ & 0x3f;
-                    int i_259_ = (i_254_ >> 6) & 0x3f;
-                    int i_260_ = buffer.read8U() >> 2;
-                    int i_261_ = i_259_ + i;
-                    int i_262_ = i_258_ + i_250_;
-                    if ((i_261_ > 0) && (i_262_ > 0) && (i_261_ < 103) && (i_262_ < 103)) {
-                        LocType type = LocType.get(i_252_);
-                        if ((i_260_ != 22) || !lowmem || type.interactable || type.important) {
-                            bool &= type.method579();
-                            bool_255_ = true;
+
+                    coordinate += coordinateDelta - 1;
+
+                    int z = coordinate & 0x3f;
+                    int x = (coordinate >> 6) & 0x3f;
+
+                    int kind = buffer.read8U() >> 2;
+                    int localX = x + originX;
+                    int localZ = z + originZ;
+
+                    if ((localX > 0) && (localZ > 0) && (localX < 103) && (localZ < 103)) {
+                        LocType type = LocType.get(locID);
+
+                        if ((kind != 22) || !lowmem || type.interactable || type.important) {
+                            ok &= type.validate();
+                            skip = true; // Skip the remaining locs of this ID because we only need to validate the model of one.
                         }
                     }
                 }
             }
         }
-        return bool;
+        return ok;
     }
 
     public final int[] blendChroma;
@@ -427,7 +446,7 @@ public class SceneBuilder {
         randomize();
 
         for (int level = 0; level < 4; level++) {
-            buildTerrainLighting(level);
+            buildLandscapeLighting(level);
             buildTiles(scene, level);
             updateDrawLevels(scene, level);
         }
@@ -443,17 +462,19 @@ public class SceneBuilder {
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
                     // solid?
-                    if ((levelTileFlags[level][x][z] & 0x1) == 1) {
-                        int trueLevel = level;
+                    if ((levelTileFlags[level][x][z] & 0x1) != 1) {
+                        continue;
+                    }
 
-                        // bridge
-                        if ((levelTileFlags[1][x][z] & 0x2) == 2) {
-                            trueLevel--;
-                        }
+                    int trueLevel = level;
 
-                        if (trueLevel >= 0) {
-                            levelCollisionMaps[trueLevel].addSolid(z, x);
-                        }
+                    // bridge
+                    if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                        trueLevel--;
+                    }
+
+                    if (trueLevel >= 0) {
+                        levelCollisionMaps[trueLevel].addSolid(z, x);
                     }
 
                 }
@@ -561,102 +582,106 @@ public class SceneBuilder {
                         magnitudeAccumulator -= blendMagnitude[dz2];
                     }
 
-                    if ((z0 >= 1) && (z0 < (maxTileZ - 1)) && (!lowmem || ((levelTileFlags[0][x0][z0] & 0x2) != 0) || (((levelTileFlags[level][x0][z0] & 0x10) == 0) && (getDrawLevel(level, x0, z0) == anInt131)))) {
-                        if (level < minLevel) {
-                            minLevel = level;
+                    if ((z0 < 1) || (z0 >= (maxTileZ - 1)) || (lowmem && ((levelTileFlags[0][x0][z0] & 0x2) == 0) && (((levelTileFlags[level][x0][z0] & 0x10) != 0) || (getDrawLevel(level, x0, z0) != SceneBuilder.level)))) {
+                        continue;
+                    }
+
+                    if (level < minLevel) {
+                        minLevel = level;
+                    }
+
+                    int underlayID = levelTileUnderlayIDs[level][x0][z0] & 0xff;
+                    int overlayID = levelTileOverlayIDs[level][x0][z0] & 0xff;
+
+                    if ((underlayID <= 0) && (overlayID <= 0)) {
+                        continue;
+                    }
+
+                    int heightSW = levelHeightmap[level][x0][z0];
+                    int heightSE = levelHeightmap[level][x0 + 1][z0];
+                    int heightNE = levelHeightmap[level][x0 + 1][z0 + 1];
+                    int heightNW = levelHeightmap[level][x0][z0 + 1];
+
+                    int lightSW = levelLightmap[x0][z0];
+                    int lightSE = levelLightmap[x0 + 1][z0];
+                    int lightNE = levelLightmap[x0 + 1][z0 + 1];
+                    int lightNW = levelLightmap[x0][z0 + 1];
+
+                    int baseColor = -1;
+                    int tintColor = -1;
+
+                    if (underlayID > 0) {
+                        int hue = (hueAccumulator * 256) / luminanceAccumulator;
+                        int saturation = saturationAccumulator / magnitudeAccumulator;
+                        int lightness = lightnessAccumulator / magnitudeAccumulator;
+
+                        baseColor = decimateHSL(hue, saturation, lightness);
+
+                        hue = (hue + randomHueOffset) & 0xff;
+                        lightness += randomLightnessOffset;
+
+                        if (lightness < 0) {
+                            lightness = 0;
+                        } else if (lightness > 255) {
+                            lightness = 255;
                         }
 
-                        int underlayID = levelTileUnderlayIDs[level][x0][z0] & 0xff;
-                        int overlayID = levelTileOverlayIDs[level][x0][z0] & 0xff;
+                        tintColor = decimateHSL(hue, saturation, lightness);
+                    }
 
-                        if ((underlayID > 0) || (overlayID > 0)) {
-                            int heightSW = levelHeightmap[level][x0][z0];
-                            int heightSE = levelHeightmap[level][x0 + 1][z0];
-                            int heightNE = levelHeightmap[level][x0 + 1][z0 + 1];
-                            int heightNW = levelHeightmap[level][x0][z0 + 1];
+                    if (level > 0) {
+                        boolean occludes = true;
 
-                            int lightSW = levelLightmap[x0][z0];
-                            int lightSE = levelLightmap[x0 + 1][z0];
-                            int lightNE = levelLightmap[x0 + 1][z0 + 1];
-                            int lightNW = levelLightmap[x0][z0 + 1];
-
-                            int baseColor = -1;
-                            int tintColor = -1;
-
-                            if (underlayID > 0) {
-                                int hue = (hueAccumulator * 256) / luminanceAccumulator;
-                                int saturation = saturationAccumulator / magnitudeAccumulator;
-                                int lightness = lightnessAccumulator / magnitudeAccumulator;
-
-                                baseColor = decimateHSL(hue, saturation, lightness);
-
-                                hue = (hue + randomHueOffset) & 0xff;
-                                lightness += randomLightnessOffset;
-
-                                if (lightness < 0) {
-                                    lightness = 0;
-                                } else if (lightness > 255) {
-                                    lightness = 255;
-                                }
-
-                                tintColor = decimateHSL(hue, saturation, lightness);
-                            }
-
-                            if (level > 0) {
-                                boolean occludes = true;
-
-                                if ((underlayID == 0) && (levelTileOverlayShape[level][x0][z0] != 0)) {
-                                    occludes = false;
-                                }
-
-                                if ((overlayID > 0) && !FloType.instances[overlayID - 1].occludes) {
-                                    occludes = false;
-                                }
-
-                                // occludes && flat
-                                if (occludes && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
-                                    levelOccludemap[level][x0][z0] |= 0b100_100_100_100;
-                                }
-                            }
-
-                            int shadeColor = 0;
-
-                            if (baseColor != -1) {
-                                shadeColor = Draw3D.palette[mulHSL(tintColor, 96)];
-                            }
-
-                            if (overlayID == 0) {
-                                scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), 0, 0, 0, 0, shadeColor, 0);
-                            } else {
-                                int shape = levelTileOverlayShape[level][x0][z0] + 1;
-                                byte rotation = levelTileOverlayRotation[level][x0][z0];
-                                FloType flo = FloType.instances[overlayID - 1];
-                                int textureID = flo.textureID;
-                                int rgb;
-                                int hsl;
-
-                                if (textureID >= 0) {
-                                    rgb = Draw3D.getAverageTextureRGB(textureID);
-                                    hsl = -1;
-                                } else if (flo.rgb == 16711935) {
-                                    rgb = 0;
-                                    hsl = -2;
-                                    textureID = -1;
-                                } else {
-                                    hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
-                                    rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
-                                }
-
-                                scene.setTile(level, x0, z0, shape, rotation, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), adjustLightness(hsl, lightSW), adjustLightness(hsl, lightSE), adjustLightness(hsl, lightNE), adjustLightness(hsl, lightNW), shadeColor, rgb);
-                            }
+                        if ((underlayID == 0) && (levelTileOverlayShape[level][x0][z0] != 0)) {
+                            occludes = false;
                         }
+
+                        if ((overlayID > 0) && !FloType.instances[overlayID - 1].occludes) {
+                            occludes = false;
+                        }
+
+                        // occludes && flat
+                        if (occludes && (heightSW == heightSE) && (heightSW == heightNE) && (heightSW == heightNW)) {
+                            levelOccludemap[level][x0][z0] |= 0b100_100_100_100;
+                        }
+                    }
+
+                    int shadeColor = 0;
+
+                    if (baseColor != -1) {
+                        shadeColor = Draw3D.palette[mulHSL(tintColor, 96)];
+                    }
+
+                    if (overlayID == 0) {
+                        scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), 0, 0, 0, 0, shadeColor, 0);
+                    } else {
+                        int shape = levelTileOverlayShape[level][x0][z0] + 1;
+                        byte rotation = levelTileOverlayRotation[level][x0][z0];
+                        FloType flo = FloType.instances[overlayID - 1];
+                        int textureID = flo.textureID;
+                        int rgb;
+                        int hsl;
+
+                        if (textureID >= 0) {
+                            rgb = Draw3D.getAverageTextureRGB(textureID);
+                            hsl = -1;
+                        } else if (flo.rgb == 16711935) {
+                            rgb = 0;
+                            hsl = -2;
+                            textureID = -1;
+                        } else {
+                            hsl = decimateHSL(flo.hue, flo.saturation, flo.lightness);
+                            rgb = Draw3D.palette[adjustLightness(flo.hsl, 96)];
+                        }
+
+                        scene.setTile(level, x0, z0, shape, rotation, textureID, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), adjustLightness(hsl, lightSW), adjustLightness(hsl, lightSE), adjustLightness(hsl, lightNE), adjustLightness(hsl, lightNW), shadeColor, rgb);
                     }
                 }
             }
         }
     }
 
-    private void buildTerrainLighting(int level) {
+    private void buildLandscapeLighting(int level) {
         byte[][] shademap = levelShademap[level];
         int lightAmbient = 96;
         int lightAttenuation = 768;
@@ -753,7 +778,7 @@ public class SceneBuilder {
             if ((((maxTileX - minTileX) + 1) * ((maxTileZ - minTileZ) + 1)) >= 4) {
                 int y = levelHeightmap[level][minTileX][minTileZ];
 
-                Scene.addOccluder(top, minTileX * 128, y, (maxTileX * 128) + 128, (maxTileZ * 128) + 128, y, minTileZ * 128, 4);
+                Scene.addOccluder(top, minTileX * 128, y, minTileZ * 128, (maxTileX * 128) + 128, y, (maxTileZ * 128) + 128, 4);
 
                 for (int x = minTileX; x <= maxTileX; x++) {
                     for (int z = minTileZ; z <= maxTileZ; z++) {
@@ -806,7 +831,7 @@ public class SceneBuilder {
                 int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
                 int maxY = levelHeightmap[minLevel][minTileX][tileZ];
 
-                Scene.addOccluder(top, minTileX * 128, maxY, (maxTileX * 128) + 128, tileZ * 128, minY, tileZ * 128, 2);
+                Scene.addOccluder(top, minTileX * 128, minY, tileZ * 128, (maxTileX * 128) + 128, maxY, tileZ * 128, 2);
 
                 for (int l = minLevel; l <= maxLevel; l++) {
                     for (int x = minTileX; x <= maxTileX; x++) {
@@ -860,7 +885,7 @@ public class SceneBuilder {
                 int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
                 int maxY = levelHeightmap[minLevel][tileX][minTileZ];
 
-                Scene.addOccluder(top, tileX * 128, maxY, tileX * 128, (maxTileZ * 128) + 128, minY, minTileZ * 128, 1);
+                Scene.addOccluder(top, tileX * 128, minY, minTileZ * 128, tileX * 128, maxY, (maxTileZ * 128) + 128, 1);
 
                 for (int l = minLevel; l <= maxLevel; l++) {
                     for (int z = minTileZ; z <= maxTileZ; z++) {
@@ -894,7 +919,7 @@ public class SceneBuilder {
     }
 
     public void method175(int z, Scene scene, SceneCollisionMap collision, int kind, int level, int x, int locID, int rotation) {
-        if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != anInt131))) {
+        if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != SceneBuilder.level))) {
             return;
         }
         if (level < minLevel) {

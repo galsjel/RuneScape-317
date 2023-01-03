@@ -55,6 +55,47 @@ public class Draw2D {
 		Arrays.fill(pixels, 0);
 	}
 
+	/**
+	 * Bresenham's line algorithm.
+	 * @param x1 the first x coordinate.
+	 * @param y1 the first y coordinate.
+	 * @param x2 the second x coordinate.
+	 * @param y2 the second y coordinate.
+	 * @param rgb the color.
+	 */
+	public static void drawLine(int x1, int y1, int x2, int y2, int rgb) {
+		int dx = Math.abs(x2 - x1);
+		int dy = Math.abs(y2 - y1);
+
+		int sx = (x1 < x2) ? 1 : -1;
+		int sy = (y1 < y2) ? 1 : -1;
+
+		int err = dx - dy;
+
+		while (true) {
+			if (x1 >= left && x1 < right && y1 >= top && y1 < bottom) {
+				pixels[x1 + (y1 * width)] = rgb;
+			}
+
+			if (x1 == x2 && y1 == y2) {
+				break;
+			}
+
+			int e2 = 2 * err;
+
+			if (e2 > -dy) {
+				err = err - dy;
+				x1 = x1 + sx;
+			}
+
+			if (e2 < dx) {
+				err = err + dx;
+				y1 = y1 + sy;
+			}
+		}
+
+	}
+
 	public static void fillRect(int x, int y, int width, int height, int rgb, int alpha) {
 		if (x < left) {
 			width -= left - x;

@@ -108,7 +108,7 @@ public class ChatCompression {
 		}
 	}
 
-	public static String method527(String string) {
+	public static String format(String string) {
 		buf.position = 0;
 		pack(string, buf);
 		int length = buf.position;

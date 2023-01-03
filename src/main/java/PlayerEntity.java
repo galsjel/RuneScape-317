@@ -62,7 +62,7 @@ public class PlayerEntity extends PathingEntity {
 				Model spotModel2 = new Model(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
 				spotModel2.translate(0, -super.spotanimY, 0);
 				spotModel2.createLabelReferences();
-				spotModel2.applyTransform(spot.seq.transformIndices[super.spotanimFrame]);
+				spotModel2.applyTransform(spot.seq.transformIDs[super.spotanimFrame]);
 				spotModel2.labelFaces = null;
 				spotModel2.labelVertices = null;
 				if ((spot.scaleXY != 128) || (spot.scaleZ != 128)) {
@@ -219,9 +219,9 @@ public class PlayerEntity extends PathingEntity {
 		if (npcType != null) {
 			int transformID = -1;
 			if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-				transformID = SeqType.instances[super.primarySeqID].transformIndices[super.primarySeqFrame];
+				transformID = SeqType.instances[super.primarySeqID].transformIDs[super.primarySeqFrame];
 			} else if (super.secondarySeqID >= 0) {
-				transformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
+				transformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
 			}
 			return npcType.getSequencedModel(-1, transformID, null);
 		}
@@ -234,10 +234,10 @@ public class PlayerEntity extends PathingEntity {
 
 		if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
 			SeqType type = SeqType.instances[super.primarySeqID];
-			primaryTransformID = type.transformIndices[super.primarySeqFrame];
+			primaryTransformID = type.transformIDs[super.primarySeqFrame];
 
 			if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
-				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
+				secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
 			}
 
 			if (type.rightHandOverride >= 0) {
@@ -250,7 +250,7 @@ public class PlayerEntity extends PathingEntity {
 				hashCode += ((long) leftHandValue - appearances[3]) << 16;
 			}
 		} else if (super.secondarySeqID >= 0) {
-			primaryTransformID = SeqType.instances[super.secondarySeqID].transformIndices[super.secondarySeqFrame];
+			primaryTransformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
 		}
 
 		Model model = modelCache.get(hashCode);

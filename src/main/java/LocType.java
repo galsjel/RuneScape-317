@@ -18,12 +18,12 @@ public class LocType {
     /**
      * This is where dynamically generated models go.
      */
-    public static LRUMap<Long, Model> dynamicCache = new LRUMap(30);
+    public static LRUMap<Long, Model> modelCacheDynamic = new LRUMap(30);
     public static LocType[] cache;
     /**
      * This is where basic models go.
      */
-    public static LRUMap<Long, Model> staticCache = new LRUMap(500);
+    public static LRUMap<Long, Model> modelCacheStatic = new LRUMap(500);
 
     public static LocType get(int i) {
         if (i >= count) {
@@ -44,8 +44,8 @@ public class LocType {
     }
 
     public static void unload() {
-        staticCache = null;
-        dynamicCache = null;
+        modelCacheStatic = null;
+        modelCacheDynamic = null;
         offsets = null;
         cache = null;
         dat = null;
@@ -210,15 +210,15 @@ public class LocType {
         return model;
     }
 
-    public boolean method579() {
+    public boolean validate() {
         if (modelIDs == null) {
             return true;
         }
-        boolean flag1 = true;
-        for (int j : modelIDs) {
-            flag1 &= Model.validate(j & 0xffff);
+        boolean ok = true;
+        for (int modelID : modelIDs) {
+            ok &= Model.validate(modelID & 0xffff);
         }
-        return flag1;
+        return ok;
     }
 
     public LocType getOverrideType() {
@@ -252,7 +252,7 @@ public class LocType {
             }
 
             bitset = ((long) index << 6) + rotation + ((long) (transformID + 1) << 32);
-            Model cached = dynamicCache.get(bitset);
+            Model cached = modelCacheDynamic.get(bitset);
 
             if (cached != null) {
                 return cached;
@@ -272,7 +272,7 @@ public class LocType {
                     modelID += 0x10000;
                 }
 
-                model = staticCache.get(modelID);
+                model = modelCacheStatic.get(modelID);
                 if (model == null) {
                     model = Model.tryGet(modelID & 0xffff);
                     if (model == null) {
@@ -281,7 +281,7 @@ public class LocType {
                     if (flip) {
                         model.rotateY180();
                     }
-                    staticCache.put((long) modelID, model);
+                    modelCacheStatic.put((long) modelID, model);
                 }
 
                 if (modelCount > 1) {
@@ -309,7 +309,7 @@ public class LocType {
 
             bitset = ((long) this.index << 6) + ((long) kindIndex << 3) + rotation + ((long) (transformID + 1) << 32);
 
-            Model cached = dynamicCache.get(bitset);
+            Model cached = modelCacheDynamic.get(bitset);
 
             if (cached != null) {
                 return cached;
@@ -322,7 +322,7 @@ public class LocType {
                 modelID += 0x10000;
             }
 
-            model = staticCache.get(modelID);
+            model = modelCacheStatic.get(modelID);
 
             if (model == null) {
                 model = Model.tryGet(modelID & 0xffff);
@@ -335,7 +335,7 @@ public class LocType {
                     model.rotateY180();
                 }
 
-                staticCache.put((long) modelID, model);
+                modelCacheStatic.put((long) modelID, model);
             }
         }
 
@@ -375,7 +375,7 @@ public class LocType {
             modified.objRaise = modified.minY;
         }
 
-        dynamicCache.put(bitset, modified);
+        modelCacheDynamic.put(bitset, modified);
         return modified;
     }
 

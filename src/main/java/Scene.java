@@ -104,6 +104,8 @@ public class Scene {
     public static int[] levelOccluderCount = new int[LEVEL_COUNT];
     public static SceneOccluder[][] levelOccluders = new SceneOccluder[LEVEL_COUNT][500];
     public static int activeOccluderCount;
+    public static int activeWallOccluderCount;
+    public static int activeGroundOccluderCount;
     public static DoublyLinkedList drawTileQueue = new DoublyLinkedList();
     public static boolean[][][][] visibilityMatrix = new boolean[8][32][51][51];
     public static boolean[][] visibilityMap;
@@ -123,7 +125,7 @@ public class Scene {
         visibilityMap = null;
     }
 
-    public static void addOccluder(int level, int minX, int maxY, int maxX, int maxZ, int minY, int minZ, int type) {
+    public static void addOccluder(int level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int type) {
         SceneOccluder occluder = new SceneOccluder();
         occluder.minTileX = minX / 128;
         occluder.maxTileX = maxX / 128;
@@ -161,7 +163,7 @@ public class Scene {
             pitchDistance[pitchLevel] = (distance * Draw3D.sin[angle]) >> 16;
         }
 
-        boolean[][][][] visibilityMap = new boolean[9][32][53][53];
+        boolean[][][][] matrix = new boolean[9][32][53][53];
 
         for (int pitch = 128; pitch <= 384; pitch += 32) {
             for (int yaw = 0; yaw < 2048; yaw += 64) {
@@ -184,7 +186,7 @@ public class Scene {
                                 break;
                             }
                         }
-                        visibilityMap[pitchLevel][yawLevel][dx + 25 + 1][dz + 25 + 1] = visible;
+                        matrix[pitchLevel][yawLevel][dx + 25 + 1][dz + 25 + 1] = visible;
                     }
                 }
             }
@@ -200,14 +202,14 @@ public class Scene {
                         check_area:
                         for (int dx = -1; dx <= 1; dx++) {
                             for (int dz = -1; dz <= 1; dz++) {
-                                if (visibilityMap[pitchLevel][yawLevel][x + dx + 25 + 1][z + dz + 25 + 1]) {
+                                if (matrix[pitchLevel][yawLevel][x + dx + 25 + 1][z + dz + 25 + 1]) {
                                     visible = true;
-                                } else if (visibilityMap[pitchLevel][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
+                                } else if (matrix[pitchLevel][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
                                     visible = true;
-                                } else if (visibilityMap[pitchLevel + 1][yawLevel][x + dx + 25 + 1][z + dz + 25 + 1]) {
+                                } else if (matrix[pitchLevel + 1][yawLevel][x + dx + 25 + 1][z + dz + 25 + 1]) {
                                     visible = true;
                                 } else {
-                                    if (!visibilityMap[pitchLevel + 1][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
+                                    if (!matrix[pitchLevel + 1][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
                                         continue;
                                     }
                                     visible = true;
@@ -268,15 +270,18 @@ public class Scene {
                 }
             }
         }
+
         for (int l = 0; l < LEVEL_COUNT; l++) {
             for (int j1 = 0; j1 < levelOccluderCount[l]; j1++) {
                 levelOccluders[l][j1] = null;
             }
             levelOccluderCount[l] = 0;
         }
+
         for (int i = 0; i < temporaryLocCount; i++) {
             temporaryLocs[i] = null;
         }
+
         temporaryLocCount = 0;
         Arrays.fill(locBuffer, null);
     }
@@ -1994,6 +1999,9 @@ public class Scene {
         SceneOccluder[] occluders = levelOccluders[topLevel];
 
         activeOccluderCount = 0;
+        activeGroundOccluderCount = 0;
+        activeWallOccluderCount = 0;
+
         for (int i = 0; i < count; i++) {
             SceneOccluder occluder = occluders[i];
 
@@ -2048,6 +2056,7 @@ public class Scene {
                 occluder.minDeltaY = ((occluder.minY - eyeY) << 8) / deltaMinX;
                 occluder.maxDeltaY = ((occluder.maxY - eyeY) << 8) / deltaMinX;
                 activeOccluders[activeOccluderCount++] = occluder;
+                activeWallOccluderCount++;
                 continue;
             }
 
@@ -2100,6 +2109,7 @@ public class Scene {
                 occluder.minDeltaY = ((occluder.minY - eyeY) << 8) / deltaMinZ;
                 occluder.maxDeltaY = ((occluder.maxY - eyeY) << 8) / deltaMinZ;
                 activeOccluders[activeOccluderCount++] = occluder;
+                activeWallOccluderCount++;
             } else if (occluder.type == 4) {
                 int deltaMaxY = occluder.minY - eyeY;
 
@@ -2151,6 +2161,7 @@ public class Scene {
                         occluder.minDeltaZ = ((occluder.minZ - eyeZ) << 8) / deltaMaxY;
                         occluder.maxDeltaZ = ((occluder.maxZ - eyeZ) << 8) / deltaMaxY;
                         activeOccluders[activeOccluderCount++] = occluder;
+                        activeGroundOccluderCount++;
                     }
                 }
             }

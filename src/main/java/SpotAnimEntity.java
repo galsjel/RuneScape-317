@@ -31,7 +31,7 @@ public class SpotAnimEntity extends Entity {
 			return null;
 		}
 
-		int transformID = type.seq.transformIndices[seqFrame];
+		int transformID = type.seq.transformIDs[seqFrame];
 
 		Model model = new Model(true, SeqTransform.isNull(transformID), false, base);
 

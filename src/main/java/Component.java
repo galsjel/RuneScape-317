@@ -314,7 +314,7 @@ public class Component {
 	public int[] scriptOperand;
 	public int[][] scripts;
 	public int scrollableHeight;
-	public int scrollY;
+	public int scrollPosition;
 	public int seqCycle;
 	public int seqFrame;
 	public int seqID;

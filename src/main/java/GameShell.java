@@ -27,14 +27,14 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 	public int mouseButton;
 	public int mouseX;
 	public int mouseY;
-	public int lastMousePressButton;
-	public int lastMousePressX;
-	public int lastMousePressY;
-	public long lastMousePressTime;
-	public int mousePressButton;
-	public int mousePressX;
-	public int mousePressY;
-	public long mousePressTime;
+	public int lastMouseClickButton;
+	public int lastMouseClickX;
+	public int lastMouseClickY;
+	public long lastMouseClickTime;
+	public int mouseClickButton;
+	public int mouseClickX;
+	public int mouseClickY;
+	public long mouseClickTime;
 	public int keyQueueReadPos;
 	public int keyQueueWritePos;
 
@@ -140,11 +140,11 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 				}
 
 				for (; count < 256; count += ratio) {
-					mousePressButton = lastMousePressButton;
-					mousePressX = lastMousePressX;
-					mousePressY = lastMousePressY;
-					mousePressTime = lastMousePressTime;
-					lastMousePressButton = 0;
+					mouseClickButton = lastMouseClickButton;
+					mouseClickX = lastMouseClickX;
+					mouseClickY = lastMouseClickY;
+					mouseClickTime = lastMouseClickTime;
+					lastMouseClickButton = 0;
 					update();
 					keyQueueReadPos = keyQueueWritePos;
 				}
@@ -237,15 +237,15 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 		int y = e.getY();
 
 		idleCycles = 0;
-		lastMousePressX = x;
-		lastMousePressY = y;
-		lastMousePressTime = System.currentTimeMillis();
+		lastMouseClickX = x;
+		lastMouseClickY = y;
+		lastMouseClickTime = System.currentTimeMillis();
 
 		if (SwingUtilities.isRightMouseButton(e)) {
-			lastMousePressButton = 2;
+			lastMouseClickButton = 2;
 			mouseButton = 2;
 		} else {
-			lastMousePressButton = 1;
+			lastMouseClickButton = 1;
 			mouseButton = 1;
 		}
 	}

@@ -71,7 +71,7 @@ public class ProjectileEntity extends Entity {
 		int transformID = -1;
 
 		if (spotanim.seq != null) {
-			transformID = spotanim.seq.transformIndices[seqFrame];
+			transformID = spotanim.seq.transformIDs[seqFrame];
 		}
 
 		Model model = new Model(true, SeqTransform.isNull(transformID), false, tmp);

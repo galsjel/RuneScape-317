@@ -1313,56 +1313,52 @@ public class Draw3D {
     /**
      * Long story short, this defines a plane in view space and traverses it to determine uv values. It's an impl of
      * this algorithm: <a href="https://www.gamers.org/dEngine/rsc/pcgpe-1.0/texture.txt">texture.txt</a>
-     * @param yA
-     * @param yB
-     * @param yC
-     * @param xA
-     * @param xB
-     * @param xC
-     * @param shadeA
-     * @param shadeB
-     * @param shadeC
-     * @param txA
-     * @param txB
-     * @param txC
-     * @param tyA
-     * @param tyB
-     * @param tyC
-     * @param tzA
-     * @param tzB
-     * @param tzC
-     * @param texture
-     *
      */
     public static void fillTexturedTriangle(int yA, int yB, int yC, int xA, int xB, int xC, int shadeA, int shadeB, int shadeC, int txA, int txB, int txC, int tyA, int tyB, int tyC, int tzA, int tzB, int tzC, int texture) {
         int[] texels = getTexels(texture);
         opaque = !textureTranslucent[texture];
 
-        txB = txA - txB;
-        tyB = tyA - tyB;
-        tzB = tzA - tzB;
+        int originX = txA;
+        int originY = tyA;
+        int originZ = tzA;
 
-        txC -= txA;
-        tyC -= tyA;
-        tzC -= tzA;
+        int verticalX = originX - txB;
+        int verticalY = originY - tyB;
+        int verticalZ = originZ - tzB;
+
+        int horizontalX = txC - originX;
+        int horizontalY = tyC - originY;
+        int horizontalZ = tzC - originZ;
+
+        // ! It's important to know the document referenced above assumes the following coordinate system:
+        // +X = Right
+        // +Y = Forward
+        // +Z = Up
+
+        // RS2 coordinate system is as follows:
+        // +X = Right
+        // +Y = Down
+        // +Z = Forward
+
+        // Which means we must swap Y and Z for our code to coincide.
 
         // The reason I called horizontals 'stride' and vertical 'step' is because the drawTexturedScanline is unrolled
         // and does 8 pixels per 'stride' as an optimization. If you were to roll the loops in drawTexturedScanline then
-        // you can name these StepHorizontal and change the bitshift to << 5 just like its vertical sibling.
+        // you can name these StepHorizontal and change the bitshift to << 5 like its vertical sibling.
 
         // (a << 3) is the same as (a * 8)
 
-        int u = ((txC * tyA) - (tyC * txA)) << 14;
-        int uStrideHorizontal = ((tyC * tzA) - (tzC * tyA)) << 8;
-        int uStepVertical = ((tzC * txA) - (txC * tzA)) << 5;
+        int u = ((horizontalX * originY) - (horizontalY * originX)) << 14;
+        int uStrideHorizontal = ((horizontalY * originZ) - (horizontalZ * originY)) << 8;
+        int uStepVertical = ((horizontalZ * originX) - (horizontalX * originZ)) << 5;
 
-        int v = ((txB * tyA) - (tyB * txA)) << 14;
-        int vStrideHorizontal = ((tyB * tzA) - (tzB * tyA)) << 8;
-        int vStepVertical = ((tzB * txA) - (txB * tzA)) << 5;
+        int v = ((verticalX * originY) - (verticalY * originX)) << 14;
+        int vStrideHorizontal = ((verticalY * originZ) - (verticalZ * originY)) << 8;
+        int vStepVertical = ((verticalZ * originX) - (verticalX * originZ)) << 5;
 
-        int w = ((tyB * txC) - (txB * tyC)) << 14;
-        int wStrideHorizontal = ((tzB * tyC) - (tyB * tzC)) << 8;
-        int wStepVertical = ((txB * tzC) - (tzB * txC)) << 5;
+        int w = ((verticalY * horizontalX) - (verticalX * horizontalY)) << 14;
+        int wStrideHorizontal = ((verticalZ * horizontalY) - (verticalY * horizontalZ)) << 8;
+        int wStepVertical = ((verticalX * horizontalZ) - (verticalZ * horizontalX)) << 5;
 
         int xStepAB = 0;
         int xStepBC = 0;

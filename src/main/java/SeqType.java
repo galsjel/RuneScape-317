@@ -33,12 +33,12 @@ public class SeqType {
 	 * The list of {@link SeqTransform} indices indexed by Frame ID.
 	 * @see SeqTransform
 	 */
-	public int[] transformIndices;
+	public int[] transformIDs;
 
 	/**
 	 * Auxiliary transform indices appear to only be used by a {@link Component} of type <code>6</code> as seen in {@link Game#drawParentComponent(Component, int, int, int)}.
 	 */
-	public int[] auxiliaryTransformIndices;
+	public int[] auxiliaryTransformIDs;
 
 	/**
 	 * A list of durations indexed by Frame ID.
@@ -116,7 +116,7 @@ public class SeqType {
 		int duration = frameDuration[frame];
 
 		if (duration == 0) {
-			SeqTransform transform = SeqTransform.get(transformIndices[frame]);
+			SeqTransform transform = SeqTransform.get(transformIDs[frame]);
 			if (transform != null) {
 				duration = frameDuration[frame] = transform.delay;
 			}
@@ -136,14 +136,14 @@ public class SeqType {
 				break;
 			} else if (op == 1) {
 				frameCount = buffer.read8U();
-				transformIndices = new int[frameCount];
-				auxiliaryTransformIndices = new int[frameCount];
+				transformIDs = new int[frameCount];
+				auxiliaryTransformIDs = new int[frameCount];
 				frameDuration = new int[frameCount];
 				for (int f = 0; f < frameCount; f++) {
-					transformIndices[f] = buffer.read16U();
-					auxiliaryTransformIndices[f] = buffer.read16U();
-					if (auxiliaryTransformIndices[f] == 65535) {
-						auxiliaryTransformIndices[f] = -1;
+					transformIDs[f] = buffer.read16U();
+					auxiliaryTransformIDs[f] = buffer.read16U();
+					if (auxiliaryTransformIDs[f] == 65535) {
+						auxiliaryTransformIDs[f] = -1;
 					}
 					frameDuration[f] = buffer.read16U();
 				}
@@ -181,10 +181,10 @@ public class SeqType {
 
 		if (frameCount == 0) {
 			frameCount = 1;
-			transformIndices = new int[1];
-			transformIndices[0] = -1;
-			auxiliaryTransformIndices = new int[1];
-			auxiliaryTransformIndices[0] = -1;
+			transformIDs = new int[1];
+			transformIDs[0] = -1;
+			auxiliaryTransformIDs = new int[1];
+			auxiliaryTransformIDs[0] = -1;
 			frameDuration = new int[1];
 			frameDuration[0] = -1;
 		}

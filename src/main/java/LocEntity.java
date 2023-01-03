@@ -75,7 +75,7 @@ public class LocEntity extends Entity {
 			seqCycle = Game.loopCycle - delta;
 
 			if (seq != null) {
-				transformID = seq.transformIndices[seqFrame];
+				transformID = seq.transformIDs[seqFrame];
 			}
 		}
 
