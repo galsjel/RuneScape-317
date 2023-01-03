@@ -154,12 +154,11 @@ public class Scene {
      * visibility within a specific range of pitches and yaws.
      */
     private static void initVisibilityMatrix() {
-        int[] pitchDistance = new int[9]; // = {437, 575, 724, 881, 1044, 1209, 1374, 1535, 1690}
-
+        int[] pitchDistance = new int[9];
         for (int pitchLevel = 0; pitchLevel < 9; pitchLevel++) {
             int angle = 128 + (pitchLevel * 32) + 15;
-            int y = 600 + (angle * 3);
-            pitchDistance[pitchLevel] = (y * Draw3D.sin[angle]) >> 16;
+            int distance = 600 + (angle * 3);
+            pitchDistance[pitchLevel] = (distance * Draw3D.sin[angle]) >> 16;
         }
 
         boolean[][][][] visibilityMap = new boolean[9][32][53][53];
@@ -207,11 +206,13 @@ public class Scene {
                                     visible = true;
                                 } else if (visibilityMap[pitchLevel + 1][yawLevel][x + dx + 25 + 1][z + dz + 25 + 1]) {
                                     visible = true;
-                                } else if (visibilityMap[pitchLevel + 1][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
-                                    visible = true;
                                 } else {
-                                    break check_area;
+                                    if (!visibilityMap[pitchLevel + 1][(yawLevel + 1) % 31][x + dx + 25 + 1][z + dz + 25 + 1]) {
+                                        continue;
+                                    }
+                                    visible = true;
                                 }
+                                break check_area;
                             }
                         }
                         Scene.visibilityMatrix[pitchLevel][yawLevel][x + 25][z + 25] = visible;
