@@ -54,13 +54,13 @@ public class PlayerEntity extends PathingEntity {
 			return model;
 		}
 
-		if ((super.spotanim != -1) && (super.spotanimFrame != -1)) {
-			SpotAnimType spot = SpotAnimType.instances[super.spotanim];
+		if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
+			SpotAnimType spot = SpotAnimType.instances[super.spotanimID];
 			Model spotModel1 = spot.getModel();
 
 			if (spotModel1 != null) {
 				Model spotModel2 = new Model(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
-				spotModel2.translate(0, -super.spotanimY, 0);
+				spotModel2.translate(0, -super.spotanimOffset, 0);
 				spotModel2.createLabelReferences();
 				spotModel2.applyTransform(spot.seq.transformIDs[super.spotanimFrame]);
 				spotModel2.labelFaces = null;
@@ -114,7 +114,7 @@ public class PlayerEntity extends PathingEntity {
 		return model;
 	}
 
-	public void method451(Buffer buffer) {
+	public void read(Buffer buffer) {
 		buffer.position = 0;
 		gender = buffer.read8U();
 		headicons = buffer.read8U();
@@ -269,7 +269,7 @@ public class PlayerEntity extends PathingEntity {
 					value = rightHandValue;
 				}
 
-				if ((value >= 256) && (value < 512) && !IDKType.instances[value - 256].validateModel()) {
+				if ((value >= 256) && (value < 512) && !IdkType.instances[value - 256].validateModel()) {
 					invalid = true;
 				}
 
@@ -304,7 +304,7 @@ public class PlayerEntity extends PathingEntity {
 				}
 
 				if ((value >= 256) && (value < 512)) {
-					Model kitModel = IDKType.instances[value - 256].getModel();
+					Model kitModel = IdkType.instances[value - 256].getModel();
 					if (kitModel != null) {
 						models[modelCount++] = kitModel;
 					}
@@ -372,7 +372,7 @@ public class PlayerEntity extends PathingEntity {
 		for (int part = 0; part < 12; part++) {
 			int value = appearances[part];
 
-			if ((value >= 256) && (value < 512) && !IDKType.instances[value - 256].validateHeadModel()) {
+			if ((value >= 256) && (value < 512) && !IdkType.instances[value - 256].validateHeadModel()) {
 				invalid = true;
 			}
 
@@ -391,7 +391,7 @@ public class PlayerEntity extends PathingEntity {
 			int value = appearances[part];
 
 			if ((value >= 256) && (value < 512)) {
-				Model model = IDKType.instances[value - 256].method540();
+				Model model = IdkType.instances[value - 256].method540();
 				if (model != null) {
 					models[modelCount++] = model;
 				}

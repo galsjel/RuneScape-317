@@ -4,20 +4,20 @@
 
 import java.io.IOException;
 
-public class IDKType {
+public class IdkType {
 
 	public static int count;
-	public static IDKType[] instances;
+	public static IdkType[] instances;
 
 	public static void unpack(FileArchive archive) throws IOException {
 		Buffer buffer = new Buffer(archive.read("idk.dat"));
 		count = buffer.read16U();
 		if (instances == null) {
-			instances = new IDKType[count];
+			instances = new IdkType[count];
 		}
 		for (int j = 0; j < count; j++) {
 			if (instances[j] == null) {
-				instances[j] = new IDKType();
+				instances[j] = new IdkType();
 			}
 			instances[j].method536(buffer);
 		}
@@ -30,7 +30,7 @@ public class IDKType {
 	public int[] modelIDs;
 	public boolean selectable = false;
 
-	public IDKType() {
+	public IdkType() {
 	}
 
 	public void method536(Buffer buffer) {

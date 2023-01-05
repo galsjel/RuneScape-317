@@ -301,6 +301,10 @@ public class Buffer extends DoublyLinkedList.Node {
 		position += len;
 	}
 
+	public void read(byte[] dst) {
+		read(dst,0,dst.length);
+	}
+
 	public void readReversed(byte[] dst, int off, int len) {
 		for (int i = (off + len) - 1; i >= off; i--) {
 			dst[i] = data[position++];

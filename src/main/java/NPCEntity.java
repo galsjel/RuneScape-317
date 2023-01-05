@@ -42,8 +42,8 @@ public class NPCEntity extends PathingEntity {
 
 		super.height = model.minY;
 
-		if ((super.spotanim != -1) && (super.spotanimFrame != -1)) {
-			SpotAnimType spotanim = SpotAnimType.instances[super.spotanim];
+		if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
+			SpotAnimType spotanim = SpotAnimType.instances[super.spotanimID];
 			Model model0 = spotanim.getModel();
 
 			if (model0 != null) {
@@ -51,7 +51,7 @@ public class NPCEntity extends PathingEntity {
 
 				// create a copy of the model
 				Model model1 = new Model(true, SeqTransform.isNull(transformID), false, model0);
-				model1.translate(0, -super.spotanimY, 0);
+				model1.translate(0, -super.spotanimOffset, 0);
 				model1.createLabelReferences();
 				model1.applyTransform(transformID);
 				model1.labelFaces = null;

@@ -59,7 +59,7 @@ public class Game extends GameShell {
         }
     }
 
-    public static String formatObjAmountTagged(int amount) {
+    public static String formatObjCountTagged(int amount) {
         String s = String.valueOf(amount);
         for (int k = s.length() - 3; k > 0; k -= 3) {
             s = s.substring(0, k) + "," + s.substring(k);
@@ -72,7 +72,7 @@ public class Game extends GameShell {
         return " " + s;
     }
 
-    public static String formatObjAmount(int amount) {
+    public static String formatObjCount(int amount) {
         if (amount < 100000) {
             return String.valueOf(amount);
         }
@@ -203,9 +203,9 @@ public class Game extends GameShell {
     /**
      * Not an actual component, just a hacky fix (by Andy Grower) to use the same method to handle scrolling.
      *
-     * @see #handleScrollInput(int, int, int, int, Component, int, boolean, int)
+     * @see #handleScrollInput(int, int, int, int, IfType, int, boolean, int)
      */
-    public final Component chatComponent = new Component();
+    public final IfType chatInterface = new IfType();
     public final int anInt1063 = 0x4d4233;
     public final int[] designIdentikits = new int[7];
     public final int[] archiveChecksum = new int[9];
@@ -234,8 +234,8 @@ public class Game extends GameShell {
     public NPCEntity[] npcs = new NPCEntity[16384];
     public int npcCount;
     public int[] npcIDs = new int[16384];
-    public int anInt839;
-    public int[] anIntArray840 = new int[1000];
+    public int entityRemovalCount;
+    public int[] entityRemovalIDs = new int[1000];
     public int lastPacketType0;
     public int lastPacketType1;
     public int lastPacketType2;
@@ -256,7 +256,7 @@ public class Game extends GameShell {
     /**
      * The active viewport component id which is affected by input.
      */
-    public int viewportComponentID = -1;
+    public int viewportInterfaceID = -1;
     public int cameraX;
     public int cameraY;
     public int cameraZ;
@@ -283,9 +283,9 @@ public class Game extends GameShell {
     public PlayerEntity[] players = new PlayerEntity[MAX_PLAYER_COUNT];
     public int playerCount;
     public int[] playerIDs = new int[MAX_PLAYER_COUNT];
-    public int anInt893;
-    public int[] anIntArray894 = new int[MAX_PLAYER_COUNT];
-    public Buffer[] aBufferArray895 = new Buffer[MAX_PLAYER_COUNT];
+    public int entityUpdateCount;
+    public int[] entityUpdateIDs = new int[MAX_PLAYER_COUNT];
+    public Buffer[] playerAppearanceBuffer = new Buffer[MAX_PLAYER_COUNT];
     public int cameraAnticheatAngle;
     public int friendCount;
     public int friendlistLoaded;
@@ -656,7 +656,7 @@ public class Game extends GameShell {
     public BitmapFont fontBold12;
     public BitmapFont fontQuill8;
     public int flameCycle0;
-    public int chatbackComponentID = -1;
+    public int chatInterfaceID = -1;
     public int cameraAnticheatOffsetX;
     public int[] bfsStepX = new int[4000];
     public int[] bfsStepZ = new int[4000];
@@ -1013,7 +1013,7 @@ public class Game extends GameShell {
             FloType.unpack(archiveConfig);
             ObjType.unpack(archiveConfig);
             NPCType.unpack(archiveConfig);
-            IDKType.unpack(archiveConfig);
+            IdkType.unpack(archiveConfig);
             SpotAnimType.unpack(archiveConfig);
             VarpType.unpack(archiveConfig);
             VarbitType.unpack(archiveConfig);
@@ -1024,7 +1024,7 @@ public class Game extends GameShell {
             }
 
             showProgress(95, "Unpacking interfaces");
-            Component.unpack(archiveInterface, new BitmapFont[]{fontPlain11, fontPlain12, fontBold12, fontQuill8}, archiveMedia);
+            IfType.unpack(archiveInterface, new BitmapFont[]{fontPlain11, fontPlain12, fontBold12, fontQuill8}, archiveMedia);
 
             showProgress(100, "Preparing game engine");
 
@@ -1192,9 +1192,9 @@ public class Game extends GameShell {
         tileLastOccupiedCycle = null;
         players = null;
         playerIDs = null;
-        anIntArray894 = null;
-        aBufferArray895 = null;
-        anIntArray840 = null;
+        entityUpdateIDs = null;
+        playerAppearanceBuffer = null;
+        entityRemovalIDs = null;
         npcs = null;
         npcIDs = null;
         levelObjStacks = null;
@@ -1228,8 +1228,8 @@ public class Game extends GameShell {
         NPCType.unload();
         ObjType.unload();
         FloType.instances = null;
-        IDKType.instances = null;
-        Component.instances = null;
+        IdkType.instances = null;
+        IfType.instances = null;
         SeqType.instances = null;
         SpotAnimType.instances = null;
         SpotAnimType.modelCache = null;
@@ -1403,10 +1403,10 @@ public class Game extends GameShell {
         } else if (modalMessage != null) {
             fontBold12.drawStringCenter(modalMessage, 239, 40, 0);
             fontBold12.drawStringCenter("Click to continue", 239, 60, 128);
-        } else if (chatbackComponentID != -1) {
-            drawParentComponent(Component.instances[chatbackComponentID], 0, 0, 0);
+        } else if (chatInterfaceID != -1) {
+            drawParentComponent(IfType.instances[chatInterfaceID], 0, 0, 0);
         } else if (stickyChatbackComponentID != -1) {
-            drawParentComponent(Component.instances[stickyChatbackComponentID], 0, 0, 0);
+            drawParentComponent(IfType.instances[stickyChatbackComponentID], 0, 0, 0);
         } else {
             drawChat();
         }
@@ -1589,21 +1589,21 @@ public class Game extends GameShell {
                     case 447:
                     case 1125: {
                         int objSlot = menuParamA[menuSize - 1];
-                        int componentID = menuParamB[menuSize - 1];
-                        Component component = Component.instances[componentID];
+                        int interfaceID = menuParamB[menuSize - 1];
+                        IfType iface = IfType.instances[interfaceID];
 
-                        if (component.invDraggable || component.invMoveReplaces) {
+                        if (iface.inventoryDraggable || iface.inventoryMoveReplaces) {
                             objGrabThreshold = false;
                             objDragCycles = 0;
-                            objDragComponentID = componentID;
+                            objDragComponentID = interfaceID;
                             objDragSlot = objSlot;
                             objDragArea = 2;
                             objGrabX = super.mouseClickX;
                             objGrabY = super.mouseClickY;
-                            if (Component.instances[componentID].parentID == viewportComponentID) {
+                            if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
                                 objDragArea = 1;
                             }
-                            if (Component.instances[componentID].parentID == chatbackComponentID) {
+                            if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
                                 objDragArea = 3;
                             }
                             return;
@@ -2079,7 +2079,7 @@ public class Game extends GameShell {
         System.out.println(s);
     }
 
-    public void handleParentComponentInput(int x, Component parent, int mouseX, int y, int mouseY, int scrollY) {
+    public void handleParentComponentInput(int x, IfType parent, int mouseX, int y, int mouseY, int scrollY) {
         if ((parent.type != 0) || (parent.children == null) || parent.hide) {
             return;
         }
@@ -2093,7 +2093,7 @@ public class Game extends GameShell {
         for (int childIndex = 0; childIndex < childCount; childIndex++) {
             int cx = parent.childX[childIndex] + x;
             int cy = (parent.childY[childIndex] + y) - scrollY;
-            Component child = Component.instances[parent.children[childIndex]];
+            IfType child = IfType.instances[parent.children[childIndex]];
 
             cx += child.x;
             cy += child.y;
@@ -2160,132 +2160,151 @@ public class Game extends GameShell {
                     menuSize++;
                 }
                 if (child.type == 2) {
-                    int k2 = 0;
-                    for (int l2 = 0; l2 < child.height; l2++) {
-                        for (int i3 = 0; i3 < child.width; i3++) {
-                            int j3 = cx + (i3 * (32 + child.invMarginX));
-                            int k3 = cy + (l2 * (32 + child.invMarginY));
-                            if (k2 < 20) {
-                                j3 += child.invSlotX[k2];
-                                k3 += child.invSlotY[k2];
+                    handleInventoryMouseInput(mouseX, mouseY, cx, cy, child);
+                }
+            }
+        }
+    }
+
+    private void handleInventoryMouseInput(int mouseX, int mouseY, int interfaceX, int interfaceY, IfType child) {
+        int slot = 0;
+        for (int row = 0; row < child.height; row++) {
+            for (int column = 0; column < child.width; column++) {
+                int x = interfaceX + (column * (32 + child.inventoryMarginX));
+                int y = interfaceY + (row * (32 + child.inventoryMarginY));
+
+                if (slot < 20) {
+                    x += child.inventorySlotOffsetX[slot];
+                    y += child.inventorySlotOffsetY[slot];
+                }
+
+                if ((mouseX >= x) && (mouseY >= y) && (mouseX < (x + 32)) && (mouseY < (y + 32))) {
+                    hoveredSlot = slot;
+                    hoveredSlotParentID = child.id;
+
+                    if (child.inventorySlotObjID[slot] > 0) {
+                        ObjType obj = ObjType.get(child.inventorySlotObjID[slot] - 1);
+
+                        if ((objSelected == 1) && child.aBoolean249) {
+                            if ((child.id != selectedObjComponentID) || (slot != selectedObjSlot)) {
+                                menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + obj.name;
+                                menuAction[menuSize] = 870;
+                                menuParamC[menuSize] = obj.id;
+                                menuParamA[menuSize] = slot;
+                                menuParamB[menuSize] = child.id;
+                                menuSize++;
                             }
-                            if ((mouseX >= j3) && (mouseY >= k3) && (mouseX < (j3 + 32)) && (mouseY < (k3 + 32))) {
-                                hoveredSlot = k2;
-                                hoveredSlotParentID = child.id;
-                                if (child.invSlotObjID[k2] > 0) {
-                                    ObjType type = ObjType.get(child.invSlotObjID[k2] - 1);
-                                    if ((objSelected == 1) && child.aBoolean249) {
-                                        if ((child.id != selectedObjComponentID) || (k2 != selectedObjSlot)) {
-                                            menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + type.name;
-                                            menuAction[menuSize] = 870;
-                                            menuParamC[menuSize] = type.id;
-                                            menuParamA[menuSize] = k2;
-                                            menuParamB[menuSize] = child.id;
-                                            menuSize++;
+                        } else if ((spellSelected == 1) && child.aBoolean249) {
+                            if ((activeSpellFlags & 0x10) == 0x10) {
+                                menuOption[menuSize] = spellCaption + " @lre@" + obj.name;
+                                menuAction[menuSize] = 543;
+                                menuParamC[menuSize] = obj.id;
+                                menuParamA[menuSize] = slot;
+                                menuParamB[menuSize] = child.id;
+                                menuSize++;
+                            }
+                        } else {
+                            if (child.aBoolean249) {
+                                for (int option = 4; option >= 3; option--) {
+                                    if ((obj.inventoryOptions != null) && (obj.inventoryOptions[option] != null)) {
+                                        menuOption[menuSize] = obj.inventoryOptions[option] + " @lre@" + obj.name;
+                                        if (option == 3) {
+                                            menuAction[menuSize] = 493;
                                         }
-                                    } else if ((spellSelected == 1) && child.aBoolean249) {
-                                        if ((activeSpellFlags & 0x10) == 0x10) {
-                                            menuOption[menuSize] = spellCaption + " @lre@" + type.name;
-                                            menuAction[menuSize] = 543;
-                                            menuParamC[menuSize] = type.id;
-                                            menuParamA[menuSize] = k2;
-                                            menuParamB[menuSize] = child.id;
-                                            menuSize++;
+                                        if (option == 4) {
+                                            menuAction[menuSize] = 847;
                                         }
-                                    } else {
-                                        if (child.aBoolean249) {
-                                            for (int l3 = 4; l3 >= 3; l3--) {
-                                                if ((type.inventoryOptions != null) && (type.inventoryOptions[l3] != null)) {
-                                                    menuOption[menuSize] = type.inventoryOptions[l3] + " @lre@" + type.name;
-                                                    if (l3 == 3) {
-                                                        menuAction[menuSize] = 493;
-                                                    }
-                                                    if (l3 == 4) {
-                                                        menuAction[menuSize] = 847;
-                                                    }
-                                                    menuParamC[menuSize] = type.id;
-                                                    menuParamA[menuSize] = k2;
-                                                    menuParamB[menuSize] = child.id;
-                                                    menuSize++;
-                                                } else if (l3 == 4) {
-                                                    menuOption[menuSize] = "Drop @lre@" + type.name;
-                                                    menuAction[menuSize] = 847;
-                                                    menuParamC[menuSize] = type.id;
-                                                    menuParamA[menuSize] = k2;
-                                                    menuParamB[menuSize] = child.id;
-                                                    menuSize++;
-                                                }
-                                            }
-                                        }
-                                        if (child.invUsable) {
-                                            menuOption[menuSize] = "Use @lre@" + type.name;
-                                            menuAction[menuSize] = 447;
-                                            menuParamC[menuSize] = type.id;
-                                            menuParamA[menuSize] = k2;
-                                            menuParamB[menuSize] = child.id;
-                                            menuSize++;
-                                        }
-                                        if (child.aBoolean249 && (type.inventoryOptions != null)) {
-                                            for (int i4 = 2; i4 >= 0; i4--) {
-                                                if (type.inventoryOptions[i4] != null) {
-                                                    menuOption[menuSize] = type.inventoryOptions[i4] + " @lre@" + type.name;
-                                                    if (i4 == 0) {
-                                                        menuAction[menuSize] = 74;
-                                                    }
-                                                    if (i4 == 1) {
-                                                        menuAction[menuSize] = 454;
-                                                    }
-                                                    if (i4 == 2) {
-                                                        menuAction[menuSize] = 539;
-                                                    }
-                                                    menuParamC[menuSize] = type.id;
-                                                    menuParamA[menuSize] = k2;
-                                                    menuParamB[menuSize] = child.id;
-                                                    menuSize++;
-                                                }
-                                            }
-                                        }
-                                        if (child.invOptions != null) {
-                                            for (int j4 = 4; j4 >= 0; j4--) {
-                                                if (child.invOptions[j4] != null) {
-                                                    menuOption[menuSize] = child.invOptions[j4] + " @lre@" + type.name;
-                                                    if (j4 == 0) {
-                                                        menuAction[menuSize] = 632;
-                                                    }
-                                                    if (j4 == 1) {
-                                                        menuAction[menuSize] = 78;
-                                                    }
-                                                    if (j4 == 2) {
-                                                        menuAction[menuSize] = 867;
-                                                    }
-                                                    if (j4 == 3) {
-                                                        menuAction[menuSize] = 431;
-                                                    }
-                                                    if (j4 == 4) {
-                                                        menuAction[menuSize] = 53;
-                                                    }
-                                                    menuParamC[menuSize] = type.id;
-                                                    menuParamA[menuSize] = k2;
-                                                    menuParamB[menuSize] = child.id;
-                                                    menuSize++;
-                                                }
-                                            }
-                                        }
-                                        menuOption[menuSize] = "Examine @lre@" + type.name;
-                                        menuAction[menuSize] = 1125;
-                                        menuParamC[menuSize] = type.id;
-                                        menuParamA[menuSize] = k2;
+                                        menuParamC[menuSize] = obj.id;
+                                        menuParamA[menuSize] = slot;
+                                        menuParamB[menuSize] = child.id;
+                                        menuSize++;
+                                    } else if (option == 4) {
+                                        menuOption[menuSize] = "Drop @lre@" + obj.name;
+                                        menuAction[menuSize] = 847;
+                                        menuParamC[menuSize] = obj.id;
+                                        menuParamA[menuSize] = slot;
                                         menuParamB[menuSize] = child.id;
                                         menuSize++;
                                     }
                                 }
                             }
-                            k2++;
+
+                            if (child.inventoryUsable) {
+                                menuOption[menuSize] = "Use @lre@" + obj.name;
+                                menuAction[menuSize] = 447;
+                                menuParamC[menuSize] = obj.id;
+                                menuParamA[menuSize] = slot;
+                                menuParamB[menuSize] = child.id;
+                                menuSize++;
+                            }
+
+                            if (child.aBoolean249 && (obj.inventoryOptions != null)) {
+                                for (int option = 2; option >= 0; option--) {
+                                    if (obj.inventoryOptions[option] != null) {
+                                        menuOption[menuSize] = obj.inventoryOptions[option] + " @lre@" + obj.name;
+                                        if (option == 0) {
+                                            menuAction[menuSize] = 74;
+                                        }
+                                        if (option == 1) {
+                                            menuAction[menuSize] = 454;
+                                        }
+                                        if (option == 2) {
+                                            menuAction[menuSize] = 539;
+                                        }
+                                        menuParamC[menuSize] = obj.id;
+                                        menuParamA[menuSize] = slot;
+                                        menuParamB[menuSize] = child.id;
+                                        menuSize++;
+                                    }
+                                }
+                            }
+                            if (child.inventoryOptions != null) {
+                                for (int option = 4; option >= 0; option--) {
+                                    if (child.inventoryOptions[option] != null) {
+                                        menuOption[menuSize] = child.inventoryOptions[option] + " @lre@" + obj.name;
+                                        if (option == 0) {
+                                            menuAction[menuSize] = 632;
+                                        }
+                                        if (option == 1) {
+                                            menuAction[menuSize] = 78;
+                                        }
+                                        if (option == 2) {
+                                            menuAction[menuSize] = 867;
+                                        }
+                                        if (option == 3) {
+                                            menuAction[menuSize] = 431;
+                                        }
+                                        if (option == 4) {
+                                            menuAction[menuSize] = 53;
+                                        }
+                                        menuParamC[menuSize] = obj.id;
+                                        menuParamA[menuSize] = slot;
+                                        menuParamB[menuSize] = child.id;
+                                        menuSize++;
+                                    }
+                                }
+                            }
+                            menuOption[menuSize] = "Examine @lre@" + obj.name;
+                            menuAction[menuSize] = 1125;
+                            menuParamC[menuSize] = obj.id;
+                            menuParamA[menuSize] = slot;
+                            menuParamB[menuSize] = child.id;
+                            menuSize++;
                         }
                     }
                 }
+                slot++;
             }
         }
+    }
+
+    public void addMenuOption(String option, int action, int a, int b, int c) {
+        menuOption[menuSize] = option;
+        menuAction[menuSize] = action;
+        menuParamC[menuSize] = c;
+        menuParamA[menuSize] = a;
+        menuParamB[menuSize] = b;
+        menuSize++;
     }
 
     public void drawScrollbar(int x, int y, int height, int scrollHeight, int scrollY) {
@@ -2308,23 +2327,28 @@ public class Game extends GameShell {
         Draw2D.drawLineX(x + 1, y + 14 + gripY + gripSize, 15, anInt927);
     }
 
-    public void readNPCs(Buffer buffer, int i) {
-        anInt839 = 0;
-        anInt893 = 0;
-        method139(buffer);
-        method46(i, buffer);
-        method86(buffer);
-        for (int k = 0; k < anInt839; k++) {
-            int l = anIntArray840[k];
-            if (npcs[l].anInt1537 != loopCycle) {
-                npcs[l].type = null;
-                npcs[l] = null;
+    public void readSyncNPCs() {
+        entityRemovalCount = 0;
+        entityUpdateCount = 0;
+
+        readNPCs();
+        readNewNPCs();
+        readNPCUpdates();
+
+        for (int k = 0; k < entityRemovalCount; k++) {
+            int id = entityRemovalIDs[k];
+
+            if (npcs[id].cycle != loopCycle) {
+                npcs[id].type = null;
+                npcs[id] = null;
             }
         }
-        if (buffer.position != i) {
-            Signlink.reporterror(username + " size mismatch in getnpcpos - pos:" + buffer.position + " psize:" + i);
+
+        if (in.position != this.packetSize) {
+            Signlink.reporterror(username + " size mismatch in getnpcpos - pos:" + in.position + " psize:" + this.packetSize);
             throw new RuntimeException("eek");
         }
+
         for (int i1 = 0; i1 < npcCount; i1++) {
             if (npcs[npcIDs[i1]] == null) {
                 Signlink.reporterror(username + " null entry in npc list - pos:" + i1 + " size:" + npcCount);
@@ -2768,9 +2792,9 @@ public class Game extends GameShell {
         imageInvback.blit(0, 0);
 
         if (sidebarComponentID != -1) {
-            drawParentComponent(Component.instances[sidebarComponentID], 0, 0, 0);
+            drawParentComponent(IfType.instances[sidebarComponentID], 0, 0, 0);
         } else if (tabComponentIDs[selectedTab] != -1) {
-            drawParentComponent(Component.instances[tabComponentIDs[selectedTab]], 0, 0, 0);
+            drawParentComponent(IfType.instances[tabComponentIDs[selectedTab]], 0, 0, 0);
         }
 
         if (menuVisible && (mouseArea == 1)) {
@@ -2847,8 +2871,8 @@ public class Game extends GameShell {
         }
 
         for (int i = 0; i < npcCount; i++) {
-            int npcID = npcIDs[i];
-            NPCEntity npc = npcs[npcID];
+            int id = npcIDs[i];
+            NPCEntity npc = npcs[id];
 
             if ((npc != null) && (npc.chatTimer > 0)) {
                 npc.chatTimer--;
@@ -3105,8 +3129,8 @@ public class Game extends GameShell {
         updateDesignModel = true;
         for (int part = 0; part < 7; part++) {
             designIdentikits[part] = -1;
-            for (int kit = 0; kit < IDKType.count; kit++) {
-                if (IDKType.instances[kit].selectable || (IDKType.instances[kit].type != (part + (designGender ? 0 : 7)))) {
+            for (int kit = 0; kit < IdkType.count; kit++) {
+                if (IdkType.instances[kit].selectable || (IdkType.instances[kit].type != (part + (designGender ? 0 : 7)))) {
                     continue;
                 }
                 designIdentikits[part] = kit;
@@ -3115,32 +3139,40 @@ public class Game extends GameShell {
         }
     }
 
-    public void method46(int i, Buffer buffer) {
-        while ((buffer.bitPosition + 21) < (i * 8)) {
-            int k = buffer.readN(14);
-            if (k == 16383) {
+    public void readNewNPCs() {
+        while ((in.bitPosition + 21) < (this.packetSize * 8)) {
+            int id = in.readN(14);
+
+            if (id == 16383) {
                 break;
             }
-            if (npcs[k] == null) {
-                npcs[k] = new NPCEntity();
+
+            if (npcs[id] == null) {
+                npcs[id] = new NPCEntity();
             }
-            NPCEntity npc = npcs[k];
-            npcIDs[npcCount++] = k;
-            npc.anInt1537 = loopCycle;
-            int z = buffer.readN(5);
+
+            NPCEntity npc = npcs[id];
+            npcIDs[npcCount++] = id;
+            npc.cycle = loopCycle;
+
+            int z = in.readN(5);
+            int x = in.readN(5);
+
             if (z > 15) {
                 z -= 32;
             }
-            int x = buffer.readN(5);
+
             if (x > 15) {
                 x -= 32;
             }
-            int j1 = buffer.readN(1);
-            npc.type = NPCType.get(buffer.readN(12));
-            int k1 = buffer.readN(1);
-            if (k1 == 1) {
-                anIntArray894[anInt893++] = k;
+
+            int teleport = in.readN(1);
+            npc.type = NPCType.get(in.readN(12));
+
+            if (in.readN(1) == 1) {
+                entityUpdateIDs[entityUpdateCount++] = id;
             }
+
             npc.size = npc.type.size;
             npc.turnSpeed = npc.type.turnSpeed;
             npc.seqWalkID = npc.type.seqWalkID;
@@ -3148,9 +3180,8 @@ public class Game extends GameShell {
             npc.seqTurnLeftID = npc.type.seqTurnLeftID;
             npc.seqTurnRightID = npc.type.seqTurnRightID;
             npc.seqStandID = npc.type.seqStandID;
-            npc.move(localPlayer.pathTileX[0] + x, localPlayer.pathTileZ[0] + z, j1 == 1);
+            npc.move(localPlayer.pathTileX[0] + x, localPlayer.pathTileZ[0] + z, teleport == 1);
         }
-        buffer.accessBytes();
     }
 
     public void appendPlayers(boolean local) {
@@ -3211,11 +3242,11 @@ public class Game extends GameShell {
     /**
      * Handles a components action.
      *
-     * @param component the component.
+     * @param iface the component.
      * @return <code>false</code> to suppress packet 185.
      */
-    public boolean handleComponentAction(Component component) {
-        int type = component.contentType;
+    public boolean handleComponentAction(IfType iface) {
+        int type = iface.contentType;
 
         if (friendlistLoaded == 2) {
             if (type == 201) {
@@ -3263,12 +3294,12 @@ public class Game extends GameShell {
             if (kit != -1) {
                 do {
                     if ((direction == 0) && (--kit < 0)) {
-                        kit = IDKType.count - 1;
+                        kit = IdkType.count - 1;
                     }
-                    if ((direction == 1) && (++kit >= IDKType.count)) {
+                    if ((direction == 1) && (++kit >= IdkType.count)) {
                         kit = 0;
                     }
-                } while (IDKType.instances[kit].selectable || (IDKType.instances[kit].type != (part + (designGender ? 0 : 7))));
+                } while (IdkType.instances[kit].selectable || (IdkType.instances[kit].type != (part + (designGender ? 0 : 7))));
 
                 designIdentikits[part] = kit;
                 updateDesignModel = true;
@@ -3321,16 +3352,218 @@ public class Game extends GameShell {
         return false;
     }
 
-    public void method49(Buffer buffer) {
-        for (int j = 0; j < anInt893; j++) {
-            int k = anIntArray894[j];
-            PlayerEntity player = players[k];
-            int l = buffer.read8U();
-            if ((l & 0x40) != 0) {
-                l += buffer.read8U() << 8;
+    public void readPlayerUpdates() {
+        for (int i = 0; i < entityUpdateCount; i++) {
+            int playerID = entityUpdateIDs[i];
+            PlayerEntity player = players[playerID];
+            int updates = in.read8U();
+
+            if ((updates & 0x40) != 0) {
+                updates += in.read8U() << 8;
             }
-            method107(l, k, buffer, player);
+
+            if ((updates & 0x400) != 0) {
+                readPlayerForceMovement(player);
+            }
+
+            if ((updates & 0x100) != 0) {
+                readPlayerGraphic(player);
+            }
+
+            if ((updates & 8) != 0) {
+                readPlayerAnimation(player);
+            }
+
+            if ((updates & 4) != 0) {
+                readPlayerChatForced(player);
+            }
+
+            if ((updates & 0x80) != 0) {
+                readPlayerChat(player);
+            }
+
+            if ((updates & 1) != 0) {
+                readPlayerTargetEntity(player);
+            }
+
+            if ((updates & 0x10) != 0) {
+                readPlayerAppearance(playerID, player);
+            }
+
+            if ((updates & 2) != 0) {
+                readPlayerTargetTile(player);
+            }
+
+            if ((updates & 0x20) != 0) {
+                readPlayerDamage0(player);
+            }
+
+            if ((updates & 0x200) != 0) {
+                readPlayerDamage1(player);
+            }
         }
+    }
+
+    private void readPlayerForceMovement(PlayerEntity player) {
+        player.forceMoveStartSceneTileX = in.read8US();
+        player.forceMoveStartSceneTileZ = in.read8US();
+        player.forceMoveEndSceneTileX = in.read8US();
+        player.forceMoveEndSceneTileZ = in.read8US();
+        player.forceMoveEndCycle = in.read16ULEA() + loopCycle;
+        player.forceMoveStartCycle = in.read16UA() + loopCycle;
+        player.forceMoveFaceDirection = in.read8US();
+        player.resetPath();
+    }
+
+    private void readPlayerGraphic(PlayerEntity player) {
+        player.spotanimID = in.read16ULE();
+        player.spotanimOffset = in.read16U();
+        player.spotanimLastCycle = loopCycle + in.read16U();
+        player.spotanimFrame = 0;
+        player.spotanimCycle = 0;
+
+        if (player.spotanimLastCycle > loopCycle) {
+            player.spotanimFrame = -1;
+        }
+
+        if (player.spotanimID == 65535) {
+            player.spotanimID = -1;
+        }
+    }
+
+    private void readPlayerAnimation(PlayerEntity player) {
+        int seqID = in.read16ULE();
+
+        if (seqID == 65535) {
+            seqID = -1;
+        }
+
+        int delay = in.read8UC();
+
+        if ((seqID == player.primarySeqID) && (seqID != -1)) {
+            int style = SeqType.instances[seqID].replayStyle;
+
+            if (style == 1) {
+                player.primarySeqFrame = 0;
+                player.primarySeqCycle = 0;
+                player.primarySeqDelay = delay;
+                player.primarySeqLoop = 0;
+            }
+
+            if (style == 2) {
+                player.primarySeqLoop = 0;
+            }
+        } else if ((seqID == -1) || (player.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[player.primarySeqID].priority)) {
+            player.primarySeqID = seqID;
+            player.primarySeqFrame = 0;
+            player.primarySeqCycle = 0;
+            player.primarySeqDelay = delay;
+            player.primarySeqLoop = 0;
+            player.seqPathLength = player.pathLength;
+        }
+    }
+
+    private void readPlayerChatForced(PlayerEntity player) {
+        player.chat = in.readString();
+
+        if (player.chat.charAt(0) == '~') {
+            player.chat = player.chat.substring(1);
+            addMessage(2, player.name, player.chat);
+        } else if (player == localPlayer) {
+            addMessage(2, player.name, player.chat);
+        }
+
+        player.chatColor = 0;
+        player.chatStyle = 0;
+        player.chatTimer = 150;
+    }
+
+    private void readPlayerChat(PlayerEntity player) {
+        int colorStyle = in.read16ULE();
+        int role = in.read8U();
+        int length = in.read8UC();
+        int start = in.position;
+
+        if (player.name != null && player.visible) {
+            long name37 = StringUtil.toBase37(player.name);
+            boolean ignore = false;
+
+            if (role <= 1) {
+                for (int i = 0; i < ignoreCount; i++) {
+                    if (ignoreName37[i] != name37) {
+                        continue;
+                    }
+                    ignore = true;
+                    break;
+                }
+            }
+
+            if (!ignore && (overrideChat == 0)) {
+                try {
+                    chatBuffer.position = 0;
+                    in.readReversed(chatBuffer.data, 0, length);
+                    chatBuffer.position = 0;
+
+                    String chat = ChatCompression.unpack(length, chatBuffer);
+                    chat = Censor.apply(chat);
+
+                    player.chat = chat;
+                    player.chatColor = colorStyle >> 8;
+                    player.chatStyle = colorStyle & 0xff;
+                    player.chatTimer = 150;
+
+                    if ((role == 2) || (role == 3)) {
+                        addMessage(1, "@cr2@" + player.name, chat);
+                    } else if (role == 1) {
+                        addMessage(1, "@cr1@" + player.name, chat);
+                    } else {
+                        addMessage(2, player.name, chat);
+                    }
+                } catch (Exception exception) {
+                    Signlink.reporterror("cde2");
+                }
+            }
+        }
+
+        in.position = start + length;
+    }
+
+    private void readPlayerTargetEntity(PlayerEntity player) {
+        player.targetID = in.read16ULE();
+
+        if (player.targetID == 65535) {
+            player.targetID = -1;
+        }
+    }
+
+    private void readPlayerAppearance(int playerID, PlayerEntity player) {
+        Buffer buffer = new Buffer(new byte[in.read8UC()]);
+        in.read(buffer.data);
+        playerAppearanceBuffer[playerID] = buffer;
+        player.read(buffer);
+    }
+
+    private void readPlayerTargetTile(PlayerEntity player) {
+        player.targetTileX = in.read16ULEA();
+        player.targetTileZ = in.read16ULE();
+    }
+
+    private void readPlayerDamage0(PlayerEntity player) {
+        int damage = in.read8U();
+        int type = in.read8UA();
+        player.hit(type, damage);
+        player.combatCycle = loopCycle + 300;
+        player.health = in.read8UC();
+        player.totalHealth = in.read8U();
+    }
+
+    private void readPlayerDamage1(PlayerEntity player) {
+        int damage = in.read8U();
+        int type = in.read8US();
+        player.hit(type, damage);
+        player.combatCycle = loopCycle + 300;
+        player.health = in.read8U();
+        player.totalHealth = in.read8UC();
     }
 
     public void drawMinimapLoc(int z, int wallRGB, int x, int doorRGB, int level) {
@@ -3751,7 +3984,7 @@ public class Game extends GameShell {
                     Model.unpack(request.data, request.file);
                     if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
                         redrawSidebar = true;
-                        if (chatbackComponentID != -1) {
+                        if (chatInterfaceID != -1) {
                             redrawChatback = true;
                         }
                     }
@@ -3867,13 +4100,13 @@ public class Game extends GameShell {
         }
     }
 
-    public void resetParentComponentSeq(int parentId) {
-        Component parent = Component.instances[parentId];
+    public void resetParentComponentSeq(int parentID) {
+        IfType parent = IfType.instances[parentID];
         for (int i = 0; i < parent.children.length; i++) {
             if (parent.children[i] == -1) {
                 break;
             }
-            Component child = Component.instances[parent.children[i]];
+            IfType child = IfType.instances[parent.children[i]];
             if (child.type == 1) {
                 resetParentComponentSeq(child.id);
             }
@@ -4050,40 +4283,40 @@ public class Game extends GameShell {
             handleInput();
 
             if ((hoveredSlotParentID == objDragComponentID) && (hoveredSlot != objDragSlot)) {
-                Component component = Component.instances[objDragComponentID];
+                IfType iface = IfType.instances[objDragComponentID];
 
                 // mode 0 = swap
                 // mode 1 = insert
                 int mode = 0;
 
-                if ((bankArrangeMode == 1) && (component.contentType == 206)) {
+                if ((bankArrangeMode == 1) && (iface.contentType == 206)) {
                     mode = 1;
                 }
 
-                if (component.invSlotObjID[hoveredSlot] <= 0) {
+                if (iface.inventorySlotObjID[hoveredSlot] <= 0) {
                     mode = 0;
                 }
 
-                if (component.invMoveReplaces) {
+                if (iface.inventoryMoveReplaces) {
                     int src = objDragSlot;
                     int dst = hoveredSlot;
-                    component.invSlotObjID[dst] = component.invSlotObjID[src];
-                    component.invSlotAmount[dst] = component.invSlotAmount[src];
-                    component.invSlotObjID[src] = -1;
-                    component.invSlotAmount[src] = 0;
+                    iface.inventorySlotObjID[dst] = iface.inventorySlotObjID[src];
+                    iface.inventorySlotObjCount[dst] = iface.inventorySlotObjCount[src];
+                    iface.inventorySlotObjID[src] = -1;
+                    iface.inventorySlotObjCount[src] = 0;
                 } else if (mode == 1) {
                     int src = objDragSlot;
                     for (int dst = hoveredSlot; src != dst; ) {
                         if (src > dst) {
-                            component.swapSlots(src, src - 1);
+                            iface.inventorySwap(src, src - 1);
                             src--;
                         } else {
-                            component.swapSlots(src, src + 1);
+                            iface.inventorySwap(src, src + 1);
                             src++;
                         }
                     }
                 } else {
-                    component.swapSlots(objDragSlot, hoveredSlot);
+                    iface.inventorySwap(objDragSlot, hoveredSlot);
                 }
                 out.writeOp(214);
                 out.write16LEA(objDragComponentID);
@@ -4299,7 +4532,7 @@ public class Game extends GameShell {
         redrawTitleBackground = true;
     }
 
-    public void handleScrollInput(int left, int height, int mouseX, int mouseY, Component component, int top, boolean redraw, int scrollableHeight) {
+    public void handleScrollInput(int left, int height, int mouseX, int mouseY, IfType iface, int top, boolean redraw, int scrollableHeight) {
         if (gripGrabbed) {
             gripThreshold = 32;
         } else {
@@ -4309,12 +4542,12 @@ public class Game extends GameShell {
         gripGrabbed = false;
 
         if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= top) && (mouseY < (top + 16))) {
-            component.scrollPos -= dragCycles * 4;
+            iface.scrollPos -= dragCycles * 4;
             if (redraw) {
                 redrawSidebar = true;
             }
         } else if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= ((top + height) - 16)) && (mouseY < (top + height))) {
-            component.scrollPos += dragCycles * 4;
+            iface.scrollPos += dragCycles * 4;
             if (redraw) {
                 redrawSidebar = true;
             }
@@ -4325,7 +4558,7 @@ public class Game extends GameShell {
             }
             int gripY = mouseY - top - 16 - (gripSize / 2);
             int maxY = height - 32 - gripSize;
-            component.scrollPos = ((scrollableHeight - height) * gripY) / maxY;
+            iface.scrollPos = ((scrollableHeight - height) * gripY) / maxY;
             if (redraw) {
                 redrawSidebar = true;
             }
@@ -4400,9 +4633,7 @@ public class Game extends GameShell {
                 int i2 = buffer.read24() + 6;
                 int j2 = 6;
                 data = new byte[i2];
-                for (int k2 = 0; k2 < 6; k2++) {
-                    data[k2] = abyte1[k2];
-                }
+                System.arraycopy(abyte1, 0, data, 0, 6);
                 while (j2 < i2) {
                     int l2 = i2 - j2;
                     if (l2 > 1000) {
@@ -4796,28 +5027,28 @@ public class Game extends GameShell {
         out.write16(tileX + sceneBaseTileX);
     }
 
-    private void useObjOption0(int slot, int componentID, int objID) {
+    private void useObjOption0(int slot, int interfaceID, int objID) {
         out.writeOp(122);
-        out.write16LEA(componentID);
+        out.write16LEA(interfaceID);
         out.write16A(slot);
         out.write16LE(objID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
     private void useButton(int b) {
-        Component component = Component.instances[b];
+        IfType iface = IfType.instances[b];
         boolean notify = true;
-        if (component.contentType > 0) {
-            notify = handleComponentAction(component);
+        if (iface.contentType > 0) {
+            notify = handleComponentAction(iface);
         }
         if (notify) {
             out.writeOp(185);
@@ -4883,53 +5114,53 @@ public class Game extends GameShell {
         out.write16(tileX + sceneBaseTileX);
     }
 
-    private void useInventoryOption3(int slot, int componentID, int objID) {
+    private void useInventoryOption3(int slot, int interfaceID, int objID) {
         out.writeOp(129);
         out.write16A(slot);
-        out.write16(componentID);
+        out.write16(interfaceID);
         out.write16A(objID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void useInventoryOption4(int a, int componentID, int c) {
+    private void useInventoryOption4(int a, int interfaceID, int c) {
         out.writeOp(135);
         out.write16LE(a);
-        out.write16A(componentID);
+        out.write16A(interfaceID);
         out.write16LE(c);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = a;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void useObjOption2(int slot, int componentID, int c) {
+    private void useObjOption2(int slot, int interfaceID, int c) {
         out.writeOp(16);
         out.write16A(c);
         out.write16LEA(slot);
-        out.write16LEA(componentID);
+        out.write16LEA(interfaceID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
@@ -4966,64 +5197,64 @@ public class Game extends GameShell {
         }
     }
 
-    private void useObjOnObj(int slot, int componentID, int objID) {
+    private void useObjOnObj(int slot, int interfaceID, int objID) {
         out.writeOp(53);
         out.write16(slot);
         out.write16A(selectedObjSlot);
         out.write16LEA(objID);
         out.write16(selectedObjComponentID);
         out.write16LE(selectedObjID);
-        out.write16(componentID);
+        out.write16(interfaceID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void useObjOption4(int slot, int componentID, int objID) {
+    private void useObjOption4(int slot, int interfaceID, int objID) {
         out.writeOp(87);
         out.write16A(objID);
-        out.write16(componentID);
+        out.write16(interfaceID);
         out.write16A(slot);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void selectSpell(int componentID) {
-        Component component = Component.instances[componentID];
+    private void selectSpell(int interfaceID) {
+        IfType iface = IfType.instances[interfaceID];
         spellSelected = 1;
-        activeSpellID = componentID;
-        activeSpellFlags = component.spellFlags;
+        activeSpellID = interfaceID;
+        activeSpellFlags = iface.spellFlags;
         objSelected = 0;
         redrawSidebar = true;
 
-        String prefix = component.spellAction;
+        String prefix = iface.spellAction;
 
         if (prefix.contains(" ")) {
             prefix = prefix.substring(0, prefix.indexOf(" "));
         }
 
-        String suffix = component.spellAction;
+        String suffix = iface.spellAction;
 
         if (suffix.contains(" ")) {
             suffix = suffix.substring(suffix.indexOf(" ") + 1);
         }
 
-        spellCaption = prefix + " " + component.spellName + " " + suffix;
+        spellCaption = prefix + " " + iface.spellName + " " + suffix;
 
         if (activeSpellFlags == 0x10) {
             redrawSidebar = true;
@@ -5032,19 +5263,19 @@ public class Game extends GameShell {
         }
     }
 
-    private void useInventoryOption1(int slot, int componentID, int objID) {
+    private void useInventoryOption1(int slot, int interfaceID, int objID) {
         out.writeOp(117);
-        out.write16LEA(componentID);
+        out.write16LEA(interfaceID);
         out.write16LEA(objID);
         out.write16LE(slot);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
@@ -5078,36 +5309,36 @@ public class Game extends GameShell {
         out.write16A(tileX + sceneBaseTileX);
     }
 
-    private void useInventoryOption0(int slot, int componentID, int objID) {
+    private void useInventoryOption0(int slot, int interfaceID, int objID) {
         out.writeOp(145);
-        out.write16A(componentID);
+        out.write16A(interfaceID);
         out.write16A(slot);
         out.write16A(objID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void useObjOption3(int slot, int componentID, int objID) {
+    private void useObjOption3(int slot, int interfaceID, int objID) {
         out.writeOp(75);
-        out.write16LEA(componentID);
+        out.write16LEA(interfaceID);
         out.write16LE(slot);
         out.write16A(objID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
@@ -5143,14 +5374,14 @@ public class Game extends GameShell {
         out.write16A(activeSpellID);
     }
 
-    private void useSelectOption(int componentID) {
+    private void useSelectOption(int interfaceID) {
         out.writeOp(185);
-        out.write16(componentID);
-        Component component = Component.instances[componentID];
-        if ((component.scripts != null) && (component.scripts[0][0] == 5)) {
-            int varpID = component.scripts[0][1];
-            if (varps[varpID] != component.scriptOperand[0]) {
-                varps[varpID] = component.scriptOperand[0];
+        out.write16(interfaceID);
+        IfType iface = IfType.instances[interfaceID];
+        if ((iface.scripts != null) && (iface.scripts[0][0] == 5)) {
+            int varpID = iface.scripts[0][1];
+            if (varps[varpID] != iface.scriptOperand[0]) {
+                varps[varpID] = iface.scriptOperand[0];
                 updateVarp(varpID);
                 redrawSidebar = true;
             }
@@ -5314,51 +5545,51 @@ public class Game extends GameShell {
         out.write16LE(tileX + sceneBaseTileX);
     }
 
-    private void useInventoryOption2(int slot, int componentID, int objID) {
+    private void useInventoryOption2(int slot, int interfaceID, int objID) {
         out.writeOp(43);
-        out.write16LE(componentID);
+        out.write16LE(interfaceID);
         out.write16A(objID);
         out.write16A(slot);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
-    private void castSpellOnObj(int slot, int componentID, int objID) {
+    private void castSpellOnObj(int slot, int interfaceID, int objID) {
         out.writeOp(237);
         out.write16(slot);
         out.write16A(objID);
-        out.write16(componentID);
+        out.write16(interfaceID);
         out.write16A(activeSpellID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
 
     private void useReportAbuseOption(String input) {
-        if (viewportComponentID == -1) {
+        if (viewportInterfaceID == -1) {
             closeInterfaces();
             reportAbuseInput = input;
             aBoolean1158 = false;
-            for (int i = 0; i < Component.instances.length; i++) {
-                if ((Component.instances[i] == null) || (Component.instances[i].contentType != 600)) {
+            for (int i = 0; i < IfType.instances.length; i++) {
+                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != 600)) {
                     continue;
                 }
-                reportAbuseComponentID = viewportComponentID = Component.instances[i].parentID;
+                reportAbuseComponentID = viewportInterfaceID = IfType.instances[i].parentID;
                 break;
             }
         } else {
@@ -5404,19 +5635,19 @@ public class Game extends GameShell {
         }
     }
 
-    private void useObjOption1(int slot, int componentID, int objID) {
+    private void useObjOption1(int slot, int interfaceID, int objID) {
         out.writeOp(41);
         out.write16(objID);
         out.write16A(slot);
-        out.write16A(componentID);
+        out.write16A(interfaceID);
         actionCycles = 0;
-        actionComponentID = componentID;
+        actionComponentID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Component.instances[componentID].parentID == viewportComponentID) {
+        if (IfType.instances[interfaceID].parentID == viewportInterfaceID) {
             actionArea = 1;
         }
-        if (Component.instances[componentID].parentID == chatbackComponentID) {
+        if (IfType.instances[interfaceID].parentID == chatInterfaceID) {
             actionArea = 3;
         }
     }
@@ -5459,12 +5690,12 @@ public class Game extends GameShell {
         out.write16A(b + sceneBaseTileZ);
     }
 
-    private void examineInventoryObj(int slot, int componentID, int objID) {
+    private void examineInventoryObj(int slot, int interfaceID, int objID) {
         ObjType type = ObjType.get(objID);
-        Component component = Component.instances[componentID];
+        IfType iface = IfType.instances[interfaceID];
         String message;
-        if ((component != null) && (component.invSlotAmount[slot] >= 0x186a0)) {
-            message = component.invSlotAmount[slot] + " x " + type.name;
+        if ((iface != null) && (iface.inventorySlotObjCount[slot] >= 0x186a0)) {
+            message = iface.inventorySlotObjCount[slot] + " x " + type.name;
         } else if (type.examine != null) {
             message = new String(type.examine);
         } else {
@@ -5473,23 +5704,23 @@ public class Game extends GameShell {
         addMessage(0, "", message);
     }
 
-    private void useToggleOption(int componentID) {
+    private void useToggleOption(int interfaceID) {
         out.writeOp(185);
-        out.write16(componentID);
-        Component component = Component.instances[componentID];
+        out.write16(interfaceID);
+        IfType iface = IfType.instances[interfaceID];
 
-        if ((component.scripts != null) && (component.scripts[0][0] == 5)) {
-            int varpID = component.scripts[0][1];
+        if ((iface.scripts != null) && (iface.scripts[0][0] == 5)) {
+            int varpID = iface.scripts[0][1];
             varps[varpID] = 1 - varps[varpID];
             updateVarp(varpID);
             redrawSidebar = true;
         }
     }
 
-    private void selectObj(int slot, int componentID, int objID) {
+    private void selectObj(int slot, int interfaceID, int objID) {
         objSelected = 1;
         selectedObjSlot = slot;
-        selectedObjComponentID = componentID;
+        selectedObjComponentID = interfaceID;
         selectedObjID = objID;
         selectedObjName = ObjType.get(objID).name;
         spellSelected = 0;
@@ -5782,7 +6013,7 @@ public class Game extends GameShell {
                 break;
             }
 
-            if ((viewportComponentID != -1) && (viewportComponentID == reportAbuseComponentID)) {
+            if ((viewportInterfaceID != -1) && (viewportInterfaceID == reportAbuseComponentID)) {
                 handleInputReportAbuseKey(key);
             } else if (showSocialInput) {
                 handleInputSocialKey(key);
@@ -5790,7 +6021,7 @@ public class Game extends GameShell {
                 handleInputAmountKey(key);
             } else if (chatbackInputType == 2) {
                 handleInputNameKey(key);
-            } else if (chatbackComponentID == -1) {
+            } else if (chatInterfaceID == -1) {
                 handleInputChatKey(key);
             }
         } while (true);
@@ -6136,23 +6367,23 @@ public class Game extends GameShell {
         }
     }
 
-    public void updateComponentContent(Component component) {
-        int type = component.contentType;
+    public void updateComponentContent(IfType iface) {
+        int type = iface.contentType;
 
         if (((type >= 1) && (type <= 100)) || ((type >= 701) && (type <= 800))) {
             if ((type == 1) && (friendlistLoaded == 0)) {
-                component.text = "Loading friend list";
-                component.optionType = 0;
+                iface.text = "Loading friend list";
+                iface.optionType = 0;
                 return;
             }
             if ((type == 1) && (friendlistLoaded == 1)) {
-                component.text = "Connecting to friendserver";
-                component.optionType = 0;
+                iface.text = "Connecting to friendserver";
+                iface.optionType = 0;
                 return;
             }
             if ((type == 2) && (friendlistLoaded != 2)) {
-                component.text = "Please wait...";
-                component.optionType = 0;
+                iface.text = "Please wait...";
+                iface.optionType = 0;
                 return;
             }
             int k = friendCount;
@@ -6165,11 +6396,11 @@ public class Game extends GameShell {
                 type--;
             }
             if (type >= k) {
-                component.text = "";
-                component.optionType = 0;
+                iface.text = "";
+                iface.optionType = 0;
             } else {
-                component.text = friendName[type];
-                component.optionType = 1;
+                iface.text = friendName[type];
+                iface.optionType = 1;
             }
             return;
         }
@@ -6185,18 +6416,18 @@ public class Game extends GameShell {
                 type -= 101;
             }
             if (type >= l) {
-                component.text = "";
-                component.optionType = 0;
+                iface.text = "";
+                iface.optionType = 0;
                 return;
             }
             if (friendWorld[type] == 0) {
-                component.text = "@red@Offline";
+                iface.text = "@red@Offline";
             } else if (friendWorld[type] == nodeID) {
-                component.text = "@gre@World-" + (friendWorld[type] - 9);
+                iface.text = "@gre@World-" + (friendWorld[type] - 9);
             } else {
-                component.text = "@yel@World-" + (friendWorld[type] - 9);
+                iface.text = "@yel@World-" + (friendWorld[type] - 9);
             }
-            component.optionType = 1;
+            iface.optionType = 1;
             return;
         }
 
@@ -6205,22 +6436,22 @@ public class Game extends GameShell {
             if (friendlistLoaded != 2) {
                 i1 = 0;
             }
-            component.scrollableHeight = (i1 * 15) + 20;
-            if (component.scrollableHeight <= component.height) {
-                component.scrollableHeight = component.height + 1;
+            iface.scrollableHeight = (i1 * 15) + 20;
+            if (iface.scrollableHeight <= iface.height) {
+                iface.scrollableHeight = iface.height + 1;
             }
             return;
         }
 
         if ((type >= 401) && (type <= 500)) {
             if ((((type -= 401)) == 0) && (friendlistLoaded == 0)) {
-                component.text = "Loading ignore list";
-                component.optionType = 0;
+                iface.text = "Loading ignore list";
+                iface.optionType = 0;
                 return;
             }
             if ((type == 1) && (friendlistLoaded == 0)) {
-                component.text = "Please wait...";
-                component.optionType = 0;
+                iface.text = "Please wait...";
+                iface.optionType = 0;
                 return;
             }
             int j1 = ignoreCount;
@@ -6228,31 +6459,31 @@ public class Game extends GameShell {
                 j1 = 0;
             }
             if (type >= j1) {
-                component.text = "";
-                component.optionType = 0;
+                iface.text = "";
+                iface.optionType = 0;
             } else {
-                component.text = StringUtil.formatName(StringUtil.fromBase37(ignoreName37[type]));
-                component.optionType = 1;
+                iface.text = StringUtil.formatName(StringUtil.fromBase37(ignoreName37[type]));
+                iface.optionType = 1;
             }
             return;
         }
 
         if (type == 503) {
-            component.scrollableHeight = (ignoreCount * 15) + 20;
-            if (component.scrollableHeight <= component.height) {
-                component.scrollableHeight = component.height + 1;
+            iface.scrollableHeight = (ignoreCount * 15) + 20;
+            if (iface.scrollableHeight <= iface.height) {
+                iface.scrollableHeight = iface.height + 1;
             }
             return;
         }
 
         if (type == 327) {
-            component.modelPitch = 150;
-            component.modelYaw = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
+            iface.modelPitch = 150;
+            iface.modelYaw = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
 
             if (updateDesignModel) {
                 for (int i = 0; i < 7; i++) {
                     int kit = designIdentikits[i];
-                    if ((kit >= 0) && !IDKType.instances[kit].validateModel()) {
+                    if ((kit >= 0) && !IdkType.instances[kit].validateModel()) {
                         return;
                     }
                 }
@@ -6265,7 +6496,7 @@ public class Game extends GameShell {
                     int kit = designIdentikits[part];
 
                     if (kit >= 0) {
-                        models[modelCount++] = IDKType.instances[kit].getModel();
+                        models[modelCount++] = IdkType.instances[kit].getModel();
                     }
                 }
 
@@ -6283,56 +6514,56 @@ public class Game extends GameShell {
                 model.applyTransform(SeqType.instances[localPlayer.seqStandID].transformIDs[0]);
                 model.calculateNormals(64, 850, -30, -50, -30, true);
 
-                component.modelCategory = 5;
-                component.modelID = 0;
-                Component.cacheModel(0, 5, model);
+                iface.modelCategory = 5;
+                iface.modelID = 0;
+                IfType.cacheModel(0, 5, model);
             }
             return;
         }
         if (type == 324) {
             if (aImage_931 == null) {
-                aImage_931 = component.image;
-                aImage_932 = component.activeImage;
+                aImage_931 = iface.image;
+                aImage_932 = iface.activeImage;
             }
             if (designGender) {
-                component.image = aImage_932;
+                iface.image = aImage_932;
             } else {
-                component.image = aImage_931;
+                iface.image = aImage_931;
             }
             return;
         }
         if (type == 325) {
             if (aImage_931 == null) {
-                aImage_931 = component.image;
-                aImage_932 = component.activeImage;
+                aImage_931 = iface.image;
+                aImage_932 = iface.activeImage;
             }
             if (designGender) {
-                component.image = aImage_931;
+                iface.image = aImage_931;
             } else {
-                component.image = aImage_932;
+                iface.image = aImage_932;
             }
             return;
         }
         if (type == 600) {
-            component.text = reportAbuseInput;
+            iface.text = reportAbuseInput;
             if ((loopCycle % 20) < 10) {
-                component.text += "|";
+                iface.text += "|";
             } else {
-                component.text += " ";
+                iface.text += " ";
             }
             return;
         }
         if (type == 613) {
             if (rights >= 1) {
                 if (aBoolean1158) {
-                    component.color = 0xff0000;
-                    component.text = "Moderator option: Mute player for 48 hours: <ON>";
+                    iface.color = 0xff0000;
+                    iface.text = "Moderator option: Mute player for 48 hours: <ON>";
                 } else {
-                    component.color = 0xffffff;
-                    component.text = "Moderator option: Mute player for 48 hours: <OFF>";
+                    iface.color = 0xffffff;
+                    iface.text = "Moderator option: Mute player for 48 hours: <OFF>";
                 }
             } else {
-                component.text = "";
+                iface.text = "";
             }
         }
         if ((type == 650) || (type == 655)) {
@@ -6345,34 +6576,34 @@ public class Game extends GameShell {
                 } else {
                     s = daysSinceLastLogin + " days ago";
                 }
-                component.text = "You last logged in " + s + " from: " + Signlink.dns;
+                iface.text = "You last logged in " + s + " from: " + Signlink.dns;
             } else {
-                component.text = "";
+                iface.text = "";
             }
         }
         if (type == 651) {
             if (unreadMessages == 0) {
-                component.text = "0 unread messages";
-                component.color = 0xffff00;
+                iface.text = "0 unread messages";
+                iface.color = 0xffff00;
             }
             if (unreadMessages == 1) {
-                component.text = "1 unread message";
-                component.color = 65280;
+                iface.text = "1 unread message";
+                iface.color = 65280;
             }
             if (unreadMessages > 1) {
-                component.text = unreadMessages + " unread messages";
-                component.color = 65280;
+                iface.text = unreadMessages + " unread messages";
+                iface.color = 65280;
             }
         }
         if (type == 652) {
             if (daysSinceRecoveriesChanged == 201) {
                 if (warnMembersInNonMembers == 1) {
-                    component.text = "@yel@This is a non-members world: @whi@Since you are a member we";
+                    iface.text = "@yel@This is a non-members world: @whi@Since you are a member we";
                 } else {
-                    component.text = "";
+                    iface.text = "";
                 }
             } else if (daysSinceRecoveriesChanged == 200) {
-                component.text = "You have not yet set any password recovery questions.";
+                iface.text = "You have not yet set any password recovery questions.";
             } else {
                 String s1;
                 if (daysSinceRecoveriesChanged == 0) {
@@ -6382,36 +6613,36 @@ public class Game extends GameShell {
                 } else {
                     s1 = daysSinceRecoveriesChanged + " days ago";
                 }
-                component.text = s1 + " you changed your recovery questions";
+                iface.text = s1 + " you changed your recovery questions";
             }
         }
         if (type == 653) {
             if (daysSinceRecoveriesChanged == 201) {
                 if (warnMembersInNonMembers == 1) {
-                    component.text = "@whi@recommend you use a members world instead. You may use";
+                    iface.text = "@whi@recommend you use a members world instead. You may use";
                 } else {
-                    component.text = "";
+                    iface.text = "";
                 }
             } else if (daysSinceRecoveriesChanged == 200) {
-                component.text = "We strongly recommend you do so now to secure your account.";
+                iface.text = "We strongly recommend you do so now to secure your account.";
             } else {
-                component.text = "If you do not remember making this change then cancel it immediately";
+                iface.text = "If you do not remember making this change then cancel it immediately";
             }
         }
         if (type == 654) {
             if (daysSinceRecoveriesChanged == 201) {
                 if (warnMembersInNonMembers == 1) {
-                    component.text = "@whi@this world but member benefits are unavailable whilst here.";
+                    iface.text = "@whi@this world but member benefits are unavailable whilst here.";
                 } else {
-                    component.text = "";
+                    iface.text = "";
                 }
                 return;
             }
             if (daysSinceRecoveriesChanged == 200) {
-                component.text = "Do this from the 'account management' area on our front webpage";
+                iface.text = "Do this from the 'account management' area on our front webpage";
                 return;
             }
-            component.text = "Do this from the 'account management' area on our front webpage";
+            iface.text = "Do this from the 'account management' area on our front webpage";
         }
     }
 
@@ -6484,7 +6715,7 @@ public class Game extends GameShell {
             super.mouseClickButton = 0;
         }
 
-        if (chatbackComponentID == -1) {
+        if (chatInterfaceID == -1) {
             redrawChatback = true;
         }
 
@@ -6634,8 +6865,8 @@ public class Game extends GameShell {
         lastHoveredComponentID = 0;
 
         if ((super.mouseX > 4) && (super.mouseY > 4) && (super.mouseX < 516) && (super.mouseY < 338)) {
-            if (viewportComponentID != -1) {
-                handleParentComponentInput(4, Component.instances[viewportComponentID], super.mouseX, 4, super.mouseY, 0);
+            if (viewportInterfaceID != -1) {
+                handleParentComponentInput(4, IfType.instances[viewportInterfaceID], super.mouseX, 4, super.mouseY, 0);
             } else {
                 handleViewportInput();
             }
@@ -6648,9 +6879,9 @@ public class Game extends GameShell {
         lastHoveredComponentID = 0;
         if ((super.mouseX > 553) && (super.mouseY > 205) && (super.mouseX < 743) && (super.mouseY < 466)) {
             if (sidebarComponentID != -1) {
-                handleParentComponentInput(553, Component.instances[sidebarComponentID], super.mouseX, 205, super.mouseY, 0);
+                handleParentComponentInput(553, IfType.instances[sidebarComponentID], super.mouseX, 205, super.mouseY, 0);
             } else if (tabComponentIDs[selectedTab] != -1) {
-                handleParentComponentInput(553, Component.instances[tabComponentIDs[selectedTab]], super.mouseX, 205, super.mouseY, 0);
+                handleParentComponentInput(553, IfType.instances[tabComponentIDs[selectedTab]], super.mouseX, 205, super.mouseY, 0);
             }
         }
 
@@ -6662,14 +6893,14 @@ public class Game extends GameShell {
         lastHoveredComponentID = 0;
 
         if ((super.mouseX > 17) && (super.mouseY > 357) && (super.mouseX < 496) && (super.mouseY < 453)) {
-            if (chatbackComponentID != -1) {
-                handleParentComponentInput(17, Component.instances[chatbackComponentID], super.mouseX, 357, super.mouseY, 0);
+            if (chatInterfaceID != -1) {
+                handleParentComponentInput(17, IfType.instances[chatInterfaceID], super.mouseX, 357, super.mouseY, 0);
             } else if ((super.mouseY < 434) && (super.mouseX < 426)) {
                 handleChatMouseInput(super.mouseY - 357);
             }
         }
 
-        if ((chatbackComponentID != -1) && (lastHoveredComponentID != chatbackHoveredComponentID)) {
+        if ((chatInterfaceID != -1) && (lastHoveredComponentID != chatbackHoveredComponentID)) {
             redrawChatback = true;
             chatbackHoveredComponentID = lastHoveredComponentID;
         }
@@ -6873,7 +7104,7 @@ public class Game extends GameShell {
                 npcCount = 0;
                 for (int i2 = 0; i2 < MAX_PLAYER_COUNT; i2++) {
                     players[i2] = null;
-                    aBufferArray895[i2] = null;
+                    playerAppearanceBuffer[i2] = null;
                 }
                 for (int k2 = 0; k2 < 16384; k2++) {
                     npcs[k2] = null;
@@ -6892,8 +7123,8 @@ public class Game extends GameShell {
                 friendlistLoaded = 0;
                 friendCount = 0;
                 stickyChatbackComponentID = -1;
-                chatbackComponentID = -1;
-                viewportComponentID = -1;
+                chatInterfaceID = -1;
+                viewportInterfaceID = -1;
                 sidebarComponentID = -1;
                 viewportOverlayComponentID = -1;
                 pressedContinueOption = false;
@@ -7269,97 +7500,136 @@ public class Game extends GameShell {
         return type != 1;
     }
 
-    public void method86(Buffer buffer) {
-        for (int j = 0; j < anInt893; j++) {
-            int k = anIntArray894[j];
-            NPCEntity npc = npcs[k];
-            int l = buffer.read8U();
+    public void readNPCUpdates() {
+        in.accessBytes();
 
-            if ((l & 0x10) != 0) {
-                int seqID = buffer.read16ULE();
+        for (int i = 0; i < entityUpdateCount; i++) {
+            NPCEntity npc = npcs[entityUpdateIDs[i]];
+            int updates = in.read8U();
 
-                if (seqID == 65535) {
-                    seqID = -1;
-                }
+            if ((updates & 0x10) != 0) {
+                readNPCAnimation(npc);
+            }
 
-                int delay = buffer.read8U();
-                if ((seqID == npc.primarySeqID) && (seqID != -1)) {
-                    int style = SeqType.instances[seqID].replayStyle;
+            if ((updates & 0x8) != 0) {
+                readNPCDamage0(npc);
+            }
 
-                    if (style == 0) {
-                        npc.primarySeqFrame = 0;
-                        npc.primarySeqCycle = 0;
-                        npc.primarySeqDelay = delay;
-                        npc.primarySeqLoop = 0;
-                    }
+            if ((updates & 0x80) != 0) {
+                readNPCGraphic(npc);
+            }
 
-                    if (style == 1) {
-                        npc.primarySeqLoop = 0;
-                    }
-                } else if ((seqID == -1) || (npc.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[npc.primarySeqID].priority)) {
-                    npc.primarySeqID = seqID;
-                    npc.primarySeqFrame = 0;
-                    npc.primarySeqCycle = 0;
-                    npc.primarySeqDelay = delay;
-                    npc.primarySeqLoop = 0;
-                    npc.seqPathLength = npc.pathLength;
-                }
+            if ((updates & 0x20) != 0) {
+                readNPCTargetEntity(npc);
             }
-            if ((l & 8) != 0) {
-                int j1 = buffer.read8UA();
-                int j2 = buffer.read8UC();
-                npc.method447(j2, j1, loopCycle);
-                npc.combatCycle = loopCycle + 300;
-                npc.health = buffer.read8UA();
-                npc.totalHealth = buffer.read8U();
+
+            if ((updates & 0x1) != 0) {
+                readNPCChat(npc);
             }
-            if ((l & 0x80) != 0) {
-                npc.spotanim = buffer.read16U();
-                int k1 = buffer.read32();
-                npc.spotanimY = k1 >> 16;
-                npc.anInt1523 = loopCycle + (k1 & 0xffff);
-                npc.spotanimFrame = 0;
-                npc.spotanimCycle = 0;
-                if (npc.anInt1523 > loopCycle) {
-                    npc.spotanimFrame = -1;
-                }
-                if (npc.spotanim == 65535) {
-                    npc.spotanim = -1;
-                }
+
+            if ((updates & 0x40) != 0) {
+                readNPCDamage1(npc);
             }
-            if ((l & 0x20) != 0) {
-                npc.index = buffer.read16U();
-                if (npc.index == 65535) {
-                    npc.index = -1;
-                }
+
+            if ((updates & 0x2) != 0) {
+                readNPCTransform(npc);
             }
-            if ((l & 1) != 0) {
-                npc.chat = buffer.readString();
-                npc.chatTimer = 100;
-            }
-            if ((l & 0x40) != 0) {
-                int l1 = buffer.read8UC();
-                int k2 = buffer.read8US();
-                npc.method447(k2, l1, loopCycle);
-                npc.combatCycle = loopCycle + 300;
-                npc.health = buffer.read8US();
-                npc.totalHealth = buffer.read8UC();
-            }
-            if ((l & 2) != 0) {
-                npc.type = NPCType.get(buffer.read16ULEA());
-                npc.size = npc.type.size;
-                npc.turnSpeed = npc.type.turnSpeed;
-                npc.seqWalkID = npc.type.seqWalkID;
-                npc.seqTurnAroundID = npc.type.seqTurnAroundID;
-                npc.seqTurnLeftID = npc.type.seqTurnLeftID;
-                npc.seqTurnRightID = npc.type.seqTurnRightID;
-                npc.seqStandID = npc.type.seqStandID;
-            }
-            if ((l & 4) != 0) {
-                npc.faceTileX = buffer.read16ULE();
-                npc.faceTileZ = buffer.read16ULE();
+
+            if ((updates & 0x4) != 0) {
+                readNPCTargetTile(npc);
             }
         }
+    }
+
+    private void readNPCGraphic(NPCEntity npc) {
+        npc.spotanimID = in.read16U();
+        npc.spotanimOffset = in.read16U();
+        npc.spotanimLastCycle = loopCycle + in.read16U();
+        npc.spotanimFrame = 0;
+        npc.spotanimCycle = 0;
+        if (npc.spotanimLastCycle > loopCycle) {
+            npc.spotanimFrame = -1;
+        }
+        if (npc.spotanimID == 65535) {
+            npc.spotanimID = -1;
+        }
+    }
+
+    private void readNPCTargetEntity(NPCEntity npc) {
+        npc.targetID = in.read16U();
+        if (npc.targetID == 65535) {
+            npc.targetID = -1;
+        }
+    }
+
+    private void readNPCTargetTile(NPCEntity npc) {
+        npc.targetTileX = in.read16ULE();
+        npc.targetTileZ = in.read16ULE();
+    }
+
+    private void readNPCChat(NPCEntity npc) {
+        npc.chat = in.readString();
+        npc.chatTimer = 100;
+    }
+
+    private void readNPCDamage1(NPCEntity npc) {
+        int damage = in.read8UC();
+        int type = in.read8US();
+        npc.hit(type, damage);
+        npc.combatCycle = loopCycle + 300;
+        npc.health = in.read8US();
+        npc.totalHealth = in.read8UC();
+    }
+
+    private void readNPCTransform(NPCEntity npc) {
+        npc.type = NPCType.get(in.read16ULEA());
+        npc.size = npc.type.size;
+        npc.turnSpeed = npc.type.turnSpeed;
+        npc.seqWalkID = npc.type.seqWalkID;
+        npc.seqTurnAroundID = npc.type.seqTurnAroundID;
+        npc.seqTurnLeftID = npc.type.seqTurnLeftID;
+        npc.seqTurnRightID = npc.type.seqTurnRightID;
+        npc.seqStandID = npc.type.seqStandID;
+    }
+
+    private void readNPCAnimation(NPCEntity npc) {
+        int seqID = in.read16ULE();
+
+        if (seqID == 65535) {
+            seqID = -1;
+        }
+
+        int delay = in.read8U();
+        if ((seqID == npc.primarySeqID) && (seqID != -1)) {
+            int style = SeqType.instances[seqID].replayStyle;
+
+            if (style == 0) {
+                npc.primarySeqFrame = 0;
+                npc.primarySeqCycle = 0;
+                npc.primarySeqDelay = delay;
+                npc.primarySeqLoop = 0;
+            }
+
+            if (style == 1) {
+                npc.primarySeqLoop = 0;
+            }
+        } else if ((seqID == -1) || (npc.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[npc.primarySeqID].priority)) {
+            npc.primarySeqID = seqID;
+            npc.primarySeqFrame = 0;
+            npc.primarySeqCycle = 0;
+            npc.primarySeqDelay = delay;
+            npc.primarySeqLoop = 0;
+            npc.seqPathLength = npc.pathLength;
+        }
+    }
+
+    private void readNPCDamage0(NPCEntity npc) {
+        int damage = in.read8UA();
+        int type = in.read8UC();
+        npc.hit(type, damage);
+        npc.combatCycle = loopCycle + 300;
+        npc.health = in.read8UA();
+        npc.totalHealth = in.read8U();
     }
 
     public void method87(NPCType type, int i, int j, int k) {
@@ -7637,37 +7907,44 @@ public class Game extends GameShell {
         }
     }
 
-    public void method91(Buffer buffer, int i) {
-        while ((buffer.bitPosition + 10) < (i * 8)) {
-            int j = buffer.readN(11);
-            if (j == 2047) {
+    public void readNewPlayers() {
+        while ((in.bitPosition + 10) < (packetSize * 8)) {
+            int id = in.readN(11);
+
+            if (id == 2047) {
                 break;
             }
-            if (players[j] == null) {
-                players[j] = new PlayerEntity();
-                if (aBufferArray895[j] != null) {
-                    players[j].method451(aBufferArray895[j]);
+
+            if (players[id] == null) {
+                players[id] = new PlayerEntity();
+                if (playerAppearanceBuffer[id] != null) {
+                    players[id].read(playerAppearanceBuffer[id]);
                 }
             }
-            playerIDs[playerCount++] = j;
-            PlayerEntity player = players[j];
-            player.anInt1537 = loopCycle;
-            int k = buffer.readN(1);
-            if (k == 1) {
-                anIntArray894[anInt893++] = j;
+
+            playerIDs[playerCount++] = id;
+            PlayerEntity player = players[id];
+            player.cycle = loopCycle;
+
+            if (in.readN(1) == 1) {
+                entityUpdateIDs[entityUpdateCount++] = id;
             }
-            int l = buffer.readN(1);
-            int i1 = buffer.readN(5);
-            if (i1 > 15) {
-                i1 -= 32;
+
+            int teleport = in.readN(1);
+            int z = in.readN(5);
+            int x = in.readN(5);
+
+            if (z > 15) {
+                z -= 32;
             }
-            int j1 = buffer.readN(5);
-            if (j1 > 15) {
-                j1 -= 32;
+
+            if (x > 15) {
+                x -= 32;
             }
-            player.move(localPlayer.pathTileX[0] + j1, localPlayer.pathTileZ[0] + i1, l == 1);
+
+            player.move(localPlayer.pathTileX[0] + x, localPlayer.pathTileZ[0] + z, teleport == 1);
         }
-        buffer.accessBytes();
+        in.accessBytes();
     }
 
     public void handleMinimapInput() {
@@ -7769,8 +8046,7 @@ public class Game extends GameShell {
 
     public void updateNPCs() {
         for (int i = 0; i < npcCount; i++) {
-            int npcID = npcIDs[i];
-            NPCEntity npc = npcs[npcID];
+            NPCEntity npc = npcs[npcIDs[i]];
             if (npc != null) {
                 updateEntity(npc);
             }
@@ -7780,7 +8056,7 @@ public class Game extends GameShell {
     public void updateEntity(PathingEntity entity) {
         if ((entity.x < 128) || (entity.z < 128) || (entity.x >= 13184) || (entity.z >= 13184)) {
             entity.primarySeqID = -1;
-            entity.spotanim = -1;
+            entity.spotanimID = -1;
             entity.forceMoveEndCycle = 0;
             entity.forceMoveStartCycle = 0;
             entity.x = (entity.pathTileX[0] * 128) + (entity.size * 64);
@@ -7789,7 +8065,7 @@ public class Game extends GameShell {
         }
         if ((entity == localPlayer) && ((entity.x < 1536) || (entity.z < 1536) || (entity.x >= 11776) || (entity.z >= 11776))) {
             entity.primarySeqID = -1;
-            entity.spotanim = -1;
+            entity.spotanimID = -1;
             entity.forceMoveEndCycle = 0;
             entity.forceMoveStartCycle = 0;
             entity.x = (entity.pathTileX[0] * 128) + (entity.size * 64);
@@ -7952,7 +8228,7 @@ public class Game extends GameShell {
 
         int moveSpeed = 4;
 
-        if ((entity.yaw != entity.dstYaw) && (entity.index == -1) && (entity.turnSpeed != 0)) {
+        if ((entity.yaw != entity.dstYaw) && (entity.targetID == -1) && (entity.turnSpeed != 0)) {
             moveSpeed = 2;
         }
 
@@ -8012,8 +8288,8 @@ public class Game extends GameShell {
             return;
         }
 
-        if ((e.index != -1) && (e.index < 32768)) {
-            NPCEntity npc = npcs[e.index];
+        if ((e.targetID != -1) && (e.targetID < 32768)) {
+            NPCEntity npc = npcs[e.targetID];
 
             if (npc != null) {
                 int dstX = e.x - npc.x;
@@ -8024,8 +8300,8 @@ public class Game extends GameShell {
                 }
             }
         }
-        if (e.index >= 32768) {
-            int id = e.index - 32768;
+        if (e.targetID >= 32768) {
+            int id = e.targetID - 32768;
 
             if (id == localPID) {
                 id = LOCAL_PLAYER_INDEX;
@@ -8043,16 +8319,16 @@ public class Game extends GameShell {
             }
         }
 
-        if (((e.faceTileX != 0) || (e.faceTileZ != 0)) && ((e.pathLength == 0) || (e.seqTrigger > 0))) {
-            int dstX = e.x - ((e.faceTileX - sceneBaseTileX - sceneBaseTileX) * 64);
-            int dstZ = e.z - ((e.faceTileZ - sceneBaseTileZ - sceneBaseTileZ) * 64);
+        if (((e.targetTileX != 0) || (e.targetTileZ != 0)) && ((e.pathLength == 0) || (e.seqTrigger > 0))) {
+            int dstX = e.x - ((e.targetTileX - sceneBaseTileX - sceneBaseTileX) * 64);
+            int dstZ = e.z - ((e.targetTileZ - sceneBaseTileZ - sceneBaseTileZ) * 64);
 
             if ((dstX != 0) || (dstZ != 0)) {
                 e.dstYaw = (int) (Math.atan2(dstX, dstZ) * 325.94900000000001D) & 0x7ff;
             }
 
-            e.faceTileX = 0;
-            e.faceTileZ = 0;
+            e.targetTileX = 0;
+            e.targetTileZ = 0;
         }
 
         int remainingYaw = (e.dstYaw - e.yaw) & 0x7ff;
@@ -8097,19 +8373,19 @@ public class Game extends GameShell {
             }
         }
 
-        if ((e.spotanim != -1) && (loopCycle >= e.anInt1523)) {
+        if ((e.spotanimID != -1) && (loopCycle >= e.spotanimLastCycle)) {
             if (e.spotanimFrame < 0) {
                 e.spotanimFrame = 0;
             }
 
-            SeqType seq = SpotAnimType.instances[e.spotanim].seq;
+            SeqType seq = SpotAnimType.instances[e.spotanimID].seq;
 
             for (e.spotanimCycle++; (e.spotanimFrame < seq.frameCount) && (e.spotanimCycle > seq.getFrameDuration(e.spotanimFrame)); e.spotanimFrame++) {
                 e.spotanimCycle -= seq.getFrameDuration(e.spotanimFrame);
             }
 
             if ((e.spotanimFrame >= seq.frameCount) && ((e.spotanimFrame < 0) || (e.spotanimFrame >= seq.frameCount))) {
-                e.spotanim = -1;
+                e.spotanimID = -1;
             }
         }
 
@@ -8199,12 +8475,12 @@ public class Game extends GameShell {
             redrawSidebar = false;
         }
 
-        if (chatbackComponentID == -1) {
-            chatComponent.scrollPos = chatScrollHeight - chatScrollOffset - 77;
+        if (chatInterfaceID == -1) {
+            chatInterface.scrollPos = chatScrollHeight - chatScrollOffset - 77;
             if ((super.mouseX > 448) && (super.mouseX < 560) && (super.mouseY > 332)) {
-                handleScrollInput(463, 77, super.mouseX - 17, super.mouseY - 357, chatComponent, 0, false, chatScrollHeight);
+                handleScrollInput(463, 77, super.mouseX - 17, super.mouseY - 357, chatInterface, 0, false, chatScrollHeight);
             }
-            int offset = chatScrollHeight - 77 - chatComponent.scrollPos;
+            int offset = chatScrollHeight - 77 - chatInterface.scrollPos;
 
             if (offset < 0) {
                 offset = 0;
@@ -8219,8 +8495,8 @@ public class Game extends GameShell {
             }
         }
 
-        if (chatbackComponentID != -1) {
-            if (updateParentComponentSeq(delta, chatbackComponentID)) {
+        if (chatInterfaceID != -1) {
+            if (updateParentComponentSeq(delta, chatInterfaceID)) {
                 redrawChatback = true;
             }
         }
@@ -8411,8 +8687,8 @@ public class Game extends GameShell {
         areaViewport.bind();
     }
 
-    public boolean handleSocialMenuOption(Component component) {
-        int type = component.contentType;
+    public boolean handleSocialMenuOption(IfType iface) {
+        int type = iface.contentType;
         if (((type >= 1) && (type <= 200)) || ((type >= 701) && (type <= 900))) {
             if (type >= 801) {
                 type -= 701;
@@ -8432,7 +8708,7 @@ public class Game extends GameShell {
             return true;
         }
         if ((type >= 401) && (type <= 500)) {
-            menuOption[menuSize] = "Remove @whi@" + component.text;
+            menuOption[menuSize] = "Remove @whi@" + iface.text;
             menuAction[menuSize] = 322;
             menuSize++;
             return true;
@@ -8458,7 +8734,7 @@ public class Game extends GameShell {
         }
     }
 
-    public void drawParentComponent(Component parent, int px, int py, int scrollY) {
+    public void drawParentComponent(IfType parent, int px, int py, int scrollY) {
         if ((parent.type != 0) || (parent.children == null)) {
             return;
         }
@@ -8478,7 +8754,7 @@ public class Game extends GameShell {
             int x = parent.childX[i] + px;
             int y = (parent.childY[i] + py) - scrollY;
 
-            Component child = Component.instances[parent.children[i]];
+            IfType child = IfType.instances[parent.children[i]];
 
             x += child.x;
             y += child.y;
@@ -8507,18 +8783,18 @@ public class Game extends GameShell {
                 int slot = 0;
                 for (int row = 0; row < child.height; row++) {
                     for (int column = 0; column < child.width; column++) {
-                        int slotX = x + (column * (32 + child.invMarginX));
-                        int slotY = y + (row * (32 + child.invMarginY));
+                        int slotX = x + (column * (32 + child.inventoryMarginX));
+                        int slotY = y + (row * (32 + child.inventoryMarginY));
 
                         if (slot < 20) {
-                            slotX += child.invSlotX[slot];
-                            slotY += child.invSlotY[slot];
+                            slotX += child.inventorySlotOffsetX[slot];
+                            slotY += child.inventorySlotOffsetY[slot];
                         }
 
-                        if (child.invSlotObjID[slot] > 0) {
+                        if (child.inventorySlotObjID[slot] > 0) {
                             int dx = 0;
                             int dy = 0;
-                            int objID = child.invSlotObjID[slot] - 1;
+                            int objID = child.inventorySlotObjID[slot] - 1;
 
                             if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((objDragArea != 0) && (objDragSlot == slot))) {
                                 int outlineColor = 0;
@@ -8527,9 +8803,9 @@ public class Game extends GameShell {
                                     outlineColor = 0xffffff;
                                 }
 
-                                Image24 itemIcon = ObjType.getIcon(objID, child.invSlotAmount[slot], outlineColor);
+                                Image24 icon = ObjType.getIcon(objID, child.inventorySlotObjCount[slot], outlineColor);
 
-                                if (itemIcon != null) {
+                                if (icon != null) {
                                     if ((objDragArea != 0) && (objDragSlot == slot) && (objDragComponentID == child.id)) {
                                         dx = super.mouseX - objGrabX;
                                         dy = super.mouseY - objGrabY;
@@ -8547,7 +8823,7 @@ public class Game extends GameShell {
                                             dy = 0;
                                         }
 
-                                        itemIcon.draw(slotX + dx, slotY + dy, 128);
+                                        icon.draw(slotX + dx, slotY + dy, 128);
 
                                         // scroll component up if dragging obj near the top
                                         if (((slotY + dy) < Draw2D.top) && (parent.scrollPos > 0)) {
@@ -8579,23 +8855,23 @@ public class Game extends GameShell {
                                             objGrabY -= scroll;
                                         }
                                     } else if ((actionArea != 0) && (actionSlot == slot) && (actionComponentID == child.id)) {
-                                        itemIcon.draw(slotX, slotY, 128);
+                                        icon.draw(slotX, slotY, 128);
                                     } else {
-                                        itemIcon.draw(slotX, slotY);
+                                        icon.draw(slotX, slotY);
                                     }
 
-                                    // draw item amount
-                                    if ((itemIcon.cropW == 33) || (child.invSlotAmount[slot] != 1)) {
-                                        int amount = child.invSlotAmount[slot];
-                                        fontPlain11.drawString(formatObjAmount(amount), slotX + 1 + dx, slotY + 10 + dy, 0);
-                                        fontPlain11.drawString(formatObjAmount(amount), slotX + dx, slotY + 9 + dy, 0xffff00);
+                                    if ((icon.cropW == 33) || (child.inventorySlotObjCount[slot] != 1)) {
+                                        int count = child.inventorySlotObjCount[slot];
+                                        fontPlain11.drawString(formatObjCount(count), slotX + 1 + dx, slotY + 10 + dy, 0);
+                                        fontPlain11.drawString(formatObjCount(count), slotX + dx, slotY + 9 + dy, 0xffff00);
                                     }
                                 }
                             }
-                        } else if ((child.invSlotImage != null) && (slot < 20)) {
-                            Image24 class30_sub2_sub1_sub1_1 = child.invSlotImage[slot];
-                            if (class30_sub2_sub1_sub1_1 != null) {
-                                class30_sub2_sub1_sub1_1.draw(slotX, slotY);
+                        } else if ((child.inventorySlotImage != null) && (slot < 20)) {
+                            Image24 image = child.inventorySlotImage[slot];
+
+                            if (image != null) {
+                                image.draw(slotX, slotY);
                             }
                         }
                         slot++;
@@ -8631,11 +8907,7 @@ public class Game extends GameShell {
             } else if (child.type == 4) {
                 BitmapFont font = child.font;
                 String text = child.text;
-                boolean hovered = false;
-
-                if ((chatbackHoveredComponentID == child.id) || (sidebarHoveredComponentID == child.id) || (viewportHoveredComponentID == child.id)) {
-                    hovered = true;
-                }
+                boolean hovered = (chatbackHoveredComponentID == child.id) || (sidebarHoveredComponentID == child.id) || (viewportHoveredComponentID == child.id);
 
                 int rgb;
                 if (getComponentScriptState(child)) {
@@ -8771,24 +9043,26 @@ public class Game extends GameShell {
                 Draw3D.centerY = _centerY;
             } else if (child.type == 7) {
                 BitmapFont font = child.font;
-                int k4 = 0;
-                for (int j5 = 0; j5 < child.height; j5++) {
-                    for (int i6 = 0; i6 < child.width; i6++) {
-                        if (child.invSlotObjID[k4] > 0) {
-                            ObjType type = ObjType.get(child.invSlotObjID[k4] - 1);
-                            String s2 = type.name;
-                            if (type.stackable || (child.invSlotAmount[k4] != 1)) {
-                                s2 = s2 + " x" + formatObjAmountTagged(child.invSlotAmount[k4]);
+                int slot = 0;
+                for (int row = 0; row < child.height; row++) {
+                    for (int column = 0; column < child.width; column++) {
+                        if (child.inventorySlotObjID[slot] > 0) {
+                            ObjType type = ObjType.get(child.inventorySlotObjID[slot] - 1);
+                            String text = type.name;
+
+                            if (type.stackable || (child.inventorySlotObjCount[slot] != 1)) {
+                                text = text + " x" + formatObjCountTagged(child.inventorySlotObjCount[slot]);
                             }
-                            int i9 = x + (i6 * (115 + child.invMarginX));
-                            int k9 = y + (j5 * (12 + child.invMarginY));
+
+                            int i9 = x + (column * (115 + child.inventoryMarginX));
+                            int k9 = y + (row * (12 + child.inventoryMarginY));
                             if (child.center) {
-                                font.drawStringTaggableCenter(s2, i9 + (child.width / 2), k9, child.color, child.shadow);
+                                font.drawStringTaggableCenter(text, i9 + (child.width / 2), k9, child.color, child.shadow);
                             } else {
-                                font.drawStringTaggable(s2, i9, k9, child.color, child.shadow);
+                                font.drawStringTaggable(text, i9, k9, child.color, child.shadow);
                             }
                         }
-                        k4++;
+                        slot++;
                     }
                 }
             }
@@ -8827,163 +9101,6 @@ public class Game extends GameShell {
                     }
                 }
             }
-        }
-    }
-
-    public void method107(int masks, int j, Buffer buffer, PlayerEntity player) {
-        if ((masks & 0x400) != 0) {
-            player.forceMoveStartSceneTileX = buffer.read8US();
-            player.forceMoveStartSceneTileZ = buffer.read8US();
-            player.forceMoveEndSceneTileX = buffer.read8US();
-            player.forceMoveEndSceneTileZ = buffer.read8US();
-            player.forceMoveEndCycle = buffer.read16ULEA() + loopCycle;
-            player.forceMoveStartCycle = buffer.read16UA() + loopCycle;
-            player.forceMoveFaceDirection = buffer.read8US();
-            player.resetPath();
-        }
-
-        if ((masks & 0x100) != 0) {
-            player.spotanim = buffer.read16ULE();
-            int k = buffer.read32();
-            player.spotanimY = k >> 16;
-            player.anInt1523 = loopCycle + (k & 0xffff);
-            player.spotanimFrame = 0;
-            player.spotanimCycle = 0;
-            if (player.anInt1523 > loopCycle) {
-                player.spotanimFrame = -1;
-            }
-            if (player.spotanim == 65535) {
-                player.spotanim = -1;
-            }
-        }
-
-        if ((masks & 8) != 0) {
-            int seqID = buffer.read16ULE();
-
-            if (seqID == 65535) {
-                seqID = -1;
-            }
-
-            int delay = buffer.read8UC();
-
-            if ((seqID == player.primarySeqID) && (seqID != -1)) {
-                int style = SeqType.instances[seqID].replayStyle;
-
-                if (style == 1) {
-                    player.primarySeqFrame = 0;
-                    player.primarySeqCycle = 0;
-                    player.primarySeqDelay = delay;
-                    player.primarySeqLoop = 0;
-                }
-
-                if (style == 2) {
-                    player.primarySeqLoop = 0;
-                }
-            } else if ((seqID == -1) || (player.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[player.primarySeqID].priority)) {
-                player.primarySeqID = seqID;
-                player.primarySeqFrame = 0;
-                player.primarySeqCycle = 0;
-                player.primarySeqDelay = delay;
-                player.primarySeqLoop = 0;
-                player.seqPathLength = player.pathLength;
-            }
-        }
-
-        if ((masks & 4) != 0) {
-            player.chat = buffer.readString();
-            if (player.chat.charAt(0) == '~') {
-                player.chat = player.chat.substring(1);
-                addMessage(2, player.name, player.chat);
-            } else if (player == localPlayer) {
-                addMessage(2, player.name, player.chat);
-            }
-            player.chatColor = 0;
-            player.chatStyle = 0;
-            player.chatTimer = 150;
-        }
-
-        if ((masks & 0x80) != 0) {
-            int colorStyle = buffer.read16ULE();
-            int role = buffer.read8U();
-            int length = buffer.read8UC();
-            int start = buffer.position;
-
-            if ((player.name != null) && player.visible) {
-                long name37 = StringUtil.toBase37(player.name);
-                boolean ignore = false;
-
-                if (role <= 1) {
-                    for (int i4 = 0; i4 < ignoreCount; i4++) {
-                        if (ignoreName37[i4] != name37) {
-                            continue;
-                        }
-                        ignore = true;
-                        break;
-                    }
-                }
-
-                if (!ignore && (overrideChat == 0)) {
-                    try {
-                        chatBuffer.position = 0;
-                        buffer.readReversed(chatBuffer.data, 0, length);
-                        chatBuffer.position = 0;
-
-                        String chat = ChatCompression.unpack(length, chatBuffer);
-                        chat = Censor.apply(chat);
-
-                        player.chat = chat;
-                        player.chatColor = colorStyle >> 8;
-                        player.chatStyle = colorStyle & 0xff;
-                        player.chatTimer = 150;
-
-                        if ((role == 2) || (role == 3)) {
-                            addMessage(1, "@cr2@" + player.name, chat);
-                        } else if (role == 1) {
-                            addMessage(1, "@cr1@" + player.name, chat);
-                        } else {
-                            addMessage(2, player.name, chat);
-                        }
-                    } catch (Exception exception) {
-                        Signlink.reporterror("cde2");
-                    }
-                }
-            }
-            buffer.position = start + length;
-        }
-
-        if ((masks & 1) != 0) {
-            player.index = buffer.read16ULE();
-            if (player.index == 65535) {
-                player.index = -1;
-            }
-        }
-        if ((masks & 0x10) != 0) {
-            int j1 = buffer.read8UC();
-            byte[] abyte0 = new byte[j1];
-            Buffer buffer_1 = new Buffer(abyte0);
-            buffer.read(abyte0, 0, j1);
-            aBufferArray895[j] = buffer_1;
-            player.method451(buffer_1);
-        }
-        if ((masks & 2) != 0) {
-            player.faceTileX = buffer.read16ULEA();
-            player.faceTileZ = buffer.read16ULE();
-        }
-        if ((masks & 0x20) != 0) {
-            int k1 = buffer.read8U();
-            int k2 = buffer.read8UA();
-            player.method447(k2, k1, loopCycle);
-            player.combatCycle = loopCycle + 300;
-            player.health = buffer.read8UC();
-            player.totalHealth = buffer.read8U();
-        }
-        if ((masks & 0x200) != 0) {
-            int l1 = buffer.read8U();
-            int l2 = buffer.read8US();
-            player.method447(l2, l1, loopCycle);
-            player.combatCycle = loopCycle + 300;
-            player.health = buffer.read8U();
-            player.totalHealth = buffer.read8UC();
         }
     }
 
@@ -9095,12 +9212,12 @@ public class Game extends GameShell {
     private void drawViewportComponents() {
         if (viewportOverlayComponentID != -1) {
             updateParentComponentSeq(delta, viewportOverlayComponentID);
-            drawParentComponent(Component.instances[viewportOverlayComponentID], 0, 0, 0);
+            drawParentComponent(IfType.instances[viewportOverlayComponentID], 0, 0, 0);
         }
 
-        if (viewportComponentID != -1) {
-            updateParentComponentSeq(delta, viewportComponentID);
-            drawParentComponent(Component.instances[viewportComponentID], 0, 0, 0);
+        if (viewportInterfaceID != -1) {
+            updateParentComponentSeq(delta, viewportInterfaceID);
+            drawParentComponent(IfType.instances[viewportInterfaceID], 0, 0, 0);
         }
     }
 
@@ -9398,47 +9515,41 @@ public class Game extends GameShell {
         }
     }
 
-    public void method117(Buffer buffer) {
-        buffer.accessBits();
-        int j = buffer.readN(1);
-        if (j == 0) {
+    public void readLocalPlayer() {
+        in.accessBits();
+
+        if (in.readN(1) == 0) {
             return;
         }
-        int k = buffer.readN(2);
-        if (k == 0) {
-            anIntArray894[anInt893++] = LOCAL_PLAYER_INDEX;
-            return;
-        }
-        if (k == 1) {
-            int l = buffer.readN(3);
-            localPlayer.method448(false, l);
-            int k1 = buffer.readN(1);
-            if (k1 == 1) {
-                anIntArray894[anInt893++] = LOCAL_PLAYER_INDEX;
+
+        int type = in.readN(2);
+
+        if (type == 0) {
+            entityUpdateIDs[entityUpdateCount++] = LOCAL_PLAYER_INDEX;
+        } else if (type == 1) {
+            localPlayer.step(false, in.readN(3));
+
+            if (in.readN(1) == 1) {
+                entityUpdateIDs[entityUpdateCount++] = LOCAL_PLAYER_INDEX;
             }
-            return;
-        }
-        if (k == 2) {
-            int i1 = buffer.readN(3);
-            localPlayer.method448(true, i1);
-            int l1 = buffer.readN(3);
-            localPlayer.method448(true, l1);
-            int j2 = buffer.readN(1);
-            if (j2 == 1) {
-                anIntArray894[anInt893++] = LOCAL_PLAYER_INDEX;
+        } else if (type == 2) {
+            localPlayer.step(true, in.readN(3));
+            localPlayer.step(true, in.readN(3));
+
+            if (in.readN(1) == 1) {
+                entityUpdateIDs[entityUpdateCount++] = LOCAL_PLAYER_INDEX;
             }
-            return;
-        }
-        if (k == 3) {
-            currentLevel = buffer.readN(2);
-            int j1 = buffer.readN(1);
-            int i2 = buffer.readN(1);
-            if (i2 == 1) {
-                anIntArray894[anInt893++] = LOCAL_PLAYER_INDEX;
+        } else if (type == 3) {
+            currentLevel = in.readN(2);
+            int teleport = in.readN(1);
+
+            if (in.readN(1) == 1) {
+                entityUpdateIDs[entityUpdateCount++] = LOCAL_PLAYER_INDEX;
             }
-            int k2 = buffer.readN(7);
-            int l2 = buffer.readN(7);
-            localPlayer.move(l2, k2, j1 == 1);
+
+            int z = in.readN(7);
+            int x = in.readN(7);
+            localPlayer.move(x, z, teleport == 1);
         }
     }
 
@@ -9476,14 +9587,14 @@ public class Game extends GameShell {
      */
     public boolean updateParentComponentSeq(int delta, int id) {
         boolean updated = false;
-        Component parent = Component.instances[id];
+        IfType parent = IfType.instances[id];
 
         for (int k = 0; k < parent.children.length; k++) {
             if (parent.children[k] == -1) {
                 break;
             }
 
-            Component child = Component.instances[parent.children[k]];
+            IfType child = IfType.instances[parent.children[k]];
 
             if (child.type == 1) {
                 updated |= updateParentComponentSeq(delta, child.id);
@@ -9654,12 +9765,12 @@ public class Game extends GameShell {
         }
     }
 
-    public int executeClientscript1(Component component, int scriptId) {
-        if ((component.scripts == null) || (scriptId >= component.scripts.length)) {
+    public int executeClientscript1(IfType iface, int scriptId) {
+        if ((iface.scripts == null) || (scriptId >= iface.scripts.length)) {
             return -2;
         }
         try {
-            int[] script = component.scripts[scriptId];
+            int[] script = iface.scripts[scriptId];
             int acc = 0;
             int pos = 0;
             int arith = 0;
@@ -9678,12 +9789,12 @@ public class Game extends GameShell {
                 } else if (op == 3) { // load_skill_exp {skill}
                     reg = skillExperience[script[pos++]];
                 } else if (op == 4) {// load_inv_count {component id} {obj id}
-                    Component c = Component.instances[script[pos++]];
+                    IfType c = IfType.instances[script[pos++]];
                     int objID = script[pos++];
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
-                        for (int slot = 0; slot < c.invSlotObjID.length; slot++) {
-                            if (c.invSlotObjID[slot] == (objID + 1)) {
-                                reg += c.invSlotAmount[slot];
+                        for (int slot = 0; slot < c.inventorySlotObjID.length; slot++) {
+                            if (c.inventorySlotObjID[slot] == (objID + 1)) {
+                                reg += c.inventorySlotObjCount[slot];
                             }
                         }
                     }
@@ -9702,11 +9813,11 @@ public class Game extends GameShell {
                         }
                     }
                 } else if (op == 10) {// load_inv_contains {component id} {obj id}
-                    Component c = Component.instances[script[pos++]];
+                    IfType c = IfType.instances[script[pos++]];
                     int objID = script[pos++] + 1;
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
-                        for (int slot = 0; slot < c.invSlotObjID.length; slot++) {
-                            if (c.invSlotObjID[slot] != objID) {
+                        for (int slot = 0; slot < c.inventorySlotObjID.length; slot++) {
+                            if (c.inventorySlotObjID[slot] != objID) {
                                 continue;
                             }
                             reg = 999999999;
@@ -10051,26 +10162,26 @@ public class Game extends GameShell {
     /**
      * Executes ClientScript 1 and returns a state value.
      *
-     * @param component the component.
+     * @param iface the component.
      * @return the state.
      */
-    public boolean getComponentScriptState(Component component) {
-        if (component.scriptComparator == null) {
+    public boolean getComponentScriptState(IfType iface) {
+        if (iface.scriptComparator == null) {
             return false;
         }
-        for (int i = 0; i < component.scriptComparator.length; i++) {
-            int value = executeClientscript1(component, i);
-            int operand = component.scriptOperand[i];
+        for (int i = 0; i < iface.scriptComparator.length; i++) {
+            int value = executeClientscript1(iface, i);
+            int operand = iface.scriptOperand[i];
 
-            if (component.scriptComparator[i] == 2) {
+            if (iface.scriptComparator[i] == 2) {
                 if (value >= operand) {
                     return false;
                 }
-            } else if (component.scriptComparator[i] == 3) {
+            } else if (iface.scriptComparator[i] == 3) {
                 if (value <= operand) {
                     return false;
                 }
-            } else if (component.scriptComparator[i] == 4) {
+            } else if (iface.scriptComparator[i] == 4) {
                 if (value == operand) {
                     return false;
                 }
@@ -10200,53 +10311,58 @@ public class Game extends GameShell {
         imageTitle1.draw(super.graphics, 637, 0);
     }
 
-    public void method134(Buffer buffer) {
-        int j = buffer.readN(8);
-        if (j < playerCount) {
-            for (int k = j; k < playerCount; k++) {
-                anIntArray840[anInt839++] = playerIDs[k];
+    public void readPlayers() {
+        int count = in.readN(8);
+
+        if (count < playerCount) {
+            for (int i = count; i < playerCount; i++) {
+                entityRemovalIDs[entityRemovalCount++] = playerIDs[i];
             }
         }
-        if (j > playerCount) {
+
+        if (count > playerCount) {
             Signlink.reporterror(username + " Too many players");
             throw new RuntimeException("eek");
         }
+
         playerCount = 0;
-        for (int l = 0; l < j; l++) {
-            int i1 = playerIDs[l];
-            PlayerEntity player = players[i1];
-            int j1 = buffer.readN(1);
-            if (j1 == 0) {
-                playerIDs[playerCount++] = i1;
-                player.anInt1537 = loopCycle;
+
+        for (int i = 0; i < count; i++) {
+            int id = playerIDs[i];
+            PlayerEntity player = players[id];
+
+            if (in.readN(1) == 0) {
+                playerIDs[playerCount++] = id;
+                player.cycle = loopCycle;
             } else {
-                int k1 = buffer.readN(2);
-                if (k1 == 0) {
-                    playerIDs[playerCount++] = i1;
-                    player.anInt1537 = loopCycle;
-                    anIntArray894[anInt893++] = i1;
-                } else if (k1 == 1) {
-                    playerIDs[playerCount++] = i1;
-                    player.anInt1537 = loopCycle;
-                    int l1 = buffer.readN(3);
-                    player.method448(false, l1);
-                    int j2 = buffer.readN(1);
-                    if (j2 == 1) {
-                        anIntArray894[anInt893++] = i1;
+                int type = in.readN(2);
+
+                if (type == 0) {
+                    playerIDs[playerCount++] = id;
+                    player.cycle = loopCycle;
+
+                    entityUpdateIDs[entityUpdateCount++] = id;
+                } else if (type == 1) {
+                    playerIDs[playerCount++] = id;
+                    player.cycle = loopCycle;
+
+                    player.step(false, in.readN(3));
+
+                    if (in.readN(1) == 1) {
+                        entityUpdateIDs[entityUpdateCount++] = id;
                     }
-                } else if (k1 == 2) {
-                    playerIDs[playerCount++] = i1;
-                    player.anInt1537 = loopCycle;
-                    int i2 = buffer.readN(3);
-                    player.method448(true, i2);
-                    int k2 = buffer.readN(3);
-                    player.method448(true, k2);
-                    int l2 = buffer.readN(1);
-                    if (l2 == 1) {
-                        anIntArray894[anInt893++] = i1;
+                } else if (type == 2) {
+                    playerIDs[playerCount++] = id;
+                    player.cycle = loopCycle;
+
+                    player.step(true, in.readN(3));
+                    player.step(true, in.readN(3));
+
+                    if (in.readN(1) == 1) {
+                        entityUpdateIDs[entityUpdateCount++] = id;
                     }
-                } else if (k1 == 3) {
-                    anIntArray840[anInt839++] = i1;
+                } else if (type == 3) {
+                    entityRemovalIDs[entityRemovalCount++] = id;
                 }
             }
         }
@@ -10359,368 +10475,396 @@ public class Game extends GameShell {
         flameThread = false;
     }
 
-    public void readZonePacket(Buffer buffer, int opcode) {
+    public void readZonePacket(int opcode) {
         switch (opcode) {
-            case PacketIn.OBJ_ADD: {
-                int id = buffer.read16ULEA();
-                int amount = buffer.read16U();
-                int pos = buffer.read8U();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    ObjEntity stack = new ObjEntity();
-                    stack.id = id;
-                    stack.count = amount;
-                    if (levelObjStacks[currentLevel][x][z] == null) {
-                        levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
-                    }
-                    levelObjStacks[currentLevel][x][z].pushBack(stack);
-                    sortObjStacks(x, z);
-                }
-                return;
-            }
-
-            case PacketIn.OBJ_REVEAL: {
-                int objID = buffer.read16UA();
-                int pos = buffer.read8US();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int ownerPID = buffer.read16UA();
-                int objAmount = buffer.read16U();
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
-                    ObjEntity obj = new ObjEntity();
-                    obj.id = objID;
-                    obj.count = objAmount;
-                    if (levelObjStacks[currentLevel][x][z] == null) {
-                        levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
-                    }
-                    levelObjStacks[currentLevel][x][z].pushBack(obj);
-                    sortObjStacks(x, z);
-                }
-                return;
-            }
-
-            case PacketIn.OBJ_COUNT: {
-                int pos = buffer.read8U();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int objID = buffer.read16U();
-                int oldCount = buffer.read16U();
-                int newCount = buffer.read16U();
-
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
-                    if (stacks != null) {
-                        for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
-                            if ((stack.id != (objID & 0x7fff)) || (stack.count != oldCount)) {
-                                continue;
-                            }
-                            stack.count = newCount;
-                            break;
-                        }
-                        sortObjStacks(x, z);
-                    }
-                }
-            }
-
-            case PacketIn.OBJ_DEL: {
-                int pos = buffer.read8UA();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int objID = buffer.read16U();
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
-                    if (list != null) {
-                        for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
-                            if (obj.id != (objID & 0x7fff)) {
-                                continue;
-                            }
-                            obj.unlink();
-                            break;
-                        }
-                        if (list.peekFront() == null) {
-                            levelObjStacks[currentLevel][x][z] = null;
-                        }
-                        sortObjStacks(x, z);
-                    }
-                }
-                return;
-            }
-
-            case PacketIn.LOC_ADD: {
-                int pos = buffer.read8UA();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int id = buffer.read16ULE();
-                int info = buffer.read8US();
-                int kind = info >> 2;
-                int rotation = info & 3;
-                int classID = LOC_KIND_TO_CLASS_ID[kind];
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    appendLoc(-1, id, rotation, classID, z, kind, currentLevel, x, 0);
-                }
-                return;
-            }
-
-            case PacketIn.LOC_CHANGE: {
-                int pos = buffer.read8US();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int info = buffer.read8US();
-                int kind = info >> 2;
-                int rotation = info & 3;
-                int classID = LOC_KIND_TO_CLASS_ID[kind];
-                int seqID = buffer.read16UA();
-
-                if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
-                    return;
-                }
-
-                int heightmapSW = levelHeightmap[currentLevel][x][z];
-                int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
-                int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
-                int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
-
-                if (classID == 0) {
-                    SceneWall wall = scene.getWall(currentLevel, x, z);
-
-                    if (wall != null) {
-                        int locID = (wall.bitset >> 14) & 0x7fff;
-
-                        if (kind == 2) {
-                            wall.entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                            wall.entityB = new LocEntity(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                        } else {
-                            wall.entityA = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                        }
-                    }
-                }
-
-                if (classID == 1) {
-                    SceneWallDecoration deco = scene.getWallDecoration(currentLevel, x, z);
-
-                    if (deco != null) {
-                        deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                    }
-                }
-
-                if (classID == 2) {
-                    SceneLoc loc = scene.getLoc(currentLevel, x, z);
-
-                    if (kind == 11) {
-                        kind = 10;
-                    }
-
-                    if (loc != null) {
-                        loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                    }
-                }
-
-                if (classID == 3) {
-                    SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentLevel);
-
-                    if (deco != null) {
-                        deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                    }
-                }
-                return;
-            }
-
-            case PacketIn.LOC_DEL: {
-                int info = buffer.read8UC();
-                int kind = info >> 2;
-                int rotation = info & 3;
-                int classID = LOC_KIND_TO_CLASS_ID[kind];
-                int pos = buffer.read8U();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    appendLoc(-1, -1, rotation, classID, z, kind, currentLevel, x, 0);
-                }
-                return;
-            }
-
-            case PacketIn.PLAYER_LOC: {
-                int pos = buffer.read8US();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int pid = buffer.read16U();
-                byte maxX = buffer.read8S();
-                int delay = buffer.read16ULE();
-                byte maxZ = buffer.read8C();
-                int duration = buffer.read16U();
-                int info = buffer.read8US();
-                int kind = info >> 2;
-                int rotation = info & 3;
-                int classID = LOC_KIND_TO_CLASS_ID[kind];
-                byte minX = buffer.read();
-                int locID = buffer.read16U();
-                byte minZ = buffer.read8C();
-                PlayerEntity player;
-
-                if (pid == localPID) {
-                    player = localPlayer;
-                } else {
-                    player = players[pid];
-                }
-
-                if (player != null) {
-                    LocType type = LocType.get(locID);
-                    int heightmapSW = levelHeightmap[currentLevel][x][z];
-                    int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
-                    int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
-                    int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
-
-                    Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-
-                    if (model != null) {
-                        appendLoc(duration + 1, -1, 0, classID, z, 0, currentLevel, x, delay + 1);
-
-                        player.locStartCycle = delay + loopCycle;
-                        player.locStopCycle = duration + loopCycle;
-                        player.locModel = model;
-                        int sizeX = type.width;
-                        int sizeZ = type.length;
-
-                        if ((rotation == 1) || (rotation == 3)) {
-                            sizeX = type.length;
-                            sizeZ = type.width;
-                        }
-
-                        player.locOffsetX = (x * 128) + (sizeX * 64);
-                        player.locOffsetZ = (z * 128) + (sizeZ * 64);
-                        player.locOffsetY = getHeightmapY(currentLevel, player.locOffsetX, player.locOffsetZ);
-
-                        if (minX > maxX) {
-                            byte tmp = minX;
-                            minX = maxX;
-                            maxX = tmp;
-                        }
-
-                        if (minZ > maxZ) {
-                            byte tmp = minZ;
-                            minZ = maxZ;
-                            maxZ = tmp;
-                        }
-
-                        player.minSceneTileX = x + minX;
-                        player.maxSceneTileX = x + maxX;
-                        player.minSceneTileZ = z + minZ;
-                        player.maxSceneTileZ = z + maxZ;
-                    }
-                }
+            case PacketIn.OBJ_ADD:
+                readObjAdd();
                 break;
-            }
-
-            case PacketIn.MAP_ANIM: {
-                int pos = buffer.read8U();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int id = buffer.read16U();
-                int y = buffer.read8U();
-                int delay = buffer.read16U();
-
-                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                    x = (x * 128) + 64;
-                    z = (z * 128) + 64;
-                    SpotAnimEntity spotAnim = new SpotAnimEntity(currentLevel, loopCycle, delay, id, getHeightmapY(currentLevel, x, z) - y, z, x);
-                    spotanims.pushBack(spotAnim);
-                }
-                return;
-            }
-
-            case PacketIn.SOUND_AREA: {
-                int pos = buffer.read8U();
-                int x = baseX + ((pos >> 4) & 7);
-                int z = baseZ + (pos & 7);
-                int waveID = buffer.read16U();
-                int info = buffer.read8U();
-                int maxDist = (info >> 4) & 0xf;
-                int loopCount = info & 0b111;
-                if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && aBoolean848 && !lowmem && (waveCount < 50)) {
-                    waveIDs[waveCount] = waveID;
-                    waveLoops[waveCount] = loopCount;
-                    waveDelay[waveCount] = SoundTrack.delays[waveID];
-                    waveCount++;
-                }
-            }
-
-            case PacketIn.MAP_PROJANIM: {
-                int pos = buffer.read8U();
-                int srcX = baseX + ((pos >> 4) & 7);
-                int srcZ = baseZ + (pos & 7);
-                int dstX = srcX + buffer.read();
-                int dstZ = srcZ + buffer.read();
-                int targetID = buffer.read16();
-                int spotanimID = buffer.read16U();
-                int srcY = buffer.read8U() * 4;
-                int dstY = buffer.read8U() * 4;
-                int delay = buffer.read16U();
-                int duration = buffer.read16U();
-                int peakPitch = buffer.read8U();
-                int arcSize = buffer.read8U();
-                if ((srcX >= 0) && (srcZ >= 0) && (srcX < 104) && (srcZ < 104) && (dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104) && (spotanimID != 65535)) {
-                    srcX = (srcX * 128) + 64;
-                    srcZ = (srcZ * 128) + 64;
-                    dstX = (dstX * 128) + 64;
-                    dstZ = (dstZ * 128) + 64;
-                    ProjectileEntity projectile = new ProjectileEntity(peakPitch, dstY, delay + loopCycle, duration + loopCycle, arcSize, currentLevel, getHeightmapY(currentLevel, srcX, srcZ) - srcY, srcZ, srcX, targetID, spotanimID);
-                    projectile.updateVelocity(delay + loopCycle, dstZ, getHeightmapY(currentLevel, dstX, dstZ) - dstY, dstX);
-                    projectiles.pushBack(projectile);
-                }
+            case PacketIn.OBJ_REVEAL:
+                readObjReveal();
                 break;
+            case PacketIn.OBJ_COUNT:
+                readObjCount();
+                break;
+            case PacketIn.OBJ_DEL:
+                readObjDelete();
+                break;
+            case PacketIn.LOC_ADD:
+                readLocAdd();
+                break;
+            case PacketIn.LOC_CHANGE:
+                readLocChange();
+                break;
+            case PacketIn.LOC_DEL:
+                readLocDelete();
+                break;
+            case PacketIn.LOC_PLAYER:
+                readLocPlayer();
+                break;
+            case PacketIn.MAP_ANIM:
+                readMapAnim();
+                break;
+            case PacketIn.MAP_SOUND:
+                readMapSound();
+                break;
+            case PacketIn.MAP_PROJECTILE:
+                readMapProjectile();
+                break;
+        }
+    }
+
+    private void readObjAdd() {
+        int objID = in.read16ULEA();
+        int objCount = in.read16U();
+        int pos = in.read8U();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            ObjEntity stack = new ObjEntity();
+            stack.id = objID;
+            stack.count = objCount;
+            if (levelObjStacks[currentLevel][x][z] == null) {
+                levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
+            }
+            levelObjStacks[currentLevel][x][z].pushBack(stack);
+            sortObjStacks(x, z);
+        }
+    }
+
+    private void readObjReveal() {
+        int objID = in.read16UA();
+        int pos = in.read8US();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int ownerPID = in.read16UA();
+        int objCount = in.read16U();
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
+            ObjEntity obj = new ObjEntity();
+            obj.id = objID;
+            obj.count = objCount;
+            if (levelObjStacks[currentLevel][x][z] == null) {
+                levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
+            }
+            levelObjStacks[currentLevel][x][z].pushBack(obj);
+            sortObjStacks(x, z);
+        }
+    }
+
+    private void readObjCount() {
+        int pos = in.read8U();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int objID = in.read16U();
+        int oldCount = in.read16U();
+        int newCount = in.read16U();
+
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
+            if (stacks != null) {
+                for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
+                    if ((stack.id != (objID & 0x7fff)) || (stack.count != oldCount)) {
+                        continue;
+                    }
+                    stack.count = newCount;
+                    break;
+                }
+                sortObjStacks(x, z);
             }
         }
     }
 
-    public void method139(Buffer buffer) {
-        buffer.accessBits();
-        int k = buffer.readN(8);
-        if (k < npcCount) {
-            for (int l = k; l < npcCount; l++) {
-                anIntArray840[anInt839++] = npcIDs[l];
+    private void readObjDelete() {
+        int pos = in.read8UA();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int objID = in.read16U();
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
+            if (list != null) {
+                for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
+                    if (obj.id != (objID & 0x7fff)) {
+                        continue;
+                    }
+                    obj.unlink();
+                    break;
+                }
+                if (list.peekFront() == null) {
+                    levelObjStacks[currentLevel][x][z] = null;
+                }
+                sortObjStacks(x, z);
             }
         }
-        if (k > npcCount) {
+    }
+
+    private void readLocAdd() {
+        int pos = in.read8UA();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int id = in.read16ULE();
+        int info = in.read8US();
+        int kind = info >> 2;
+        int rotation = info & 3;
+        int classID = LOC_KIND_TO_CLASS_ID[kind];
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            appendLoc(-1, id, rotation, classID, z, kind, currentLevel, x, 0);
+        }
+    }
+
+    private void readLocChange() {
+        int pos = in.read8US();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int info = in.read8US();
+        int kind = info >> 2;
+        int rotation = info & 3;
+        int classID = LOC_KIND_TO_CLASS_ID[kind];
+        int seqID = in.read16UA();
+
+        if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
+            return;
+        }
+
+        int heightmapSW = levelHeightmap[currentLevel][x][z];
+        int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
+        int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
+        int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
+
+        if (classID == 0) {
+            SceneWall wall = scene.getWall(currentLevel, x, z);
+
+            if (wall != null) {
+                int locID = (wall.bitset >> 14) & 0x7fff;
+
+                if (kind == 2) {
+                    wall.entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                    wall.entityB = new LocEntity(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                } else {
+                    wall.entityA = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                }
+            }
+        }
+
+        if (classID == 1) {
+            SceneWallDecoration deco = scene.getWallDecoration(currentLevel, x, z);
+
+            if (deco != null) {
+                deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+            }
+        }
+
+        if (classID == 2) {
+            SceneLoc loc = scene.getLoc(currentLevel, x, z);
+
+            if (kind == 11) {
+                kind = 10;
+            }
+
+            if (loc != null) {
+                loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+            }
+        }
+
+        if (classID == 3) {
+            SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentLevel);
+
+            if (deco != null) {
+                deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+            }
+        }
+    }
+
+    private void readLocDelete() {
+        int info = in.read8UC();
+        int kind = info >> 2;
+        int rotation = info & 3;
+        int classID = LOC_KIND_TO_CLASS_ID[kind];
+        int pos = in.read8U();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            appendLoc(-1, -1, rotation, classID, z, kind, currentLevel, x, 0);
+        }
+    }
+
+    private void readLocPlayer() {
+        int pos = in.read8US();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int pid = in.read16U();
+        byte maxX = in.read8S();
+        int delay = in.read16ULE();
+        byte maxZ = in.read8C();
+        int duration = in.read16U();
+        int info = in.read8US();
+        int kind = info >> 2;
+        int rotation = info & 3;
+        int classID = LOC_KIND_TO_CLASS_ID[kind];
+        byte minX = in.read();
+        int locID = in.read16U();
+        byte minZ = in.read8C();
+        PlayerEntity player;
+
+        if (pid == localPID) {
+            player = localPlayer;
+        } else {
+            player = players[pid];
+        }
+
+        if (player != null) {
+            LocType type = LocType.get(locID);
+            int heightmapSW = levelHeightmap[currentLevel][x][z];
+            int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
+            int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
+            int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
+
+            Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+
+            if (model != null) {
+                appendLoc(duration + 1, -1, 0, classID, z, 0, currentLevel, x, delay + 1);
+
+                player.locStartCycle = delay + loopCycle;
+                player.locStopCycle = duration + loopCycle;
+                player.locModel = model;
+                int sizeX = type.width;
+                int sizeZ = type.length;
+
+                if ((rotation == 1) || (rotation == 3)) {
+                    sizeX = type.length;
+                    sizeZ = type.width;
+                }
+
+                player.locOffsetX = (x * 128) + (sizeX * 64);
+                player.locOffsetZ = (z * 128) + (sizeZ * 64);
+                player.locOffsetY = getHeightmapY(currentLevel, player.locOffsetX, player.locOffsetZ);
+
+                if (minX > maxX) {
+                    byte tmp = minX;
+                    minX = maxX;
+                    maxX = tmp;
+                }
+
+                if (minZ > maxZ) {
+                    byte tmp = minZ;
+                    minZ = maxZ;
+                    maxZ = tmp;
+                }
+
+                player.minSceneTileX = x + minX;
+                player.maxSceneTileX = x + maxX;
+                player.minSceneTileZ = z + minZ;
+                player.maxSceneTileZ = z + maxZ;
+            }
+        }
+    }
+
+    private void readMapAnim() {
+        int pos = in.read8U();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int id = in.read16U();
+        int y = in.read8U();
+        int delay = in.read16U();
+
+        if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+            x = (x * 128) + 64;
+            z = (z * 128) + 64;
+            SpotAnimEntity anim = new SpotAnimEntity(currentLevel, loopCycle, delay, id, getHeightmapY(currentLevel, x, z) - y, z, x);
+            spotanims.pushBack(anim);
+        }
+    }
+
+    private void readMapSound() {
+        int pos = in.read8U();
+        int x = baseX + ((pos >> 4) & 7);
+        int z = baseZ + (pos & 7);
+        int waveID = in.read16U();
+        int info = in.read8U();
+        int maxDist = (info >> 4) & 0xf;
+        int loopCount = info & 0b111;
+        if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && aBoolean848 && !lowmem && (waveCount < 50)) {
+            waveIDs[waveCount] = waveID;
+            waveLoops[waveCount] = loopCount;
+            waveDelay[waveCount] = SoundTrack.delays[waveID];
+            waveCount++;
+        }
+    }
+
+    private void readMapProjectile() {
+        int pos = in.read8U();
+        int srcX = baseX + ((pos >> 4) & 7);
+        int srcZ = baseZ + (pos & 7);
+        int dstX = srcX + in.read();
+        int dstZ = srcZ + in.read();
+        int targetID = in.read16();
+        int spotanimID = in.read16U();
+        int srcY = in.read8U() * 4;
+        int dstY = in.read8U() * 4;
+        int delay = in.read16U();
+        int duration = in.read16U();
+        int peakPitch = in.read8U();
+        int arcSize = in.read8U();
+        if ((srcX >= 0) && (srcZ >= 0) && (srcX < 104) && (srcZ < 104) && (dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104) && (spotanimID != 65535)) {
+            srcX = (srcX * 128) + 64;
+            srcZ = (srcZ * 128) + 64;
+            dstX = (dstX * 128) + 64;
+            dstZ = (dstZ * 128) + 64;
+            ProjectileEntity projectile = new ProjectileEntity(peakPitch, dstY, delay + loopCycle, duration + loopCycle, arcSize, currentLevel, getHeightmapY(currentLevel, srcX, srcZ) - srcY, srcZ, srcX, targetID, spotanimID);
+            projectile.updateVelocity(delay + loopCycle, dstZ, getHeightmapY(currentLevel, dstX, dstZ) - dstY, dstX);
+            projectiles.pushBack(projectile);
+        }
+    }
+
+    public void readNPCs() {
+        in.accessBits();
+        int count = in.readN(8);
+
+        if (count < npcCount) {
+            for (int l = count; l < npcCount; l++) {
+                entityRemovalIDs[entityRemovalCount++] = npcIDs[l];
+            }
+        }
+
+        if (count > npcCount) {
             Signlink.reporterror(username + " Too many npcs");
             throw new RuntimeException("eek");
         }
+
         npcCount = 0;
-        for (int i1 = 0; i1 < k; i1++) {
-            int j1 = npcIDs[i1];
-            NPCEntity npc = npcs[j1];
-            int k1 = buffer.readN(1);
-            if (k1 == 0) {
-                npcIDs[npcCount++] = j1;
-                npc.anInt1537 = loopCycle;
+        for (int i = 0; i < count; i++) {
+            int id = npcIDs[i];
+            NPCEntity npc = npcs[id];
+
+            if (in.readN(1) == 0) {
+                npcIDs[npcCount++] = id;
+                npc.cycle = loopCycle;
             } else {
-                int l1 = buffer.readN(2);
-                if (l1 == 0) {
-                    npcIDs[npcCount++] = j1;
-                    npc.anInt1537 = loopCycle;
-                    anIntArray894[anInt893++] = j1;
-                } else if (l1 == 1) {
-                    npcIDs[npcCount++] = j1;
-                    npc.anInt1537 = loopCycle;
-                    int i2 = buffer.readN(3);
-                    npc.method448(false, i2);
-                    int k2 = buffer.readN(1);
-                    if (k2 == 1) {
-                        anIntArray894[anInt893++] = j1;
+                int type = in.readN(2);
+
+                if (type == 0) {
+                    npcIDs[npcCount++] = id;
+                    npc.cycle = loopCycle;
+                    entityUpdateIDs[entityUpdateCount++] = id;
+                } else if (type == 1) {
+                    npcIDs[npcCount++] = id;
+                    npc.cycle = loopCycle;
+
+                    npc.step(false, in.readN(3));
+
+                    if (in.readN(1) == 1) {
+                        entityUpdateIDs[entityUpdateCount++] = id;
                     }
-                } else if (l1 == 2) {
-                    npcIDs[npcCount++] = j1;
-                    npc.anInt1537 = loopCycle;
-                    int j2 = buffer.readN(3);
-                    npc.method448(true, j2);
-                    int l2 = buffer.readN(3);
-                    npc.method448(true, l2);
-                    int i3 = buffer.readN(1);
-                    if (i3 == 1) {
-                        anIntArray894[anInt893++] = j1;
+                } else if (type == 2) {
+                    npcIDs[npcCount++] = id;
+                    npc.cycle = loopCycle;
+
+                    npc.step(true, in.readN(3));
+                    npc.step(true, in.readN(3));
+
+                    if (in.readN(1) == 1) {
+                        entityUpdateIDs[entityUpdateCount++] = id;
                     }
-                } else if (l1 == 3) {
-                    anIntArray840[anInt839++] = j1;
+                } else if (type == 3) {
+                    entityRemovalIDs[entityRemovalCount++] = id;
                 }
             }
         }
@@ -10940,29 +11084,34 @@ public class Game extends GameShell {
         }
     }
 
-    public void readPlayers(int i, Buffer buffer) {
-        anInt839 = 0;
-        anInt893 = 0;
-        method117(buffer);
-        method134(buffer);
-        method91(buffer, i);
-        method49(buffer);
-        for (int k = 0; k < anInt839; k++) {
-            int l = anIntArray840[k];
-            if (players[l].anInt1537 != loopCycle) {
-                players[l] = null;
+    public void readSyncPlayers() {
+        entityRemovalCount = 0;
+        entityUpdateCount = 0;
+
+        readLocalPlayer();
+        readPlayers();
+        readNewPlayers();
+        readPlayerUpdates();
+
+        for (int i = 0; i < entityRemovalCount; i++) {
+            int id = entityRemovalIDs[i];
+            if (players[id].cycle != loopCycle) {
+                players[id] = null;
             }
         }
-        if (buffer.position != i) {
-            Signlink.reporterror("Error packet size mismatch in getplayer pos:" + buffer.position + " psize:" + i);
+
+        if (in.position != packetSize) {
+            Signlink.reporterror("Error packet size mismatch in getplayer pos:" + in.position + " psize:" + packetSize);
             throw new RuntimeException("eek");
         }
-        for (int i1 = 0; i1 < playerCount; i1++) {
-            if (players[playerIDs[i1]] == null) {
-                Signlink.reporterror(username + " null entry in pl list - pos:" + i1 + " size:" + playerCount);
+
+        for (int i = 0; i < playerCount; i++) {
+            if (players[playerIDs[i]] == null) {
+                Signlink.reporterror(username + " null entry in pl list - pos:" + i + " size:" + playerCount);
                 throw new RuntimeException("eek");
             }
         }
+
         awaitingSync = false;
     }
 
@@ -11049,7 +11198,7 @@ public class Game extends GameShell {
 
             switch (packetType) {
                 case PacketIn.SYNC_PLAYERS:
-                    readPlayers(packetSize, in);
+                    readSyncPlayers();
                     break;
 
                 case PacketIn.LAST_LOGIN_INFO:
@@ -11061,11 +11210,11 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_SETPLAYERHEAD:
-                    readComponentPlayerHead();
+                    readIfSetPlayerHead();
                     break;
 
                 case PacketIn.CAM_RESET:
-                    resetCamera();
+                    readCameraReset();
                     break;
 
                 case PacketIn.INV_CLEAR:
@@ -11077,7 +11226,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.CAM_SETPOS:
-                    readCameraPosition();
+                    readCameraSetPos();
                     break;
 
                 case PacketIn.CAM_LOOKAT:
@@ -11085,19 +11234,19 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_STAT:
-                    readSkill();
+                    readUpdateStat();
                     break;
 
-                case PacketIn.TAB_COMPONENT:
-                    readTabComponent();
+                case PacketIn.IF_TAB:
+                    readIfTab();
                     break;
 
                 case PacketIn.MIDI_SONG:
-                    readSong();
+                    readMidiSong();
                     break;
 
                 case PacketIn.MIDI_JINGLE:
-                    readJingle();
+                    readMidiJingle();
                     break;
 
                 case PacketIn.LOGOUT:
@@ -11105,16 +11254,16 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_SETPOSITION:
-                    readComponentPosition();
+                    readIfSetPosition();
                     break;
 
                 case PacketIn.REBUILD_REGION:
                 case PacketIn.REBUILD_REGION_INSTANCE:
-                    rebuildRegion();
+                    readRebuildRegion();
                     break;
 
                 case PacketIn.IF_VIEWPORT_OVERLAY:
-                    readViewportOverlayComponent();
+                    readIfViewportOverlay();
                     break;
 
                 case PacketIn.MINIMAP_TOGGLE:
@@ -11122,7 +11271,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_SETNPCHEAD:
-                    readComponentNPCHead();
+                    readIfSetNPCHead();
                     break;
 
                 case PacketIn.UPDATE_REBOOT_TIMER:
@@ -11142,7 +11291,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.SET_PLAYER_OP:
-                    readPlayerOption();
+                    readSetPlayerOp();
                     break;
 
                 case PacketIn.CLEAR_MAP_FLAG:
@@ -11150,7 +11299,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.MESSAGE_GAME:
-                    readGameMessage();
+                    readMessageGame();
                     break;
 
                 case PacketIn.RESET_ANIMS:
@@ -11162,19 +11311,19 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_RUNENERGY:
-                    readRunEnergy();
+                    readUpdateRunEnergy();
                     break;
 
                 case PacketIn.HINT_ARROW:
-                    readHint();
+                    readHintArrow();
                     break;
 
                 case PacketIn.IF_VIEWPORT_AND_SIDEBAR:
-                    readViewportAndSidebarComponents();
+                    readIfViewportAndSidebar();
                     break;
 
                 case PacketIn.IF_SETSCROLLPOS:
-                    readComponentScrollPos();
+                    readIfSetScrollPos();
                     break;
 
                 case PacketIn.RESET_CLIENT_VARCACHE:
@@ -11182,7 +11331,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.MESSAGE_PUBLIC:
-                    readPublicMessage();
+                    readMessagePublic();
                     break;
 
                 case PacketIn.ZONE_BASE:
@@ -11195,19 +11344,19 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_SETOBJECT:
-                    readComponentModelObj();
+                    readIfSetObject();
                     break;
 
                 case PacketIn.IF_SETHIDE:
-                    readComponentHide();
+                    readIfSetHide();
                     break;
 
                 case PacketIn.IF_STOPANIM:
-                    readComponentResetSeq();
+                    readIfStopAnim();
                     break;
 
                 case PacketIn.IF_SETTEXT:
-                    readComponentText();
+                    readIfSetText();
                     break;
 
                 case PacketIn.CHAT_FILTER_SETTINGS:
@@ -11215,23 +11364,23 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_RUNWEIGHT:
-                    readRunWeight();
+                    readUpdateRunWeight();
                     break;
 
                 case PacketIn.IF_SETMODEL:
-                    readComponentModel();
+                    readIfSetModel();
                     break;
 
                 case PacketIn.IF_SETCOLOR:
-                    readComponentColor();
+                    readIfSetColor();
                     break;
 
                 case PacketIn.UPDATE_INV_FULL:
-                    readInventoryUpdateFull();
+                    readUpdateInvFull();
                     break;
 
                 case PacketIn.IF_SETANGLE:
-                    readComponentModelRotation();
+                    readIfSetAngle();
                     break;
 
                 case PacketIn.FRIENDLIST_LOADED:
@@ -11245,7 +11394,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.SYNC_NPCS:
-                    readNPCs(in, packetSize);
+                    readSyncNPCs();
                     break;
 
                 case PacketIn.INPUT_AMOUNT:
@@ -11278,7 +11427,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_SETANIM:
-                    readComponentSeq();
+                    readIfSetAnim();
                     break;
 
                 case PacketIn.IF_CLOSE:
@@ -11286,15 +11435,15 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_INV_PARTIAL:
-                    readInventoryUpdatePartial();
+                    readUpdateInvPartial();
                     break;
 
                 case PacketIn.TAB_SELECTED:
                     readTabSelected();
                     break;
 
-                case PacketIn.CHAT_COMPONENT:
-                    readChatComponent();
+                case PacketIn.IF_CHAT:
+                    readIfChat();
                     break;
 
                 case PacketIn.OBJ_ADD:
@@ -11304,11 +11453,11 @@ public class Game extends GameShell {
                 case PacketIn.LOC_ADD:
                 case PacketIn.LOC_CHANGE:
                 case PacketIn.LOC_DEL:
-                case PacketIn.SOUND_AREA:
-                case PacketIn.PLAYER_LOC:
+                case PacketIn.MAP_SOUND:
+                case PacketIn.LOC_PLAYER:
                 case PacketIn.MAP_ANIM:
-                case PacketIn.MAP_PROJANIM:
-                    readZonePacket(in, packetType);
+                case PacketIn.MAP_PROJECTILE:
+                    readZonePacket(packetType);
                     break;
 
                 default:
@@ -11340,7 +11489,7 @@ public class Game extends GameShell {
         lastAddress = in.read32ME();
         daysSinceLastLogin = in.read16U();
 
-        if ((lastAddress != 0) && (viewportComponentID == -1)) {
+        if ((lastAddress != 0) && (viewportInterfaceID == -1)) {
             Signlink.dnslookup(StringUtil.formatIPv4(lastAddress));
             closeInterfaces();
             char cmpType = 650;
@@ -11349,11 +11498,11 @@ public class Game extends GameShell {
             }
             reportAbuseInput = "";
             aBoolean1158 = false;
-            for (int i = 0; i < Component.instances.length; i++) {
-                if ((Component.instances[i] == null) || (Component.instances[i].contentType != cmpType)) {
+            for (int i = 0; i < IfType.instances.length; i++) {
+                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != cmpType)) {
                     continue;
                 }
-                viewportComponentID = Component.instances[i].parentID;
+                viewportInterfaceID = IfType.instances[i].parentID;
                 break;
             }
         }
@@ -11377,19 +11526,19 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentPlayerHead() {
-        int componentID = in.read16ULEA();
-        Component component = Component.instances[componentID];
-        component.modelCategory = 3;
+    private void readIfSetPlayerHead() {
+        int interfaceID = in.read16ULEA();
+        IfType iface = IfType.instances[interfaceID];
+        iface.modelCategory = 3;
 
         if (localPlayer.npcType == null) {
-            component.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
+            iface.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
         } else {
-            component.modelID = (int) (0x12345678L + localPlayer.npcType.uid);
+            iface.modelID = (int) (0x12345678L + localPlayer.npcType.uid);
         }
     }
 
-    private void resetCamera() {
+    private void readCameraReset() {
         cutscene = false;
         for (int l = 0; l < 5; l++) {
             cameraModifierEnabled[l] = false;
@@ -11397,11 +11546,11 @@ public class Game extends GameShell {
     }
 
     private void readInventoryClear() {
-        int componentID = in.read16ULE();
-        Component component = Component.instances[componentID];
-        for (int slot = 0; slot < component.invSlotObjID.length; slot++) {
-            component.invSlotObjID[slot] = -1;
-            component.invSlotObjID[slot] = 0;
+        int interfaceID = in.read16ULE();
+        IfType iface = IfType.instances[interfaceID];
+        for (int slot = 0; slot < iface.inventorySlotObjID.length; slot++) {
+            iface.inventorySlotObjID[slot] = -1;
+            iface.inventorySlotObjID[slot] = 0;
         }
     }
 
@@ -11412,7 +11561,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readCameraPosition() {
+    private void readCameraSetPos() {
         cutscene = true;
         cutsceneSrcLocalTileX = in.read8U();
         cutsceneSrcLocalTileZ = in.read8U();
@@ -11454,7 +11603,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readSkill() {
+    private void readUpdateStat() {
         redrawSidebar = true;
         int skill = in.read8U();
         int experience = in.read32RME();
@@ -11469,18 +11618,18 @@ public class Game extends GameShell {
         }
     }
 
-    private void readTabComponent() {
-        int componentID = in.read16U();
+    private void readIfTab() {
+        int interfaceID = in.read16U();
         int tab = in.read8UA();
-        if (componentID == 65535) {
-            componentID = -1;
+        if (interfaceID == 65535) {
+            interfaceID = -1;
         }
-        tabComponentIDs[tab] = componentID;
+        tabComponentIDs[tab] = interfaceID;
         redrawSidebar = true;
         redrawSideicons = true;
     }
 
-    private void readSong() {
+    private void readMidiSong() {
         int next = in.read16ULE();
         if (next == 65535) {
             next = -1;
@@ -11493,7 +11642,7 @@ public class Game extends GameShell {
         nextSong = next;
     }
 
-    private void readJingle() {
+    private void readMidiJingle() {
         int next = in.read16ULEA();
         int delay = in.read16UA();
         if (midiActive && !lowmem) {
@@ -11504,16 +11653,16 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentPosition() {
+    private void readIfSetPosition() {
         int x = in.read16();
         int y = in.read16LE();
-        int componentID = in.read16ULE();
-        Component component = Component.instances[componentID];
-        component.x = x;
-        component.y = y;
+        int interfaceID = in.read16ULE();
+        IfType iface = IfType.instances[interfaceID];
+        iface.x = x;
+        iface.y = y;
     }
 
-    private void rebuildRegion() {
+    private void readRebuildRegion() {
         int zoneX = sceneCenterZoneX;
         int zoneZ = sceneCenterZoneZ;
 
@@ -11760,19 +11909,19 @@ public class Game extends GameShell {
         }
     }
 
-    private void readViewportOverlayComponent() {
-        int componentID = in.read16LE();
-        if (componentID >= 0) {
-            resetParentComponentSeq(componentID);
+    private void readIfViewportOverlay() {
+        int interfaceID = in.read16LE();
+        if (interfaceID >= 0) {
+            resetParentComponentSeq(interfaceID);
         }
-        viewportOverlayComponentID = componentID;
+        viewportOverlayComponentID = interfaceID;
     }
 
-    private void readComponentNPCHead() {
+    private void readIfSetNPCHead() {
         int npcID = in.read16ULEA();
-        int componentID = in.read16ULEA();
-        Component.instances[componentID].modelCategory = 2;
-        Component.instances[componentID].modelID = npcID;
+        int interfaceID = in.read16ULEA();
+        IfType.instances[interfaceID].modelCategory = 2;
+        IfType.instances[interfaceID].modelID = npcID;
     }
 
     private void readZoneUpdate() {
@@ -11780,7 +11929,7 @@ public class Game extends GameShell {
         baseX = in.read8UC();
         while (in.position < packetSize) {
             int opcode = in.read8U();
-            readZonePacket(in, opcode);
+            readZonePacket(opcode);
         }
     }
 
@@ -11808,7 +11957,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readPlayerOption() {
+    private void readSetPlayerOp() {
         int option = in.read8UC();
         int priority = in.read8UA();
         String text = in.readString();
@@ -11821,7 +11970,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readGameMessage() {
+    private void readMessageGame() {
         String s = in.readString();
 
         if (s.endsWith(":tradereq:")) {
@@ -11942,14 +12091,14 @@ public class Game extends GameShell {
         }
     }
 
-    private void readRunEnergy() {
+    private void readUpdateRunEnergy() {
         if (selectedTab == 12) {
             redrawSidebar = true;
         }
         energy = in.read8U();
     }
 
-    private void readHint() {
+    private void readHintArrow() {
         hintType = in.read8U();
 
         if (hintType == 1) {
@@ -11988,12 +12137,12 @@ public class Game extends GameShell {
         }
     }
 
-    private void readViewportAndSidebarComponents() {
+    private void readIfViewportAndSidebar() {
         int viewportComponentID = in.read16UA();
         int sidebarComponentID = in.read16U();
 
-        if (chatbackComponentID != -1) {
-            chatbackComponentID = -1;
+        if (chatInterfaceID != -1) {
+            chatInterfaceID = -1;
             redrawChatback = true;
         }
 
@@ -12002,25 +12151,25 @@ public class Game extends GameShell {
             redrawChatback = true;
         }
 
-        this.viewportComponentID = viewportComponentID;
+        this.viewportInterfaceID = viewportComponentID;
         this.sidebarComponentID = sidebarComponentID;
         redrawSidebar = true;
         redrawSideicons = true;
         pressedContinueOption = false;
     }
 
-    private void readComponentScrollPos() {
-        int componentID = in.read16ULE();
+    private void readIfSetScrollPos() {
+        int interfaceID = in.read16ULE();
         int scrollPos = in.read16UA();
-        Component component = Component.instances[componentID];
-        if ((component != null) && (component.type == 0)) {
+        IfType iface = IfType.instances[interfaceID];
+        if ((iface != null) && (iface.type == 0)) {
             if (scrollPos < 0) {
                 scrollPos = 0;
             }
-            if (scrollPos > (component.scrollableHeight - component.height)) {
-                scrollPos = component.scrollableHeight - component.height;
+            if (scrollPos > (iface.scrollableHeight - iface.height)) {
+                scrollPos = iface.scrollableHeight - iface.height;
             }
-            component.scrollPos = scrollPos;
+            iface.scrollPos = scrollPos;
         }
     }
 
@@ -12034,7 +12183,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readPublicMessage() {
+    private void readMessagePublic() {
         long name37 = in.read64();
         int messageID = in.read32();
         int role = in.read8U();
@@ -12090,54 +12239,54 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentModelObj() {
-        int componentID = in.read16ULE();
+    private void readIfSetObject() {
+        int interfaceID = in.read16ULE();
         int zoom = in.read16U();
         int objID = in.read16U();
         if (objID == 65535) {
-            Component.instances[componentID].modelCategory = 0;
+            IfType.instances[interfaceID].modelCategory = 0;
         } else {
             ObjType type = ObjType.get(objID);
-            Component.instances[componentID].modelCategory = 4;
-            Component.instances[componentID].modelID = objID;
-            Component.instances[componentID].modelPitch = type.iconPitch;
-            Component.instances[componentID].modelYaw = type.iconYaw;
-            Component.instances[componentID].modelZoom = (type.iconZoom * 100) / zoom;
+            IfType.instances[interfaceID].modelCategory = 4;
+            IfType.instances[interfaceID].modelID = objID;
+            IfType.instances[interfaceID].modelPitch = type.iconPitch;
+            IfType.instances[interfaceID].modelYaw = type.iconYaw;
+            IfType.instances[interfaceID].modelZoom = (type.iconZoom * 100) / zoom;
         }
     }
 
-    private void readComponentHide() {
+    private void readIfSetHide() {
         boolean hide = in.read8U() == 1;
-        int componentID = in.read16U();
-        Component.instances[componentID].hide = hide;
+        int interfaceID = in.read16U();
+        IfType.instances[interfaceID].hide = hide;
     }
 
-    private void readComponentResetSeq() {
-        int componentID = in.read16ULE();
-        resetParentComponentSeq(componentID);
-        if (chatbackComponentID != -1) {
-            chatbackComponentID = -1;
+    private void readIfStopAnim() {
+        int interfaceID = in.read16ULE();
+        resetParentComponentSeq(interfaceID);
+        if (chatInterfaceID != -1) {
+            chatInterfaceID = -1;
             redrawChatback = true;
         }
         if (chatbackInputType != 0) {
             chatbackInputType = 0;
             redrawChatback = true;
         }
-        sidebarComponentID = componentID;
+        sidebarComponentID = interfaceID;
         redrawSidebar = true;
         redrawSideicons = true;
-        viewportComponentID = -1;
+        viewportInterfaceID = -1;
         pressedContinueOption = false;
     }
 
-    private void readComponentText() {
+    private void readIfSetText() {
         String text = in.readString();
-        int componentID = in.read16UA();
-        if ((componentID >= 0) && (componentID < Component.instances.length)) {
-            Component component = Component.instances[componentID];
-            if (component != null) {
-                component.text = text;
-                if (component.parentID == tabComponentIDs[selectedTab]) {
+        int interfaceID = in.read16UA();
+        if ((interfaceID >= 0) && (interfaceID < IfType.instances.length)) {
+            IfType iface = IfType.instances[interfaceID];
+            if (iface != null) {
+                iface.text = text;
+                if (iface.parentID == tabComponentIDs[selectedTab]) {
                     redrawSidebar = true;
                 }
             }
@@ -12152,64 +12301,65 @@ public class Game extends GameShell {
         redrawChatback = true;
     }
 
-    private void readRunWeight() {
+    private void readUpdateRunWeight() {
         if (selectedTab == 12) {
             redrawSidebar = true;
         }
         weightCarried = in.read16();
     }
 
-    private void readComponentModel() {
-        int componentID = in.read16ULEA();
+    private void readIfSetModel() {
+        int interfaceID = in.read16ULEA();
         int modelID = in.read16U();
-        Component.instances[componentID].modelCategory = 1;
-        Component.instances[componentID].modelID = modelID;
+        IfType.instances[interfaceID].modelCategory = 1;
+        IfType.instances[interfaceID].modelID = modelID;
     }
 
-    private void readComponentColor() {
-        int componentID = in.read16ULEA();
+    private void readIfSetColor() {
+        int interfaceID = in.read16ULEA();
         int rgb555 = in.read16ULEA();
         int r = (rgb555 >> 10) & 0x1f;
         int g = (rgb555 >> 5) & 0x1f;
         int b = rgb555 & 0x1f;
-        Component.instances[componentID].color = (r << 19) + (g << 11) + (b << 3);
+        IfType.instances[interfaceID].color = (r << 19) + (g << 11) + (b << 3);
     }
 
-    private void readInventoryUpdateFull() {
+    private void readUpdateInvFull() {
         redrawSidebar = true;
-        int componentID = in.read16U();
-        Component component = Component.instances[componentID];
-        int count = in.read16U();
-        for (int slot = 0; slot < count; slot++) {
-            int amount = in.read8U();
+        int interfaceID = in.read16U();
+        IfType iface = IfType.instances[interfaceID];
+        int lastSlot = in.read16U();
 
-            if (amount == 255) {
-                amount = in.read32ME();
+        for (int slot = 0; slot < lastSlot; slot++) {
+            int objCount = in.read8U();
+
+            if (objCount == 255) {
+                objCount = in.read32ME();
             }
 
-            if (slot >= component.invSlotObjID.length) {
+            if (slot >= iface.inventorySlotObjID.length) {
                 in.read16ULEA();
             } else {
-                component.invSlotObjID[slot] = in.read16ULEA();
-                component.invSlotAmount[slot] = amount;
+                iface.inventorySlotObjID[slot] = in.read16ULEA();
+                iface.inventorySlotObjCount[slot] = objCount;
             }
         }
 
         // clear remaining slots
-        for (int slot = count; slot < component.invSlotObjID.length; slot++) {
-            component.invSlotObjID[slot] = 0;
-            component.invSlotAmount[slot] = 0;
+        for (int slot = lastSlot; slot < iface.inventorySlotObjID.length; slot++) {
+            iface.inventorySlotObjID[slot] = 0;
+            iface.inventorySlotObjCount[slot] = 0;
         }
     }
 
-    private void readComponentModelRotation() {
+    private void readIfSetAngle() {
         int zoom = in.read16UA();
-        int componentID = in.read16U();
+        int interfaceID = in.read16U();
         int pitch = in.read16U();
         int yaw = in.read16ULEA();
-        Component.instances[componentID].modelPitch = pitch;
-        Component.instances[componentID].modelYaw = yaw;
-        Component.instances[componentID].modelZoom = zoom;
+        IfType.instances[interfaceID].modelPitch = pitch;
+        IfType.instances[interfaceID].modelYaw = yaw;
+        IfType.instances[interfaceID].modelZoom = zoom;
     }
 
     private void openChatInput(int type) {
@@ -12219,28 +12369,28 @@ public class Game extends GameShell {
         redrawChatback = true;
     }
 
-    private void openViewportComponent(int componentID) {
+    private void openViewportComponent(int interfaceID) {
         if (sidebarComponentID != -1) {
             sidebarComponentID = -1;
             redrawSidebar = true;
             redrawSideicons = true;
         }
-        if (chatbackComponentID != -1) {
-            chatbackComponentID = -1;
+        if (chatInterfaceID != -1) {
+            chatInterfaceID = -1;
             redrawChatback = true;
         }
         if (chatbackInputType != 0) {
             chatbackInputType = 0;
             redrawChatback = true;
         }
-        viewportComponentID = componentID;
+        viewportInterfaceID = interfaceID;
         pressedContinueOption = false;
     }
 
     private void readViewportComponent() {
-        int componentID = in.read16U();
-        resetParentComponentSeq(componentID);
-        openViewportComponent(componentID);
+        int interfaceID = in.read16U();
+        resetParentComponentSeq(interfaceID);
+        openViewportComponent(interfaceID);
     }
 
     private void readVarpLarge() {
@@ -12273,31 +12423,32 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentSeq() {
-        int componentID = in.read16U();
+    private void readIfSetAnim() {
+        int interfaceID = in.read16U();
         int seqID = in.read16();
-        Component component = Component.instances[componentID];
-        component.seqID = seqID;
+        IfType iface = IfType.instances[interfaceID];
+        iface.seqID = seqID;
         if (seqID == -1) {
-            component.seqFrame = 0;
-            component.seqCycle = 0;
+            iface.seqFrame = 0;
+            iface.seqCycle = 0;
         }
     }
 
-    private void readInventoryUpdatePartial() {
+    private void readUpdateInvPartial() {
         redrawSidebar = true;
-        int componentID = in.read16U();
-        Component component = Component.instances[componentID];
+        int interfaceID = in.read16U();
+        IfType iface = IfType.instances[interfaceID];
+
         while (in.position < packetSize) {
             int slot = in.readSmartU();
             int objID = in.read16U();
-            int amount = in.read8U();
-            if (amount == 255) {
-                amount = in.read32();
+            int objCount = in.read8U();
+            if (objCount == 255) {
+                objCount = in.read32();
             }
-            if ((slot >= 0) && (slot < component.invSlotObjID.length)) {
-                component.invSlotObjID[slot] = objID;
-                component.invSlotAmount[slot] = amount;
+            if ((slot >= 0) && (slot < iface.inventorySlotObjID.length)) {
+                iface.inventorySlotObjID[slot] = objID;
+                iface.inventorySlotObjCount[slot] = objCount;
             }
         }
     }
@@ -12308,17 +12459,17 @@ public class Game extends GameShell {
         redrawSideicons = true;
     }
 
-    private void readChatComponent() {
-        int componentID = in.read16ULE();
-        resetParentComponentSeq(componentID);
+    private void readIfChat() {
+        int interfaceID = in.read16ULE();
+        resetParentComponentSeq(interfaceID);
         if (sidebarComponentID != -1) {
             sidebarComponentID = -1;
             redrawSidebar = true;
             redrawSideicons = true;
         }
-        chatbackComponentID = componentID;
+        chatInterfaceID = interfaceID;
         redrawChatback = true;
-        viewportComponentID = -1;
+        viewportInterfaceID = -1;
         pressedContinueOption = false;
     }
 
@@ -12444,12 +12595,12 @@ public class Game extends GameShell {
             pressedContinueOption = false;
             redrawSideicons = true;
         }
-        if (chatbackComponentID != -1) {
-            chatbackComponentID = -1;
+        if (chatInterfaceID != -1) {
+            chatInterfaceID = -1;
             redrawChatback = true;
             pressedContinueOption = false;
         }
-        viewportComponentID = -1;
+        viewportInterfaceID = -1;
     }
 
 }

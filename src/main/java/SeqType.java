@@ -36,7 +36,7 @@ public class SeqType {
 	public int[] transformIDs;
 
 	/**
-	 * Auxiliary transform indices appear to only be used by a {@link Component} of type <code>6</code> as seen in {@link Game#drawParentComponent(Component, int, int, int)}.
+	 * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentComponent(IfType, int, int, int)}.
 	 */
 	public int[] auxiliaryTransformIDs;
 
@@ -103,7 +103,7 @@ public class SeqType {
 	/**
 	 * If 0, restarts the sequence if already playing
 	 * If 1, does not restart if already playing
-	 * @see Game#method86(Buffer)
+	 * @see Game#readNPCUpdates()
 	 */
 	public int replayStyle = 1;
 
