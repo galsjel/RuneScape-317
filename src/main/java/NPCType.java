@@ -74,16 +74,19 @@ public class NPCType {
 	public long uid = -1L;
 	public int turnSpeed = 32;
 	public int seqTurnLeftID = -1;
-	public boolean aBoolean84 = true;
+	public boolean interactable = true;
 	public int anInt85;
 	public int anInt86 = 128;
-	public boolean aBoolean87 = true;
+	public boolean showOnMinimap = true;
 	public int[] overrides;
 	public byte[] desc;
 	public int unusedInt1 = -1;
 	public int anInt91 = 128;
 	public int anInt92;
-	public boolean aBoolean93 = false;
+	/**
+	 * Causes the npc to render on top of other npcs.
+	 */
+	public boolean important = false;
 	public int[] modelIDs;
 	public int unusedInt2 = -1;
 
@@ -285,7 +288,7 @@ public class NPCType {
 			} else if (i == 92) {
 				unusedInt1 = buffer.read16U();
 			} else if (i == 93) {
-				aBoolean87 = false;
+				showOnMinimap = false;
 			} else if (i == 95) {
 				level = buffer.read16U();
 			} else if (i == 97) {
@@ -293,7 +296,7 @@ public class NPCType {
 			} else if (i == 98) {
 				anInt86 = buffer.read16U();
 			} else if (i == 99) {
-				aBoolean93 = true;
+				important = true;
 			} else if (i == 100) {
 				anInt85 = buffer.read();
 			} else if (i == 101) {
@@ -320,7 +323,7 @@ public class NPCType {
 					}
 				}
 			} else if (i == 107) {
-				aBoolean84 = false;
+				interactable = false;
 			}
 		} while (true);
 	}

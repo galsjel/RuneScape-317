@@ -179,46 +179,47 @@ public class Draw3D {
         }
     }
 
-    public static int getAverageTextureRGB(int textureId) {
-        if (averageTextureRGB[textureId] != 0) {
-            return averageTextureRGB[textureId];
+    public static int getAverageTextureRGB(int textureID) {
+        if (averageTextureRGB[textureID] != 0) {
+            return averageTextureRGB[textureID];
         }
         int r = 0;
         int g = 0;
         int b = 0;
-        int length = texturePalette[textureId].length;
+        int length = texturePalette[textureID].length;
         for (int i = 0; i < length; i++) {
-            r += (texturePalette[textureId][i] >> 16) & 0xff;
-            g += (texturePalette[textureId][i] >> 8) & 0xff;
-            b += texturePalette[textureId][i] & 0xff;
+            r += (texturePalette[textureID][i] >> 16) & 0xff;
+            g += (texturePalette[textureID][i] >> 8) & 0xff;
+            b += texturePalette[textureID][i] & 0xff;
         }
         int rgb = ((r / length) << 16) + ((g / length) << 8) + (b / length);
         rgb = setGamma(rgb, 1.3999999999999999D);
         if (rgb == 0) {
             rgb = 1;
         }
-        averageTextureRGB[textureId] = rgb;
+        averageTextureRGB[textureID] = rgb;
         return rgb;
     }
 
     /**
-     * Pushes the texels of the provided texture id back into the pool.
+     * Pushes the texels of the provided texture id back into the pool. This causes the texture to be regenerated the
+     * next time {@link #getTexels(int)} is called for that <code>textureID</code>. This method is actively used for
+     * scrolling textures by {@link Game#updateTextures(int)}
      *
-     * @param textureId the texture id.
+     * @param textureID the texture id.
      */
-    public static void unloadTexture(int textureId) {
-        if (activeTexels[textureId] == null) {
-            return;
+    public static void pushTexture(int textureID) {
+        if (activeTexels[textureID] != null) {
+            texelPool[poolSize++] = activeTexels[textureID];
+            activeTexels[textureID] = null;
         }
-        texelPool[poolSize++] = activeTexels[textureId];
-        activeTexels[textureId] = null;
     }
 
-    public static int[] getTexels(int textureId) {
-        textureCycle[textureId] = cycle++;
+    public static int[] getTexels(int textureID) {
+        textureCycle[textureID] = cycle++;
 
-        if (activeTexels[textureId] != null) {
-            return activeTexels[textureId];
+        if (activeTexels[textureID] != null) {
+            return activeTexels[textureID];
         }
 
         int[] texels;
@@ -241,18 +242,18 @@ public class Draw3D {
             activeTexels[selected] = null;
         }
 
-        activeTexels[textureId] = texels;
-        Image8 texture = textures[textureId];
-        int[] palette = texturePalette[textureId];
+        activeTexels[textureID] = texels;
+        Image8 texture = textures[textureID];
+        int[] palette = texturePalette[textureID];
 
         if (lowmem) {
-            textureTranslucent[textureId] = false;
+            textureTranslucent[textureID] = false;
 
             for (int i = 0; i < 4096; i++) {
                 int rgb = texels[i] = palette[texture.pixels[i]] & 0xf8f8ff;
 
                 if (rgb == 0) {
-                    textureTranslucent[textureId] = true;
+                    textureTranslucent[textureID] = true;
                 }
 
                 texels[4096 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
@@ -273,7 +274,7 @@ public class Draw3D {
                 }
             }
 
-            textureTranslucent[textureId] = false;
+            textureTranslucent[textureID] = false;
 
             for (int i = 0; i < 16384; i++) {
                 texels[i] &= 0xf8f8ff;
@@ -281,7 +282,7 @@ public class Draw3D {
                 int rgb = texels[i];
 
                 if (rgb == 0) {
-                    textureTranslucent[textureId] = true;
+                    textureTranslucent[textureID] = true;
                 }
 
                 texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
@@ -397,7 +398,7 @@ public class Draw3D {
         }
 
         for (int textureID = 0; textureID < 50; textureID++) {
-            unloadTexture(textureID);
+            pushTexture(textureID);
         }
     }
 

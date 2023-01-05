@@ -34,7 +34,7 @@ public class OnDemand implements Runnable {
 	public int partOffset;
 	public int partAvailable;
 	public int[] midiIndex;
-	public int anInt1349;
+	public int failCount;
 	public int[] mapLandFile;
 	public int loadedPretechFiles;
 	public boolean running = true;
@@ -314,7 +314,7 @@ public class OnDemand implements Runnable {
 
 			out.write(bbuf, 0, 4);
 			heartbeatCycle = 0;
-			anInt1349 = -10000;
+			failCount = -10000;
 			return;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -328,7 +328,7 @@ public class OnDemand implements Runnable {
 		in = null;
 		out = null;
 		partAvailable = 0;
-		anInt1349++;
+		failCount++;
 	}
 
 	public int getSeqFrameCount() {

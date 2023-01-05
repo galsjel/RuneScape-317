@@ -5,23 +5,23 @@
 public class MouseRecorder implements Runnable {
 
 	public final Object lock = new Object();
-	public final Game aGame805;
+	public final Game game;
 	public final int[] y = new int[500];
 	public final int[] x = new int[500];
-	public boolean aBoolean808 = true;
+	public boolean active = true;
 	public int length;
 
-	public MouseRecorder(Game game1) {
-		aGame805 = game1;
+	public MouseRecorder(Game game) {
+		this.game = game;
 	}
 
 	@Override
 	public void run() {
-		while (aBoolean808) {
+		while (active) {
 			synchronized (lock) {
 				if (length < 500) {
-					x[length] = aGame805.mouseX;
-					y[length] = aGame805.mouseY;
+					x[length] = game.mouseX;
+					y[length] = game.mouseY;
 					length++;
 				}
 			}

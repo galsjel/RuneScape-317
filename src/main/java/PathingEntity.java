@@ -43,7 +43,11 @@ public class PathingEntity extends Entity {
     public int targetTileX;
     public int targetTileZ;
     public int size = 1;
-    public boolean aBoolean1541 = false;
+    /**
+     * Passed to {@link Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)} to provide an additional
+     * tile worth of draw padding ahead of this entity for things like animations that extend past the normal boundary.
+     */
+    public boolean needsForwardDrawPadding = false;
     public int seqPathLength;
     public int forceMoveStartSceneTileX;
     public int forceMoveEndSceneTileX;

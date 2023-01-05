@@ -91,7 +91,7 @@ public class IfType {
 				iface.inventorySlotObjID = new int[iface.width * iface.height];
 				iface.inventorySlotObjCount = new int[iface.width * iface.height];
 				iface.inventoryDraggable = in.read8U() == 1;
-				iface.aBoolean249 = in.read8U() == 1;
+				iface.inventoryInteractable = in.read8U() == 1;
 				iface.inventoryUsable = in.read8U() == 1;
 				iface.inventoryMoveReplaces = in.read8U() == 1;
 				iface.inventoryMarginX = in.read8U();
@@ -205,7 +205,7 @@ public class IfType {
 				iface.color = in.read32();
 				iface.inventoryMarginX = in.read16();
 				iface.inventoryMarginY = in.read16();
-				iface.aBoolean249 = in.read8U() == 1;
+				iface.inventoryInteractable = in.read8U() == 1;
 				iface.inventoryOptions = new String[5];
 				for (int k4 = 0; k4 < 5; k4++) {
 					iface.inventoryOptions[k4] = in.readString();
@@ -265,7 +265,7 @@ public class IfType {
 		}
 	}
 
-	public boolean aBoolean249;
+	public boolean inventoryInteractable;
 	public int activeColor;
 	public int activeHoverColor;
 	public Image24 activeImage;
@@ -308,6 +308,13 @@ public class IfType {
 	public int modelYaw;
 	public int modelZoom;
 	public String option;
+
+	public static final int OPTION_TYPE_STANDARD = 1;
+	public static final int OPTION_TYPE_SPELL = 2;
+	public static final int OPTION_TYPE_CLOSE = 3;
+	public static final int OPTION_TYPE_TOGGLE = 4;
+	public static final int OPTION_TYPE_SELECT = 5;
+	public static final int OPTION_TYPE_CONTINUE = 6;
 	public int optionType;
 	public int parentID;
 	public int[] scriptComparator;

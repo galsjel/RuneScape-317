@@ -37,7 +37,7 @@ public class VarpType {
 	public int unusedInt1;
 	public boolean unusedBool0 = false;
 	public boolean unusedBool1 = true;
-	public int anInt709;
+	public int type;
 	public boolean unusedBool2 = false;
 	public int unusedInt2;
 	public int unusedInt3;
@@ -62,7 +62,7 @@ public class VarpType {
 			} else if (op == 4) {
 				unusedBool1 = false;
 			} else if (op == 5) {
-				anInt709 = buffer.read16U();
+				type = buffer.read16U();
 			} else if (op == 6) {
 				unusedBool2 = true;
 			} else if (op == 7) {
