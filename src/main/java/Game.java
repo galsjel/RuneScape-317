@@ -197,7 +197,7 @@ public class Game extends GameShell {
     public final int[] designColors = new int[5];
     public final int anInt1002 = 0x23201b;
     public final int[] cameraModifierCycle = new int[5];
-    public final int[] storedVarps = new int[2000];
+    public final int[] varCache = new int[2000];
     public final int[] minimapMaskLineOffsets = new int[151];
     public final int[] compassMaskLineLengths = new int[33];
     /**
@@ -288,7 +288,7 @@ public class Game extends GameShell {
     public Buffer[] aBufferArray895 = new Buffer[MAX_PLAYER_COUNT];
     public int cameraAnticheatAngle;
     public int friendCount;
-    public int friendserverStatus;
+    public int friendlistLoaded;
     public int[][] bfsDirection = new int[104][104];
     public DrawArea areaBackleft1;
     public DrawArea areaBackleft2;
@@ -507,61 +507,61 @@ public class Game extends GameShell {
     public boolean aBoolean1158 = false;
     public boolean sceneInstanced = false;
     /**
-     * When <code>true</code> will cause the camera to be overridden by the following cinematic fields.
+     * When <code>true</code> will cause the camera to be overridden by the following cutscene fields.
      *
-     * @see #applyCinematicCamera()
-     * @see #cinematicSrcLocalTileX
-     * @see #cinematicSrcLocalTileZ
-     * @see #cinematicSrcHeight
-     * @see #cinematicMoveSpeed
-     * @see #cinematicMoveAcceleration
-     * @see #cinematicDstLocalTileX
-     * @see #cinematicDstLocalTileZ
-     * @see #cinematicDstHeight
-     * @see #cinematicRotateSpeed
-     * @see #cinematicRotateAcceleration
+     * @see #applyCutscene()
+     * @see #cutsceneSrcLocalTileX
+     * @see #cutsceneSrcLocalTileZ
+     * @see #cutsceneSrcHeight
+     * @see #cutsceneMoveSpeed
+     * @see #cutsceneMoveAcceleration
+     * @see #cutsceneDstLocalTileX
+     * @see #cutsceneDstLocalTileZ
+     * @see #cutsceneDstHeight
+     * @see #cutsceneRotateSpeed
+     * @see #cutsceneRotateAcceleration
      */
-    public boolean cinematic = false;
+    public boolean cutscene = false;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicSrcLocalTileX;
+    public int cutsceneSrcLocalTileX;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicSrcLocalTileZ;
+    public int cutsceneSrcLocalTileZ;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicSrcHeight;
+    public int cutsceneSrcHeight;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicMoveSpeed;
+    public int cutsceneMoveSpeed;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicMoveAcceleration;
+    public int cutsceneMoveAcceleration;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicDstLocalTileX;
+    public int cutsceneDstLocalTileX;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicDstLocalTileZ;
+    public int cutsceneDstLocalTileZ;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicDstHeight;
+    public int cutsceneDstHeight;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicRotateSpeed;
+    public int cutsceneRotateSpeed;
     /**
-     * @see #cinematic
+     * @see #cutscene
      */
-    public int cinematicRotateAcceleration;
+    public int cutsceneRotateAcceleration;
     public DrawArea areaSidebar;
     public DrawArea areaMapback;
     public DrawArea areaViewport;
@@ -2018,7 +2018,7 @@ public class Game extends GameShell {
             int l = type.cost;
 
             if (type.stackable) {
-                l *= obj.amount + 1;
+                l *= obj.count + 1;
             }
 
             if (l > k) {
@@ -2080,7 +2080,7 @@ public class Game extends GameShell {
     }
 
     public void handleParentComponentInput(int x, Component parent, int mouseX, int y, int mouseY, int scrollY) {
-        if ((parent.type != 0) || (parent.children == null) || parent.hidden) {
+        if ((parent.type != 0) || (parent.children == null) || parent.hide) {
             return;
         }
 
@@ -2107,7 +2107,7 @@ public class Game extends GameShell {
             }
 
             if (child.type == 0) {
-                handleParentComponentInput(cx, child, mouseX, cy, mouseY, child.scrollPosition);
+                handleParentComponentInput(cx, child, mouseX, cy, mouseY, child.scrollPos);
 
                 if (child.scrollableHeight > child.height) {
                     handleScrollInput(cx + child.width, child.height, mouseX, mouseY, child, cy, true, child.scrollableHeight);
@@ -2860,48 +2860,48 @@ public class Game extends GameShell {
     }
 
     /**
-     * Applies the cinematic camera properties to the main camera.
+     * Applies the cutscene camera properties to the main camera.
      *
-     * @see #cinematic
+     * @see #cutscene
      */
-    public void applyCinematicCamera() {
+    public void applyCutscene() {
         // the following code updates the position of the camera
-        int x = (cinematicSrcLocalTileX * 128) + 64;
-        int z = (cinematicSrcLocalTileZ * 128) + 64;
-        int y = getHeightmapY(currentLevel, x, z) - cinematicSrcHeight;
+        int x = (cutsceneSrcLocalTileX * 128) + 64;
+        int z = (cutsceneSrcLocalTileZ * 128) + 64;
+        int y = getHeightmapY(currentLevel, x, z) - cutsceneSrcHeight;
 
         if (cameraX < x) {
-            cameraX += cinematicMoveSpeed + (((x - cameraX) * cinematicMoveAcceleration) / 1000);
+            cameraX += cutsceneMoveSpeed + (((x - cameraX) * cutsceneMoveAcceleration) / 1000);
             if (cameraX > x) {
                 cameraX = x;
             }
         }
         if (cameraX > x) {
-            cameraX -= cinematicMoveSpeed + (((cameraX - x) * cinematicMoveAcceleration) / 1000);
+            cameraX -= cutsceneMoveSpeed + (((cameraX - x) * cutsceneMoveAcceleration) / 1000);
             if (cameraX < x) {
                 cameraX = x;
             }
         }
         if (cameraY < y) {
-            cameraY += cinematicMoveSpeed + (((y - cameraY) * cinematicMoveAcceleration) / 1000);
+            cameraY += cutsceneMoveSpeed + (((y - cameraY) * cutsceneMoveAcceleration) / 1000);
             if (cameraY > y) {
                 cameraY = y;
             }
         }
         if (cameraY > y) {
-            cameraY -= cinematicMoveSpeed + (((cameraY - y) * cinematicMoveAcceleration) / 1000);
+            cameraY -= cutsceneMoveSpeed + (((cameraY - y) * cutsceneMoveAcceleration) / 1000);
             if (cameraY < y) {
                 cameraY = y;
             }
         }
         if (cameraZ < z) {
-            cameraZ += cinematicMoveSpeed + (((z - cameraZ) * cinematicMoveAcceleration) / 1000);
+            cameraZ += cutsceneMoveSpeed + (((z - cameraZ) * cutsceneMoveAcceleration) / 1000);
             if (cameraZ > z) {
                 cameraZ = z;
             }
         }
         if (cameraZ > z) {
-            cameraZ -= cinematicMoveSpeed + (((cameraZ - z) * cinematicMoveAcceleration) / 1000);
+            cameraZ -= cutsceneMoveSpeed + (((cameraZ - z) * cutsceneMoveAcceleration) / 1000);
             if (cameraZ < z) {
                 cameraZ = z;
             }
@@ -2909,9 +2909,9 @@ public class Game extends GameShell {
 
         // the following code updates the angle of the camera
 
-        x = (cinematicDstLocalTileX * 128) + 64;
-        z = (cinematicDstLocalTileZ * 128) + 64;
-        y = getHeightmapY(currentLevel, x, z) - cinematicDstHeight;
+        x = (cutsceneDstLocalTileX * 128) + 64;
+        z = (cutsceneDstLocalTileZ * 128) + 64;
+        y = getHeightmapY(currentLevel, x, z) - cutsceneDstHeight;
 
         int deltaX = x - cameraX;
         int deltaY = y - cameraY;
@@ -2930,14 +2930,14 @@ public class Game extends GameShell {
         }
 
         if (cameraPitch < pitch) {
-            cameraPitch += cinematicRotateSpeed + (((pitch - cameraPitch) * cinematicRotateAcceleration) / 1000);
+            cameraPitch += cutsceneRotateSpeed + (((pitch - cameraPitch) * cutsceneRotateAcceleration) / 1000);
             if (cameraPitch > pitch) {
                 cameraPitch = pitch;
             }
         }
 
         if (cameraPitch > pitch) {
-            cameraPitch -= cinematicRotateSpeed + (((cameraPitch - pitch) * cinematicRotateAcceleration) / 1000);
+            cameraPitch -= cutsceneRotateSpeed + (((cameraPitch - pitch) * cutsceneRotateAcceleration) / 1000);
             if (cameraPitch < pitch) {
                 cameraPitch = pitch;
             }
@@ -2954,12 +2954,12 @@ public class Game extends GameShell {
         }
 
         if (deltaYaw > 0) {
-            cameraYaw += cinematicRotateSpeed + ((deltaYaw * cinematicRotateAcceleration) / 1000);
+            cameraYaw += cutsceneRotateSpeed + ((deltaYaw * cutsceneRotateAcceleration) / 1000);
             cameraYaw &= 0x7ff;
         }
 
         if (deltaYaw < 0) {
-            cameraYaw -= cinematicRotateSpeed + ((-deltaYaw * cinematicRotateAcceleration) / 1000);
+            cameraYaw -= cutsceneRotateSpeed + ((-deltaYaw * cutsceneRotateAcceleration) / 1000);
             cameraYaw &= 0x7ff;
         }
 
@@ -3077,7 +3077,7 @@ public class Game extends GameShell {
         return ((y00 * (128 - tileLocalZ)) + (y11 * tileLocalZ)) >> 7;
     }
 
-    public void disconnect() {
+    public void logout() {
         try {
             if (connection != null) {
                 connection.close();
@@ -3217,7 +3217,7 @@ public class Game extends GameShell {
     public boolean handleComponentAction(Component component) {
         int type = component.contentType;
 
-        if (friendserverStatus == 2) {
+        if (friendlistLoaded == 2) {
             if (type == 201) {
                 redrawChatback = true;
                 chatbackInputType = 0;
@@ -3989,8 +3989,8 @@ public class Game extends GameShell {
             updateOrbitCamera();
         }
 
-        if ((sceneState == 2) && cinematic) {
-            applyCinematicCamera();
+        if ((sceneState == 2) && cutscene) {
+            applyCutscene();
         }
 
         for (int i = 0; i < 5; i++) {
@@ -4014,7 +4014,7 @@ public class Game extends GameShell {
         } catch (IOException _ex) {
             tryReconnect();
         } catch (Exception exception) {
-            disconnect();
+            logout();
         }
     }
 
@@ -4309,12 +4309,12 @@ public class Game extends GameShell {
         gripGrabbed = false;
 
         if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= top) && (mouseY < (top + 16))) {
-            component.scrollPosition -= dragCycles * 4;
+            component.scrollPos -= dragCycles * 4;
             if (redraw) {
                 redrawSidebar = true;
             }
         } else if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= ((top + height) - 16)) && (mouseY < (top + height))) {
-            component.scrollPosition += dragCycles * 4;
+            component.scrollPos += dragCycles * 4;
             if (redraw) {
                 redrawSidebar = true;
             }
@@ -4325,7 +4325,7 @@ public class Game extends GameShell {
             }
             int gripY = mouseY - top - 16 - (gripSize / 2);
             int maxY = height - 32 - gripSize;
-            component.scrollPosition = ((scrollableHeight - height) * gripY) / maxY;
+            component.scrollPos = ((scrollableHeight - height) * gripY) / maxY;
             if (redraw) {
                 redrawSidebar = true;
             }
@@ -4487,7 +4487,7 @@ public class Game extends GameShell {
 
     public void tryReconnect() {
         if (idleTimeout > 0) {
-            disconnect();
+            logout();
             return;
         }
         areaViewport.bind();
@@ -4503,7 +4503,7 @@ public class Game extends GameShell {
         anInt1038 = 0;
         login(username, password, true);
         if (!ingame) {
-            disconnect();
+            logout();
         }
         try {
             connection.close();
@@ -6140,23 +6140,23 @@ public class Game extends GameShell {
         int type = component.contentType;
 
         if (((type >= 1) && (type <= 100)) || ((type >= 701) && (type <= 800))) {
-            if ((type == 1) && (friendserverStatus == 0)) {
+            if ((type == 1) && (friendlistLoaded == 0)) {
                 component.text = "Loading friend list";
                 component.optionType = 0;
                 return;
             }
-            if ((type == 1) && (friendserverStatus == 1)) {
+            if ((type == 1) && (friendlistLoaded == 1)) {
                 component.text = "Connecting to friendserver";
                 component.optionType = 0;
                 return;
             }
-            if ((type == 2) && (friendserverStatus != 2)) {
+            if ((type == 2) && (friendlistLoaded != 2)) {
                 component.text = "Please wait...";
                 component.optionType = 0;
                 return;
             }
             int k = friendCount;
-            if (friendserverStatus != 2) {
+            if (friendlistLoaded != 2) {
                 k = 0;
             }
             if (type > 700) {
@@ -6176,7 +6176,7 @@ public class Game extends GameShell {
 
         if (((type >= 101) && (type <= 200)) || ((type >= 801) && (type <= 900))) {
             int l = friendCount;
-            if (friendserverStatus != 2) {
+            if (friendlistLoaded != 2) {
                 l = 0;
             }
             if (type > 800) {
@@ -6202,7 +6202,7 @@ public class Game extends GameShell {
 
         if (type == 203) {
             int i1 = friendCount;
-            if (friendserverStatus != 2) {
+            if (friendlistLoaded != 2) {
                 i1 = 0;
             }
             component.scrollableHeight = (i1 * 15) + 20;
@@ -6213,18 +6213,18 @@ public class Game extends GameShell {
         }
 
         if ((type >= 401) && (type <= 500)) {
-            if ((((type -= 401)) == 0) && (friendserverStatus == 0)) {
+            if ((((type -= 401)) == 0) && (friendlistLoaded == 0)) {
                 component.text = "Loading ignore list";
                 component.optionType = 0;
                 return;
             }
-            if ((type == 1) && (friendserverStatus == 0)) {
+            if ((type == 1) && (friendlistLoaded == 0)) {
                 component.text = "Please wait...";
                 component.optionType = 0;
                 return;
             }
             int j1 = ignoreCount;
-            if (friendserverStatus == 0) {
+            if (friendlistLoaded == 0) {
                 j1 = 0;
             }
             if (type >= j1) {
@@ -6889,7 +6889,7 @@ public class Game extends GameShell {
                     }
                 }
                 temporaryLocs = new DoublyLinkedList();
-                friendserverStatus = 0;
+                friendlistLoaded = 0;
                 friendCount = 0;
                 stickyChatbackComponentID = -1;
                 chatbackComponentID = -1;
@@ -8200,11 +8200,11 @@ public class Game extends GameShell {
         }
 
         if (chatbackComponentID == -1) {
-            chatComponent.scrollPosition = chatScrollHeight - chatScrollOffset - 77;
+            chatComponent.scrollPos = chatScrollHeight - chatScrollOffset - 77;
             if ((super.mouseX > 448) && (super.mouseX < 560) && (super.mouseY > 332)) {
                 handleScrollInput(463, 77, super.mouseX - 17, super.mouseY - 357, chatComponent, 0, false, chatScrollHeight);
             }
-            int offset = chatScrollHeight - 77 - chatComponent.scrollPosition;
+            int offset = chatScrollHeight - 77 - chatComponent.scrollPos;
 
             if (offset < 0) {
                 offset = 0;
@@ -8463,7 +8463,7 @@ public class Game extends GameShell {
             return;
         }
 
-        if (parent.hidden && (viewportHoveredComponentID != parent.id) && (sidebarHoveredComponentID != parent.id) && (chatbackHoveredComponentID != parent.id)) {
+        if (parent.hide && (viewportHoveredComponentID != parent.id) && (sidebarHoveredComponentID != parent.id) && (chatbackHoveredComponentID != parent.id)) {
             return;
         }
 
@@ -8488,18 +8488,18 @@ public class Game extends GameShell {
             }
 
             if (child.type == 0) {
-                if (child.scrollPosition > (child.scrollableHeight - child.height)) {
-                    child.scrollPosition = child.scrollableHeight - child.height;
+                if (child.scrollPos > (child.scrollableHeight - child.height)) {
+                    child.scrollPos = child.scrollableHeight - child.height;
                 }
 
-                if (child.scrollPosition < 0) {
-                    child.scrollPosition = 0;
+                if (child.scrollPos < 0) {
+                    child.scrollPos = 0;
                 }
 
-                drawParentComponent(child, x, y, child.scrollPosition);
+                drawParentComponent(child, x, y, child.scrollPos);
 
                 if (child.scrollableHeight > child.height) {
-                    drawScrollbar(x + child.width, y, child.height, child.scrollableHeight, child.scrollPosition);
+                    drawScrollbar(x + child.width, y, child.height, child.scrollableHeight, child.scrollPos);
                 }
             } else if (child.type == 1) {
                 // unused
@@ -8550,32 +8550,32 @@ public class Game extends GameShell {
                                         itemIcon.draw(slotX + dx, slotY + dy, 128);
 
                                         // scroll component up if dragging obj near the top
-                                        if (((slotY + dy) < Draw2D.top) && (parent.scrollPosition > 0)) {
+                                        if (((slotY + dy) < Draw2D.top) && (parent.scrollPos > 0)) {
                                             int scroll = (delta * (Draw2D.top - slotY - dy)) / 3;
 
                                             if (scroll > (delta * 10)) {
                                                 scroll = delta * 10;
                                             }
 
-                                            if (scroll > parent.scrollPosition) {
-                                                scroll = parent.scrollPosition;
+                                            if (scroll > parent.scrollPos) {
+                                                scroll = parent.scrollPos;
                                             }
-                                            parent.scrollPosition -= scroll;
+                                            parent.scrollPos -= scroll;
                                             objGrabY += scroll;
                                         }
 
                                         // scroll component down if dragging obj near the bottom
-                                        if (((slotY + dy + 32) > Draw2D.bottom) && (parent.scrollPosition < (parent.scrollableHeight - parent.height))) {
+                                        if (((slotY + dy + 32) > Draw2D.bottom) && (parent.scrollPos < (parent.scrollableHeight - parent.height))) {
                                             int scroll = (delta * ((slotY + dy + 32) - Draw2D.bottom)) / 3;
 
                                             if (scroll > (delta * 10)) {
                                                 scroll = delta * 10;
                                             }
 
-                                            if (scroll > (parent.scrollableHeight - parent.height - parent.scrollPosition)) {
-                                                scroll = parent.scrollableHeight - parent.height - parent.scrollPosition;
+                                            if (scroll > (parent.scrollableHeight - parent.height - parent.scrollPos)) {
+                                                scroll = parent.scrollableHeight - parent.height - parent.scrollPos;
                                             }
-                                            parent.scrollPosition += scroll;
+                                            parent.scrollPos += scroll;
                                             objGrabY -= scroll;
                                         }
                                     } else if ((actionArea != 0) && (actionSlot == slot) && (actionComponentID == child.id)) {
@@ -9619,7 +9619,7 @@ public class Game extends GameShell {
         return top;
     }
 
-    public int getTopLevelCinematic() {
+    public int getTopLevelCutscene() {
         int y = getHeightmapY(currentLevel, cameraX, cameraZ);
 
         if (((y - cameraY) < 800) && ((levelTileFlags[currentLevel][cameraX >> 7][cameraZ >> 7] & 4) != 0)) {
@@ -10361,7 +10361,7 @@ public class Game extends GameShell {
 
     public void readZonePacket(Buffer buffer, int opcode) {
         switch (opcode) {
-            case PacketIn.OBJ_PLACE: {
+            case PacketIn.OBJ_ADD: {
                 int id = buffer.read16ULEA();
                 int amount = buffer.read16U();
                 int pos = buffer.read8U();
@@ -10370,7 +10370,7 @@ public class Game extends GameShell {
                 if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
                     ObjEntity stack = new ObjEntity();
                     stack.id = id;
-                    stack.amount = amount;
+                    stack.count = amount;
                     if (levelObjStacks[currentLevel][x][z] == null) {
                         levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
                     }
@@ -10390,7 +10390,7 @@ public class Game extends GameShell {
                 if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
                     ObjEntity obj = new ObjEntity();
                     obj.id = objID;
-                    obj.amount = objAmount;
+                    obj.count = objAmount;
                     if (levelObjStacks[currentLevel][x][z] == null) {
                         levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
                     }
@@ -10400,22 +10400,22 @@ public class Game extends GameShell {
                 return;
             }
 
-            case PacketIn.OBJ_UPDATE: {
+            case PacketIn.OBJ_COUNT: {
                 int pos = buffer.read8U();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
                 int objID = buffer.read16U();
-                int objAmount = buffer.read16U();
-                int newAmount = buffer.read16U();
+                int oldCount = buffer.read16U();
+                int newCount = buffer.read16U();
 
                 if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
                     DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
                     if (stacks != null) {
                         for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
-                            if ((stack.id != (objID & 0x7fff)) || (stack.amount != objAmount)) {
+                            if ((stack.id != (objID & 0x7fff)) || (stack.count != oldCount)) {
                                 continue;
                             }
-                            stack.amount = newAmount;
+                            stack.count = newCount;
                             break;
                         }
                         sortObjStacks(x, z);
@@ -10423,7 +10423,7 @@ public class Game extends GameShell {
                 }
             }
 
-            case PacketIn.OBJ_REMOVE: {
+            case PacketIn.OBJ_DEL: {
                 int pos = buffer.read8UA();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
@@ -10447,7 +10447,7 @@ public class Game extends GameShell {
                 return;
             }
 
-            case PacketIn.LOC_PLACE: {
+            case PacketIn.LOC_ADD: {
                 int pos = buffer.read8UA();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
@@ -10462,7 +10462,7 @@ public class Game extends GameShell {
                 return;
             }
 
-            case PacketIn.LOC_UPDATE: {
+            case PacketIn.LOC_CHANGE: {
                 int pos = buffer.read8US();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
@@ -10526,7 +10526,7 @@ public class Game extends GameShell {
                 return;
             }
 
-            case PacketIn.LOC_REMOVE: {
+            case PacketIn.LOC_DEL: {
                 int info = buffer.read8UC();
                 int kind = info >> 2;
                 int rotation = info & 3;
@@ -10612,7 +10612,7 @@ public class Game extends GameShell {
                 break;
             }
 
-            case PacketIn.SPOTANIM: {
+            case PacketIn.MAP_ANIM: {
                 int pos = buffer.read8U();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
@@ -10629,7 +10629,7 @@ public class Game extends GameShell {
                 return;
             }
 
-            case PacketIn.SPATIAL_SOUND: {
+            case PacketIn.SOUND_AREA: {
                 int pos = buffer.read8U();
                 int x = baseX + ((pos >> 4) & 7);
                 int z = baseZ + (pos & 7);
@@ -10645,7 +10645,7 @@ public class Game extends GameShell {
                 }
             }
 
-            case PacketIn.PROJECTILE: {
+            case PacketIn.MAP_PROJANIM: {
                 int pos = buffer.read8U();
                 int srcX = baseX + ((pos >> 4) & 7);
                 int srcZ = baseZ + (pos & 7);
@@ -11052,23 +11052,23 @@ public class Game extends GameShell {
                     readPlayers(packetSize, in);
                     break;
 
-                case PacketIn.LOGIN_INFO:
-                    readLoginInfo();
+                case PacketIn.LAST_LOGIN_INFO:
+                    readLastLoginInfo();
                     break;
 
                 case PacketIn.ZONE_CLEAR:
                     readZoneClear();
                     break;
 
-                case PacketIn.COMPONENT_MODEL_PLAYER:
-                    readComponentModelPlayer();
+                case PacketIn.IF_SETPLAYERHEAD:
+                    readComponentPlayerHead();
                     break;
 
-                case PacketIn.CAMERA_DISABLE_CINEMATIC:
-                    readCameraDisableCinematic();
+                case PacketIn.CAM_RESET:
+                    resetCamera();
                     break;
 
-                case PacketIn.INVENTORY_CLEAR:
+                case PacketIn.INV_CLEAR:
                     readInventoryClear();
                     break;
 
@@ -11076,15 +11076,15 @@ public class Game extends GameShell {
                     readIgnoreList();
                     break;
 
-                case PacketIn.CAMERA_POSITION:
+                case PacketIn.CAM_SETPOS:
                     readCameraPosition();
                     break;
 
-                case PacketIn.CAMERA_LOOK_AT:
+                case PacketIn.CAM_LOOKAT:
                     readCameraLookAt();
                     break;
 
-                case PacketIn.SKILL:
+                case PacketIn.UPDATE_STAT:
                     readSkill();
                     break;
 
@@ -11092,40 +11092,40 @@ public class Game extends GameShell {
                     readTabComponent();
                     break;
 
-                case PacketIn.SONG:
+                case PacketIn.MIDI_SONG:
                     readSong();
                     break;
 
-                case PacketIn.JINGLE:
+                case PacketIn.MIDI_JINGLE:
                     readJingle();
                     break;
 
-                case PacketIn.DISCONNECT:
-                    disconnect();
+                case PacketIn.LOGOUT:
+                    logout();
                     break;
 
-                case PacketIn.COMPONENT_POSITION:
+                case PacketIn.IF_SETPOSITION:
                     readComponentPosition();
                     break;
 
-                case PacketIn.SCENE_LOAD:
-                case PacketIn.SCENE_LOAD_INSTANCED:
-                    readSceneLoad();
+                case PacketIn.REBUILD_REGION:
+                case PacketIn.REBUILD_REGION_INSTANCE:
+                    rebuildRegion();
                     break;
 
-                case PacketIn.VIEWPORT_OVERLAY_COMPONENT:
+                case PacketIn.IF_VIEWPORT_OVERLAY:
                     readViewportOverlayComponent();
                     break;
 
-                case PacketIn.MINIMAP_STATE:
+                case PacketIn.MINIMAP_TOGGLE:
                     minimapState = in.read8U();
                     break;
 
-                case PacketIn.COMPONENT_MODEL_NPC:
-                    readComponentModelNPC();
+                case PacketIn.IF_SETNPCHEAD:
+                    readComponentNPCHead();
                     break;
 
-                case PacketIn.SYSTEM_UPDATE:
+                case PacketIn.UPDATE_REBOOT_TIMER:
                     systemUpdateTimer = in.read16ULE() * 30;
                     break;
 
@@ -11133,56 +11133,56 @@ public class Game extends GameShell {
                     readZoneUpdate();
                     break;
 
-                case PacketIn.CAMERA_EFFECT:
-                    readCameraEffect();
+                case PacketIn.CAM_SHAKE:
+                    readCameraShake();
                     break;
 
-                case PacketIn.SOUND:
-                    readSound();
+                case PacketIn.SYNTH_SOUND:
+                    readSynthSound();
                     break;
 
-                case PacketIn.PLAYER_OPTION:
+                case PacketIn.SET_PLAYER_OP:
                     readPlayerOption();
                     break;
 
-                case PacketIn.CLEAR_MINIMAP_FLAG:
+                case PacketIn.CLEAR_MAP_FLAG:
                     flagSceneTileX = 0;
                     break;
 
-                case PacketIn.MESSAGE:
-                    readMessage();
+                case PacketIn.MESSAGE_GAME:
+                    readGameMessage();
                     break;
 
-                case PacketIn.SCENE_RESET_SEQ:
-                    resetEntitySeq();
+                case PacketIn.RESET_ANIMS:
+                    resetAnimations();
                     break;
 
                 case PacketIn.FRIEND_STATUS:
                     readFriendStatus();
                     break;
 
-                case PacketIn.ENERGY:
-                    readEnergy();
+                case PacketIn.UPDATE_RUNENERGY:
+                    readRunEnergy();
                     break;
 
-                case PacketIn.HINT:
+                case PacketIn.HINT_ARROW:
                     readHint();
                     break;
 
-                case PacketIn.VIEWPORT_AND_SIDEBAR_COMPONENTS:
+                case PacketIn.IF_VIEWPORT_AND_SIDEBAR:
                     readViewportAndSidebarComponents();
                     break;
 
-                case PacketIn.COMPONENT_SCROLL_Y:
-                    readComponentScrollY();
+                case PacketIn.IF_SETSCROLLPOS:
+                    readComponentScrollPos();
                     break;
 
-                case PacketIn.RESTORE_VARPS:
-                    restoreVarps();
+                case PacketIn.RESET_CLIENT_VARCACHE:
+                    restoreVarCache();
                     break;
 
-                case PacketIn.CHAT_MESSAGE:
-                    readChatMessage();
+                case PacketIn.MESSAGE_PUBLIC:
+                    readPublicMessage();
                     break;
 
                 case PacketIn.ZONE_BASE:
@@ -11194,48 +11194,48 @@ public class Game extends GameShell {
                     readTabHint();
                     break;
 
-                case PacketIn.COMPONENT_MODEL_OBJ:
+                case PacketIn.IF_SETOBJECT:
                     readComponentModelObj();
                     break;
 
-                case PacketIn.COMPONENT_HIDDEN:
-                    readComponentHidden();
+                case PacketIn.IF_SETHIDE:
+                    readComponentHide();
                     break;
 
-                case PacketIn.COMPONENT_RESET_SEQ:
+                case PacketIn.IF_STOPANIM:
                     readComponentResetSeq();
                     break;
 
-                case PacketIn.COMPONENT_TEXT:
+                case PacketIn.IF_SETTEXT:
                     readComponentText();
                     break;
 
-                case PacketIn.PRIVACY_SETTINGS:
-                    readPrivacySettings();
+                case PacketIn.CHAT_FILTER_SETTINGS:
+                    readChatFilterSettings();
                     break;
 
-                case PacketIn.WEIGHT:
-                    readWeight();
+                case PacketIn.UPDATE_RUNWEIGHT:
+                    readRunWeight();
                     break;
 
-                case PacketIn.COMPONENT_MODEL:
+                case PacketIn.IF_SETMODEL:
                     readComponentModel();
                     break;
 
-                case PacketIn.COMPONENT_COLOR:
+                case PacketIn.IF_SETCOLOR:
                     readComponentColor();
                     break;
 
-                case PacketIn.INVENTORY:
-                    readInventory();
+                case PacketIn.UPDATE_INV_FULL:
+                    readInventoryUpdateFull();
                     break;
 
-                case PacketIn.COMPONENT_MODEL_ROTATION:
+                case PacketIn.IF_SETANGLE:
                     readComponentModelRotation();
                     break;
 
-                case PacketIn.FRIENDSERVER_STATUS:
-                    friendserverStatus = in.read8U();
+                case PacketIn.FRIENDLIST_LOADED:
+                    friendlistLoaded = in.read8U();
                     redrawSidebar = true;
                     break;
 
@@ -11256,7 +11256,7 @@ public class Game extends GameShell {
                     openChatInput(2);
                     break;
 
-                case PacketIn.VIEWPORT_COMPONENT:
+                case PacketIn.IF_VIEWPORT:
                     readViewportComponent();
                     break;
 
@@ -11265,28 +11265,28 @@ public class Game extends GameShell {
                     redrawChatback = true;
                     break;
 
-                case PacketIn.VARP_INT:
-                    readVarpInt();
+                case PacketIn.VARP_LARGE:
+                    readVarpLarge();
                     break;
 
-                case PacketIn.VARP_BYTE:
-                    readVarpByte();
+                case PacketIn.VARP_SMALL:
+                    readVarpSmall();
                     break;
 
                 case PacketIn.MULTIZONE:
                     multizone = in.read8U();
                     break;
 
-                case PacketIn.COMPONENT_SEQ:
+                case PacketIn.IF_SETANIM:
                     readComponentSeq();
                     break;
 
-                case PacketIn.CLEAR_COMPONENTS:
+                case PacketIn.IF_CLOSE:
                     openViewportComponent(-1);
                     break;
 
-                case PacketIn.INVENTORY_UPDATE:
-                    readInventoryUpdate();
+                case PacketIn.UPDATE_INV_PARTIAL:
+                    readInventoryUpdatePartial();
                     break;
 
                 case PacketIn.TAB_SELECTED:
@@ -11297,23 +11297,23 @@ public class Game extends GameShell {
                     readChatComponent();
                     break;
 
-                case PacketIn.OBJ_PLACE:
+                case PacketIn.OBJ_ADD:
                 case PacketIn.OBJ_REVEAL:
-                case PacketIn.OBJ_UPDATE:
-                case PacketIn.OBJ_REMOVE:
-                case PacketIn.LOC_PLACE:
-                case PacketIn.LOC_UPDATE:
-                case PacketIn.LOC_REMOVE:
-                case PacketIn.SPATIAL_SOUND:
+                case PacketIn.OBJ_COUNT:
+                case PacketIn.OBJ_DEL:
+                case PacketIn.LOC_ADD:
+                case PacketIn.LOC_CHANGE:
+                case PacketIn.LOC_DEL:
+                case PacketIn.SOUND_AREA:
                 case PacketIn.PLAYER_LOC:
-                case PacketIn.SPOTANIM:
-                case PacketIn.PROJECTILE:
+                case PacketIn.MAP_ANIM:
+                case PacketIn.MAP_PROJANIM:
                     readZonePacket(in, packetType);
                     break;
 
                 default:
                     Signlink.reporterror("T1 (Unhandled Packet Type) - " + packetType + "," + packetSize + " - " + lastPacketType1 + "," + lastPacketType2);
-                    disconnect();
+                    logout();
                     break;
             }
 
@@ -11326,14 +11326,14 @@ public class Game extends GameShell {
                 s2.append(in.data[j15]).append(",");
             }
             Signlink.reporterror(s2.toString());
-            disconnect();
+            logout();
             e.printStackTrace();
         }
 
         return true;
     }
 
-    private void readLoginInfo() {
+    private void readLastLoginInfo() {
         daysSinceRecoveriesChanged = in.read8UC();
         unreadMessages = in.read16UA();
         warnMembersInNonMembers = in.read8U();
@@ -11377,7 +11377,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentModelPlayer() {
+    private void readComponentPlayerHead() {
         int componentID = in.read16ULEA();
         Component component = Component.instances[componentID];
         component.modelCategory = 3;
@@ -11389,8 +11389,8 @@ public class Game extends GameShell {
         }
     }
 
-    private void readCameraDisableCinematic() {
-        cinematic = false;
+    private void resetCamera() {
+        cutscene = false;
         for (int l = 0; l < 5; l++) {
             cameraModifierEnabled[l] = false;
         }
@@ -11413,32 +11413,32 @@ public class Game extends GameShell {
     }
 
     private void readCameraPosition() {
-        cinematic = true;
-        cinematicSrcLocalTileX = in.read8U();
-        cinematicSrcLocalTileZ = in.read8U();
-        cinematicSrcHeight = in.read16U();
-        cinematicMoveSpeed = in.read8U();
-        cinematicMoveAcceleration = in.read8U();
+        cutscene = true;
+        cutsceneSrcLocalTileX = in.read8U();
+        cutsceneSrcLocalTileZ = in.read8U();
+        cutsceneSrcHeight = in.read16U();
+        cutsceneMoveSpeed = in.read8U();
+        cutsceneMoveAcceleration = in.read8U();
 
-        if (cinematicMoveAcceleration >= 100) {
-            cameraX = (cinematicSrcLocalTileX * 128) + 64;
-            cameraZ = (cinematicSrcLocalTileZ * 128) + 64;
-            cameraY = getHeightmapY(currentLevel, cameraX, cameraZ) - cinematicSrcHeight;
+        if (cutsceneMoveAcceleration >= 100) {
+            cameraX = (cutsceneSrcLocalTileX * 128) + 64;
+            cameraZ = (cutsceneSrcLocalTileZ * 128) + 64;
+            cameraY = getHeightmapY(currentLevel, cameraX, cameraZ) - cutsceneSrcHeight;
         }
     }
 
     private void readCameraLookAt() {
-        cinematic = true;
-        cinematicDstLocalTileX = in.read8U();
-        cinematicDstLocalTileZ = in.read8U();
-        cinematicDstHeight = in.read16U();
-        cinematicRotateSpeed = in.read8U();
-        cinematicRotateAcceleration = in.read8U();
+        cutscene = true;
+        cutsceneDstLocalTileX = in.read8U();
+        cutsceneDstLocalTileZ = in.read8U();
+        cutsceneDstHeight = in.read16U();
+        cutsceneRotateSpeed = in.read8U();
+        cutsceneRotateAcceleration = in.read8U();
 
-        if (cinematicRotateAcceleration >= 100) {
-            int sceneX = (cinematicDstLocalTileX * 128) + 64;
-            int sceneZ = (cinematicDstLocalTileZ * 128) + 64;
-            int sceneY = getHeightmapY(currentLevel, sceneX, sceneZ) - cinematicDstHeight;
+        if (cutsceneRotateAcceleration >= 100) {
+            int sceneX = (cutsceneDstLocalTileX * 128) + 64;
+            int sceneZ = (cutsceneDstLocalTileZ * 128) + 64;
+            int sceneY = getHeightmapY(currentLevel, sceneX, sceneZ) - cutsceneDstHeight;
             int deltaX = sceneX - cameraX;
             int deltaY = sceneY - cameraY;
             int deltaZ = sceneZ - cameraZ;
@@ -11513,17 +11513,17 @@ public class Game extends GameShell {
         component.y = y;
     }
 
-    private void readSceneLoad() {
+    private void rebuildRegion() {
         int zoneX = sceneCenterZoneX;
         int zoneZ = sceneCenterZoneZ;
 
-        if (packetType == PacketIn.SCENE_LOAD) {
+        if (packetType == PacketIn.REBUILD_REGION) {
             zoneX = in.read16UA();
             zoneZ = in.read16U();
             sceneInstanced = false;
         }
 
-        if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
+        if (packetType == PacketIn.REBUILD_REGION_INSTANCE) {
             zoneZ = in.read16UA();
             in.accessBits();
 
@@ -11567,17 +11567,17 @@ public class Game extends GameShell {
         fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
         areaViewport.draw(super.graphics, 4, 4);
 
-        if (packetType == PacketIn.SCENE_LOAD) {
+        if (packetType == PacketIn.REBUILD_REGION) {
             fetchMaps();
         }
 
-        if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
+        if (packetType == PacketIn.REBUILD_REGION_INSTANCE) {
             fetchMapsInstanced();
         }
 
         shiftScene();
 
-        cinematic = false;
+        cutscene = false;
     }
 
     private void fetchMaps() {
@@ -11768,7 +11768,7 @@ public class Game extends GameShell {
         viewportOverlayComponentID = componentID;
     }
 
-    private void readComponentModelNPC() {
+    private void readComponentNPCHead() {
         int npcID = in.read16ULEA();
         int componentID = in.read16ULEA();
         Component.instances[componentID].modelCategory = 2;
@@ -11784,7 +11784,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readCameraEffect() {
+    private void readCameraShake() {
         int component = in.read8U();
         int jitterScale = in.read8U();
         int wobbleScale = in.read8U();
@@ -11796,7 +11796,7 @@ public class Game extends GameShell {
         cameraModifierCycle[component] = 0;
     }
 
-    private void readSound() {
+    private void readSynthSound() {
         int waveID = in.read16U();
         int loopCount = in.read8U();
         int delay = in.read16U();
@@ -11821,7 +11821,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readMessage() {
+    private void readGameMessage() {
         String s = in.readString();
 
         if (s.endsWith(":tradereq:")) {
@@ -11876,7 +11876,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void resetEntitySeq() {
+    private void resetAnimations() {
         for (PlayerEntity player : players) {
             if (player != null) {
                 player.primarySeqID = -1;
@@ -11942,7 +11942,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readEnergy() {
+    private void readRunEnergy() {
         if (selectedTab == 12) {
             redrawSidebar = true;
         }
@@ -12009,32 +12009,32 @@ public class Game extends GameShell {
         pressedContinueOption = false;
     }
 
-    private void readComponentScrollY() {
+    private void readComponentScrollPos() {
         int componentID = in.read16ULE();
-        int scrollY = in.read16UA();
+        int scrollPos = in.read16UA();
         Component component = Component.instances[componentID];
         if ((component != null) && (component.type == 0)) {
-            if (scrollY < 0) {
-                scrollY = 0;
+            if (scrollPos < 0) {
+                scrollPos = 0;
             }
-            if (scrollY > (component.scrollableHeight - component.height)) {
-                scrollY = component.scrollableHeight - component.height;
+            if (scrollPos > (component.scrollableHeight - component.height)) {
+                scrollPos = component.scrollableHeight - component.height;
             }
-            component.scrollPosition = scrollY;
+            component.scrollPos = scrollPos;
         }
     }
 
-    private void restoreVarps() {
+    private void restoreVarCache() {
         for (int i = 0; i < varps.length; i++) {
-            if (varps[i] != storedVarps[i]) {
-                varps[i] = storedVarps[i];
+            if (varps[i] != varCache[i]) {
+                varps[i] = varCache[i];
                 updateVarp(i);
                 redrawSidebar = true;
             }
         }
     }
 
-    private void readChatMessage() {
+    private void readPublicMessage() {
         long name37 = in.read64();
         int messageID = in.read32();
         int role = in.read8U();
@@ -12106,10 +12106,10 @@ public class Game extends GameShell {
         }
     }
 
-    private void readComponentHidden() {
-        boolean hidden = in.read8U() == 1;
+    private void readComponentHide() {
+        boolean hide = in.read8U() == 1;
         int componentID = in.read16U();
-        Component.instances[componentID].hidden = hidden;
+        Component.instances[componentID].hide = hide;
     }
 
     private void readComponentResetSeq() {
@@ -12144,7 +12144,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readPrivacySettings() {
+    private void readChatFilterSettings() {
         publicChatSetting = in.read8U();
         privateChatSetting = in.read8U();
         tradeChatSetting = in.read8U();
@@ -12152,7 +12152,7 @@ public class Game extends GameShell {
         redrawChatback = true;
     }
 
-    private void readWeight() {
+    private void readRunWeight() {
         if (selectedTab == 12) {
             redrawSidebar = true;
         }
@@ -12175,7 +12175,7 @@ public class Game extends GameShell {
         Component.instances[componentID].color = (r << 19) + (g << 11) + (b << 3);
     }
 
-    private void readInventory() {
+    private void readInventoryUpdateFull() {
         redrawSidebar = true;
         int componentID = in.read16U();
         Component component = Component.instances[componentID];
@@ -12243,10 +12243,10 @@ public class Game extends GameShell {
         openViewportComponent(componentID);
     }
 
-    private void readVarpInt() {
+    private void readVarpLarge() {
         int varp = in.read16ULE();
         int value = in.read32RME();
-        storedVarps[varp] = value;
+        varCache[varp] = value;
 
         if (varps[varp] != value) {
             varps[varp] = value;
@@ -12258,10 +12258,10 @@ public class Game extends GameShell {
         }
     }
 
-    private void readVarpByte() {
+    private void readVarpSmall() {
         int varp = in.read16ULE();
         byte value = in.read();
-        storedVarps[varp] = value;
+        varCache[varp] = value;
 
         if (varps[varp] != value) {
             varps[varp] = value;
@@ -12284,7 +12284,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readInventoryUpdate() {
+    private void readInventoryUpdatePartial() {
         redrawSidebar = true;
         int componentID = in.read16U();
         Component component = Component.instances[componentID];
@@ -12331,7 +12331,7 @@ public class Game extends GameShell {
         appendProjectiles();
         appendSpotanims();
 
-        if (!cinematic) {
+        if (!cutscene) {
             int pitch = orbitCameraPitch;
 
             if ((cameraPitchClamp / 256) > pitch) {
@@ -12348,8 +12348,8 @@ public class Game extends GameShell {
 
         int topLevel;
 
-        if (cinematic) {
-            topLevel = getTopLevelCinematic();
+        if (cutscene) {
+            topLevel = getTopLevelCutscene();
         } else {
             topLevel = getTopLevel();
         }

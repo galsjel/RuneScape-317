@@ -5,7 +5,7 @@
 public class ObjEntity extends Entity {
 
 	public int id;
-	public int amount;
+	public int count;
 
 	public ObjEntity() {
 	}
@@ -13,7 +13,7 @@ public class ObjEntity extends Entity {
 	@Override
 	public Model getModel() {
 		ObjType type = ObjType.get(id);
-		return type.getModel(amount);
+		return type.getModel(count);
 	}
 
 }
