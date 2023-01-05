@@ -10,6 +10,7 @@ import java.io.IOException;
 public abstract class GameShell extends JComponent implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
 
 	public final long[] otim = new long[10];
+	public final double[] frameTime = new double[100];
 	public final int[] actionKey = new int[128];
 	public final int[] keyQueue = new int[128];
 	public int state;
@@ -72,6 +73,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 			load();
 
 			int opos = 0;
+			int fpos = 0;
 			int ratio = 256;
 			int delta = 1;
 			int count = 0;
@@ -139,6 +141,8 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 					intex++;
 				}
 
+				long time = System.nanoTime();
+
 				for (; count < 256; count += ratio) {
 					mouseClickButton = lastMouseClickButton;
 					mouseClickX = lastMouseClickX;
@@ -156,6 +160,9 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 				}
 
 				draw();
+
+				frameTime[fpos] = (double)(System.nanoTime() - time) / 1_000_000.0;
+				fpos = (fpos + 1) % frameTime.length;
 
 				if (debug) {
 					System.out.println("ntime:" + ntime);

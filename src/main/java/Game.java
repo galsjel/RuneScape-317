@@ -197,7 +197,7 @@ public class Game extends GameShell {
     public final int[] designColors = new int[5];
     public final int anInt1002 = 0x23201b;
     public final int[] cameraModifierCycle = new int[5];
-    public final int[] storedVariables = new int[2000];
+    public final int[] storedVarps = new int[2000];
     public final int[] minimapMaskLineOffsets = new int[151];
     public final int[] compassMaskLineLengths = new int[33];
     /**
@@ -327,13 +327,13 @@ public class Game extends GameShell {
     public long inputFriendName37;
     public boolean _focused = true;
     public long[] friendName37 = new long[200];
-    public int nextMusic = -1;
+    public int nextSong = -1;
     public volatile boolean flameThread = false;
     public int projectX = -1;
     public int projectY = -1;
     public Image8 imageTitlebox;
     public Image8 imageTitlebutton;
-    public int[] variables = new int[2000];
+    public int[] varps = new int[2000];
     public boolean gripGrabbed = false;
     public int chatCount;
     /**
@@ -485,8 +485,8 @@ public class Game extends GameShell {
     public DrawArea areaBackhmid1;
     public int cameraAnticheatOffsetZ;
     public int menuSize;
-    public int anInt1136;
-    public int activeSpellComponent;
+    public int spellSelected;
+    public int activeSpellID;
     public int activeSpellFlags;
     public String spellCaption;
     public Image24[] activeMapFunctions = new Image24[1000];
@@ -609,8 +609,8 @@ public class Game extends GameShell {
     public int hintNPC;
     public boolean redrawChatback = false;
     public int chatbackInputType;
-    public int music;
-    public boolean musicFading = true;
+    public int song;
+    public boolean songFading = true;
     public SceneCollisionMap[] levelCollisionMap = new SceneCollisionMap[4];
     public boolean redrawPrivacySettings = false;
     public int[] sceneMapIndex;
@@ -621,7 +621,7 @@ public class Game extends GameShell {
     public boolean objGrabThreshold = false;
     public int actionCycles;
     public int actionComponentID;
-    public int actionInvSlot;
+    public int actionSlot;
     public int actionArea;
     public byte[][] sceneMapLocData;
     public int tradeChatSetting;
@@ -641,7 +641,7 @@ public class Game extends GameShell {
     public boolean showSocialInput = false;
     public int lastWaveLength;
     public byte[][][] levelTileFlags;
-    public int nextMusicDelay;
+    public int nextSongDelay;
     public int flagSceneTileX;
     public int flagSceneTileZ;
     public Image24 imageMinimap;
@@ -660,11 +660,11 @@ public class Game extends GameShell {
     public int cameraAnticheatOffsetX;
     public int[] bfsStepX = new int[4000];
     public int[] bfsStepZ = new int[4000];
-    public int anInt1282;
-    public int anInt1283;
-    public int anInt1284;
-    public int anInt1285;
-    public String aString1286;
+    public int objSelected;
+    public int selectedObjSlot;
+    public int selectedObjComponentID;
+    public int selectedObjID;
+    public String selectedObjName;
     public int publicChatSetting;
     public int lastWaveLoops = -1;
 
@@ -753,15 +753,15 @@ public class Game extends GameShell {
             Model.init(ondemand.getFileCount(0), ondemand);
 
             if (!lowmem) {
-                music = 7;
+                song = 7;
 
                 try {
-                    music = Integer.parseInt(getParameter("music"));
+                    song = Integer.parseInt(getParameter("music"));
                 } catch (Exception ignored) {
                 }
 
-                musicFading = true;
-                ondemand.request(2, music);
+                songFading = true;
+                ondemand.request(2, song);
 
                 while (ondemand.remaining() > 0) {
                     handleOnDemandRequests();
@@ -1206,7 +1206,7 @@ public class Game extends GameShell {
         menuAction = null;
         menuParamC = null;
         menuOption = null;
-        variables = null;
+        varps = null;
         activeMapFunctionX = null;
         activeMapFunctionZ = null;
         activeMapFunctions = null;
@@ -1566,7 +1566,7 @@ public class Game extends GameShell {
 
         int button = super.mouseClickButton;
 
-        if ((anInt1136 == 1) && (super.mouseClickX >= 516) && (super.mouseClickY >= 160) && (super.mouseClickX <= 765) && (super.mouseClickY <= 205)) {
+        if ((spellSelected == 1) && (super.mouseClickX >= 516) && (super.mouseClickY >= 160) && (super.mouseClickX <= 765) && (super.mouseClickY <= 205)) {
             button = 0;
         }
 
@@ -2114,18 +2114,18 @@ public class Game extends GameShell {
                 }
             } else {
                 if ((child.optionType == 1) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
-                    boolean flag = false;
+                    boolean override = false;
                     if (child.contentType != 0) {
-                        flag = method103(child);
+                        override = handleSocialMenuOption(child);
                     }
-                    if (!flag) {
+                    if (!override) {
                         menuOption[menuSize] = child.option;
                         menuAction[menuSize] = 315;
                         menuParamB[menuSize] = child.id;
                         menuSize++;
                     }
                 }
-                if ((child.optionType == 2) && (anInt1136 == 0) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
+                if ((child.optionType == 2) && (spellSelected == 0) && (mouseX >= cx) && (mouseY >= cy) && (mouseX < (cx + child.width)) && (mouseY < (cy + child.height))) {
                     String prefix = child.spellAction;
                     if (prefix.contains(" ")) {
                         prefix = prefix.substring(0, prefix.indexOf(" "));
@@ -2174,17 +2174,17 @@ public class Game extends GameShell {
                                 hoveredSlotParentID = child.id;
                                 if (child.invSlotObjID[k2] > 0) {
                                     ObjType type = ObjType.get(child.invSlotObjID[k2] - 1);
-                                    if ((anInt1282 == 1) && child.aBoolean249) {
-                                        if ((child.id != anInt1284) || (k2 != anInt1283)) {
-                                            menuOption[menuSize] = "Use " + aString1286 + " with @lre@" + type.name;
+                                    if ((objSelected == 1) && child.aBoolean249) {
+                                        if ((child.id != selectedObjComponentID) || (k2 != selectedObjSlot)) {
+                                            menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + type.name;
                                             menuAction[menuSize] = 870;
                                             menuParamC[menuSize] = type.id;
                                             menuParamA[menuSize] = k2;
                                             menuParamB[menuSize] = child.id;
                                             menuSize++;
                                         }
-                                    } else if ((anInt1136 == 1) && child.aBoolean249) {
-                                        if ((activeSpellFlags & 0x10) == 16) {
+                                    } else if ((spellSelected == 1) && child.aBoolean249) {
+                                        if ((activeSpellFlags & 0x10) == 0x10) {
                                             menuOption[menuSize] = spellCaption + " @lre@" + type.name;
                                             menuAction[menuSize] = 543;
                                             menuParamC[menuSize] = type.id;
@@ -2308,7 +2308,7 @@ public class Game extends GameShell {
         Draw2D.drawLineX(x + 1, y + 14 + gripY + gripSize, 15, anInt927);
     }
 
-    public void method31(Buffer buffer, int i) {
+    public void readNPCs(Buffer buffer, int i) {
         anInt839 = 0;
         anInt893 = 0;
         method139(buffer);
@@ -2363,20 +2363,7 @@ public class Game extends GameShell {
                 out.write8(tradeChatSetting);
             }
             if ((super.mouseClickX >= 412) && (super.mouseClickX <= 512) && (super.mouseClickY >= 467) && (super.mouseClickY <= 499)) {
-                if (viewportComponentID == -1) {
-                    closeInterfaces();
-                    reportAbuseInput = "";
-                    aBoolean1158 = false;
-                    for (int i = 0; i < Component.instances.length; i++) {
-                        if ((Component.instances[i] == null) || (Component.instances[i].contentType != 600)) {
-                            continue;
-                        }
-                        reportAbuseComponentID = viewportComponentID = Component.instances[i].parentID;
-                        break;
-                    }
-                } else {
-                    addMessage(0, "", "Please close the interface you have open before using 'report abuse'");
-                }
+                useReportAbuseOption("");
             }
         }
     }
@@ -2388,7 +2375,7 @@ public class Game extends GameShell {
             return;
         }
 
-        int value = variables[varp];
+        int value = varps[varp];
 
         if (key == 1) {
             if (value == 1) {
@@ -2435,13 +2422,13 @@ public class Game extends GameShell {
 
             if ((midiActive != active) && !lowmem) {
                 if (midiActive) {
-                    music = nextMusic;
-                    musicFading = true;
-                    ondemand.request(2, music);
+                    song = nextSong;
+                    songFading = true;
+                    ondemand.request(2, song);
                 } else {
                     midistop();
                 }
-                nextMusicDelay = 0;
+                nextSongDelay = 0;
             }
         }
         if (key == 4) {
@@ -3109,9 +3096,9 @@ public class Game extends GameShell {
         }
         // System.gc();
         midistop();
-        nextMusic = -1;
-        music = -1;
-        nextMusicDelay = 0;
+        nextSong = -1;
+        song = -1;
+        nextSongDelay = 0;
     }
 
     public void validateCharacterDesign() {
@@ -3774,8 +3761,8 @@ public class Game extends GameShell {
                     SeqTransform.unpack(request.data);
                 }
 
-                if ((request.store == 2) && (request.file == music) && (request.data != null)) {
-                    midisave(musicFading, request.data);
+                if ((request.store == 2) && (request.file == song) && (request.data != null)) {
+                    midisave(songFading, request.data);
                 }
 
                 if ((request.store == 3) && sceneState == 1) {
@@ -4524,8 +4511,8 @@ public class Game extends GameShell {
         }
     }
 
-    public void useMenuOption(int option) {
-        if (option < 0) {
+    public void useMenuOption(int optionID) {
+        if (optionID < 0) {
             return;
         }
 
@@ -4534,777 +4521,1034 @@ public class Game extends GameShell {
             redrawChatback = true;
         }
 
-        int action = menuAction[option];
-        int a = menuParamA[option];
-        int b = menuParamB[option];
-        int c = menuParamC[option];
+        int action = menuAction[optionID];
+        int a = menuParamA[optionID];
+        int b = menuParamB[optionID];
+        int c = menuParamC[optionID];
 
         if (action >= 2000) {
             action -= 2000;
         }
 
-        if (action == 582) {
-            NPCEntity npc = npcs[c];
-            if (npc != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(57);
-                out.write16A(anInt1285);
-                out.write16A(c);
-                out.write16LE(anInt1283);
-                out.write16A(anInt1284);
-            }
-        }
-        if (action == 234) {
-            boolean flag1 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag1) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(236);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16(c);
-            out.write16LE(a + sceneBaseTileX);
-        }
-        if ((action == 62) && interactWithLoc(c, a, b)) {
-            out.writeOp(192);
-            out.write16(anInt1284);
-            out.write16LE((c >> 14) & 0x7fff);
-            out.write16LEA(b + sceneBaseTileZ);
-            out.write16LE(anInt1283);
-            out.write16LEA(a + sceneBaseTileX);
-            out.write16(anInt1285);
-        }
-        if (action == 511) {
-            boolean flag2 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag2) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(25);
-            out.write16LE(anInt1284);
-            out.write16A(anInt1285);
-            out.write16(c);
-            out.write16A(b + sceneBaseTileZ);
-            out.write16LEA(anInt1283);
-            out.write16(a + sceneBaseTileX);
-        }
-        if (action == 74) {
-            out.writeOp(122);
-            out.write16LEA(b);
-            out.write16A(a);
-            out.write16LE(c);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 315) {
-            Component component = Component.instances[b];
-            boolean notify = true;
-            if (component.contentType > 0) {
-                notify = handleComponentAction(component);
-            }
-            if (notify) {
-                out.writeOp(185);
-                out.write16(b);
-            }
-        }
-        if (action == 561) {
-            PlayerEntity player = players[c];
-            if (player != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(128);
-                out.write16(c);
-            }
-        }
-        if (action == 20) {
-            NPCEntity class30_sub2_sub4_sub1_sub1_1 = npcs[c];
-            if (class30_sub2_sub4_sub1_sub1_1 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub1_1.pathTileX[0], class30_sub2_sub4_sub1_sub1_1.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(155);
-                out.write16LE(c);
-            }
-        }
-        if (action == 779) {
-            PlayerEntity class30_sub2_sub4_sub1_sub2_1 = players[c];
-            if (class30_sub2_sub4_sub1_sub2_1 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub2_1.pathTileX[0], class30_sub2_sub4_sub1_sub2_1.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(153);
-                out.write16LE(c);
-            }
-        }
-        if (action == 516) {
-            if (!menuVisible) {
-                scene.method312(super.mouseClickY - 4, super.mouseClickX - 4);
-            } else {
-                scene.method312(b - 4, a - 4);
-            }
-        }
-        if (action == 1062) {
-            interactWithLoc(c, a, b);
-            out.writeOp(228);
-            out.write16A((c >> 14) & 0x7fff);
-            out.write16A(b + sceneBaseTileZ);
-            out.write16(a + sceneBaseTileX);
-        }
-        if ((action == 679) && !pressedContinueOption) {
-            out.writeOp(40);
-            out.write16(b);
-            pressedContinueOption = true;
-        }
-        if (action == 431) {
-            out.writeOp(129);
-            out.write16A(a);
-            out.write16(b);
-            out.write16A(c);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if ((action == 337) || (action == 42) || (action == 792) || (action == 322)) {
-            String s = menuOption[option];
-            int k1 = s.indexOf("@whi@");
-            if (k1 != -1) {
-                long l3 = StringUtil.toBase37(s.substring(k1 + 5).trim());
-                if (action == 337) {
-                    addFriend(l3);
+        switch (action) {
+            case 582:
+                sendUseObjOnNPC(c);
+                break;
+            case 234:
+                useGroundObjOption2(a, b, c);
+                break;
+            case 62:
+                if (interactWithLoc(c, a, b)) {
+                    useObjOnLoc(a, b, c);
                 }
-                if (action == 42) {
-                    addIgnore(l3);
+                break;
+            case 511:
+                useObjOnGroundObj(a, b, c);
+                break;
+            case 74:
+                useObjOption0(a, b, c);
+                break;
+            case 315:
+                useButton(b);
+                break;
+            case 561:
+                usePlayerOption0(c);
+                break;
+            case 20:
+                useNPCOption0(c);
+                break;
+            case 779:
+                usePlayerOption1(c);
+                break;
+            case 516:
+                useWalkHereOption(a, b);
+                break;
+            case 1062:
+                useLocOption4(a, b, c);
+                break;
+            case 679:
+                if (!pressedContinueOption) {
+                    out.writeOp(40);
+                    out.write16(b);
+                    pressedContinueOption = true;
                 }
-                if (action == 792) {
-                    removeFriend(l3);
-                }
-                if (action == 322) {
-                    removeIgnore(l3);
-                }
-            }
-        }
-        if (action == 53) {
-            out.writeOp(135);
-            out.write16LE(a);
-            out.write16A(b);
-            out.write16LE(c);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 539) {
-            out.writeOp(16);
-            out.write16A(c);
-            out.write16LEA(a);
-            out.write16LEA(b);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if ((action == 484) || (action == 6)) {
-            String s1 = menuOption[option];
-            int l1 = s1.indexOf("@whi@");
-            if (l1 != -1) {
-                s1 = s1.substring(l1 + 5).trim();
-                String s7 = StringUtil.formatName(StringUtil.fromBase37(StringUtil.toBase37(s1)));
-                boolean flag9 = false;
-                for (int j3 = 0; j3 < playerCount; j3++) {
-                    PlayerEntity player_7 = players[playerIDs[j3]];
-                    if ((player_7 == null) || (player_7.name == null) || !player_7.name.equalsIgnoreCase(s7)) {
-                        continue;
+                break;
+            case 431:
+                useInventoryOption3(a, b, c);
+                break;
+            case 337:
+            case 42:
+            case 792:
+            case 322: {
+                String ption = menuOption[optionID];
+                int tag = ption.indexOf("@whi@");
+                if (tag != -1) {
+                    long name = StringUtil.toBase37(ption.substring(tag + 5).trim());
+
+                    if (action == 337) {
+                        addFriend(name);
                     }
-                    tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player_7.pathTileX[0], player_7.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                    if (action == 484) {
-                        out.writeOp(139);
-                        out.write16LE(playerIDs[j3]);
+                    if (action == 42) {
+                        addIgnore(name);
                     }
-                    if (action == 6) {
-                        out.writeOp(128);
-                        out.write16(playerIDs[j3]);
+                    if (action == 792) {
+                        removeFriend(name);
                     }
-                    flag9 = true;
-                    break;
-                }
-                if (!flag9) {
-                    addMessage(0, "", "Unable to find " + s7);
-                }
-            }
-        }
-        if (action == 870) {
-            out.writeOp(53);
-            out.write16(a);
-            out.write16A(anInt1283);
-            out.write16LEA(c);
-            out.write16(anInt1284);
-            out.write16LE(anInt1285);
-            out.write16(b);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 847) {
-            out.writeOp(87);
-            out.write16A(c);
-            out.write16(b);
-            out.write16A(a);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-
-        if (action == 626) {
-            Component component_1 = Component.instances[b];
-            anInt1136 = 1;
-            activeSpellComponent = b;
-            activeSpellFlags = component_1.spellFlags;
-            anInt1282 = 0;
-            redrawSidebar = true;
-
-            String prefix = component_1.spellAction;
-
-            if (prefix.contains(" ")) {
-                prefix = prefix.substring(0, prefix.indexOf(" "));
-            }
-
-            String suffix = component_1.spellAction;
-
-            if (suffix.contains(" ")) {
-                suffix = suffix.substring(suffix.indexOf(" ") + 1);
-            }
-
-            spellCaption = prefix + " " + component_1.spellName + " " + suffix;
-
-            if (activeSpellFlags == 0x10) {
-                redrawSidebar = true;
-                selectedTab = 3;
-                redrawSideicons = true;
-            }
-            return;
-        }
-        if (action == 78) {
-            out.writeOp(117);
-            out.write16LEA(b);
-            out.write16LEA(c);
-            out.write16LE(a);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 27) {
-            PlayerEntity class30_sub2_sub4_sub1_sub2_2 = players[c];
-            if (class30_sub2_sub4_sub1_sub2_2 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub2_2.pathTileX[0], class30_sub2_sub4_sub1_sub2_2.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(73);
-                out.write16LE(c);
-            }
-        }
-        if (action == 213) {
-            boolean flag3 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag3) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(79);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16(c);
-            out.write16A(a + sceneBaseTileX);
-        }
-        if (action == 632) {
-            out.writeOp(145);
-            out.write16A(b);
-            out.write16A(a);
-            out.write16A(c);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 493) {
-            out.writeOp(75);
-            out.write16LEA(b);
-            out.write16LE(a);
-            out.write16A(c);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 652) {
-            boolean flag4 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag4) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(156);
-            out.write16A(a + sceneBaseTileX);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16LEA(c);
-        }
-        if (action == 94) {
-            boolean flag5 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag5) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(181);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16(c);
-            out.write16LE(a + sceneBaseTileX);
-            out.write16A(activeSpellComponent);
-        }
-        if (action == 646) {
-            out.writeOp(185);
-            out.write16(b);
-            Component component_2 = Component.instances[b];
-            if ((component_2.scripts != null) && (component_2.scripts[0][0] == 5)) {
-                int i2 = component_2.scripts[0][1];
-                if (variables[i2] != component_2.scriptOperand[0]) {
-                    variables[i2] = component_2.scriptOperand[0];
-                    updateVarp(i2);
-                    redrawSidebar = true;
-                }
-            }
-        }
-        if (action == 225) {
-            NPCEntity class30_sub2_sub4_sub1_sub1_2 = npcs[c];
-            if (class30_sub2_sub4_sub1_sub1_2 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub1_2.pathTileX[0], class30_sub2_sub4_sub1_sub1_2.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(17);
-                out.write16LEA(c);
-            }
-        }
-        if (action == 965) {
-            NPCEntity npc_3 = npcs[c];
-            if (npc_3 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc_3.pathTileX[0], npc_3.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(21);
-                out.write16(c);
-            }
-        }
-        if (action == 413) {
-            NPCEntity class30_sub2_sub4_sub1_sub1_4 = npcs[c];
-            if (class30_sub2_sub4_sub1_sub1_4 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub1_4.pathTileX[0], class30_sub2_sub4_sub1_sub1_4.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(131);
-                out.write16LEA(c);
-                out.write16A(activeSpellComponent);
-            }
-        }
-        if (action == 200) {
-            closeInterfaces();
-        }
-        if (action == 1025) {
-            NPCEntity npc_5 = npcs[c];
-            if (npc_5 != null) {
-                NPCType type = npc_5.type;
-                if (type.overrides != null) {
-                    type = type.getOverrideType();
-                }
-                if (type != null) {
-                    String s9;
-                    if (type.desc != null) {
-                        s9 = new String(type.desc);
-                    } else {
-                        s9 = "It's a " + type.name + ".";
+                    if (action == 322) {
+                        removeIgnore(name);
                     }
-                    addMessage(0, "", s9);
                 }
+                break;
             }
-        }
-        if (action == 900) {
-            interactWithLoc(c, a, b);
-            out.writeOp(252);
-            out.write16LEA((c >> 14) & 0x7fff);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16A(a + sceneBaseTileX);
-        }
-        if (action == 412) {
-            NPCEntity npc_6 = npcs[c];
-            if (npc_6 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc_6.pathTileX[0], npc_6.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(72);
-                out.write16A(c);
-            }
-        }
-        if (action == 365) {
-            PlayerEntity player_3 = players[c];
-            if (player_3 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player_3.pathTileX[0], player_3.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(249);
-                out.write16A(c);
-                out.write16LE(activeSpellComponent);
-            }
-        }
-        if (action == 729) {
-            PlayerEntity class30_sub2_sub4_sub1_sub2_4 = players[c];
-            if (class30_sub2_sub4_sub1_sub2_4 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], class30_sub2_sub4_sub1_sub2_4.pathTileX[0], class30_sub2_sub4_sub1_sub2_4.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(39);
-                out.write16LE(c);
-            }
-        }
-        if (action == 577) {
-            PlayerEntity player_5 = players[c];
-            if (player_5 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player_5.pathTileX[0], player_5.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(139);
-                out.write16LE(c);
-            }
-        }
-        if ((action == 956) && interactWithLoc(c, a, b)) {
-            out.writeOp(35);
-            out.write16LE(a + sceneBaseTileX);
-            out.write16A(activeSpellComponent);
-            out.write16A(b + sceneBaseTileZ);
-            out.write16LE((c >> 14) & 0x7fff);
-        }
-        if (action == 567) {
-            boolean flag6 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag6) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(23);
-            out.write16LE(b + sceneBaseTileZ);
-            out.write16LE(c);
-            out.write16LE(a + sceneBaseTileX);
-        }
-        if (action == 867) {
-            out.writeOp(43);
-            out.write16LE(b);
-            out.write16A(c);
-            out.write16A(a);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 543) {
-            out.writeOp(237);
-            out.write16(a);
-            out.write16A(c);
-            out.write16(b);
-            out.write16A(activeSpellComponent);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
-            }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
-        }
-        if (action == 606) {
-            String s2 = menuOption[option];
-            int j2 = s2.indexOf("@whi@");
-            if (j2 != -1) {
-                if (viewportComponentID == -1) {
-                    closeInterfaces();
-                    reportAbuseInput = s2.substring(j2 + 5).trim();
-                    aBoolean1158 = false;
-                    for (int i3 = 0; i3 < Component.instances.length; i3++) {
-                        if ((Component.instances[i3] == null) || (Component.instances[i3].contentType != 600)) {
-                            continue;
-                        }
-                        reportAbuseComponentID = viewportComponentID = Component.instances[i3].parentID;
-                        break;
-                    }
-                } else {
-                    addMessage(0, "", "Please close the interface you have open before using 'report abuse'");
+            case 53:
+                useInventoryOption4(a, b, c);
+                break;
+            case 539:
+                useObjOption2(a, b, c);
+                break;
+            case 484:
+            case 6: {
+                String option = menuOption[optionID];
+                int tag = option.indexOf("@whi@");
+
+                if (tag != -1) {
+                    option = option.substring(tag + 5).trim();
+                    acceptPlayerRequest(action, StringUtil.formatName(StringUtil.fromBase37(StringUtil.toBase37(option))));
                 }
+                break;
             }
-        }
-        if (action == 491) {
-            PlayerEntity player_6 = players[c];
-            if (player_6 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player_6.pathTileX[0], player_6.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(14);
-                out.write16A(anInt1284);
-                out.write16(c);
-                out.write16(anInt1285);
-                out.write16LE(anInt1283);
-            }
-        }
-        if (action == 639) {
-            String s3 = menuOption[option];
-            int k2 = s3.indexOf("@whi@");
-            if (k2 != -1) {
-                long l4 = StringUtil.toBase37(s3.substring(k2 + 5).trim());
-                int k3 = -1;
-                for (int i4 = 0; i4 < friendCount; i4++) {
-                    if (friendName37[i4] != l4) {
-                        continue;
-                    }
-                    k3 = i4;
-                    break;
+            case 870:
+                useObjOnObj(a, b, c);
+                break;
+            case 847:
+                useObjOption4(a, b, c);
+                break;
+            case 626:
+                selectSpell(b);
+                return;
+            case 78:
+                useInventoryOption1(a, b, c);
+                break;
+            case 27:
+                usePlayerOption2(c);
+                break;
+            case 213:
+                useGroundObjOption4(a, b, c);
+                break;
+            case 632:
+                useInventoryOption0(a, b, c);
+                break;
+            case 493:
+                useObjOption3(a, b, c);
+                break;
+            case 652:
+                useGroundObjOption0(a, b, c);
+                break;
+            case 94:
+                castSpellOnGroundObj(a, b, c);
+                break;
+            case 646:
+                useSelectOption(b);
+                break;
+            case 225:
+                useNPCOption2(c);
+                break;
+            case 965:
+                useNPCOption3(c);
+                break;
+            case 413:
+                castSpellOnNPC(c);
+                break;
+            case 200:
+                closeInterfaces();
+                break;
+            case 1025:
+                examineNPC(c);
+                break;
+            case 900:
+                useLocOption1(a, b, c);
+                break;
+            case 412:
+                useNPCOption1(c);
+                break;
+            case 365:
+                castSpellOnPlayer(c);
+                break;
+            case 729:
+                usePlayerOption4(c);
+                break;
+            case 577:
+                usePlayerOption3(c);
+                break;
+            case 956:
+                if (interactWithLoc(c, a, b)) {
+                    castSpellOnLoc(a, b, c);
                 }
-                if ((k3 != -1) && (friendWorld[k3] > 0)) {
-                    redrawChatback = true;
-                    chatbackInputType = 0;
-                    showSocialInput = true;
-                    socialInput = "";
-                    socialAction = 3;
-                    inputFriendName37 = friendName37[k3];
-                    socialMessage = "Enter message to send to " + friendName[k3];
+                break;
+            case 567:
+                useGroundObjOption1(a, b, c);
+                break;
+            case 867:
+                useInventoryOption2(a, b, c);
+                break;
+            case 543:
+                castSpellOnObj(a, b, c);
+                break;
+            case 606: {
+                String option = menuOption[optionID];
+                int tag = option.indexOf("@whi@");
+                if (tag != -1) {
+                    useReportAbuseOption(option.substring(tag + 5).trim());
                 }
+                break;
             }
-        }
-        if (action == 454) {
-            out.writeOp(41);
-            out.write16(c);
-            out.write16A(a);
-            out.write16A(b);
-            actionCycles = 0;
-            actionComponentID = b;
-            actionInvSlot = a;
-            actionArea = 2;
-            if (Component.instances[b].parentID == viewportComponentID) {
-                actionArea = 1;
+            case 491:
+                useObjOnPlayer(c);
+                break;
+            case 639: {
+                String option = menuOption[optionID];
+                int tag = option.indexOf("@whi@");
+                if (tag != -1) {
+                    promptMessageFriend(StringUtil.toBase37(option.substring(tag + 5).trim()));
+                }
+                break;
             }
-            if (Component.instances[b].parentID == chatbackComponentID) {
-                actionArea = 3;
-            }
+            case 454:
+                useObjOption1(a, b, c);
+                break;
+            case 478:
+                useNPCOption4(c);
+                break;
+            case 113:
+                useLocOption2(a, b, c);
+                break;
+            case 872:
+                useLocOption3(a, b, c);
+                break;
+            case 502:
+                useLocOption0(a, b, c);
+                break;
+            case 1125:
+                examineInventoryObj(a, b, c);
+                break;
+            case 169:
+                useToggleOption(b);
+                break;
+            case 447:
+                selectObj(a, b, c);
+                return;
+            case 1226:
+                examineLoc(c);
+                break;
+            case 244:
+                useGroundObjOption3(a, b, c);
+                break;
+            case 1448:
+                examineObj(c);
+                break;
         }
-        if (action == 478) {
-            NPCEntity npc_7 = npcs[c];
-            if (npc_7 != null) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc_7.pathTileX[0], npc_7.pathTileZ[0], 0, 1, 1, 0, 0, false);
-                crossX = super.mouseClickX;
-                crossY = super.mouseClickY;
-                crossMode = 2;
-                crossCycle = 0;
-                out.writeOp(18);
-                out.write16LE(c);
-            }
-        }
-        if (action == 113) {
-            interactWithLoc(c, a, b);
-            out.writeOp(70);
-            out.write16LE(a + sceneBaseTileX);
-            out.write16(b + sceneBaseTileZ);
-            out.write16LEA((c >> 14) & 0x7fff);
-        }
-        if (action == 872) {
-            interactWithLoc(c, a, b);
-            out.writeOp(234);
-            out.write16LEA(a + sceneBaseTileX);
-            out.write16A((c >> 14) & 0x7fff);
-            out.write16LEA(b + sceneBaseTileZ);
-        }
-        if (action == 502) {
-            interactWithLoc(c, a, b);
-            out.writeOp(132);
-            out.write16LEA(a + sceneBaseTileX);
-            out.write16((c >> 14) & 0x7fff);
-            out.write16A(b + sceneBaseTileZ);
-        }
-        if (action == 1125) {
-            ObjType type = ObjType.get(c);
-            Component component_4 = Component.instances[b];
-            String s5;
-            if ((component_4 != null) && (component_4.invSlotAmount[a] >= 0x186a0)) {
-                s5 = component_4.invSlotAmount[a] + " x " + type.name;
-            } else if (type.examine != null) {
-                s5 = new String(type.examine);
-            } else {
-                s5 = "It's a " + type.name + ".";
-            }
-            addMessage(0, "", s5);
-        }
-        if (action == 169) {
-            out.writeOp(185);
-            out.write16(b);
-            Component component_3 = Component.instances[b];
-            if ((component_3.scripts != null) && (component_3.scripts[0][0] == 5)) {
-                int l2 = component_3.scripts[0][1];
-                variables[l2] = 1 - variables[l2];
-                updateVarp(l2);
-                redrawSidebar = true;
-            }
-        }
-        if (action == 447) {
-            anInt1282 = 1;
-            anInt1283 = a;
-            anInt1284 = b;
-            anInt1285 = c;
-            aString1286 = ObjType.get(c).name;
-            anInt1136 = 0;
-            redrawSidebar = true;
-            return;
-        }
-        if (action == 1226) {
-            int j1 = (c >> 14) & 0x7fff;
-            LocType type = LocType.get(j1);
-            String s10;
-            if (type.description != null) {
-                s10 = type.description;
-            } else {
-                s10 = "It's a " + type.name + ".";
-            }
-            addMessage(0, "", s10);
-        }
-        if (action == 244) {
-            boolean flag7 = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 0, 0, 0, 0, false);
-            if (!flag7) {
-                tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], a, b, 0, 1, 1, 0, 0, false);
-            }
-            crossX = super.mouseClickX;
-            crossY = super.mouseClickY;
-            crossMode = 2;
-            crossCycle = 0;
-            out.writeOp(253);
-            out.write16LE(a + sceneBaseTileX);
-            out.write16LEA(b + sceneBaseTileZ);
-            out.write16A(c);
-        }
-        if (action == 1448) {
-            ObjType type_1 = ObjType.get(c);
-            String s6;
-            if (type_1.examine != null) {
-                s6 = new String(type_1.examine);
-            } else {
-                s6 = "It's a " + type_1.name + ".";
-            }
-            addMessage(0, "", s6);
-        }
-        anInt1282 = 0;
-        anInt1136 = 0;
+
+        objSelected = 0;
+        spellSelected = 0;
         redrawSidebar = true;
+    }
+
+    private void useGroundObjOption2(int tileX, int tileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(236);
+        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(objID);
+        out.write16LE(tileX + sceneBaseTileX);
+    }
+
+    private void useObjOnLoc(int tileX, int tileZ, int locBitset) {
+        out.writeOp(192);
+        out.write16(selectedObjComponentID);
+        out.write16LE((locBitset >> 14) & 0x7fff);
+        out.write16LEA(tileZ + sceneBaseTileZ);
+        out.write16LE(selectedObjSlot);
+        out.write16LEA(tileX + sceneBaseTileX);
+        out.write16(selectedObjID);
+    }
+
+    private void useObjOnGroundObj(int tileX, int tileZ, int groundObjID) {
+        boolean k = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!k) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(25);
+        out.write16LE(selectedObjComponentID);
+        out.write16A(selectedObjID);
+        out.write16(groundObjID);
+        out.write16A(tileZ + sceneBaseTileZ);
+        out.write16LEA(selectedObjSlot);
+        out.write16(tileX + sceneBaseTileX);
+    }
+
+    private void useObjOption0(int slot, int componentID, int objID) {
+        out.writeOp(122);
+        out.write16LEA(componentID);
+        out.write16A(slot);
+        out.write16LE(objID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useButton(int b) {
+        Component component = Component.instances[b];
+        boolean notify = true;
+        if (component.contentType > 0) {
+            notify = handleComponentAction(component);
+        }
+        if (notify) {
+            out.writeOp(185);
+            out.write16(b);
+        }
+    }
+
+    private void usePlayerOption0(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(128);
+        out.write16(playerID);
+    }
+
+    private void useNPCOption0(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(155);
+        out.write16LE(npcID);
+    }
+
+    private void usePlayerOption1(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(153);
+        out.write16LE(playerID);
+    }
+
+    private void useWalkHereOption(int mouseX, int mouseY) {
+        if (!menuVisible) {
+            scene.click(super.mouseClickY - 4, super.mouseClickX - 4);
+        } else {
+            scene.click(mouseY - 4, mouseX - 4);
+        }
+    }
+
+    private void useLocOption4(int tileX, int tileZ, int locBitset) {
+        interactWithLoc(locBitset, tileX, tileZ);
+        out.writeOp(228);
+        out.write16A((locBitset >> 14) & 0x7fff);
+        out.write16A(tileZ + sceneBaseTileZ);
+        out.write16(tileX + sceneBaseTileX);
+    }
+
+    private void useInventoryOption3(int slot, int componentID, int objID) {
+        out.writeOp(129);
+        out.write16A(slot);
+        out.write16(componentID);
+        out.write16A(objID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useInventoryOption4(int a, int componentID, int c) {
+        out.writeOp(135);
+        out.write16LE(a);
+        out.write16A(componentID);
+        out.write16LE(c);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = a;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useObjOption2(int slot, int componentID, int c) {
+        out.writeOp(16);
+        out.write16A(c);
+        out.write16LEA(slot);
+        out.write16LEA(componentID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void acceptPlayerRequest(int action, String playerName) {
+        boolean found = false;
+        for (int i = 0; i < playerCount; i++) {
+            PlayerEntity player = players[playerIDs[i]];
+
+            if ((player == null) || (player.name == null) || !player.name.equalsIgnoreCase(playerName)) {
+                continue;
+            }
+
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+
+            // trade
+            if (action == 484) {
+                out.writeOp(139);
+                out.write16LE(playerIDs[i]);
+            }
+
+            // challenge
+            if (action == 6) {
+                out.writeOp(128);
+                out.write16(playerIDs[i]);
+            }
+
+            found = true;
+            break;
+        }
+
+        if (!found) {
+            addMessage(0, "", "Unable to find " + playerName);
+        }
+    }
+
+    private void useObjOnObj(int slot, int componentID, int objID) {
+        out.writeOp(53);
+        out.write16(slot);
+        out.write16A(selectedObjSlot);
+        out.write16LEA(objID);
+        out.write16(selectedObjComponentID);
+        out.write16LE(selectedObjID);
+        out.write16(componentID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useObjOption4(int slot, int componentID, int objID) {
+        out.writeOp(87);
+        out.write16A(objID);
+        out.write16(componentID);
+        out.write16A(slot);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void selectSpell(int componentID) {
+        Component component = Component.instances[componentID];
+        spellSelected = 1;
+        activeSpellID = componentID;
+        activeSpellFlags = component.spellFlags;
+        objSelected = 0;
+        redrawSidebar = true;
+
+        String prefix = component.spellAction;
+
+        if (prefix.contains(" ")) {
+            prefix = prefix.substring(0, prefix.indexOf(" "));
+        }
+
+        String suffix = component.spellAction;
+
+        if (suffix.contains(" ")) {
+            suffix = suffix.substring(suffix.indexOf(" ") + 1);
+        }
+
+        spellCaption = prefix + " " + component.spellName + " " + suffix;
+
+        if (activeSpellFlags == 0x10) {
+            redrawSidebar = true;
+            selectedTab = 3;
+            redrawSideicons = true;
+        }
+    }
+
+    private void useInventoryOption1(int slot, int componentID, int objID) {
+        out.writeOp(117);
+        out.write16LEA(componentID);
+        out.write16LEA(objID);
+        out.write16LE(slot);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void usePlayerOption2(int c) {
+        PlayerEntity player = players[c];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(73);
+        out.write16LE(c);
+    }
+
+    private void useGroundObjOption4(int tileX, int tileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(79);
+        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(objID);
+        out.write16A(tileX + sceneBaseTileX);
+    }
+
+    private void useInventoryOption0(int slot, int componentID, int objID) {
+        out.writeOp(145);
+        out.write16A(componentID);
+        out.write16A(slot);
+        out.write16A(objID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useObjOption3(int slot, int componentID, int objID) {
+        out.writeOp(75);
+        out.write16LEA(componentID);
+        out.write16LE(slot);
+        out.write16A(objID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useGroundObjOption0(int tileX, int tileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(156);
+        out.write16A(tileX + sceneBaseTileX);
+        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16LEA(objID);
+    }
+
+    private void castSpellOnGroundObj(int tileX, int tileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(181);
+        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(objID);
+        out.write16LE(tileX + sceneBaseTileX);
+        out.write16A(activeSpellID);
+    }
+
+    private void useSelectOption(int componentID) {
+        out.writeOp(185);
+        out.write16(componentID);
+        Component component = Component.instances[componentID];
+        if ((component.scripts != null) && (component.scripts[0][0] == 5)) {
+            int varpID = component.scripts[0][1];
+            if (varps[varpID] != component.scriptOperand[0]) {
+                varps[varpID] = component.scriptOperand[0];
+                updateVarp(varpID);
+                redrawSidebar = true;
+            }
+        }
+    }
+
+    private void useNPCOption2(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(17);
+        out.write16LEA(npcID);
+    }
+
+    private void useNPCOption3(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(21);
+        out.write16(npcID);
+    }
+
+    private void castSpellOnNPC(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(131);
+        out.write16LEA(npcID);
+        out.write16A(activeSpellID);
+    }
+
+    private void examineNPC(int npcID) {
+        NPCEntity npc = npcs[npcID];
+
+        if (npc == null) {
+            return;
+        }
+
+        NPCType type = npc.type;
+
+        if (type.overrides != null) {
+            type = type.getOverrideType();
+        }
+
+        if (type == null) {
+            return;
+        }
+
+        String message;
+        if (type.desc != null) {
+            message = new String(type.desc);
+        } else {
+            message = "It's a " + type.name + ".";
+        }
+        addMessage(0, "", message);
+    }
+
+    private void useLocOption1(int a, int b, int c) {
+        interactWithLoc(c, a, b);
+        out.writeOp(252);
+        out.write16LEA((c >> 14) & 0x7fff);
+        out.write16LE(b + sceneBaseTileZ);
+        out.write16A(a + sceneBaseTileX);
+    }
+
+    private void useNPCOption1(int c) {
+        NPCEntity npc = npcs[c];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(72);
+        out.write16A(c);
+    }
+
+    private void castSpellOnPlayer(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(249);
+        out.write16A(playerID);
+        out.write16LE(activeSpellID);
+    }
+
+    private void usePlayerOption4(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(39);
+        out.write16LE(playerID);
+    }
+
+    private void usePlayerOption3(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(139);
+        out.write16LE(playerID);
+    }
+
+    private void castSpellOnLoc(int tileX, int tileZ, int locBitset) {
+        out.writeOp(35);
+        out.write16LE(tileX + sceneBaseTileX);
+        out.write16A(activeSpellID);
+        out.write16A(tileZ + sceneBaseTileZ);
+        out.write16LE((locBitset >> 14) & 0x7fff);
+    }
+
+    private void useGroundObjOption1(int tileX, int tileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(23);
+        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16LE(objID);
+        out.write16LE(tileX + sceneBaseTileX);
+    }
+
+    private void useInventoryOption2(int slot, int componentID, int objID) {
+        out.writeOp(43);
+        out.write16LE(componentID);
+        out.write16A(objID);
+        out.write16A(slot);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void castSpellOnObj(int slot, int componentID, int objID) {
+        out.writeOp(237);
+        out.write16(slot);
+        out.write16A(objID);
+        out.write16(componentID);
+        out.write16A(activeSpellID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useReportAbuseOption(String input) {
+        if (viewportComponentID == -1) {
+            closeInterfaces();
+            reportAbuseInput = input;
+            aBoolean1158 = false;
+            for (int i = 0; i < Component.instances.length; i++) {
+                if ((Component.instances[i] == null) || (Component.instances[i].contentType != 600)) {
+                    continue;
+                }
+                reportAbuseComponentID = viewportComponentID = Component.instances[i].parentID;
+                break;
+            }
+        } else {
+            addMessage(0, "", "Please close the interface you have open before using 'report abuse'");
+        }
+    }
+
+    private void useObjOnPlayer(int playerID) {
+        PlayerEntity player = players[playerID];
+        if (player == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], player.pathTileX[0], player.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(14);
+        out.write16A(selectedObjComponentID);
+        out.write16(playerID);
+        out.write16(selectedObjID);
+        out.write16LE(selectedObjSlot);
+    }
+
+    private void promptMessageFriend(long name37) {
+        int friendSlot = -1;
+
+        for (int i = 0; i < friendCount; i++) {
+            if (friendName37[i] == name37) {
+                friendSlot = i;
+                break;
+            }
+        }
+
+        if ((friendSlot != -1) && (friendWorld[friendSlot] > 0)) {
+            redrawChatback = true;
+            chatbackInputType = 0;
+            showSocialInput = true;
+            socialInput = "";
+            socialAction = 3;
+            inputFriendName37 = friendName37[friendSlot];
+            socialMessage = "Enter message to send to " + friendName[friendSlot];
+        }
+    }
+
+    private void useObjOption1(int slot, int componentID, int objID) {
+        out.writeOp(41);
+        out.write16(objID);
+        out.write16A(slot);
+        out.write16A(componentID);
+        actionCycles = 0;
+        actionComponentID = componentID;
+        actionSlot = slot;
+        actionArea = 2;
+        if (Component.instances[componentID].parentID == viewportComponentID) {
+            actionArea = 1;
+        }
+        if (Component.instances[componentID].parentID == chatbackComponentID) {
+            actionArea = 3;
+        }
+    }
+
+    private void useNPCOption4(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(18);
+        out.write16LE(npcID);
+    }
+
+    private void useLocOption2(int a, int b, int c) {
+        interactWithLoc(c, a, b);
+        out.writeOp(70);
+        out.write16LE(a + sceneBaseTileX);
+        out.write16(b + sceneBaseTileZ);
+        out.write16LEA((c >> 14) & 0x7fff);
+    }
+
+    private void useLocOption3(int a, int b, int c) {
+        interactWithLoc(c, a, b);
+        out.writeOp(234);
+        out.write16LEA(a + sceneBaseTileX);
+        out.write16A((c >> 14) & 0x7fff);
+        out.write16LEA(b + sceneBaseTileZ);
+    }
+
+    private void useLocOption0(int a, int b, int c) {
+        interactWithLoc(c, a, b);
+        out.writeOp(132);
+        out.write16LEA(a + sceneBaseTileX);
+        out.write16((c >> 14) & 0x7fff);
+        out.write16A(b + sceneBaseTileZ);
+    }
+
+    private void examineInventoryObj(int slot, int componentID, int objID) {
+        ObjType type = ObjType.get(objID);
+        Component component = Component.instances[componentID];
+        String message;
+        if ((component != null) && (component.invSlotAmount[slot] >= 0x186a0)) {
+            message = component.invSlotAmount[slot] + " x " + type.name;
+        } else if (type.examine != null) {
+            message = new String(type.examine);
+        } else {
+            message = "It's a " + type.name + ".";
+        }
+        addMessage(0, "", message);
+    }
+
+    private void useToggleOption(int componentID) {
+        out.writeOp(185);
+        out.write16(componentID);
+        Component component = Component.instances[componentID];
+
+        if ((component.scripts != null) && (component.scripts[0][0] == 5)) {
+            int varpID = component.scripts[0][1];
+            varps[varpID] = 1 - varps[varpID];
+            updateVarp(varpID);
+            redrawSidebar = true;
+        }
+    }
+
+    private void selectObj(int slot, int componentID, int objID) {
+        objSelected = 1;
+        selectedObjSlot = slot;
+        selectedObjComponentID = componentID;
+        selectedObjID = objID;
+        selectedObjName = ObjType.get(objID).name;
+        spellSelected = 0;
+        redrawSidebar = true;
+    }
+
+    private void examineLoc(int bitset) {
+        int locID = (bitset >> 14) & 0x7fff;
+        LocType type = LocType.get(locID);
+        String message;
+        if (type.description != null) {
+            message = type.description;
+        } else {
+            message = "It's a " + type.name + ".";
+        }
+        addMessage(0, "", message);
+    }
+
+    private void useGroundObjOption3(int localTileX, int localTileZ, int objID) {
+        boolean ok = tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], localTileX, localTileZ, 0, 0, 0, 0, 0, false);
+        if (!ok) {
+            tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], localTileX, localTileZ, 0, 1, 1, 0, 0, false);
+        }
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(253);
+        out.write16LE(localTileX + sceneBaseTileX);
+        out.write16LEA(localTileZ + sceneBaseTileZ);
+        out.write16A(objID);
+    }
+
+    private void examineObj(int objID) {
+        ObjType obj = ObjType.get(objID);
+        String message;
+        if (obj.examine != null) {
+            message = new String(obj.examine);
+        } else {
+            message = "It's a " + obj.name + ".";
+        }
+        addMessage(0, "", message);
+    }
+
+    private void sendUseObjOnNPC(int npcID) {
+        NPCEntity npc = npcs[npcID];
+        if (npc == null) {
+            return;
+        }
+        tryMove(2, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], npc.pathTileX[0], npc.pathTileZ[0], 0, 1, 1, 0, 0, false);
+        crossX = super.mouseClickX;
+        crossY = super.mouseClickY;
+        crossMode = 2;
+        crossCycle = 0;
+        out.writeOp(57);
+        out.write16A(selectedObjID);
+        out.write16A(npcID);
+        out.write16LE(selectedObjSlot);
+        out.write16A(selectedObjComponentID);
     }
 
     public void updateChatOverride() {
@@ -5326,7 +5570,7 @@ public class Game extends GameShell {
     }
 
     public void handleViewportInput() {
-        if ((anInt1282 == 0) && (anInt1136 == 0)) {
+        if ((objSelected == 0) && (spellSelected == 0)) {
             menuOption[menuSize] = "Walk here";
             menuAction[menuSize] = 516;
             menuParamA[menuSize] = super.mouseX;
@@ -5355,14 +5599,14 @@ public class Game extends GameShell {
                 if (loc == null) {
                     continue;
                 }
-                if (anInt1282 == 1) {
-                    menuOption[menuSize] = "Use " + aString1286 + " with @cya@" + loc.name;
+                if (objSelected == 1) {
+                    menuOption[menuSize] = "Use " + selectedObjName + " with @cya@" + loc.name;
                     menuAction[menuSize] = 62;
                     menuParamC[menuSize] = bitset;
                     menuParamA[menuSize] = i1;
                     menuParamB[menuSize] = j1;
                     menuSize++;
-                } else if (anInt1136 == 1) {
+                } else if (spellSelected == 1) {
                     if ((activeSpellFlags & 4) == 4) {
                         menuOption[menuSize] = spellCaption + " @cya@" + loc.name;
                         menuAction[menuSize] = 956;
@@ -5447,14 +5691,14 @@ public class Game extends GameShell {
                 if (list != null) {
                     for (ObjEntity objStack = (ObjEntity) list.peekBack(); objStack != null; objStack = (ObjEntity) list.next()) {
                         ObjType type = ObjType.get(objStack.id);
-                        if (anInt1282 == 1) {
-                            menuOption[menuSize] = "Use " + aString1286 + " with @lre@" + type.name;
+                        if (objSelected == 1) {
+                            menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + type.name;
                             menuAction[menuSize] = 511;
                             menuParamC[menuSize] = objStack.id;
                             menuParamA[menuSize] = i1;
                             menuParamB[menuSize] = j1;
                             menuSize++;
-                        } else if (anInt1136 == 1) {
+                        } else if (spellSelected == 1) {
                             if ((activeSpellFlags & 1) == 1) {
                                 menuOption[menuSize] = spellCaption + " @lre@" + type.name;
                                 menuAction[menuSize] = 94;
@@ -5583,6 +5827,9 @@ public class Game extends GameShell {
                 }
                 if (chatTyped.equals("::occluders")) {
                     showOccluders = !showOccluders;
+                }
+                if (chatTyped.equals("::toggleoccluders")) {
+                    Scene.disableOccluders = !Scene.disableOccluders;
                 }
                 if (chatTyped.equals("::noclip")) {
                     for (int level = 0; level < 4; level++) {
@@ -6608,8 +6855,8 @@ public class Game extends GameShell {
                 for (int j1 = 0; j1 < 100; j1++) {
                     messageText[j1] = null;
                 }
-                anInt1282 = 0;
-                anInt1136 = 0;
+                objSelected = 0;
+                spellSelected = 0;
                 sceneState = 0;
                 waveCount = 0;
                 cameraAnticheatOffsetX = (int) (Math.random() * 100D) - 50;
@@ -7132,8 +7379,8 @@ public class Game extends GameShell {
         if (type.level != 0) {
             s = s + getCombatLevelColorTag(localPlayer.combatLevel, type.level) + " (level-" + type.level + ")";
         }
-        if (anInt1282 == 1) {
-            menuOption[menuSize] = "Use " + aString1286 + " with @yel@" + s;
+        if (objSelected == 1) {
+            menuOption[menuSize] = "Use " + selectedObjName + " with @yel@" + s;
             menuAction[menuSize] = 582;
             menuParamC[menuSize] = i;
             menuParamA[menuSize] = k;
@@ -7141,7 +7388,7 @@ public class Game extends GameShell {
             menuSize++;
             return;
         }
-        if (anInt1136 == 1) {
+        if (spellSelected == 1) {
             if ((activeSpellFlags & 2) == 2) {
                 menuOption[menuSize] = spellCaption + " @yel@" + s;
                 menuAction[menuSize] = 413;
@@ -7235,14 +7482,14 @@ public class Game extends GameShell {
             caption = player.name + " (skill-" + player.skillLevel + ")";
         }
 
-        if (anInt1282 == 1) {
-            menuOption[menuSize] = "Use " + aString1286 + " with @whi@" + caption;
+        if (objSelected == 1) {
+            menuOption[menuSize] = "Use " + selectedObjName + " with @whi@" + caption;
             menuAction[menuSize] = 491;
             menuParamC[menuSize] = j;
             menuParamA[menuSize] = i;
             menuParamB[menuSize] = k;
             menuSize++;
-        } else if (anInt1136 == 1) {
+        } else if (spellSelected == 1) {
             if ((activeSpellFlags & 8) == 8) {
                 menuOption[menuSize] = spellCaption + " @whi@" + caption;
                 menuAction[menuSize] = 365;
@@ -7377,15 +7624,15 @@ public class Game extends GameShell {
             }
         }
 
-        if (nextMusicDelay > 0) {
-            nextMusicDelay -= 20;
-            if (nextMusicDelay < 0) {
-                nextMusicDelay = 0;
+        if (nextSongDelay > 0) {
+            nextSongDelay -= 20;
+            if (nextSongDelay < 0) {
+                nextSongDelay = 0;
             }
-            if ((nextMusicDelay == 0) && midiActive && !lowmem) {
-                music = nextMusic;
-                musicFading = true;
-                ondemand.request(2, music);
+            if ((nextSongDelay == 0) && midiActive && !lowmem) {
+                song = nextSong;
+                songFading = true;
+                ondemand.request(2, song);
             }
         }
     }
@@ -7442,8 +7689,8 @@ public class Game extends GameShell {
                 int l1 = ((y * j1) - (x * i1)) >> 11;
                 int i2 = (localPlayer.x + k1) >> 7;
                 int j2 = (localPlayer.z - l1) >> 7;
-                boolean flag1 = tryMove(1, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], i2, j2, 0, 0, 0, 0, 0, true);
-                if (flag1) {
+                boolean ok = tryMove(1, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], i2, j2, 0, 0, 0, 0, 0, true);
+                if (ok) {
                     out.write8(x);
                     out.write8(y);
                     out.write16(orbitCameraYaw);
@@ -8164,27 +8411,27 @@ public class Game extends GameShell {
         areaViewport.bind();
     }
 
-    public boolean method103(Component component) {
-        int i = component.contentType;
-        if (((i >= 1) && (i <= 200)) || ((i >= 701) && (i <= 900))) {
-            if (i >= 801) {
-                i -= 701;
-            } else if (i >= 701) {
-                i -= 601;
-            } else if (i >= 101) {
-                i -= 101;
+    public boolean handleSocialMenuOption(Component component) {
+        int type = component.contentType;
+        if (((type >= 1) && (type <= 200)) || ((type >= 701) && (type <= 900))) {
+            if (type >= 801) {
+                type -= 701;
+            } else if (type >= 701) {
+                type -= 601;
+            } else if (type >= 101) {
+                type -= 101;
             } else {
-                i--;
+                type--;
             }
-            menuOption[menuSize] = "Remove @whi@" + friendName[i];
+            menuOption[menuSize] = "Remove @whi@" + friendName[type];
             menuAction[menuSize] = 792;
             menuSize++;
-            menuOption[menuSize] = "Message @whi@" + friendName[i];
+            menuOption[menuSize] = "Message @whi@" + friendName[type];
             menuAction[menuSize] = 639;
             menuSize++;
             return true;
         }
-        if ((i >= 401) && (i <= 500)) {
+        if ((type >= 401) && (type <= 500)) {
             menuOption[menuSize] = "Remove @whi@" + component.text;
             menuAction[menuSize] = 322;
             menuSize++;
@@ -8276,7 +8523,7 @@ public class Game extends GameShell {
                             if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((objDragArea != 0) && (objDragSlot == slot))) {
                                 int outlineColor = 0;
 
-                                if ((anInt1282 == 1) && (anInt1283 == slot) && (anInt1284 == child.id)) {
+                                if ((objSelected == 1) && (selectedObjSlot == slot) && (selectedObjComponentID == child.id)) {
                                     outlineColor = 0xffffff;
                                 }
 
@@ -8331,7 +8578,7 @@ public class Game extends GameShell {
                                             parent.scrollPosition += scroll;
                                             objGrabY -= scroll;
                                         }
-                                    } else if ((actionArea != 0) && (actionInvSlot == slot) && (actionComponentID == child.id)) {
+                                    } else if ((actionArea != 0) && (actionSlot == slot) && (actionComponentID == child.id)) {
                                         itemIcon.draw(slotX, slotY, 128);
                                     } else {
                                         itemIcon.draw(slotX, slotY);
@@ -8880,6 +9127,10 @@ public class Game extends GameShell {
                     }
                 }
 
+                if (!active) {
+                    continue;
+                }
+
                 int color = 0xFF0000;
                 int x0 = -1, y0 = -1;
                 int x1 = -1, y1 = -1;
@@ -8950,24 +9201,42 @@ public class Game extends GameShell {
                 Draw2D.drawLine(x2, y2, x3, y3, color);
             }
         }
+
         if (showFps) {
             int x = 507;
             int y = 20;
-            int i1 = 0xffff00;
+            int color = 0xffff00;
+
             if (super.fps < 15) {
-                i1 = 0xff0000;
+                color = 0xff0000;
             }
-            fontPlain12.drawStringRight("Fps:" + super.fps, x, y, i1);
-            y += 15;
+
+            fontPlain11.drawStringRight(String.format("Fps: %d", super.fps), x, y, color);
+            y += 13;
+
+            double ft = 0;
+            for (double delta : super.frameTime) {
+                ft += delta;
+            }
+            ft /= super.frameTime.length;
+
+            fontPlain11.drawStringRight(String.format("%04.4fms", ft), x, y, color);
+            y += 13;
+
             Runtime runtime = Runtime.getRuntime();
             int mem = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
-            fontPlain12.drawStringRight("Mem:" + mem + "k", x, y, 0xffff00);
-            y += 15;
-            fontPlain12.drawStringRight("Occluders: " + Scene.levelOccluderCount[Scene.topLevel] + ", active: " + Scene.activeOccluderCount, x, y, 0xFFFF00);
-            y += 15;
-            fontPlain12.drawStringRight("Active wall occluders:" + Scene.activeWallOccluderCount, x, y, 0xFFFF00);
-            y += 15;
-            fontPlain12.drawStringRight("Active ground occluders:" + Scene.activeGroundOccluderCount, x, y, 0xFFFF00);
+            fontPlain11.drawStringRight("Mem: " + mem + "k", x, y, 0xffff00);
+            y += 13;
+
+            fontPlain11.drawStringRight("Occluders: " + Scene.levelOccluderCount[Scene.topLevel] + ", active: " + Scene.activeOccluderCount, x, y, 0xFFFF00);
+            y += 13;
+
+            fontPlain11.drawStringRight("Active wall occluders: " + Scene.activeWallOccluderCount, x, y, 0xFFFF00);
+            y += 13;
+
+            fontPlain11.drawStringRight("Active ground occluders: " + Scene.activeGroundOccluderCount, x, y, 0xFFFF00);
+            y += 13;
+            fontPlain11.drawStringRight("Tiles culled: " + Scene.tilesCulled, x, y, 0xFFFF00);
         }
     }
 
@@ -9419,11 +9688,11 @@ public class Game extends GameShell {
                         }
                     }
                 } else if (op == 5) { // load_var {id}
-                    reg = variables[script[pos++]];
+                    reg = varps[script[pos++]];
                 } else if (op == 6) { // load_next_level_xp {skill}
                     reg = levelExperience[skillBaseLevel[script[pos++]] - 1];
                 } else if (op == 7) {
-                    reg = (variables[script[pos++]] * 100) / 46875;
+                    reg = (varps[script[pos++]] * 100) / 46875;
                 } else if (op == 8) { // load_combat_level
                     reg = localPlayer.combatLevel;
                 } else if (op == 9) { // load_total_level
@@ -9449,13 +9718,13 @@ public class Game extends GameShell {
                 } else if (op == 12) { // load_weight
                     reg = weightCarried;
                 } else if (op == 13) {// load_bool {varp} {bit: 0..31}
-                    int varp = variables[script[pos++]];
+                    int varp = varps[script[pos++]];
                     int bit = script[pos++];
                     reg = ((varp & (1 << bit)) == 0) ? 0 : 1;
                 } else if (op == 14) {// load_varbit {varbit}
                     VarbitType varbit = VarbitType.instances[script[pos++]];
                     int lsb = varbit.lsb;
-                    reg = (variables[varbit.varp] >> lsb) & BITMASK[varbit.msb - lsb];
+                    reg = (varps[varbit.varp] >> lsb) & BITMASK[varbit.msb - lsb];
                 } else if (op == 15) { // sub
                     nextArithmetic = 1;
                 } else if (op == 16) { // div
@@ -9494,21 +9763,23 @@ public class Game extends GameShell {
     }
 
     public void drawTooltip() {
-        if ((menuSize < 2) && (anInt1282 == 0) && (anInt1136 == 0)) {
+        if ((menuSize < 2) && (objSelected == 0) && (spellSelected == 0)) {
             return;
         }
-        String s;
-        if ((anInt1282 == 1) && (menuSize < 2)) {
-            s = "Use " + aString1286 + " with...";
-        } else if ((anInt1136 == 1) && (menuSize < 2)) {
-            s = spellCaption + "...";
+        String tooltip;
+
+        if ((objSelected == 1) && (menuSize < 2)) {
+            tooltip = "Use " + selectedObjName + " with...";
+        } else if ((spellSelected == 1) && (menuSize < 2)) {
+            tooltip = spellCaption + "...";
         } else {
-            s = menuOption[menuSize - 1];
+            tooltip = menuOption[menuSize - 1];
         }
+
         if (menuSize > 2) {
-            s = s + "@whi@ / " + (menuSize - 2) + " more options";
+            tooltip = tooltip + "@whi@ / " + (menuSize - 2) + " more options";
         }
-        fontBold12.drawStringTooltip(s, 4, 15, 0xffffff, true, loopCycle / 1000);
+        fontBold12.drawStringTooltip(tooltip, 4, 15, 0xffffff, true, loopCycle / 1000);
     }
 
     public void drawMinimap() {
@@ -10089,322 +10360,315 @@ public class Game extends GameShell {
     }
 
     public void readZonePacket(Buffer buffer, int opcode) {
-        // update obj
-        if (opcode == 84) {
-            int pos = buffer.read8U();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int objID = buffer.read16U();
-            int objAmount = buffer.read16U();
-            int newAmount = buffer.read16U();
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
-                if (stacks != null) {
-                    for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
-                        if ((stack.id != (objID & 0x7fff)) || (stack.amount != objAmount)) {
-                            continue;
-                        }
-                        stack.amount = newAmount;
-                        break;
+        switch (opcode) {
+            case PacketIn.OBJ_PLACE: {
+                int id = buffer.read16ULEA();
+                int amount = buffer.read16U();
+                int pos = buffer.read8U();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    ObjEntity stack = new ObjEntity();
+                    stack.id = id;
+                    stack.amount = amount;
+                    if (levelObjStacks[currentLevel][x][z] == null) {
+                        levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
                     }
+                    levelObjStacks[currentLevel][x][z].pushBack(stack);
                     sortObjStacks(x, z);
                 }
-            }
-            return;
-        }
-
-        // emit sound
-        if (opcode == 105) {
-            int pos = buffer.read8U();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int waveID = buffer.read16U();
-            int info = buffer.read8U();
-            int maxDist = (info >> 4) & 0xf;
-            int loopCount = info & 0b111;
-            if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && aBoolean848 && !lowmem && (waveCount < 50)) {
-                waveIDs[waveCount] = waveID;
-                waveLoops[waveCount] = loopCount;
-                waveDelay[waveCount] = SoundTrack.delays[waveID];
-                waveCount++;
-            }
-        }
-
-        // reveal obj (this would already be visible to the local player if it belongs to them)
-        if (opcode == 215) {
-            int objID = buffer.read16UA();
-            int pos = buffer.read8US();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int ownerPID = buffer.read16UA();
-            int objAmount = buffer.read16U();
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
-                ObjEntity obj = new ObjEntity();
-                obj.id = objID;
-                obj.amount = objAmount;
-                if (levelObjStacks[currentLevel][x][z] == null) {
-                    levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
-                }
-                levelObjStacks[currentLevel][x][z].pushBack(obj);
-                sortObjStacks(x, z);
-            }
-            return;
-        }
-
-        // remove obj
-        if (opcode == 156) {
-            int pos = buffer.read8UA();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int objID = buffer.read16U();
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
-                if (list != null) {
-                    for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
-                        if (obj.id != (objID & 0x7fff)) {
-                            continue;
-                        }
-                        obj.unlink();
-                        break;
-                    }
-                    if (list.peekFront() == null) {
-                        levelObjStacks[currentLevel][x][z] = null;
-                    }
-                    sortObjStacks(x, z);
-                }
-            }
-            return;
-        }
-
-        // update loc
-        if (opcode == 160) {
-            int pos = buffer.read8US();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int info = buffer.read8US();
-            int kind = info >> 2;
-            int rotation = info & 3;
-            int classID = LOC_KIND_TO_CLASS_ID[kind];
-            int seqID = buffer.read16UA();
-
-            if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
                 return;
             }
 
-            int heightmapSW = levelHeightmap[currentLevel][x][z];
-            int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
-            int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
-            int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
+            case PacketIn.OBJ_REVEAL: {
+                int objID = buffer.read16UA();
+                int pos = buffer.read8US();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int ownerPID = buffer.read16UA();
+                int objAmount = buffer.read16U();
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
+                    ObjEntity obj = new ObjEntity();
+                    obj.id = objID;
+                    obj.amount = objAmount;
+                    if (levelObjStacks[currentLevel][x][z] == null) {
+                        levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
+                    }
+                    levelObjStacks[currentLevel][x][z].pushBack(obj);
+                    sortObjStacks(x, z);
+                }
+                return;
+            }
 
-            if (classID == 0) {
-                SceneWall wall = scene.getWall(currentLevel, x, z);
+            case PacketIn.OBJ_UPDATE: {
+                int pos = buffer.read8U();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int objID = buffer.read16U();
+                int objAmount = buffer.read16U();
+                int newAmount = buffer.read16U();
 
-                if (wall != null) {
-                    int locID = (wall.bitset >> 14) & 0x7fff;
-
-                    if (kind == 2) {
-                        wall.entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                        wall.entityB = new LocEntity(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                    } else {
-                        wall.entityA = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
+                    if (stacks != null) {
+                        for (ObjEntity stack = (ObjEntity) stacks.peekFront(); stack != null; stack = (ObjEntity) stacks.prev()) {
+                            if ((stack.id != (objID & 0x7fff)) || (stack.amount != objAmount)) {
+                                continue;
+                            }
+                            stack.amount = newAmount;
+                            break;
+                        }
+                        sortObjStacks(x, z);
                     }
                 }
             }
 
-            if (classID == 1) {
-                SceneWallDecoration deco = scene.getWallDecoration(currentLevel, x, z);
-
-                if (deco != null) {
-                    deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+            case PacketIn.OBJ_REMOVE: {
+                int pos = buffer.read8UA();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int objID = buffer.read16U();
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
+                    if (list != null) {
+                        for (ObjEntity obj = (ObjEntity) list.peekFront(); obj != null; obj = (ObjEntity) list.prev()) {
+                            if (obj.id != (objID & 0x7fff)) {
+                                continue;
+                            }
+                            obj.unlink();
+                            break;
+                        }
+                        if (list.peekFront() == null) {
+                            levelObjStacks[currentLevel][x][z] = null;
+                        }
+                        sortObjStacks(x, z);
+                    }
                 }
+                return;
             }
 
-            if (classID == 2) {
-                SceneLoc loc = scene.getLoc(currentLevel, x, z);
-
-                if (kind == 11) {
-                    kind = 10;
+            case PacketIn.LOC_PLACE: {
+                int pos = buffer.read8UA();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int id = buffer.read16ULE();
+                int info = buffer.read8US();
+                int kind = info >> 2;
+                int rotation = info & 3;
+                int classID = LOC_KIND_TO_CLASS_ID[kind];
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    appendLoc(-1, id, rotation, classID, z, kind, currentLevel, x, 0);
                 }
-
-                if (loc != null) {
-                    loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                }
+                return;
             }
 
-            if (classID == 3) {
-                SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentLevel);
+            case PacketIn.LOC_UPDATE: {
+                int pos = buffer.read8US();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int info = buffer.read8US();
+                int kind = info >> 2;
+                int rotation = info & 3;
+                int classID = LOC_KIND_TO_CLASS_ID[kind];
+                int seqID = buffer.read16UA();
 
-                if (deco != null) {
-                    deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
+                    return;
                 }
-            }
-            return;
-        }
 
-        // attach loc to player
-        if (opcode == 147) {
-            int pos = buffer.read8US();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int pid = buffer.read16U();
-            byte maxX = buffer.read8S();
-            int delay = buffer.read16ULE();
-            byte maxZ = buffer.read8C();
-            int duration = buffer.read16U();
-            int info = buffer.read8US();
-            int kind = info >> 2;
-            int rotation = info & 3;
-            int classID = LOC_KIND_TO_CLASS_ID[kind];
-            byte minX = buffer.read();
-            int locID = buffer.read16U();
-            byte minZ = buffer.read8C();
-            PlayerEntity player;
-
-            if (pid == localPID) {
-                player = localPlayer;
-            } else {
-                player = players[pid];
-            }
-
-            if (player != null) {
-                LocType type = LocType.get(locID);
                 int heightmapSW = levelHeightmap[currentLevel][x][z];
                 int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
                 int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
                 int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
 
-                Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+                if (classID == 0) {
+                    SceneWall wall = scene.getWall(currentLevel, x, z);
 
-                if (model != null) {
-                    appendLoc(duration + 1, -1, 0, classID, z, 0, currentLevel, x, delay + 1);
+                    if (wall != null) {
+                        int locID = (wall.bitset >> 14) & 0x7fff;
 
-                    player.locStartCycle = delay + loopCycle;
-                    player.locStopCycle = duration + loopCycle;
-                    player.locModel = model;
-                    int sizeX = type.width;
-                    int sizeZ = type.length;
+                        if (kind == 2) {
+                            wall.entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                            wall.entityB = new LocEntity(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                        } else {
+                            wall.entityA = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                        }
+                    }
+                }
 
-                    if ((rotation == 1) || (rotation == 3)) {
-                        sizeX = type.length;
-                        sizeZ = type.width;
+                if (classID == 1) {
+                    SceneWallDecoration deco = scene.getWallDecoration(currentLevel, x, z);
+
+                    if (deco != null) {
+                        deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                    }
+                }
+
+                if (classID == 2) {
+                    SceneLoc loc = scene.getLoc(currentLevel, x, z);
+
+                    if (kind == 11) {
+                        kind = 10;
                     }
 
-                    player.locOffsetX = (x * 128) + (sizeX * 64);
-                    player.locOffsetZ = (z * 128) + (sizeZ * 64);
-                    player.locOffsetY = getHeightmapY(currentLevel, player.locOffsetX, player.locOffsetZ);
-
-                    if (minX > maxX) {
-                        byte tmp = minX;
-                        minX = maxX;
-                        maxX = tmp;
+                    if (loc != null) {
+                        loc.entity = new LocEntity((loc.bitset >> 14) & 0x7fff, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
                     }
+                }
 
-                    if (minZ > maxZ) {
-                        byte tmp = minZ;
-                        minZ = maxZ;
-                        maxZ = tmp;
+                if (classID == 3) {
+                    SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentLevel);
+
+                    if (deco != null) {
+                        deco.entity = new LocEntity((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
                     }
+                }
+                return;
+            }
 
-                    player.minSceneTileX = x + minX;
-                    player.maxSceneTileX = x + maxX;
-                    player.minSceneTileZ = z + minZ;
-                    player.maxSceneTileZ = z + maxZ;
+            case PacketIn.LOC_REMOVE: {
+                int info = buffer.read8UC();
+                int kind = info >> 2;
+                int rotation = info & 3;
+                int classID = LOC_KIND_TO_CLASS_ID[kind];
+                int pos = buffer.read8U();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    appendLoc(-1, -1, rotation, classID, z, kind, currentLevel, x, 0);
+                }
+                return;
+            }
+
+            case PacketIn.PLAYER_LOC: {
+                int pos = buffer.read8US();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int pid = buffer.read16U();
+                byte maxX = buffer.read8S();
+                int delay = buffer.read16ULE();
+                byte maxZ = buffer.read8C();
+                int duration = buffer.read16U();
+                int info = buffer.read8US();
+                int kind = info >> 2;
+                int rotation = info & 3;
+                int classID = LOC_KIND_TO_CLASS_ID[kind];
+                byte minX = buffer.read();
+                int locID = buffer.read16U();
+                byte minZ = buffer.read8C();
+                PlayerEntity player;
+
+                if (pid == localPID) {
+                    player = localPlayer;
+                } else {
+                    player = players[pid];
+                }
+
+                if (player != null) {
+                    LocType type = LocType.get(locID);
+                    int heightmapSW = levelHeightmap[currentLevel][x][z];
+                    int heightmapSE = levelHeightmap[currentLevel][x + 1][z];
+                    int heightmapNE = levelHeightmap[currentLevel][x + 1][z + 1];
+                    int heightmapNW = levelHeightmap[currentLevel][x][z + 1];
+
+                    Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+
+                    if (model != null) {
+                        appendLoc(duration + 1, -1, 0, classID, z, 0, currentLevel, x, delay + 1);
+
+                        player.locStartCycle = delay + loopCycle;
+                        player.locStopCycle = duration + loopCycle;
+                        player.locModel = model;
+                        int sizeX = type.width;
+                        int sizeZ = type.length;
+
+                        if ((rotation == 1) || (rotation == 3)) {
+                            sizeX = type.length;
+                            sizeZ = type.width;
+                        }
+
+                        player.locOffsetX = (x * 128) + (sizeX * 64);
+                        player.locOffsetZ = (z * 128) + (sizeZ * 64);
+                        player.locOffsetY = getHeightmapY(currentLevel, player.locOffsetX, player.locOffsetZ);
+
+                        if (minX > maxX) {
+                            byte tmp = minX;
+                            minX = maxX;
+                            maxX = tmp;
+                        }
+
+                        if (minZ > maxZ) {
+                            byte tmp = minZ;
+                            minZ = maxZ;
+                            maxZ = tmp;
+                        }
+
+                        player.minSceneTileX = x + minX;
+                        player.maxSceneTileX = x + maxX;
+                        player.minSceneTileZ = z + minZ;
+                        player.maxSceneTileZ = z + maxZ;
+                    }
+                }
+                break;
+            }
+
+            case PacketIn.SPOTANIM: {
+                int pos = buffer.read8U();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int id = buffer.read16U();
+                int y = buffer.read8U();
+                int delay = buffer.read16U();
+
+                if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
+                    x = (x * 128) + 64;
+                    z = (z * 128) + 64;
+                    SpotAnimEntity spotAnim = new SpotAnimEntity(currentLevel, loopCycle, delay, id, getHeightmapY(currentLevel, x, z) - y, z, x);
+                    spotanims.pushBack(spotAnim);
+                }
+                return;
+            }
+
+            case PacketIn.SPATIAL_SOUND: {
+                int pos = buffer.read8U();
+                int x = baseX + ((pos >> 4) & 7);
+                int z = baseZ + (pos & 7);
+                int waveID = buffer.read16U();
+                int info = buffer.read8U();
+                int maxDist = (info >> 4) & 0xf;
+                int loopCount = info & 0b111;
+                if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && aBoolean848 && !lowmem && (waveCount < 50)) {
+                    waveIDs[waveCount] = waveID;
+                    waveLoops[waveCount] = loopCount;
+                    waveDelay[waveCount] = SoundTrack.delays[waveID];
+                    waveCount++;
                 }
             }
-        }
 
-        // add loc (indefinitely)
-        if (opcode == 151) {
-            int pos = buffer.read8UA();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int id = buffer.read16ULE();
-            int info = buffer.read8US();
-            int kind = info >> 2;
-            int rotation = info & 3;
-            int classID = LOC_KIND_TO_CLASS_ID[kind];
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                appendLoc(-1, id, rotation, classID, z, kind, currentLevel, x, 0);
-            }
-            return;
-        }
-
-        // append spotanim
-        if (opcode == 4) {
-            int pos = buffer.read8U();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            int id = buffer.read16U();
-            int y = buffer.read8U();
-            int delay = buffer.read16U();
-
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                x = (x * 128) + 64;
-                z = (z * 128) + 64;
-                SpotAnimEntity spotAnim = new SpotAnimEntity(currentLevel, loopCycle, delay, id, getHeightmapY(currentLevel, x, z) - y, z, x);
-                spotanims.pushBack(spotAnim);
-            }
-            return;
-        }
-
-        // append item
-        if (opcode == 44) {
-            int id = buffer.read16ULEA();
-            int amount = buffer.read16U();
-            int pos = buffer.read8U();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                ObjEntity stack = new ObjEntity();
-                stack.id = id;
-                stack.amount = amount;
-                if (levelObjStacks[currentLevel][x][z] == null) {
-                    levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
+            case PacketIn.PROJECTILE: {
+                int pos = buffer.read8U();
+                int srcX = baseX + ((pos >> 4) & 7);
+                int srcZ = baseZ + (pos & 7);
+                int dstX = srcX + buffer.read();
+                int dstZ = srcZ + buffer.read();
+                int targetID = buffer.read16();
+                int spotanimID = buffer.read16U();
+                int srcY = buffer.read8U() * 4;
+                int dstY = buffer.read8U() * 4;
+                int delay = buffer.read16U();
+                int duration = buffer.read16U();
+                int peakPitch = buffer.read8U();
+                int arcSize = buffer.read8U();
+                if ((srcX >= 0) && (srcZ >= 0) && (srcX < 104) && (srcZ < 104) && (dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104) && (spotanimID != 65535)) {
+                    srcX = (srcX * 128) + 64;
+                    srcZ = (srcZ * 128) + 64;
+                    dstX = (dstX * 128) + 64;
+                    dstZ = (dstZ * 128) + 64;
+                    ProjectileEntity projectile = new ProjectileEntity(peakPitch, dstY, delay + loopCycle, duration + loopCycle, arcSize, currentLevel, getHeightmapY(currentLevel, srcX, srcZ) - srcY, srcZ, srcX, targetID, spotanimID);
+                    projectile.updateVelocity(delay + loopCycle, dstZ, getHeightmapY(currentLevel, dstX, dstZ) - dstY, dstX);
+                    projectiles.pushBack(projectile);
                 }
-                levelObjStacks[currentLevel][x][z].pushBack(stack);
-                sortObjStacks(x, z);
-            }
-            return;
-        }
-
-        // remove loc (indefinitely)
-        if (opcode == 101) {
-            int info = buffer.read8UC();
-            int kind = info >> 2;
-            int rotation = info & 3;
-            int classID = LOC_KIND_TO_CLASS_ID[kind];
-            int pos = buffer.read8U();
-            int x = baseX + ((pos >> 4) & 7);
-            int z = baseZ + (pos & 7);
-            if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
-                appendLoc(-1, -1, rotation, classID, z, kind, currentLevel, x, 0);
-            }
-            return;
-        }
-
-        // append projectile
-        if (opcode == 117) {
-            int pos = buffer.read8U();
-            int srcX = baseX + ((pos >> 4) & 7);
-            int srcZ = baseZ + (pos & 7);
-            int dstX = srcX + buffer.read();
-            int dstZ = srcZ + buffer.read();
-            int targetID = buffer.read16();
-            int spotanimID = buffer.read16U();
-            int srcY = buffer.read8U() * 4;
-            int dstY = buffer.read8U() * 4;
-            int delay = buffer.read16U();
-            int duration = buffer.read16U();
-            int peakPitch = buffer.read8U();
-            int arcSize = buffer.read8U();
-            if ((srcX >= 0) && (srcZ >= 0) && (srcX < 104) && (srcZ < 104) && (dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104) && (spotanimID != 65535)) {
-                srcX = (srcX * 128) + 64;
-                srcZ = (srcZ * 128) + 64;
-                dstX = (dstX * 128) + 64;
-                dstZ = (dstZ * 128) + 64;
-                ProjectileEntity projectile = new ProjectileEntity(peakPitch, dstY, delay + loopCycle, duration + loopCycle, arcSize, currentLevel, getHeightmapY(currentLevel, srcX, srcZ) - srcY, srcZ, srcX, targetID, spotanimID);
-                projectile.updateVelocity(delay + loopCycle, dstZ, getHeightmapY(currentLevel, dstX, dstZ) - dstY, dstX);
-                projectiles.pushBack(projectile);
+                break;
             }
         }
     }
@@ -10676,7 +10940,7 @@ public class Game extends GameShell {
         }
     }
 
-    public void method143(int i, Buffer buffer) {
+    public void readPlayers(int i, Buffer buffer) {
         anInt839 = 0;
         anInt893 = 0;
         method117(buffer);
@@ -10699,6 +10963,7 @@ public class Game extends GameShell {
                 throw new RuntimeException("eek");
             }
         }
+        awaitingSync = false;
     }
 
     public void orbitCamera(int distance, int pitch, int targetX, int targetY, int yaw, int targetZ) {
@@ -10782,1197 +11047,1279 @@ public class Game extends GameShell {
             lastPacketType1 = lastPacketType0;
             lastPacketType0 = packetType;
 
-            if (packetType == PacketIn.SYNC_PLAYERS) {
-                method143(packetSize, in);
-                awaitingSync = false;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.LOGIN_INFO) {
-                daysSinceRecoveriesChanged = in.read8UC();
-                unreadMessages = in.read16UA();
-                warnMembersInNonMembers = in.read8U();
-                lastAddress = in.read32ME();
-                daysSinceLastLogin = in.read16U();
-
-                if ((lastAddress != 0) && (viewportComponentID == -1)) {
-                    Signlink.dnslookup(StringUtil.formatIPv4(lastAddress));
-                    closeInterfaces();
-                    char cmpType = 650;
-                    if ((daysSinceRecoveriesChanged != 201) || (warnMembersInNonMembers == 1)) {
-                        cmpType = 655;
-                    }
-                    reportAbuseInput = "";
-                    aBoolean1158 = false;
-                    for (int i = 0; i < Component.instances.length; i++) {
-                        if ((Component.instances[i] == null) || (Component.instances[i].contentType != cmpType)) {
-                            continue;
-                        }
-                        viewportComponentID = Component.instances[i].parentID;
-                        break;
-                    }
-                }
-
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.ZONE_CLEAR) {
-                baseX = in.read8UC();
-                baseZ = in.read8US();
-                for (int x = baseX; x < (baseX + 8); x++) {
-                    for (int z = baseZ; z < (baseZ + 8); z++) {
-                        if (levelObjStacks[currentLevel][x][z] != null) {
-                            levelObjStacks[currentLevel][x][z] = null;
-                            sortObjStacks(x, z);
-                        }
-                    }
-                }
-                for (SceneLocTemporary loc = (SceneLocTemporary) temporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) temporaryLocs.prev()) {
-                    if ((loc.localX >= baseX) && (loc.localX < (baseX + 8)) && (loc.localZ >= baseZ) && (loc.localZ < (baseZ + 8)) && (loc.level == currentLevel)) {
-                        loc.duration = 0;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_MODEL_PLAYER) {
-                int componentID = in.read16ULEA();
-                Component component = Component.instances[componentID];
-                component.modelCategory = 3;
-
-                if (localPlayer.npcType == null) {
-                    component.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
-                } else {
-                    component.modelID = (int) (0x12345678L + localPlayer.npcType.uid);
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CAMERA_DISABLE_CINEMATIC) {
-                cinematic = false;
-                for (int l = 0; l < 5; l++) {
-                    cameraModifierEnabled[l] = false;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.INVENTORY_CLEAR) {
-                int componentID = in.read16ULE();
-                Component component = Component.instances[componentID];
-                for (int slot = 0; slot < component.invSlotObjID.length; slot++) {
-                    component.invSlotObjID[slot] = -1;
-                    component.invSlotObjID[slot] = 0;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.IGNORE_LIST) {
-                ignoreCount = packetSize / 8;
-                for (int j1 = 0; j1 < ignoreCount; j1++) {
-                    ignoreName37[j1] = in.read64();
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CAMERA_SET_POSITION) {
-                cinematic = true;
-                cinematicSrcLocalTileX = in.read8U();
-                cinematicSrcLocalTileZ = in.read8U();
-                cinematicSrcHeight = in.read16U();
-                cinematicMoveSpeed = in.read8U();
-                cinematicMoveAcceleration = in.read8U();
-
-                if (cinematicMoveAcceleration >= 100) {
-                    cameraX = (cinematicSrcLocalTileX * 128) + 64;
-                    cameraZ = (cinematicSrcLocalTileZ * 128) + 64;
-                    cameraY = getHeightmapY(currentLevel, cameraX, cameraZ) - cinematicSrcHeight;
-                }
-
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CAMERA_LOOK_AT) {
-                cinematic = true;
-                cinematicDstLocalTileX = in.read8U();
-                cinematicDstLocalTileZ = in.read8U();
-                cinematicDstHeight = in.read16U();
-                cinematicRotateSpeed = in.read8U();
-                cinematicRotateAcceleration = in.read8U();
-
-                if (cinematicRotateAcceleration >= 100) {
-                    int sceneX = (cinematicDstLocalTileX * 128) + 64;
-                    int sceneZ = (cinematicDstLocalTileZ * 128) + 64;
-                    int sceneY = getHeightmapY(currentLevel, sceneX, sceneZ) - cinematicDstHeight;
-                    int deltaX = sceneX - cameraX;
-                    int deltaY = sceneY - cameraY;
-                    int deltaZ = sceneZ - cameraZ;
-                    int distance = (int) Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
-                    cameraPitch = (int) (Math.atan2(deltaY, distance) * 325.94900000000001D) & 0x7ff;
-                    cameraYaw = (int) (Math.atan2(deltaX, deltaZ) * -325.94900000000001D) & 0x7ff;
-                    if (cameraPitch < 128) {
-                        cameraPitch = 128;
-                    }
-                    if (cameraPitch > 383) {
-                        cameraPitch = 383;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SKILL) {
-                redrawSidebar = true;
-                int skill = in.read8U();
-                int experience = in.read32RME();
-                int level = in.read8U();
-                skillExperience[skill] = experience;
-                skillLevel[skill] = level;
-                skillBaseLevel[skill] = 1;
-                for (int i = 0; i < 98; i++) {
-                    if (experience >= levelExperience[i]) {
-                        skillBaseLevel[skill] = i + 2;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.TAB_COMPONENT) {
-                int componentID = in.read16U();
-                int tab = in.read8UA();
-                if (componentID == 65535) {
-                    componentID = -1;
-                }
-                tabComponentIDs[tab] = componentID;
-                redrawSidebar = true;
-                redrawSideicons = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SONG) {
-                int next = in.read16ULE();
-                if (next == 65535) {
-                    next = -1;
-                }
-                if ((next != nextMusic) && midiActive && !lowmem && (nextMusicDelay == 0)) {
-                    music = next;
-                    musicFading = true;
-                    ondemand.request(2, music);
-                }
-                nextMusic = next;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.JINGLE) {
-                int next = in.read16ULEA();
-                int delay = in.read16UA();
-                if (midiActive && !lowmem) {
-                    music = next;
-                    musicFading = false;
-                    ondemand.request(2, music);
-                    nextMusicDelay = delay;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.DISCONNECT) {
-                disconnect();
-                packetType = -1;
-                return false;
-            }
-
-            if (packetType == PacketIn.COMPONENT_POSITION) {
-                int x = in.read16();
-                int y = in.read16LE();
-                int componentID = in.read16ULE();
-                Component cmp = Component.instances[componentID];
-                cmp.x = x;
-                cmp.y = y;
-                packetType = -1;
-                return true;
-            }
-
-            if ((packetType == PacketIn.SCENE_LOAD) || (packetType == PacketIn.SCENE_LOAD_INSTANCED)) {
-                int zoneX = sceneCenterZoneX;
-                int zoneZ = sceneCenterZoneZ;
-
-                if (packetType == PacketIn.SCENE_LOAD) {
-                    zoneX = in.read16UA();
-                    zoneZ = in.read16U();
-                    sceneInstanced = false;
-                }
-
-                if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
-                    zoneZ = in.read16UA();
-                    in.accessBits();
-
-                    for (int level = 0; level < 4; level++) {
-                        for (int cx = 0; cx < 13; cx++) {
-                            for (int cz = 0; cz < 13; cz++) {
-                                if (in.readN(1) == 1) {
-                                    levelChunkBitset[level][cx][cz] = in.readN(26);
-                                } else {
-                                    levelChunkBitset[level][cx][cz] = -1;
-                                }
-                            }
-                        }
-                    }
-
-                    in.accessBytes();
-                    zoneX = in.read16U();
-                    sceneInstanced = true;
-                }
-
-                if ((sceneCenterZoneX == zoneX) && (sceneCenterZoneZ == zoneZ) && (sceneState == 2)) {
-                    packetType = -1;
-                    return true;
-                }
-
-                sceneCenterZoneX = zoneX;
-                sceneCenterZoneZ = zoneZ;
-                sceneBaseTileX = (sceneCenterZoneX - 6) * 8;
-                sceneBaseTileZ = (sceneCenterZoneZ - 6) * 8;
-                withinTutorialIsland = (((sceneCenterZoneX / 8) == 48) || ((sceneCenterZoneX / 8) == 49)) && ((sceneCenterZoneZ / 8) == 48);
-
-                if (((sceneCenterZoneX / 8) == 48) && ((sceneCenterZoneZ / 8) == 148)) {
-                    withinTutorialIsland = true;
-                }
-
-                sceneState = 1;
-                sceneLoadStartTime = System.currentTimeMillis();
-
-                areaViewport.bind();
-                fontPlain12.drawStringCenter("Loading - please wait.", 257, 151, 0);
-                fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
-                areaViewport.draw(super.graphics, 4, 4);
-
-                if (packetType == PacketIn.SCENE_LOAD) {
-                    int mapCount = 0;
-
-                    for (int x = (sceneCenterZoneX - 6) / 8; x <= ((sceneCenterZoneX + 6) / 8); x++) {
-                        for (int z = (sceneCenterZoneZ - 6) / 8; z <= ((sceneCenterZoneZ + 6) / 8); z++) {
-                            mapCount++;
-                        }
-                    }
-
-                    sceneMapLandData = new byte[mapCount][];
-                    sceneMapLocData = new byte[mapCount][];
-                    sceneMapIndex = new int[mapCount];
-                    sceneMapLandFile = new int[mapCount];
-                    sceneMapLocFile = new int[mapCount];
-
-                    mapCount = 0;
-
-                    for (int mx = (sceneCenterZoneX - 6) / 8; mx <= ((sceneCenterZoneX + 6) / 8); mx++) {
-                        for (int mz = (sceneCenterZoneZ - 6) / 8; mz <= ((sceneCenterZoneZ + 6) / 8); mz++) {
-                            sceneMapIndex[mapCount] = (mx << 8) + mz;
-
-                            if (withinTutorialIsland && ((mz == 49) || (mz == 149) || (mz == 147) || (mx == 50) || ((mx == 49) && (mz == 47)))) {
-                                sceneMapLandFile[mapCount] = -1;
-                                sceneMapLocFile[mapCount] = -1;
-                            } else {
-                                int landFile = sceneMapLandFile[mapCount] = ondemand.getMapFile(0, mx, mz);
-
-                                if (landFile != -1) {
-                                    ondemand.request(3, landFile);
-                                }
-
-                                int locFile = sceneMapLocFile[mapCount] = ondemand.getMapFile(1, mx, mz);
-
-                                if (locFile != -1) {
-                                    ondemand.request(3, locFile);
-                                }
-                            }
-                            mapCount++;
-                        }
-                    }
-                }
-
-                if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
-                    int mapCount = 0;
-                    int[] mapIDs = new int[676];
-
-                    for (int level = 0; level < 4; level++) {
-                        for (int x = 0; x < 13; x++) {
-                            for (int z = 0; z < 13; z++) {
-                                int bitset = levelChunkBitset[level][x][z];
-
-                                if (bitset != -1) {
-                                    int mapX = (bitset >> 14) & 0x3ff;
-                                    int mapZ = (bitset >> 3) & 0x7ff;
-                                    int mapID = ((mapX / 8) << 8) + (mapZ / 8);
-
-                                    for (int i = 0; i < mapCount; i++) {
-                                        if (mapIDs[i] != mapID) {
-                                            continue;
-                                        }
-                                        mapID = -1;
-                                        break;
-                                    }
-
-                                    if (mapID != -1) {
-                                        mapIDs[mapCount++] = mapID;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    sceneMapLandData = new byte[mapCount][];
-                    sceneMapLocData = new byte[mapCount][];
-                    sceneMapIndex = new int[mapCount];
-                    sceneMapLandFile = new int[mapCount];
-                    sceneMapLocFile = new int[mapCount];
-
-                    for (int i = 0; i < mapCount; i++) {
-                        int mapIndex = sceneMapIndex[i] = mapIDs[i];
-                        int mapX = (mapIndex >> 8) & 0xff;
-                        int mapZ = mapIndex & 0xff;
-
-                        int mapLandFile = sceneMapLandFile[i] = ondemand.getMapFile(0, mapX, mapZ);
-
-                        if (mapLandFile != -1) {
-                            ondemand.request(3, mapLandFile);
-                        }
-
-                        int mapLocFile = sceneMapLocFile[i] = ondemand.getMapFile(1, mapX, mapZ);
-
-                        if (mapLocFile != -1) {
-                            ondemand.request(3, mapLocFile);
-                        }
-                    }
-                }
-
-                int dtx = sceneBaseTileX - scenePrevBaseTileX;
-                int dtz = sceneBaseTileZ - scenePrevBaseTileZ;
-                scenePrevBaseTileX = sceneBaseTileX;
-                scenePrevBaseTileZ = sceneBaseTileZ;
-
-                for (int i = 0; i < 16384; i++) {
-                    NPCEntity npc = npcs[i];
-
-                    if (npc != null) {
-                        for (int j = 0; j < 10; j++) {
-                            npc.pathTileX[j] -= dtx;
-                            npc.pathTileZ[j] -= dtz;
-                        }
-                        npc.x -= dtx * 128;
-                        npc.z -= dtz * 128;
-                    }
-                }
-
-                for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
-                    PlayerEntity player = players[i];
-
-                    if (player != null) {
-                        for (int i31 = 0; i31 < 10; i31++) {
-                            player.pathTileX[i31] -= dtx;
-                            player.pathTileZ[i31] -= dtz;
-                        }
-                        player.x -= dtx * 128;
-                        player.z -= dtz * 128;
-                    }
-                }
-
-                awaitingSync = true;
-
-                byte x0 = 0;
-                byte x1 = 104;
-                byte dirX = 1;
-
-                if (dtx < 0) {
-                    x0 = 103;
-                    x1 = -1;
-                    dirX = -1;
-                }
-
-                byte z0 = 0;
-                byte z1 = 104;
-                byte dirZ = 1;
-
-                if (dtz < 0) {
-                    z0 = 103;
-                    z1 = -1;
-                    dirZ = -1;
-                }
-
-                for (int x = x0; x != x1; x += dirX) {
-                    for (int z = z0; z != z1; z += dirZ) {
-                        int dstX = x + dtx;
-                        int dstZ = z + dtz;
-
-                        for (int level = 0; level < 4; level++) {
-                            if ((dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104)) {
-                                levelObjStacks[level][x][z] = levelObjStacks[level][dstX][dstZ];
-                            } else {
-                                levelObjStacks[level][x][z] = null;
-                            }
-                        }
-                    }
-                }
-
-                for (SceneLocTemporary loc = (SceneLocTemporary) temporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) temporaryLocs.prev()) {
-                    loc.localX -= dtx;
-                    loc.localZ -= dtz;
-                    if ((loc.localX < 0) || (loc.localZ < 0) || (loc.localX >= 104) || (loc.localZ >= 104)) {
-                        loc.unlink();
-                    }
-                }
-
-                if (flagSceneTileX != 0) {
-                    flagSceneTileX -= dtx;
-                    flagSceneTileZ -= dtz;
-                }
-
-                cinematic = false;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.VIEWPORT_OVERLAY_COMPONENT) {
-                int componentID = in.read16LE();
-                if (componentID >= 0) {
-                    resetParentComponentSeq(componentID);
-                }
-                viewportOverlayComponentID = componentID;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.MINIMAP_STATE) {
-                minimapState = in.read8U();
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_MODEL_NPC) {
-                int npcID = in.read16ULEA();
-                int componentID = in.read16ULEA();
-                Component.instances[componentID].modelCategory = 2;
-                Component.instances[componentID].modelID = npcID;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SYSTEM_UPDATE) {
-                systemUpdateTimer = in.read16ULE() * 30;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.ZONE_UPDATE) {
-                baseZ = in.read8U();
-                baseX = in.read8UC();
-                while (in.position < packetSize) {
-                    int opcode = in.read8U();
-                    readZonePacket(in, opcode);
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CAMERA_EFFECT) {
-                int component = in.read8U();
-                int jitterScale = in.read8U();
-                int wobbleScale = in.read8U();
-                int wobbleSpeed = in.read8U();
-                cameraModifierEnabled[component] = true;
-                cameraModifierJitter[component] = jitterScale;
-                cameraModifierWobbleScale[component] = wobbleScale;
-                cameraModifierWobbleSpeed[component] = wobbleSpeed;
-                cameraModifierCycle[component] = 0;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SOUND) {
-                int waveID = in.read16U();
-                int loopCount = in.read8U();
-                int delay = in.read16U();
-                if (aBoolean848 && !lowmem && (waveCount < 50)) {
-                    waveIDs[waveCount] = waveID;
-                    waveLoops[waveCount] = loopCount;
-                    waveDelay[waveCount] = delay + SoundTrack.delays[waveID];
-                    waveCount++;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.PLAYER_OPTION) {
-                int option = in.read8UC();
-                int priority = in.read8UA();
-                String text = in.readString();
-                if ((option >= 1) && (option <= 5)) {
-                    if (text.equalsIgnoreCase("null")) {
-                        text = null;
-                    }
-                    playerOptions[option - 1] = text;
-                    playerOptionPushDown[option - 1] = priority == 0;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CLEAR_MINIMAP_FLAG) {
-                flagSceneTileX = 0;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.MESSAGE) {
-                String s = in.readString();
-
-                if (s.endsWith(":tradereq:")) {
-                    String name = s.substring(0, s.indexOf(":"));
-                    long name37 = StringUtil.toBase37(name);
-
-                    boolean ignore = false;
-                    for (int i = 0; i < ignoreCount; i++) {
-                        if (ignoreName37[i] == name37) {
-                            ignore = true;
-                            break;
-                        }
-                    }
-
-                    if (!ignore && (overrideChat == 0)) {
-                        addMessage(4, name, "wishes to trade with you.");
-                    }
-                } else if (s.endsWith(":duelreq:")) {
-                    String name = s.substring(0, s.indexOf(":"));
-                    long name37 = StringUtil.toBase37(name);
-
-                    boolean ignore = false;
-                    for (int i = 0; i < ignoreCount; i++) {
-                        if (ignoreName37[i] == name37) {
-                            ignore = true;
-                            break;
-                        }
-                    }
-
-                    if (!ignore && (overrideChat == 0)) {
-                        addMessage(8, name, "wishes to duel with you.");
-                    }
-                } else if (s.endsWith(":chalreq:")) {
-                    String name = s.substring(0, s.indexOf(":"));
-                    long name37 = StringUtil.toBase37(name);
-
-                    boolean ignore = false;
-                    for (int i = 0; i < ignoreCount; i++) {
-                        if (ignoreName37[i] != name37) {
-                            continue;
-                        }
-                        ignore = true;
-                        break;
-                    }
-
-                    if (!ignore && (overrideChat == 0)) {
-                        String message = s.substring(s.indexOf(":") + 1, s.length() - 9);
-                        addMessage(8, name, message);
-                    }
-                } else {
-                    addMessage(0, "", s);
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SCENE_RESET_SEQ) {
-                for (PlayerEntity player : players) {
-                    if (player != null) {
-                        player.primarySeqID = -1;
-                    }
-                }
-                for (NPCEntity npc : npcs) {
-                    if (npc != null) {
-                        npc.primarySeqID = -1;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.FRIEND_STATUS) {
-                long name37 = in.read64();
-                int world = in.read8U();
-                String name = StringUtil.formatName(StringUtil.fromBase37(name37));
-
-                for (int i = 0; i < friendCount; i++) {
-                    if (name37 != friendName37[i]) {
-                        continue;
-                    }
-                    if (friendWorld[i] != world) {
-                        friendWorld[i] = world;
-                        redrawSidebar = true;
-                        if (world > 0) {
-                            addMessage(5, "", name + " has logged in.");
-                        }
-                        if (world == 0) {
-                            addMessage(5, "", name + " has logged out.");
-                        }
-                    }
-                    name = null;
+            switch (packetType) {
+                case PacketIn.SYNC_PLAYERS:
+                    readPlayers(packetSize, in);
                     break;
-                }
 
-                if ((name != null) && (friendCount < 200)) {
-                    friendName37[friendCount] = name37;
-                    friendName[friendCount] = name;
-                    friendWorld[friendCount] = world;
-                    friendCount++;
+                case PacketIn.LOGIN_INFO:
+                    readLoginInfo();
+                    break;
+
+                case PacketIn.ZONE_CLEAR:
+                    readZoneClear();
+                    break;
+
+                case PacketIn.COMPONENT_MODEL_PLAYER:
+                    readComponentModelPlayer();
+                    break;
+
+                case PacketIn.CAMERA_DISABLE_CINEMATIC:
+                    readCameraDisableCinematic();
+                    break;
+
+                case PacketIn.INVENTORY_CLEAR:
+                    readInventoryClear();
+                    break;
+
+                case PacketIn.IGNORE_LIST:
+                    readIgnoreList();
+                    break;
+
+                case PacketIn.CAMERA_POSITION:
+                    readCameraPosition();
+                    break;
+
+                case PacketIn.CAMERA_LOOK_AT:
+                    readCameraLookAt();
+                    break;
+
+                case PacketIn.SKILL:
+                    readSkill();
+                    break;
+
+                case PacketIn.TAB_COMPONENT:
+                    readTabComponent();
+                    break;
+
+                case PacketIn.SONG:
+                    readSong();
+                    break;
+
+                case PacketIn.JINGLE:
+                    readJingle();
+                    break;
+
+                case PacketIn.DISCONNECT:
+                    disconnect();
+                    break;
+
+                case PacketIn.COMPONENT_POSITION:
+                    readComponentPosition();
+                    break;
+
+                case PacketIn.SCENE_LOAD:
+                case PacketIn.SCENE_LOAD_INSTANCED:
+                    readSceneLoad();
+                    break;
+
+                case PacketIn.VIEWPORT_OVERLAY_COMPONENT:
+                    readViewportOverlayComponent();
+                    break;
+
+                case PacketIn.MINIMAP_STATE:
+                    minimapState = in.read8U();
+                    break;
+
+                case PacketIn.COMPONENT_MODEL_NPC:
+                    readComponentModelNPC();
+                    break;
+
+                case PacketIn.SYSTEM_UPDATE:
+                    systemUpdateTimer = in.read16ULE() * 30;
+                    break;
+
+                case PacketIn.ZONE_UPDATE:
+                    readZoneUpdate();
+                    break;
+
+                case PacketIn.CAMERA_EFFECT:
+                    readCameraEffect();
+                    break;
+
+                case PacketIn.SOUND:
+                    readSound();
+                    break;
+
+                case PacketIn.PLAYER_OPTION:
+                    readPlayerOption();
+                    break;
+
+                case PacketIn.CLEAR_MINIMAP_FLAG:
+                    flagSceneTileX = 0;
+                    break;
+
+                case PacketIn.MESSAGE:
+                    readMessage();
+                    break;
+
+                case PacketIn.SCENE_RESET_SEQ:
+                    resetEntitySeq();
+                    break;
+
+                case PacketIn.FRIEND_STATUS:
+                    readFriendStatus();
+                    break;
+
+                case PacketIn.ENERGY:
+                    readEnergy();
+                    break;
+
+                case PacketIn.HINT:
+                    readHint();
+                    break;
+
+                case PacketIn.VIEWPORT_AND_SIDEBAR_COMPONENTS:
+                    readViewportAndSidebarComponents();
+                    break;
+
+                case PacketIn.COMPONENT_SCROLL_Y:
+                    readComponentScrollY();
+                    break;
+
+                case PacketIn.RESTORE_VARPS:
+                    restoreVarps();
+                    break;
+
+                case PacketIn.CHAT_MESSAGE:
+                    readChatMessage();
+                    break;
+
+                case PacketIn.ZONE_BASE:
+                    baseZ = in.read8UC();
+                    baseX = in.read8UC();
+                    break;
+
+                case PacketIn.TAB_HINT:
+                    readTabHint();
+                    break;
+
+                case PacketIn.COMPONENT_MODEL_OBJ:
+                    readComponentModelObj();
+                    break;
+
+                case PacketIn.COMPONENT_HIDDEN:
+                    readComponentHidden();
+                    break;
+
+                case PacketIn.COMPONENT_RESET_SEQ:
+                    readComponentResetSeq();
+                    break;
+
+                case PacketIn.COMPONENT_TEXT:
+                    readComponentText();
+                    break;
+
+                case PacketIn.PRIVACY_SETTINGS:
+                    readPrivacySettings();
+                    break;
+
+                case PacketIn.WEIGHT:
+                    readWeight();
+                    break;
+
+                case PacketIn.COMPONENT_MODEL:
+                    readComponentModel();
+                    break;
+
+                case PacketIn.COMPONENT_COLOR:
+                    readComponentColor();
+                    break;
+
+                case PacketIn.INVENTORY:
+                    readInventory();
+                    break;
+
+                case PacketIn.COMPONENT_MODEL_ROTATION:
+                    readComponentModelRotation();
+                    break;
+
+                case PacketIn.FRIENDSERVER_STATUS:
+                    friendserverStatus = in.read8U();
                     redrawSidebar = true;
-                }
+                    break;
 
-                for (boolean sorted = false; !sorted; ) {
-                    sorted = true;
-                    for (int i = 0; i < (friendCount - 1); i++) {
-                        if (((friendWorld[i] != nodeID) && (friendWorld[i + 1] == nodeID)) || ((friendWorld[i] == 0) && (friendWorld[i + 1] != 0))) {
-                            int tmp0 = friendWorld[i];
-                            friendWorld[i] = friendWorld[i + 1];
-                            friendWorld[i + 1] = tmp0;
+                case PacketIn.LOCAL_PLAYER:
+                    isMember = in.read8UA();
+                    localPID = in.read16ULEA();
+                    break;
 
-                            String tmp1 = friendName[i];
-                            friendName[i] = friendName[i + 1];
-                            friendName[i + 1] = tmp1;
+                case PacketIn.SYNC_NPCS:
+                    readNPCs(in, packetSize);
+                    break;
 
-                            long tmp2 = friendName37[i];
-                            friendName37[i] = friendName37[i + 1];
-                            friendName37[i + 1] = tmp2;
-                            redrawSidebar = true;
-                            sorted = false;
-                        }
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
+                case PacketIn.INPUT_AMOUNT:
+                    openChatInput(1);
+                    break;
 
-            if (packetType == PacketIn.ENERGY) {
-                if (selectedTab == 12) {
-                    redrawSidebar = true;
-                }
-                energy = in.read8U();
-                packetType = -1;
-                return true;
-            }
+                case PacketIn.INPUT_NAME:
+                    openChatInput(2);
+                    break;
 
-            if (packetType == PacketIn.HINT) {
-                hintType = in.read8U();
+                case PacketIn.VIEWPORT_COMPONENT:
+                    readViewportComponent();
+                    break;
 
-                if (hintType == 1) {
-                    hintNPC = in.read16U();
-                }
-
-                if ((hintType >= 2) && (hintType <= 6)) {
-                    if (hintType == 2) {
-                        hintOffsetX = 64;
-                        hintOffsetZ = 64;
-                    }
-                    if (hintType == 3) {
-                        hintOffsetX = 0;
-                        hintOffsetZ = 64;
-                    }
-                    if (hintType == 4) {
-                        hintOffsetX = 128;
-                        hintOffsetZ = 64;
-                    }
-                    if (hintType == 5) {
-                        hintOffsetX = 64;
-                        hintOffsetZ = 0;
-                    }
-                    if (hintType == 6) {
-                        hintOffsetX = 64;
-                        hintOffsetZ = 128;
-                    }
-                    hintType = 2;
-                    hintTileX = in.read16U();
-                    hintTileZ = in.read16U();
-                    hintHeight = in.read8U();
-                }
-
-                if (hintType == 10) {
-                    hintPlayer = in.read16U();
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.VIEWPORT_AND_SIDEBAR_COMPONENTS) {
-                int viewportComponentID = in.read16UA();
-                int sidebarComponentID = in.read16U();
-
-                if (chatbackComponentID != -1) {
-                    chatbackComponentID = -1;
+                case PacketIn.CHAT_COMPONENT_STICKY:
+                    stickyChatbackComponentID = in.read16LEA();
                     redrawChatback = true;
-                }
+                    break;
 
-                if (chatbackInputType != 0) {
-                    chatbackInputType = 0;
-                    redrawChatback = true;
-                }
+                case PacketIn.VARP_INT:
+                    readVarpInt();
+                    break;
 
-                this.viewportComponentID = viewportComponentID;
-                this.sidebarComponentID = sidebarComponentID;
-                redrawSidebar = true;
-                redrawSideicons = true;
-                pressedContinueOption = false;
-                packetType = -1;
-                return true;
+                case PacketIn.VARP_BYTE:
+                    readVarpByte();
+                    break;
+
+                case PacketIn.MULTIZONE:
+                    multizone = in.read8U();
+                    break;
+
+                case PacketIn.COMPONENT_SEQ:
+                    readComponentSeq();
+                    break;
+
+                case PacketIn.CLEAR_COMPONENTS:
+                    openViewportComponent(-1);
+                    break;
+
+                case PacketIn.INVENTORY_UPDATE:
+                    readInventoryUpdate();
+                    break;
+
+                case PacketIn.TAB_SELECTED:
+                    readTabSelected();
+                    break;
+
+                case PacketIn.CHAT_COMPONENT:
+                    readChatComponent();
+                    break;
+
+                case PacketIn.OBJ_PLACE:
+                case PacketIn.OBJ_REVEAL:
+                case PacketIn.OBJ_UPDATE:
+                case PacketIn.OBJ_REMOVE:
+                case PacketIn.LOC_PLACE:
+                case PacketIn.LOC_UPDATE:
+                case PacketIn.LOC_REMOVE:
+                case PacketIn.SPATIAL_SOUND:
+                case PacketIn.PLAYER_LOC:
+                case PacketIn.SPOTANIM:
+                case PacketIn.PROJECTILE:
+                    readZonePacket(in, packetType);
+                    break;
+
+                default:
+                    Signlink.reporterror("T1 (Unhandled Packet Type) - " + packetType + "," + packetSize + " - " + lastPacketType1 + "," + lastPacketType2);
+                    disconnect();
+                    break;
             }
 
-            if (packetType == PacketIn.COMPONENT_SCROLL_Y) {
-                int componentID = in.read16ULE();
-                int scrollY = in.read16UA();
-                Component component = Component.instances[componentID];
-                if ((component != null) && (component.type == 0)) {
-                    if (scrollY < 0) {
-                        scrollY = 0;
-                    }
-                    if (scrollY > (component.scrollableHeight - component.height)) {
-                        scrollY = component.scrollableHeight - component.height;
-                    }
-                    component.scrollPosition = scrollY;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.RESTORE_VARS) {
-                for (int i = 0; i < variables.length; i++) {
-                    if (variables[i] != storedVariables[i]) {
-                        variables[i] = storedVariables[i];
-                        updateVarp(i);
-                        redrawSidebar = true;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CHAT_MESSAGE) {
-                long name37 = in.read64();
-                int messageID = in.read32();
-                int role = in.read8U();
-                boolean ignore = false;
-                for (int i = 0; i < 100; i++) {
-                    if (messageIDs[i] == messageID) {
-                        ignore = true;
-                        break;
-                    }
-                }
-
-                if (role <= 1) {
-                    for (int i = 0; i < ignoreCount; i++) {
-                        if (ignoreName37[i] == name37) {
-                            ignore = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!ignore && (overrideChat == 0)) {
-                    try {
-                        messageIDs[messageCounter] = messageID;
-                        messageCounter = (messageCounter + 1) % 100;
-                        String message = ChatCompression.unpack(packetSize - 13, in);
-
-                        if (role != 3) {
-                            message = Censor.apply(message);
-                        }
-
-                        if ((role == 2) || (role == 3)) {
-                            addMessage(7, "@cr2@" + StringUtil.formatName(name37), message);
-                        } else if (role == 1) {
-                            addMessage(7, "@cr1@" + StringUtil.formatName(name37), message);
-                        } else {
-                            addMessage(3, StringUtil.formatName(name37), message);
-                        }
-                    } catch (Exception exception1) {
-                        Signlink.reporterror("cde1");
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.ZONE_BASE) {
-                baseZ = in.read8UC();
-                baseX = in.read8UC();
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.TAB_HINT) {
-                flashingTab = in.read8US();
-                if (flashingTab == selectedTab) {
-                    if (flashingTab == 3) {
-                        selectedTab = 1;
-                    } else {
-                        selectedTab = 3;
-                    }
-                    redrawSidebar = true;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_MODEL_OBJ) {
-                int componentID = in.read16ULE();
-                int zoom = in.read16U();
-                int objID = in.read16U();
-                if (objID == 65535) {
-                    Component.instances[componentID].modelCategory = 0;
-                } else {
-                    ObjType type = ObjType.get(objID);
-                    Component.instances[componentID].modelCategory = 4;
-                    Component.instances[componentID].modelID = objID;
-                    Component.instances[componentID].modelPitch = type.iconPitch;
-                    Component.instances[componentID].modelYaw = type.iconYaw;
-                    Component.instances[componentID].modelZoom = (type.iconZoom * 100) / zoom;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_HIDDEN) {
-                boolean hidden = in.read8U() == 1;
-                int componentID = in.read16U();
-                Component.instances[componentID].hidden = hidden;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_RESET_SEQ) {
-                int componentID = in.read16ULE();
-                resetParentComponentSeq(componentID);
-                if (chatbackComponentID != -1) {
-                    chatbackComponentID = -1;
-                    redrawChatback = true;
-                }
-                if (chatbackInputType != 0) {
-                    chatbackInputType = 0;
-                    redrawChatback = true;
-                }
-                sidebarComponentID = componentID;
-                redrawSidebar = true;
-                redrawSideicons = true;
-                viewportComponentID = -1;
-                pressedContinueOption = false;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_TEXT) {
-                String text = in.readString();
-                int componentID = in.read16UA();
-                if ((componentID >= 0) && (componentID < Component.instances.length)) {
-                    Component component = Component.instances[componentID];
-                    if (component != null) {
-                        component.text = text;
-                        if (component.parentID == tabComponentIDs[selectedTab]) {
-                            redrawSidebar = true;
-                        }
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.PRIVACY_SETTINGS) {
-                publicChatSetting = in.read8U();
-                privateChatSetting = in.read8U();
-                tradeChatSetting = in.read8U();
-                redrawPrivacySettings = true;
-                redrawChatback = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.WEIGHT) {
-                if (selectedTab == 12) {
-                    redrawSidebar = true;
-                }
-                weightCarried = in.read16();
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_MODEL) {
-                int componentID = in.read16ULEA();
-                int modelID = in.read16U();
-                Component.instances[componentID].modelCategory = 1;
-                Component.instances[componentID].modelID = modelID;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_COLOR) {
-                int componentID = in.read16ULEA();
-                int rgb555 = in.read16ULEA();
-                int r = (rgb555 >> 10) & 0x1f;
-                int g = (rgb555 >> 5) & 0x1f;
-                int b = rgb555 & 0x1f;
-                Component.instances[componentID].color = (r << 19) + (g << 11) + (b << 3);
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.INVENTORY) {
-                redrawSidebar = true;
-                int componentID = in.read16U();
-                Component component = Component.instances[componentID];
-                int count = in.read16U();
-                for (int slot = 0; slot < count; slot++) {
-                    int amount = in.read8U();
-
-                    if (amount == 255) {
-                        amount = in.read32ME();
-                    }
-
-                    if (slot >= component.invSlotObjID.length) {
-                        in.read16ULEA();
-                    } else {
-                        component.invSlotObjID[slot] = in.read16ULEA();
-                        component.invSlotAmount[slot] = amount;
-                    }
-                }
-
-                // clear remaining slots
-                for (int slot = count; slot < component.invSlotObjID.length; slot++) {
-                    component.invSlotObjID[slot] = 0;
-                    component.invSlotAmount[slot] = 0;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_MODEL_ROTATION) {
-                int zoom = in.read16UA();
-                int componentID = in.read16U();
-                int pitch = in.read16U();
-                int yaw = in.read16ULEA();
-                Component.instances[componentID].modelPitch = pitch;
-                Component.instances[componentID].modelYaw = yaw;
-                Component.instances[componentID].modelZoom = zoom;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.FRIENDSERVER_STATUS) {
-                friendserverStatus = in.read8U();
-                redrawSidebar = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.LOCAL_PLAYER) {
-                isMember = in.read8UA();
-                localPID = in.read16ULEA();
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.SYNC_NPCS) {
-                method31(in, packetSize);
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.INPUT_AMOUNT) {
-                showSocialInput = false;
-                chatbackInputType = 1;
-                chatbackInput = "";
-                redrawChatback = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.INPUT_NAME) {
-                showSocialInput = false;
-                chatbackInputType = 2;
-                chatbackInput = "";
-                redrawChatback = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.VIEWPORT_COMPONENT) {
-                int componentID = in.read16U();
-                resetParentComponentSeq(componentID);
-                if (sidebarComponentID != -1) {
-                    sidebarComponentID = -1;
-                    redrawSidebar = true;
-                    redrawSideicons = true;
-                }
-                if (chatbackComponentID != -1) {
-                    chatbackComponentID = -1;
-                    redrawChatback = true;
-                }
-                if (chatbackInputType != 0) {
-                    chatbackInputType = 0;
-                    redrawChatback = true;
-                }
-                viewportComponentID = componentID;
-                pressedContinueOption = false;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CHAT_COMPONENT_STICKY) {
-                stickyChatbackComponentID = in.read16LEA();
-                redrawChatback = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.VARP_INT) {
-                int varp = in.read16ULE();
-                int value = in.read32RME();
-                storedVariables[varp] = value;
-
-                if (variables[varp] != value) {
-                    variables[varp] = value;
-                    updateVarp(varp);
-                    redrawSidebar = true;
-                    if (stickyChatbackComponentID != -1) {
-                        redrawChatback = true;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.VARP_BYTE) {
-                int varp = in.read16ULE();
-                byte value = in.read();
-                storedVariables[varp] = value;
-
-                if (variables[varp] != value) {
-                    variables[varp] = value;
-                    updateVarp(varp);
-                    redrawSidebar = true;
-                    if (stickyChatbackComponentID != -1) {
-                        redrawChatback = true;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.MULTIZONE) {
-                multizone = in.read8U();
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.COMPONENT_SEQ) {
-                int componentID = in.read16U();
-                int seqID = in.read16();
-                Component component = Component.instances[componentID];
-                component.seqID = seqID;
-                if (seqID == -1) {
-                    component.seqFrame = 0;
-                    component.seqCycle = 0;
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CLEAR_COMPONENTS) {
-                if (sidebarComponentID != -1) {
-                    sidebarComponentID = -1;
-                    redrawSidebar = true;
-                    redrawSideicons = true;
-                }
-                if (chatbackComponentID != -1) {
-                    chatbackComponentID = -1;
-                    redrawChatback = true;
-                }
-                if (chatbackInputType != 0) {
-                    chatbackInputType = 0;
-                    redrawChatback = true;
-                }
-                viewportComponentID = -1;
-                pressedContinueOption = false;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.INVENTORY_UPDATE) {
-                redrawSidebar = true;
-                int componentID = in.read16U();
-                Component component = Component.instances[componentID];
-                while (in.position < packetSize) {
-                    int slot = in.readSmartU();
-                    int objID = in.read16U();
-                    int amount = in.read8U();
-                    if (amount == 255) {
-                        amount = in.read32();
-                    }
-                    if ((slot >= 0) && (slot < component.invSlotObjID.length)) {
-                        component.invSlotObjID[slot] = objID;
-                        component.invSlotAmount[slot] = amount;
-                    }
-                }
-                packetType = -1;
-                return true;
-            }
-
-            if ((packetType == 105) || (packetType == 84) || (packetType == 147) || (packetType == 215) || (packetType == 4) || (packetType == 117) || (packetType == 156) || (packetType == 44) || (packetType == 160) || (packetType == 101) || (packetType == 151)) {
-                readZonePacket(in, packetType);
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.TAB_SELECTED) {
-                selectedTab = in.read8UC();
-                redrawSidebar = true;
-                redrawSideicons = true;
-                packetType = -1;
-                return true;
-            }
-
-            if (packetType == PacketIn.CHAT_COMPONENT) {
-                int componentID = in.read16ULE();
-                resetParentComponentSeq(componentID);
-                if (sidebarComponentID != -1) {
-                    sidebarComponentID = -1;
-                    redrawSidebar = true;
-                    redrawSideicons = true;
-                }
-                chatbackComponentID = componentID;
-                redrawChatback = true;
-                viewportComponentID = -1;
-                pressedContinueOption = false;
-                packetType = -1;
-                return true;
-            }
-
-            Signlink.reporterror("T1 (Invalid Packet ID) - " + packetType + "," + packetSize + " - " + lastPacketType1 + "," + lastPacketType2);
-            disconnect();
-        } catch (IOException _ex) {
+            packetType = -1;
+        } catch (IOException e) {
             tryReconnect();
-        } catch (Exception exception) {
+        } catch (Exception e) {
             StringBuilder s2 = new StringBuilder("T2 (Packet Error) - " + packetType + "," + lastPacketType1 + "," + lastPacketType2 + " - " + packetSize + "," + (sceneBaseTileX + localPlayer.pathTileX[0]) + "," + (sceneBaseTileZ + localPlayer.pathTileZ[0]) + " - ");
             for (int j15 = 0; (j15 < packetSize) && (j15 < 50); j15++) {
                 s2.append(in.data[j15]).append(",");
             }
             Signlink.reporterror(s2.toString());
             disconnect();
-            exception.printStackTrace();
+            e.printStackTrace();
         }
+
         return true;
+    }
+
+    private void readLoginInfo() {
+        daysSinceRecoveriesChanged = in.read8UC();
+        unreadMessages = in.read16UA();
+        warnMembersInNonMembers = in.read8U();
+        lastAddress = in.read32ME();
+        daysSinceLastLogin = in.read16U();
+
+        if ((lastAddress != 0) && (viewportComponentID == -1)) {
+            Signlink.dnslookup(StringUtil.formatIPv4(lastAddress));
+            closeInterfaces();
+            char cmpType = 650;
+            if ((daysSinceRecoveriesChanged != 201) || (warnMembersInNonMembers == 1)) {
+                cmpType = 655;
+            }
+            reportAbuseInput = "";
+            aBoolean1158 = false;
+            for (int i = 0; i < Component.instances.length; i++) {
+                if ((Component.instances[i] == null) || (Component.instances[i].contentType != cmpType)) {
+                    continue;
+                }
+                viewportComponentID = Component.instances[i].parentID;
+                break;
+            }
+        }
+    }
+
+    private void readZoneClear() {
+        baseX = in.read8UC();
+        baseZ = in.read8US();
+        for (int x = baseX; x < (baseX + 8); x++) {
+            for (int z = baseZ; z < (baseZ + 8); z++) {
+                if (levelObjStacks[currentLevel][x][z] != null) {
+                    levelObjStacks[currentLevel][x][z] = null;
+                    sortObjStacks(x, z);
+                }
+            }
+        }
+        for (SceneLocTemporary loc = (SceneLocTemporary) temporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) temporaryLocs.prev()) {
+            if ((loc.localX >= baseX) && (loc.localX < (baseX + 8)) && (loc.localZ >= baseZ) && (loc.localZ < (baseZ + 8)) && (loc.level == currentLevel)) {
+                loc.duration = 0;
+            }
+        }
+    }
+
+    private void readComponentModelPlayer() {
+        int componentID = in.read16ULEA();
+        Component component = Component.instances[componentID];
+        component.modelCategory = 3;
+
+        if (localPlayer.npcType == null) {
+            component.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
+        } else {
+            component.modelID = (int) (0x12345678L + localPlayer.npcType.uid);
+        }
+    }
+
+    private void readCameraDisableCinematic() {
+        cinematic = false;
+        for (int l = 0; l < 5; l++) {
+            cameraModifierEnabled[l] = false;
+        }
+    }
+
+    private void readInventoryClear() {
+        int componentID = in.read16ULE();
+        Component component = Component.instances[componentID];
+        for (int slot = 0; slot < component.invSlotObjID.length; slot++) {
+            component.invSlotObjID[slot] = -1;
+            component.invSlotObjID[slot] = 0;
+        }
+    }
+
+    private void readIgnoreList() {
+        ignoreCount = packetSize / 8;
+        for (int j1 = 0; j1 < ignoreCount; j1++) {
+            ignoreName37[j1] = in.read64();
+        }
+    }
+
+    private void readCameraPosition() {
+        cinematic = true;
+        cinematicSrcLocalTileX = in.read8U();
+        cinematicSrcLocalTileZ = in.read8U();
+        cinematicSrcHeight = in.read16U();
+        cinematicMoveSpeed = in.read8U();
+        cinematicMoveAcceleration = in.read8U();
+
+        if (cinematicMoveAcceleration >= 100) {
+            cameraX = (cinematicSrcLocalTileX * 128) + 64;
+            cameraZ = (cinematicSrcLocalTileZ * 128) + 64;
+            cameraY = getHeightmapY(currentLevel, cameraX, cameraZ) - cinematicSrcHeight;
+        }
+    }
+
+    private void readCameraLookAt() {
+        cinematic = true;
+        cinematicDstLocalTileX = in.read8U();
+        cinematicDstLocalTileZ = in.read8U();
+        cinematicDstHeight = in.read16U();
+        cinematicRotateSpeed = in.read8U();
+        cinematicRotateAcceleration = in.read8U();
+
+        if (cinematicRotateAcceleration >= 100) {
+            int sceneX = (cinematicDstLocalTileX * 128) + 64;
+            int sceneZ = (cinematicDstLocalTileZ * 128) + 64;
+            int sceneY = getHeightmapY(currentLevel, sceneX, sceneZ) - cinematicDstHeight;
+            int deltaX = sceneX - cameraX;
+            int deltaY = sceneY - cameraY;
+            int deltaZ = sceneZ - cameraZ;
+            int distance = (int) Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
+            cameraPitch = (int) (Math.atan2(deltaY, distance) * 325.94900000000001D) & 0x7ff;
+            cameraYaw = (int) (Math.atan2(deltaX, deltaZ) * -325.94900000000001D) & 0x7ff;
+            if (cameraPitch < 128) {
+                cameraPitch = 128;
+            }
+            if (cameraPitch > 383) {
+                cameraPitch = 383;
+            }
+        }
+    }
+
+    private void readSkill() {
+        redrawSidebar = true;
+        int skill = in.read8U();
+        int experience = in.read32RME();
+        int level = in.read8U();
+        skillExperience[skill] = experience;
+        skillLevel[skill] = level;
+        skillBaseLevel[skill] = 1;
+        for (int i = 0; i < 98; i++) {
+            if (experience >= levelExperience[i]) {
+                skillBaseLevel[skill] = i + 2;
+            }
+        }
+    }
+
+    private void readTabComponent() {
+        int componentID = in.read16U();
+        int tab = in.read8UA();
+        if (componentID == 65535) {
+            componentID = -1;
+        }
+        tabComponentIDs[tab] = componentID;
+        redrawSidebar = true;
+        redrawSideicons = true;
+    }
+
+    private void readSong() {
+        int next = in.read16ULE();
+        if (next == 65535) {
+            next = -1;
+        }
+        if ((next != nextSong) && midiActive && !lowmem && (nextSongDelay == 0)) {
+            song = next;
+            songFading = true;
+            ondemand.request(2, song);
+        }
+        nextSong = next;
+    }
+
+    private void readJingle() {
+        int next = in.read16ULEA();
+        int delay = in.read16UA();
+        if (midiActive && !lowmem) {
+            song = next;
+            songFading = false;
+            ondemand.request(2, song);
+            nextSongDelay = delay;
+        }
+    }
+
+    private void readComponentPosition() {
+        int x = in.read16();
+        int y = in.read16LE();
+        int componentID = in.read16ULE();
+        Component component = Component.instances[componentID];
+        component.x = x;
+        component.y = y;
+    }
+
+    private void readSceneLoad() {
+        int zoneX = sceneCenterZoneX;
+        int zoneZ = sceneCenterZoneZ;
+
+        if (packetType == PacketIn.SCENE_LOAD) {
+            zoneX = in.read16UA();
+            zoneZ = in.read16U();
+            sceneInstanced = false;
+        }
+
+        if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
+            zoneZ = in.read16UA();
+            in.accessBits();
+
+            for (int level = 0; level < 4; level++) {
+                for (int cx = 0; cx < 13; cx++) {
+                    for (int cz = 0; cz < 13; cz++) {
+                        if (in.readN(1) == 1) {
+                            levelChunkBitset[level][cx][cz] = in.readN(26);
+                        } else {
+                            levelChunkBitset[level][cx][cz] = -1;
+                        }
+                    }
+                }
+            }
+
+            in.accessBytes();
+            zoneX = in.read16U();
+            sceneInstanced = true;
+        }
+
+        if ((sceneCenterZoneX == zoneX) && (sceneCenterZoneZ == zoneZ) && (sceneState == 2)) {
+            packetType = -1;
+            return;
+        }
+
+        sceneCenterZoneX = zoneX;
+        sceneCenterZoneZ = zoneZ;
+        sceneBaseTileX = (sceneCenterZoneX - 6) * 8;
+        sceneBaseTileZ = (sceneCenterZoneZ - 6) * 8;
+        withinTutorialIsland = (((sceneCenterZoneX / 8) == 48) || ((sceneCenterZoneX / 8) == 49)) && ((sceneCenterZoneZ / 8) == 48);
+
+        if (((sceneCenterZoneX / 8) == 48) && ((sceneCenterZoneZ / 8) == 148)) {
+            withinTutorialIsland = true;
+        }
+
+        sceneState = 1;
+        sceneLoadStartTime = System.currentTimeMillis();
+
+        areaViewport.bind();
+        fontPlain12.drawStringCenter("Loading - please wait.", 257, 151, 0);
+        fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
+        areaViewport.draw(super.graphics, 4, 4);
+
+        if (packetType == PacketIn.SCENE_LOAD) {
+            fetchMaps();
+        }
+
+        if (packetType == PacketIn.SCENE_LOAD_INSTANCED) {
+            fetchMapsInstanced();
+        }
+
+        shiftScene();
+
+        cinematic = false;
+    }
+
+    private void fetchMaps() {
+        int mapCount = 0;
+
+        for (int x = (sceneCenterZoneX - 6) / 8; x <= ((sceneCenterZoneX + 6) / 8); x++) {
+            for (int z = (sceneCenterZoneZ - 6) / 8; z <= ((sceneCenterZoneZ + 6) / 8); z++) {
+                mapCount++;
+            }
+        }
+
+        sceneMapLandData = new byte[mapCount][];
+        sceneMapLocData = new byte[mapCount][];
+        sceneMapIndex = new int[mapCount];
+        sceneMapLandFile = new int[mapCount];
+        sceneMapLocFile = new int[mapCount];
+
+        mapCount = 0;
+
+        for (int mx = (sceneCenterZoneX - 6) / 8; mx <= ((sceneCenterZoneX + 6) / 8); mx++) {
+            for (int mz = (sceneCenterZoneZ - 6) / 8; mz <= ((sceneCenterZoneZ + 6) / 8); mz++) {
+                sceneMapIndex[mapCount] = (mx << 8) + mz;
+
+                if (withinTutorialIsland && ((mz == 49) || (mz == 149) || (mz == 147) || (mx == 50) || ((mx == 49) && (mz == 47)))) {
+                    sceneMapLandFile[mapCount] = -1;
+                    sceneMapLocFile[mapCount] = -1;
+                } else {
+                    int landFile = sceneMapLandFile[mapCount] = ondemand.getMapFile(0, mx, mz);
+
+                    if (landFile != -1) {
+                        ondemand.request(3, landFile);
+                    }
+
+                    int locFile = sceneMapLocFile[mapCount] = ondemand.getMapFile(1, mx, mz);
+
+                    if (locFile != -1) {
+                        ondemand.request(3, locFile);
+                    }
+                }
+                mapCount++;
+            }
+        }
+    }
+
+    private void fetchMapsInstanced() {
+        int mapCount = 0;
+        int[] mapIDs = new int[676];
+
+        for (int level = 0; level < 4; level++) {
+            for (int x = 0; x < 13; x++) {
+                for (int z = 0; z < 13; z++) {
+                    int bitset = levelChunkBitset[level][x][z];
+
+                    if (bitset != -1) {
+                        int mapX = (bitset >> 14) & 0x3ff;
+                        int mapZ = (bitset >> 3) & 0x7ff;
+                        int mapID = ((mapX / 8) << 8) + (mapZ / 8);
+
+                        for (int i = 0; i < mapCount; i++) {
+                            if (mapIDs[i] != mapID) {
+                                continue;
+                            }
+                            mapID = -1;
+                            break;
+                        }
+
+                        if (mapID != -1) {
+                            mapIDs[mapCount++] = mapID;
+                        }
+                    }
+                }
+            }
+        }
+
+        sceneMapLandData = new byte[mapCount][];
+        sceneMapLocData = new byte[mapCount][];
+        sceneMapIndex = new int[mapCount];
+        sceneMapLandFile = new int[mapCount];
+        sceneMapLocFile = new int[mapCount];
+
+        for (int i = 0; i < mapCount; i++) {
+            int mapIndex = sceneMapIndex[i] = mapIDs[i];
+            int mapX = (mapIndex >> 8) & 0xff;
+            int mapZ = mapIndex & 0xff;
+
+            int mapLandFile = sceneMapLandFile[i] = ondemand.getMapFile(0, mapX, mapZ);
+
+            if (mapLandFile != -1) {
+                ondemand.request(3, mapLandFile);
+            }
+
+            int mapLocFile = sceneMapLocFile[i] = ondemand.getMapFile(1, mapX, mapZ);
+
+            if (mapLocFile != -1) {
+                ondemand.request(3, mapLocFile);
+            }
+        }
+    }
+
+    private void shiftScene() {
+        int dtx = sceneBaseTileX - scenePrevBaseTileX;
+        int dtz = sceneBaseTileZ - scenePrevBaseTileZ;
+        scenePrevBaseTileX = sceneBaseTileX;
+        scenePrevBaseTileZ = sceneBaseTileZ;
+
+        for (int i = 0; i < 16384; i++) {
+            NPCEntity npc = npcs[i];
+
+            if (npc != null) {
+                for (int j = 0; j < 10; j++) {
+                    npc.pathTileX[j] -= dtx;
+                    npc.pathTileZ[j] -= dtz;
+                }
+                npc.x -= dtx * 128;
+                npc.z -= dtz * 128;
+            }
+        }
+
+        for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+            PlayerEntity player = players[i];
+
+            if (player != null) {
+                for (int i31 = 0; i31 < 10; i31++) {
+                    player.pathTileX[i31] -= dtx;
+                    player.pathTileZ[i31] -= dtz;
+                }
+                player.x -= dtx * 128;
+                player.z -= dtz * 128;
+            }
+        }
+
+        awaitingSync = true;
+
+        byte x0 = 0;
+        byte x1 = 104;
+        byte dirX = 1;
+
+        if (dtx < 0) {
+            x0 = 103;
+            x1 = -1;
+            dirX = -1;
+        }
+
+        byte z0 = 0;
+        byte z1 = 104;
+        byte dirZ = 1;
+
+        if (dtz < 0) {
+            z0 = 103;
+            z1 = -1;
+            dirZ = -1;
+        }
+
+        for (int x = x0; x != x1; x += dirX) {
+            for (int z = z0; z != z1; z += dirZ) {
+                int dstX = x + dtx;
+                int dstZ = z + dtz;
+
+                for (int level = 0; level < 4; level++) {
+                    if ((dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104)) {
+                        levelObjStacks[level][x][z] = levelObjStacks[level][dstX][dstZ];
+                    } else {
+                        levelObjStacks[level][x][z] = null;
+                    }
+                }
+            }
+        }
+
+        for (SceneLocTemporary loc = (SceneLocTemporary) temporaryLocs.peekFront(); loc != null; loc = (SceneLocTemporary) temporaryLocs.prev()) {
+            loc.localX -= dtx;
+            loc.localZ -= dtz;
+            if ((loc.localX < 0) || (loc.localZ < 0) || (loc.localX >= 104) || (loc.localZ >= 104)) {
+                loc.unlink();
+            }
+        }
+
+        if (flagSceneTileX != 0) {
+            flagSceneTileX -= dtx;
+            flagSceneTileZ -= dtz;
+        }
+    }
+
+    private void readViewportOverlayComponent() {
+        int componentID = in.read16LE();
+        if (componentID >= 0) {
+            resetParentComponentSeq(componentID);
+        }
+        viewportOverlayComponentID = componentID;
+    }
+
+    private void readComponentModelNPC() {
+        int npcID = in.read16ULEA();
+        int componentID = in.read16ULEA();
+        Component.instances[componentID].modelCategory = 2;
+        Component.instances[componentID].modelID = npcID;
+    }
+
+    private void readZoneUpdate() {
+        baseZ = in.read8U();
+        baseX = in.read8UC();
+        while (in.position < packetSize) {
+            int opcode = in.read8U();
+            readZonePacket(in, opcode);
+        }
+    }
+
+    private void readCameraEffect() {
+        int component = in.read8U();
+        int jitterScale = in.read8U();
+        int wobbleScale = in.read8U();
+        int wobbleSpeed = in.read8U();
+        cameraModifierEnabled[component] = true;
+        cameraModifierJitter[component] = jitterScale;
+        cameraModifierWobbleScale[component] = wobbleScale;
+        cameraModifierWobbleSpeed[component] = wobbleSpeed;
+        cameraModifierCycle[component] = 0;
+    }
+
+    private void readSound() {
+        int waveID = in.read16U();
+        int loopCount = in.read8U();
+        int delay = in.read16U();
+        if (aBoolean848 && !lowmem && (waveCount < 50)) {
+            waveIDs[waveCount] = waveID;
+            waveLoops[waveCount] = loopCount;
+            waveDelay[waveCount] = delay + SoundTrack.delays[waveID];
+            waveCount++;
+        }
+    }
+
+    private void readPlayerOption() {
+        int option = in.read8UC();
+        int priority = in.read8UA();
+        String text = in.readString();
+        if ((option >= 1) && (option <= 5)) {
+            if (text.equalsIgnoreCase("null")) {
+                text = null;
+            }
+            playerOptions[option - 1] = text;
+            playerOptionPushDown[option - 1] = priority == 0;
+        }
+    }
+
+    private void readMessage() {
+        String s = in.readString();
+
+        if (s.endsWith(":tradereq:")) {
+            String name = s.substring(0, s.indexOf(":"));
+            long name37 = StringUtil.toBase37(name);
+
+            boolean ignore = false;
+            for (int i = 0; i < ignoreCount; i++) {
+                if (ignoreName37[i] == name37) {
+                    ignore = true;
+                    break;
+                }
+            }
+
+            if (!ignore && (overrideChat == 0)) {
+                addMessage(4, name, "wishes to trade with you.");
+            }
+        } else if (s.endsWith(":duelreq:")) {
+            String name = s.substring(0, s.indexOf(":"));
+            long name37 = StringUtil.toBase37(name);
+
+            boolean ignore = false;
+            for (int i = 0; i < ignoreCount; i++) {
+                if (ignoreName37[i] == name37) {
+                    ignore = true;
+                    break;
+                }
+            }
+
+            if (!ignore && (overrideChat == 0)) {
+                addMessage(8, name, "wishes to duel with you.");
+            }
+        } else if (s.endsWith(":chalreq:")) {
+            String name = s.substring(0, s.indexOf(":"));
+            long name37 = StringUtil.toBase37(name);
+
+            boolean ignore = false;
+            for (int i = 0; i < ignoreCount; i++) {
+                if (ignoreName37[i] != name37) {
+                    continue;
+                }
+                ignore = true;
+                break;
+            }
+
+            if (!ignore && (overrideChat == 0)) {
+                String message = s.substring(s.indexOf(":") + 1, s.length() - 9);
+                addMessage(8, name, message);
+            }
+        } else {
+            addMessage(0, "", s);
+        }
+    }
+
+    private void resetEntitySeq() {
+        for (PlayerEntity player : players) {
+            if (player != null) {
+                player.primarySeqID = -1;
+            }
+        }
+        for (NPCEntity npc : npcs) {
+            if (npc != null) {
+                npc.primarySeqID = -1;
+            }
+        }
+    }
+
+    private void readFriendStatus() {
+        long name37 = in.read64();
+        int world = in.read8U();
+        String name = StringUtil.formatName(StringUtil.fromBase37(name37));
+
+        for (int i = 0; i < friendCount; i++) {
+            if (name37 != friendName37[i]) {
+                continue;
+            }
+            if (friendWorld[i] != world) {
+                friendWorld[i] = world;
+                redrawSidebar = true;
+                if (world > 0) {
+                    addMessage(5, "", name + " has logged in.");
+                }
+                if (world == 0) {
+                    addMessage(5, "", name + " has logged out.");
+                }
+            }
+            name = null;
+            break;
+        }
+
+        if ((name != null) && (friendCount < 200)) {
+            friendName37[friendCount] = name37;
+            friendName[friendCount] = name;
+            friendWorld[friendCount] = world;
+            friendCount++;
+            redrawSidebar = true;
+        }
+
+        for (boolean sorted = false; !sorted; ) {
+            sorted = true;
+            for (int i = 0; i < (friendCount - 1); i++) {
+                if (((friendWorld[i] != nodeID) && (friendWorld[i + 1] == nodeID)) || ((friendWorld[i] == 0) && (friendWorld[i + 1] != 0))) {
+                    int tmp0 = friendWorld[i];
+                    friendWorld[i] = friendWorld[i + 1];
+                    friendWorld[i + 1] = tmp0;
+
+                    String tmp1 = friendName[i];
+                    friendName[i] = friendName[i + 1];
+                    friendName[i + 1] = tmp1;
+
+                    long tmp2 = friendName37[i];
+                    friendName37[i] = friendName37[i + 1];
+                    friendName37[i + 1] = tmp2;
+                    redrawSidebar = true;
+                    sorted = false;
+                }
+            }
+        }
+    }
+
+    private void readEnergy() {
+        if (selectedTab == 12) {
+            redrawSidebar = true;
+        }
+        energy = in.read8U();
+    }
+
+    private void readHint() {
+        hintType = in.read8U();
+
+        if (hintType == 1) {
+            hintNPC = in.read16U();
+        }
+
+        if ((hintType >= 2) && (hintType <= 6)) {
+            if (hintType == 2) {
+                hintOffsetX = 64;
+                hintOffsetZ = 64;
+            }
+            if (hintType == 3) {
+                hintOffsetX = 0;
+                hintOffsetZ = 64;
+            }
+            if (hintType == 4) {
+                hintOffsetX = 128;
+                hintOffsetZ = 64;
+            }
+            if (hintType == 5) {
+                hintOffsetX = 64;
+                hintOffsetZ = 0;
+            }
+            if (hintType == 6) {
+                hintOffsetX = 64;
+                hintOffsetZ = 128;
+            }
+            hintType = 2;
+            hintTileX = in.read16U();
+            hintTileZ = in.read16U();
+            hintHeight = in.read8U();
+        }
+
+        if (hintType == 10) {
+            hintPlayer = in.read16U();
+        }
+    }
+
+    private void readViewportAndSidebarComponents() {
+        int viewportComponentID = in.read16UA();
+        int sidebarComponentID = in.read16U();
+
+        if (chatbackComponentID != -1) {
+            chatbackComponentID = -1;
+            redrawChatback = true;
+        }
+
+        if (chatbackInputType != 0) {
+            chatbackInputType = 0;
+            redrawChatback = true;
+        }
+
+        this.viewportComponentID = viewportComponentID;
+        this.sidebarComponentID = sidebarComponentID;
+        redrawSidebar = true;
+        redrawSideicons = true;
+        pressedContinueOption = false;
+    }
+
+    private void readComponentScrollY() {
+        int componentID = in.read16ULE();
+        int scrollY = in.read16UA();
+        Component component = Component.instances[componentID];
+        if ((component != null) && (component.type == 0)) {
+            if (scrollY < 0) {
+                scrollY = 0;
+            }
+            if (scrollY > (component.scrollableHeight - component.height)) {
+                scrollY = component.scrollableHeight - component.height;
+            }
+            component.scrollPosition = scrollY;
+        }
+    }
+
+    private void restoreVarps() {
+        for (int i = 0; i < varps.length; i++) {
+            if (varps[i] != storedVarps[i]) {
+                varps[i] = storedVarps[i];
+                updateVarp(i);
+                redrawSidebar = true;
+            }
+        }
+    }
+
+    private void readChatMessage() {
+        long name37 = in.read64();
+        int messageID = in.read32();
+        int role = in.read8U();
+        boolean ignore = false;
+        for (int i = 0; i < 100; i++) {
+            if (messageIDs[i] == messageID) {
+                ignore = true;
+                break;
+            }
+        }
+
+        if (role <= 1) {
+            for (int i = 0; i < ignoreCount; i++) {
+                if (ignoreName37[i] == name37) {
+                    ignore = true;
+                    break;
+                }
+            }
+        }
+
+        if (!ignore && (overrideChat == 0)) {
+            try {
+                messageIDs[messageCounter] = messageID;
+                messageCounter = (messageCounter + 1) % 100;
+                String message = ChatCompression.unpack(packetSize - 13, in);
+
+                if (role != 3) {
+                    message = Censor.apply(message);
+                }
+
+                if ((role == 2) || (role == 3)) {
+                    addMessage(7, "@cr2@" + StringUtil.formatName(name37), message);
+                } else if (role == 1) {
+                    addMessage(7, "@cr1@" + StringUtil.formatName(name37), message);
+                } else {
+                    addMessage(3, StringUtil.formatName(name37), message);
+                }
+            } catch (Exception exception1) {
+                Signlink.reporterror("cde1");
+            }
+        }
+    }
+
+    private void readTabHint() {
+        flashingTab = in.read8US();
+        if (flashingTab == selectedTab) {
+            if (flashingTab == 3) {
+                selectedTab = 1;
+            } else {
+                selectedTab = 3;
+            }
+            redrawSidebar = true;
+        }
+    }
+
+    private void readComponentModelObj() {
+        int componentID = in.read16ULE();
+        int zoom = in.read16U();
+        int objID = in.read16U();
+        if (objID == 65535) {
+            Component.instances[componentID].modelCategory = 0;
+        } else {
+            ObjType type = ObjType.get(objID);
+            Component.instances[componentID].modelCategory = 4;
+            Component.instances[componentID].modelID = objID;
+            Component.instances[componentID].modelPitch = type.iconPitch;
+            Component.instances[componentID].modelYaw = type.iconYaw;
+            Component.instances[componentID].modelZoom = (type.iconZoom * 100) / zoom;
+        }
+    }
+
+    private void readComponentHidden() {
+        boolean hidden = in.read8U() == 1;
+        int componentID = in.read16U();
+        Component.instances[componentID].hidden = hidden;
+    }
+
+    private void readComponentResetSeq() {
+        int componentID = in.read16ULE();
+        resetParentComponentSeq(componentID);
+        if (chatbackComponentID != -1) {
+            chatbackComponentID = -1;
+            redrawChatback = true;
+        }
+        if (chatbackInputType != 0) {
+            chatbackInputType = 0;
+            redrawChatback = true;
+        }
+        sidebarComponentID = componentID;
+        redrawSidebar = true;
+        redrawSideicons = true;
+        viewportComponentID = -1;
+        pressedContinueOption = false;
+    }
+
+    private void readComponentText() {
+        String text = in.readString();
+        int componentID = in.read16UA();
+        if ((componentID >= 0) && (componentID < Component.instances.length)) {
+            Component component = Component.instances[componentID];
+            if (component != null) {
+                component.text = text;
+                if (component.parentID == tabComponentIDs[selectedTab]) {
+                    redrawSidebar = true;
+                }
+            }
+        }
+    }
+
+    private void readPrivacySettings() {
+        publicChatSetting = in.read8U();
+        privateChatSetting = in.read8U();
+        tradeChatSetting = in.read8U();
+        redrawPrivacySettings = true;
+        redrawChatback = true;
+    }
+
+    private void readWeight() {
+        if (selectedTab == 12) {
+            redrawSidebar = true;
+        }
+        weightCarried = in.read16();
+    }
+
+    private void readComponentModel() {
+        int componentID = in.read16ULEA();
+        int modelID = in.read16U();
+        Component.instances[componentID].modelCategory = 1;
+        Component.instances[componentID].modelID = modelID;
+    }
+
+    private void readComponentColor() {
+        int componentID = in.read16ULEA();
+        int rgb555 = in.read16ULEA();
+        int r = (rgb555 >> 10) & 0x1f;
+        int g = (rgb555 >> 5) & 0x1f;
+        int b = rgb555 & 0x1f;
+        Component.instances[componentID].color = (r << 19) + (g << 11) + (b << 3);
+    }
+
+    private void readInventory() {
+        redrawSidebar = true;
+        int componentID = in.read16U();
+        Component component = Component.instances[componentID];
+        int count = in.read16U();
+        for (int slot = 0; slot < count; slot++) {
+            int amount = in.read8U();
+
+            if (amount == 255) {
+                amount = in.read32ME();
+            }
+
+            if (slot >= component.invSlotObjID.length) {
+                in.read16ULEA();
+            } else {
+                component.invSlotObjID[slot] = in.read16ULEA();
+                component.invSlotAmount[slot] = amount;
+            }
+        }
+
+        // clear remaining slots
+        for (int slot = count; slot < component.invSlotObjID.length; slot++) {
+            component.invSlotObjID[slot] = 0;
+            component.invSlotAmount[slot] = 0;
+        }
+    }
+
+    private void readComponentModelRotation() {
+        int zoom = in.read16UA();
+        int componentID = in.read16U();
+        int pitch = in.read16U();
+        int yaw = in.read16ULEA();
+        Component.instances[componentID].modelPitch = pitch;
+        Component.instances[componentID].modelYaw = yaw;
+        Component.instances[componentID].modelZoom = zoom;
+    }
+
+    private void openChatInput(int type) {
+        showSocialInput = false;
+        chatbackInputType = type;
+        chatbackInput = "";
+        redrawChatback = true;
+    }
+
+    private void openViewportComponent(int componentID) {
+        if (sidebarComponentID != -1) {
+            sidebarComponentID = -1;
+            redrawSidebar = true;
+            redrawSideicons = true;
+        }
+        if (chatbackComponentID != -1) {
+            chatbackComponentID = -1;
+            redrawChatback = true;
+        }
+        if (chatbackInputType != 0) {
+            chatbackInputType = 0;
+            redrawChatback = true;
+        }
+        viewportComponentID = componentID;
+        pressedContinueOption = false;
+    }
+
+    private void readViewportComponent() {
+        int componentID = in.read16U();
+        resetParentComponentSeq(componentID);
+        openViewportComponent(componentID);
+    }
+
+    private void readVarpInt() {
+        int varp = in.read16ULE();
+        int value = in.read32RME();
+        storedVarps[varp] = value;
+
+        if (varps[varp] != value) {
+            varps[varp] = value;
+            updateVarp(varp);
+            redrawSidebar = true;
+            if (stickyChatbackComponentID != -1) {
+                redrawChatback = true;
+            }
+        }
+    }
+
+    private void readVarpByte() {
+        int varp = in.read16ULE();
+        byte value = in.read();
+        storedVarps[varp] = value;
+
+        if (varps[varp] != value) {
+            varps[varp] = value;
+            updateVarp(varp);
+            redrawSidebar = true;
+            if (stickyChatbackComponentID != -1) {
+                redrawChatback = true;
+            }
+        }
+    }
+
+    private void readComponentSeq() {
+        int componentID = in.read16U();
+        int seqID = in.read16();
+        Component component = Component.instances[componentID];
+        component.seqID = seqID;
+        if (seqID == -1) {
+            component.seqFrame = 0;
+            component.seqCycle = 0;
+        }
+    }
+
+    private void readInventoryUpdate() {
+        redrawSidebar = true;
+        int componentID = in.read16U();
+        Component component = Component.instances[componentID];
+        while (in.position < packetSize) {
+            int slot = in.readSmartU();
+            int objID = in.read16U();
+            int amount = in.read8U();
+            if (amount == 255) {
+                amount = in.read32();
+            }
+            if ((slot >= 0) && (slot < component.invSlotObjID.length)) {
+                component.invSlotObjID[slot] = objID;
+                component.invSlotAmount[slot] = amount;
+            }
+        }
+    }
+
+    private void readTabSelected() {
+        selectedTab = in.read8UC();
+        redrawSidebar = true;
+        redrawSideicons = true;
+    }
+
+    private void readChatComponent() {
+        int componentID = in.read16ULE();
+        resetParentComponentSeq(componentID);
+        if (sidebarComponentID != -1) {
+            sidebarComponentID = -1;
+            redrawSidebar = true;
+            redrawSideicons = true;
+        }
+        chatbackComponentID = componentID;
+        redrawChatback = true;
+        viewportComponentID = -1;
+        pressedContinueOption = false;
     }
 
     public void drawScene() {

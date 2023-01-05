@@ -103,9 +103,9 @@ public class LocEntity extends Entity {
 			int low = varbit.lsb;
 			int high = varbit.msb;
 			int mask = Game.BITMASK[high - low];
-			value = (game.variables[varp] >> low) & mask;
+			value = (game.varps[varp] >> low) & mask;
 		} else if (varp != -1) {
-			value = game.variables[varp];
+			value = game.varps[varp];
 		}
 
 		if ((value < 0) || (value >= overrideTypeIDs.length) || (overrideTypeIDs[value] == -1)) {

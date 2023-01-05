@@ -147,9 +147,9 @@ public class NPCType {
 			int lsb = vb.lsb;
 			int msb = vb.msb;
 			int mask = Game.BITMASK[msb - lsb];
-			value = (game.variables[varp] >> lsb) & mask;
+			value = (game.varps[varp] >> lsb) & mask;
 		} else if (varpID != -1) {
-			value = game.variables[varpID];
+			value = game.varps[varpID];
 		}
 
 		if ((value < 0) || (value >= overrides.length) || (overrides[value] == -1)) {

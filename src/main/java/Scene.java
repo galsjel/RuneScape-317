@@ -102,10 +102,12 @@ public class Scene {
     public static int clickTileX = -1;
     public static int clickTileZ = -1;
     public static int[] levelOccluderCount = new int[LEVEL_COUNT];
-    public static SceneOccluder[][] levelOccluders = new SceneOccluder[LEVEL_COUNT][500];
+    public static SceneOccluder[][] levelOccluders = new SceneOccluder[LEVEL_COUNT][1000];
+    public static boolean disableOccluders;
     public static int activeOccluderCount;
     public static int activeWallOccluderCount;
     public static int activeGroundOccluderCount;
+    public static int tilesCulled;
     public static DoublyLinkedList drawTileQueue = new DoublyLinkedList();
     public static boolean[][][][] visibilityMatrix = new boolean[8][32][51][51];
     public static boolean[][] visibilityMap;
@@ -1057,10 +1059,10 @@ public class Scene {
         }
     }
 
-    public void method312(int i, int j) {
+    public void click(int mouseY, int mouseX) {
         takingInput = true;
-        mouseX = j;
-        mouseY = i;
+        Scene.mouseX = mouseX;
+        Scene.mouseY = mouseY;
         clickTileX = -1;
         clickTileZ = -1;
     }
@@ -1995,12 +1997,17 @@ public class Scene {
     }
 
     public void updateActiveOccluders() {
-        int count = levelOccluderCount[topLevel];
-        SceneOccluder[] occluders = levelOccluders[topLevel];
-
         activeOccluderCount = 0;
         activeGroundOccluderCount = 0;
         activeWallOccluderCount = 0;
+        tilesCulled=0;
+
+        if (disableOccluders) {
+            return;
+        }
+
+        int count = levelOccluderCount[topLevel];
+        SceneOccluder[] occluders = levelOccluders[topLevel];
 
         for (int i = 0; i < count; i++) {
             SceneOccluder occluder = occluders[i];
@@ -2051,10 +2058,10 @@ public class Scene {
                     deltaMinX = -deltaMinX;
                 }
 
-                occluder.minDeltaZ = ((occluder.minZ - eyeZ) << 8) / deltaMinX;
-                occluder.maxDeltaZ = ((occluder.maxZ - eyeZ) << 8) / deltaMinX;
-                occluder.minDeltaY = ((occluder.minY - eyeY) << 8) / deltaMinX;
-                occluder.maxDeltaY = ((occluder.maxY - eyeY) << 8) / deltaMinX;
+                occluder.minDeltaZ = ((occluder.minZ - eyeZ) << 10) / deltaMinX;
+                occluder.maxDeltaZ = ((occluder.maxZ - eyeZ) << 10) / deltaMinX;
+                occluder.minDeltaY = ((occluder.minY - eyeY) << 10) / deltaMinX;
+                occluder.maxDeltaY = ((occluder.maxY - eyeY) << 10) / deltaMinX;
                 activeOccluders[activeOccluderCount++] = occluder;
                 activeWallOccluderCount++;
                 continue;
@@ -2104,10 +2111,10 @@ public class Scene {
                     deltaMinZ = -deltaMinZ;
                 }
 
-                occluder.minDeltaX = ((occluder.minX - eyeX) << 8) / deltaMinZ;
-                occluder.maxDeltaX = ((occluder.maxX - eyeX) << 8) / deltaMinZ;
-                occluder.minDeltaY = ((occluder.minY - eyeY) << 8) / deltaMinZ;
-                occluder.maxDeltaY = ((occluder.maxY - eyeY) << 8) / deltaMinZ;
+                occluder.minDeltaX = ((occluder.minX - eyeX) << 10) / deltaMinZ;
+                occluder.maxDeltaX = ((occluder.maxX - eyeX) << 10) / deltaMinZ;
+                occluder.minDeltaY = ((occluder.minY - eyeY) << 10) / deltaMinZ;
+                occluder.maxDeltaY = ((occluder.maxY - eyeY) << 10) / deltaMinZ;
                 activeOccluders[activeOccluderCount++] = occluder;
                 activeWallOccluderCount++;
             } else if (occluder.type == 4) {
@@ -2156,10 +2163,10 @@ public class Scene {
 
                     if (ok) {
                         occluder.mode = 5;
-                        occluder.minDeltaX = ((occluder.minX - eyeX) << 8) / deltaMaxY;
-                        occluder.maxDeltaX = ((occluder.maxX - eyeX) << 8) / deltaMaxY;
-                        occluder.minDeltaZ = ((occluder.minZ - eyeZ) << 8) / deltaMaxY;
-                        occluder.maxDeltaZ = ((occluder.maxZ - eyeZ) << 8) / deltaMaxY;
+                        occluder.minDeltaX = ((occluder.minX - eyeX) << 10) / deltaMaxY;
+                        occluder.maxDeltaX = ((occluder.maxX - eyeX) << 10) / deltaMaxY;
+                        occluder.minDeltaZ = ((occluder.minZ - eyeZ) << 10) / deltaMaxY;
+                        occluder.maxDeltaZ = ((occluder.maxZ - eyeZ) << 10) / deltaMaxY;
                         activeOccluders[activeOccluderCount++] = occluder;
                         activeGroundOccluderCount++;
                     }
@@ -2184,6 +2191,7 @@ public class Scene {
 
         if (occluded(sx + 1, levelHeightmaps[level][x][z], sz + 1) && occluded((sx + 128) - 1, levelHeightmaps[level][x + 1][z], sz + 1) && occluded((sx + 128) - 1, levelHeightmaps[level][x + 1][z + 1], (sz + 128) - 1) && occluded(sx + 1, levelHeightmaps[level][x][z + 1], (sz + 128) - 1)) {
             levelTileOcclusionCycles[level][x][z] = Scene.cycle;
+            tilesCulled++;
             return true;
         } else {
             levelTileOcclusionCycles[level][x][z] = -Scene.cycle;
@@ -2378,10 +2386,10 @@ public class Scene {
                     continue;
                 }
 
-                int minZ = occluder.minZ + ((occluder.minDeltaZ * dx) >> 8);
-                int maxZ = occluder.maxZ + ((occluder.maxDeltaZ * dx) >> 8);
-                int minY = occluder.minY + ((occluder.minDeltaY * dx) >> 8);
-                int maxY = occluder.maxY + ((occluder.maxDeltaY * dx) >> 8);
+                int minZ = occluder.minZ + ((occluder.minDeltaZ * dx) >> 10);
+                int maxZ = occluder.maxZ + ((occluder.maxDeltaZ * dx) >> 10);
+                int minY = occluder.minY + ((occluder.minDeltaY * dx) >> 10);
+                int maxY = occluder.maxY + ((occluder.maxDeltaY * dx) >> 10);
                 if ((z >= minZ) && (z <= maxZ) && (y >= minY) && (y <= maxY)) {
                     return true;
                 }
@@ -2390,10 +2398,10 @@ public class Scene {
                 if (dx <= 0) {
                     continue;
                 }
-                int minZ = occluder.minZ + ((occluder.minDeltaZ * dx) >> 8);
-                int macZ = occluder.maxZ + ((occluder.maxDeltaZ * dx) >> 8);
-                int minY = occluder.minY + ((occluder.minDeltaY * dx) >> 8);
-                int maxY = occluder.maxY + ((occluder.maxDeltaY * dx) >> 8);
+                int minZ = occluder.minZ + ((occluder.minDeltaZ * dx) >> 10);
+                int macZ = occluder.maxZ + ((occluder.maxDeltaZ * dx) >> 10);
+                int minY = occluder.minY + ((occluder.minDeltaY * dx) >> 10);
+                int maxY = occluder.maxY + ((occluder.maxDeltaY * dx) >> 10);
                 if ((z >= minZ) && (z <= macZ) && (y >= minY) && (y <= maxY)) {
                     return true;
                 }
@@ -2402,10 +2410,10 @@ public class Scene {
                 if (dz <= 0) {
                     continue;
                 }
-                int minX = occluder.minX + ((occluder.minDeltaX * dz) >> 8);
-                int maxX = occluder.maxX + ((occluder.maxDeltaX * dz) >> 8);
-                int minY = occluder.minY + ((occluder.minDeltaY * dz) >> 8);
-                int maxY = occluder.maxY + ((occluder.maxDeltaY * dz) >> 8);
+                int minX = occluder.minX + ((occluder.minDeltaX * dz) >> 10);
+                int maxX = occluder.maxX + ((occluder.maxDeltaX * dz) >> 10);
+                int minY = occluder.minY + ((occluder.minDeltaY * dz) >> 10);
+                int maxY = occluder.maxY + ((occluder.maxDeltaY * dz) >> 10);
                 if ((x >= minX) && (x <= maxX) && (y >= minY) && (y <= maxY)) {
                     return true;
                 }
@@ -2414,10 +2422,10 @@ public class Scene {
                 if (dz <= 0) {
                     continue;
                 }
-                int minX = occluder.minX + ((occluder.minDeltaX * dz) >> 8);
-                int maxX = occluder.maxX + ((occluder.maxDeltaX * dz) >> 8);
-                int minY = occluder.minY + ((occluder.minDeltaY * dz) >> 8);
-                int maxY = occluder.maxY + ((occluder.maxDeltaY * dz) >> 8);
+                int minX = occluder.minX + ((occluder.minDeltaX * dz) >> 10);
+                int maxX = occluder.maxX + ((occluder.maxDeltaX * dz) >> 10);
+                int minY = occluder.minY + ((occluder.minDeltaY * dz) >> 10);
+                int maxY = occluder.maxY + ((occluder.maxDeltaY * dz) >> 10);
                 if ((x >= minX) && (x <= maxX) && (y >= minY) && (y <= maxY)) {
                     return true;
                 }
@@ -2426,10 +2434,10 @@ public class Scene {
                 if (dy <= 0) {
                     continue;
                 }
-                int minX = occluder.minX + ((occluder.minDeltaX * dy) >> 8);
-                int maxX = occluder.maxX + ((occluder.maxDeltaX * dy) >> 8);
-                int minZ = occluder.minZ + ((occluder.minDeltaZ * dy) >> 8);
-                int maxZ = occluder.maxZ + ((occluder.maxDeltaZ * dy) >> 8);
+                int minX = occluder.minX + ((occluder.minDeltaX * dy) >> 10);
+                int maxX = occluder.maxX + ((occluder.maxDeltaX * dy) >> 10);
+                int minZ = occluder.minZ + ((occluder.minDeltaZ * dy) >> 10);
+                int maxZ = occluder.maxZ + ((occluder.maxDeltaZ * dy) >> 10);
                 if ((x >= minX) && (x <= maxX) && (z >= minZ) && (z <= maxZ)) {
                     return true;
                 }

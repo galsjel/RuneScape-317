@@ -827,7 +827,7 @@ public class SceneBuilder {
 
             int area = ((maxLevel + 1) - minLevel) * ((maxTileX - minTileX) + 1);
 
-            if (area >= 8) {
+            if (area >= 2) {
                 int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
                 int maxY = levelHeightmap[minLevel][minTileX][tileZ];
 
@@ -881,7 +881,7 @@ public class SceneBuilder {
 
             int area = ((maxLevel + 1) - minLevel) * ((maxTileZ - minTileZ) + 1);
 
-            if (area >= 8) {
+            if (area >= 2) {
                 int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
                 int maxY = levelHeightmap[minLevel][tileX][minTileZ];
 
