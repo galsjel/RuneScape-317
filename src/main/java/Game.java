@@ -601,7 +601,7 @@ public class Game extends GameShell {
     public String socialInput = "";
     public int dragCycles;
     public int[][][] levelHeightmap;
-    public long aLong1215;
+    public long serverSeed;
     public int titleLoginField;
     public long prevMousePressTime;
     public int selectedTab = 3;
@@ -1951,9 +1951,9 @@ public class Game extends GameShell {
         areaViewport.bind();
         activeMapFunctionCount = 0;
 
-        for (int x = 0; x < 104; x++) {
-            for (int z = 0; z < 104; z++) {
-                int bitset = scene.getGroundDecorationBitset(currentLevel, x, z);
+        for (int tileX = 0; tileX < 104; tileX++) {
+            for (int tileZ = 0; tileZ < 104; tileZ++) {
+                int bitset = scene.getGroundDecorationBitset(currentLevel, tileX, tileZ);
 
                 if (bitset == 0) {
                     continue;
@@ -1967,8 +1967,8 @@ public class Game extends GameShell {
                     continue;
                 }
 
-                int stx = x;
-                int stz = z;
+                int stx = tileX;
+                int stz = tileZ;
 
                 if ((func != 22) && (func != 29) && (func != 34) && (func != 36) && (func != 46) && (func != 47) && (func != 48)) {
                     byte byte0 = 104;
@@ -1976,16 +1976,16 @@ public class Game extends GameShell {
                     int[][] flags = levelCollisionMap[currentLevel].flags;
                     for (int i4 = 0; i4 < 10; i4++) {
                         int j4 = (int) (Math.random() * 4D);
-                        if ((j4 == 0) && (stx > 0) && (stx > (x - 3)) && ((flags[stx - 1][stz] & 0x1280108) == 0)) {
+                        if ((j4 == 0) && (stx > 0) && (stx > (tileX - 3)) && ((flags[stx - 1][stz] & 0x1280108) == 0)) {
                             stx--;
                         }
-                        if ((j4 == 1) && (stx < (byte0 - 1)) && (stx < (x + 3)) && ((flags[stx + 1][stz] & 0x1280180) == 0)) {
+                        if ((j4 == 1) && (stx < (byte0 - 1)) && (stx < (tileX + 3)) && ((flags[stx + 1][stz] & 0x1280180) == 0)) {
                             stx++;
                         }
-                        if ((j4 == 2) && (stz > 0) && (stz > (z - 3)) && ((flags[stx][stz - 1] & 0x1280102) == 0)) {
+                        if ((j4 == 2) && (stz > 0) && (stz > (tileZ - 3)) && ((flags[stx][stz - 1] & 0x1280102) == 0)) {
                             stz--;
                         }
-                        if ((j4 == 3) && (stz < (byte1 - 1)) && (stz < (z + 3)) && ((flags[stx][stz + 1] & 0x1280120) == 0)) {
+                        if ((j4 == 3) && (stz < (byte1 - 1)) && (stz < (tileZ + 3)) && ((flags[stx][stz + 1] & 0x1280120) == 0)) {
                             stz++;
                         }
                     }
@@ -3563,11 +3563,11 @@ public class Game extends GameShell {
         player.totalHealth = in.read8UC();
     }
 
-    public void drawMinimapLoc(int z, int wallRGB, int x, int doorRGB, int level) {
-        int bitset = scene.getWallBitset(level, x, z);
+    public void drawMinimapLoc(int tileZ, int wallRGB, int tileX, int doorRGB, int level) {
+        int bitset = scene.getWallBitset(level, tileX, tileZ);
 
         if (bitset != 0) {
-            int info = scene.getInfo(level, x, z, bitset);
+            int info = scene.getInfo(level, tileX, tileZ, bitset);
             int rotation = (info >> 6) & 3;
             int kind = info & 0x1f;
             int rgb = wallRGB;
@@ -3577,7 +3577,7 @@ public class Game extends GameShell {
             }
 
             int[] dst = imageMinimap.pixels;
-            int offset = 24624 + (x * 4) + ((103 - z) * 512 * 4);
+            int offset = 24624 + (tileX * 4) + ((103 - tileZ) * 512 * 4);
 
             int locID = (bitset >> 14) & 0x7fff;
             LocType type = LocType.get(locID);
@@ -3587,7 +3587,7 @@ public class Game extends GameShell {
                 if (icon != null) {
                     int offsetX = ((type.width * 4) - icon.width) / 2;
                     int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (x * 4) + offsetX, 48 + ((104 - z - type.length) * 4) + offsetY);
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             } else {
                 if ((kind == 0) || (kind == 2)) {
@@ -3650,10 +3650,10 @@ public class Game extends GameShell {
             }
         }
 
-        bitset = scene.getLocBitset(level, x, z);
+        bitset = scene.getLocBitset(level, tileX, tileZ);
 
         if (bitset != 0) {
-            int info = scene.getInfo(level, x, z, bitset);
+            int info = scene.getInfo(level, tileX, tileZ, bitset);
             int rotation = (info >> 6) & 3;
             int kind = info & 0x1f;
             int locID = (bitset >> 14) & 0x7fff;
@@ -3665,7 +3665,7 @@ public class Game extends GameShell {
                 if (icon != null) {
                     int offsetX = ((type.width * 4) - icon.width) / 2;
                     int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (x * 4) + offsetX, 48 + ((104 - z - type.length) * 4) + offsetY);
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             } else if (kind == 9) {
                 int rgb = 0xEEEEEE;
@@ -3675,7 +3675,7 @@ public class Game extends GameShell {
                 }
 
                 int[] dst = imageMinimap.pixels;
-                int offset = 24624 + (x * 4) + ((103 - z) * 512 * 4);
+                int offset = 24624 + (tileX * 4) + ((103 - tileZ) * 512 * 4);
 
                 if ((rotation == 0) || (rotation == 2)) {
                     dst[offset + 1536] = rgb;
@@ -3691,7 +3691,7 @@ public class Game extends GameShell {
             }
         }
 
-        bitset = scene.getGroundDecorationBitset(level, x, z);
+        bitset = scene.getGroundDecorationBitset(level, tileX, tileZ);
 
         if (bitset != 0) {
             int locID = (bitset >> 14) & 0x7fff;
@@ -3703,7 +3703,7 @@ public class Game extends GameShell {
                 if (icon != null) {
                     int offsetX = ((type.width * 4) - icon.width) / 2;
                     int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (x * 4) + offsetX, 48 + ((104 - z - type.length) * 4) + offsetY);
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             }
         }
@@ -3809,7 +3809,7 @@ public class Game extends GameShell {
         if (sceneState == 1) {
             int state = checkScene();
             if ((state != 0) && ((System.currentTimeMillis() - sceneLoadStartTime) > 360000L)) {
-                Signlink.reporterror(username + " glcfb " + aLong1215 + "," + state + "," + lowmem + "," + filestores[0] + "," + ondemand.remaining() + "," + currentLevel + "," + sceneCenterZoneX + "," + sceneCenterZoneZ);
+                Signlink.reporterror(username + " glcfb " + serverSeed + "," + state + "," + lowmem + "," + filestores[0] + "," + ondemand.remaining() + "," + currentLevel + "," + sceneCenterZoneX + "," + sceneCenterZoneZ);
                 sceneLoadStartTime = System.currentTimeMillis();
             }
         }
@@ -4116,7 +4116,9 @@ public class Game extends GameShell {
         if (hintType != 2) {
             return;
         }
+
         projectFromGround(((hintTileX - sceneBaseTileX) << 7) + hintOffsetX, hintHeight * 2, ((hintTileZ - sceneBaseTileZ) << 7) + hintOffsetZ);
+
         if ((projectX > -1) && ((loopCycle % 20) < 10)) {
             imageHeadicons[2].draw(projectX - 12, projectY - 28);
         }
@@ -4434,6 +4436,7 @@ public class Game extends GameShell {
                             lastWriteX = x;
                             int dy = y - lastWriteY;
                             lastWriteY = y;
+
                             if ((lastWriteDuplicates < 8) && (dx >= -32) && (dx <= 31) && (dy >= -32) && (dy <= 31)) {
                                 dx += 32;
                                 dy += 32;
@@ -6887,35 +6890,14 @@ public class Game extends GameShell {
         menuSize = 1;
 
         handlePrivateChatInput();
+        handleViewportInput();
+        handleSidebarInput();
+        handleChatInput();
 
-        lastHoveredComponentID = 0;
+        sortMenuOptions();
+    }
 
-        if ((super.mouseX > 4) && (super.mouseY > 4) && (super.mouseX < 516) && (super.mouseY < 338)) {
-            if (viewportInterfaceID != -1) {
-                handleParentComponentInput(4, IfType.instances[viewportInterfaceID], super.mouseX, 4, super.mouseY, 0);
-            } else {
-                handleViewportOptions();
-            }
-        }
-
-        if (lastHoveredComponentID != viewportHoveredComponentID) {
-            viewportHoveredComponentID = lastHoveredComponentID;
-        }
-
-        lastHoveredComponentID = 0;
-        if ((super.mouseX > 553) && (super.mouseY > 205) && (super.mouseX < 743) && (super.mouseY < 466)) {
-            if (sidebarComponentID != -1) {
-                handleParentComponentInput(553, IfType.instances[sidebarComponentID], super.mouseX, 205, super.mouseY, 0);
-            } else if (tabComponentIDs[selectedTab] != -1) {
-                handleParentComponentInput(553, IfType.instances[tabComponentIDs[selectedTab]], super.mouseX, 205, super.mouseY, 0);
-            }
-        }
-
-        if (lastHoveredComponentID != sidebarHoveredComponentID) {
-            redrawSidebar = true;
-            sidebarHoveredComponentID = lastHoveredComponentID;
-        }
-
+    private void handleChatInput() {
         lastHoveredComponentID = 0;
 
         if ((super.mouseX > 17) && (super.mouseY > 357) && (super.mouseX < 496) && (super.mouseY < 453)) {
@@ -6930,7 +6912,42 @@ public class Game extends GameShell {
             redrawChatback = true;
             chatbackHoveredComponentID = lastHoveredComponentID;
         }
+    }
 
+    private void handleViewportInput() {
+        lastHoveredComponentID = 0;
+
+        if ((super.mouseX > 4) && (super.mouseY > 4) && (super.mouseX < 516) && (super.mouseY < 338)) {
+            if (viewportInterfaceID != -1) {
+                handleParentComponentInput(4, IfType.instances[viewportInterfaceID], super.mouseX, 4, super.mouseY, 0);
+            } else {
+                handleViewportOptions();
+            }
+        }
+
+        if (lastHoveredComponentID != viewportHoveredComponentID) {
+            viewportHoveredComponentID = lastHoveredComponentID;
+        }
+    }
+
+    private void handleSidebarInput() {
+        lastHoveredComponentID = 0;
+
+        if ((super.mouseX > 553) && (super.mouseY > 205) && (super.mouseX < 743) && (super.mouseY < 466)) {
+            if (sidebarComponentID != -1) {
+                handleParentComponentInput(553, IfType.instances[sidebarComponentID], super.mouseX, 205, super.mouseY, 0);
+            } else if (tabComponentIDs[selectedTab] != -1) {
+                handleParentComponentInput(553, IfType.instances[tabComponentIDs[selectedTab]], super.mouseX, 205, super.mouseY, 0);
+            }
+        }
+
+        if (lastHoveredComponentID != sidebarHoveredComponentID) {
+            redrawSidebar = true;
+            sidebarHoveredComponentID = lastHoveredComponentID;
+        }
+    }
+
+    private void sortMenuOptions() {
         // The code below pushes menu options with an action greater than 1000 to the bottom, reducing its priority.
         boolean done = false;
         while (!done) {
@@ -6963,20 +6980,6 @@ public class Game extends GameShell {
                 done = false;
             }
         }
-    }
-
-    public int mix2(int src, int dst, int alpha) {
-        int invAlpha = 256 - alpha;
-        int sR = (src & 0xFF0000) * invAlpha;
-        int sG = (src & 0x00FF00) * invAlpha;
-        int sB = (src & 0x0000FF) * invAlpha;
-        int dR = (dst & 0xFF0000) * alpha;
-        int dG = (dst & 0x00FF00) * alpha;
-        int dB = (dst & 0x0000FF) * alpha;
-        int finalR = (sR + dR) & 0xFF000000;
-        int finalG = (sG + dG) & 0x00FF0000;
-        int finalB = (sB + dB) & 0x0000FF00;
-        return (finalR + finalG + finalB) >> 8;
     }
 
     public int mix(int src, int dst, int alpha) {
@@ -7022,30 +7025,38 @@ public class Game extends GameShell {
                 loginMessage1 = "Connecting to server...";
                 drawTitleScreen(true);
             }
+
             connection = new Connection(this, openSocket(43594 + portOffset));
-            long l = StringUtil.toBase37(username);
-            int i = (int) ((l >> 16) & 31L);
+
+            long name37 = StringUtil.toBase37(username);
+            int namePart = (int) ((name37 >> 16) & 31L);
+
             out.position = 0;
             out.write8(14);
-            out.write8(i);
+            out.write8(namePart);
+
             connection.write(out.data, 0, 2);
+
             for (int j = 0; j < 8; j++) {
                 connection.read();
             }
-            int k = connection.read();
-            int i1 = k;
-            if (k == 0) {
+
+            int response = connection.read();
+            int lastResponse = response;
+
+            if (response == 0) {
                 connection.read(in.data, 0, 8);
                 in.position = 0;
-                aLong1215 = in.read64();
+                serverSeed = in.read64();
 
                 // apache math tries to fill the remaining 1008 bytes up with random junk if we don't give it 256 ints.
                 int[] seed = new int[1 << 8];
 
                 seed[0] = (int) (Math.random() * 99999999D);
                 seed[1] = (int) (Math.random() * 99999999D);
-                seed[2] = (int) (aLong1215 >> 32);
-                seed[3] = (int) aLong1215;
+                seed[2] = (int) (serverSeed >> 32);
+                seed[3] = (int) serverSeed;
+
                 out.position = 0;
                 out.write8(10);
                 out.write32(seed[0]);
@@ -7056,254 +7067,258 @@ public class Game extends GameShell {
                 out.writeString(username);
                 out.writeString(password);
                 out.encrypt(RSA_EXPONENT, RSA_MODULUS);
+
                 login.position = 0;
-                if (reconnect) {
-                    login.write8(18);
-                } else {
-                    login.write8(16);
-                }
+                login.write8(reconnect ? 18 : 16);
                 login.write8(out.position + 36 + 1 + 1 + 2);
                 login.write8(255);
                 login.write16(317);
                 login.write8(lowmem ? 1 : 0);
-                for (int l1 = 0; l1 < 9; l1++) {
-                    login.write32(archiveChecksum[l1]);
+
+                for (int archive = 0; archive < 9; archive++) {
+                    login.write32(archiveChecksum[archive]);
                 }
+
                 login.write(out.data, 0, out.position);
+
                 out.random = new ISAACRandom(seed);
-                for (int j2 = 0; j2 < 4; j2++) {
-                    seed[j2] += 50;
+                for (int i = 0; i < 4; i++) {
+                    seed[i] += 50;
                 }
                 randomIn = new ISAACRandom(seed);
+
                 connection.write(login.data, 0, login.position);
-                k = connection.read();
+                response = connection.read();
             }
-            if (k == 1) {
-                try {
-                    Thread.sleep(2000L);
-                } catch (Exception ignored) {
-                }
-                login(username, password, reconnect);
-                return;
-            }
-            if (k == 2) {
-                rights = connection.read();
-                flagged = connection.read() == 1;
-                prevMousePressTime = 0L;
-                lastWriteDuplicates = 0;
-                mouseRecorder.length = 0;
-                super.focused = true;
-                _focused = true;
-                ingame = true;
-                out.position = 0;
-                in.position = 0;
-                packetType = -1;
-                lastPacketType0 = -1;
-                lastPacketType1 = -1;
-                lastPacketType2 = -1;
-                packetSize = 0;
-                idleNetCycles = 0;
-                systemUpdateTimer = 0;
-                idleTimeout = 0;
-                hintType = 0;
-                menuSize = 0;
-                menuVisible = false;
-                super.idleCycles = 0;
-                for (int j1 = 0; j1 < 100; j1++) {
-                    messageText[j1] = null;
-                }
-                objSelected = 0;
-                spellSelected = 0;
-                sceneState = 0;
-                waveCount = 0;
-                cameraAnticheatOffsetX = (int) (Math.random() * 100D) - 50;
-                cameraAnticheatOffsetZ = (int) (Math.random() * 110D) - 55;
-                cameraAnticheatAngle = (int) (Math.random() * 80D) - 40;
-                minimapAnticheatAngle = (int) (Math.random() * 120D) - 60;
-                minimapZoom = (int) (Math.random() * 30D) - 20;
-                orbitCameraYaw = ((int) (Math.random() * 20D) - 10) & 0x7ff;
-                minimapState = 0;
-                minimapLevel = -1;
-                flagSceneTileX = 0;
-                flagSceneTileZ = 0;
-                playerCount = 0;
-                npcCount = 0;
-                for (int i2 = 0; i2 < MAX_PLAYER_COUNT; i2++) {
-                    players[i2] = null;
-                    playerAppearanceBuffer[i2] = null;
-                }
-                for (int k2 = 0; k2 < 16384; k2++) {
-                    npcs[k2] = null;
-                }
-                localPlayer = players[LOCAL_PLAYER_INDEX] = new PlayerEntity();
-                projectiles.clear();
-                spotanims.clear();
-                for (int l2 = 0; l2 < 4; l2++) {
-                    for (int i3 = 0; i3 < 104; i3++) {
-                        for (int k3 = 0; k3 < 104; k3++) {
-                            levelObjStacks[l2][i3][k3] = null;
-                        }
-                    }
-                }
-                temporaryLocs = new DoublyLinkedList();
-                friendlistLoaded = 0;
-                friendCount = 0;
-                stickyChatbackComponentID = -1;
-                chatInterfaceID = -1;
-                viewportInterfaceID = -1;
-                sidebarComponentID = -1;
-                viewportOverlayComponentID = -1;
-                pressedContinueOption = false;
-                selectedTab = 3;
-                chatbackInputType = 0;
-                menuVisible = false;
-                showSocialInput = false;
-                modalMessage = null;
-                multizone = 0;
-                flashingTab = -1;
-                designGenderMale = true;
-                validateCharacterDesign();
-                for (int j3 = 0; j3 < 5; j3++) {
-                    designColors[j3] = 0;
-                }
-                for (int l3 = 0; l3 < 5; l3++) {
-                    playerOptions[l3] = null;
-                    playerOptionPushDown[l3] = false;
-                }
-                prepareGameScreen();
-                return;
-            }
-            if (k == 3) {
-                loginMessage0 = "";
-                loginMessage1 = "Invalid username or password.";
-                return;
-            }
-            if (k == 4) {
-                loginMessage0 = "Your account has been disabled.";
-                loginMessage1 = "Please check your message-centre for details.";
-                return;
-            }
-            if (k == 5) {
-                loginMessage0 = "Your account is already logged in.";
-                loginMessage1 = "Try again in 60 secs...";
-                return;
-            }
-            if (k == 6) {
-                loginMessage0 = "RuneScape has been updated!";
-                loginMessage1 = "Please reload this page.";
-                return;
-            }
-            if (k == 7) {
-                loginMessage0 = "This world is full.";
-                loginMessage1 = "Please use a different world.";
-                return;
-            }
-            if (k == 8) {
-                loginMessage0 = "Unable to connect.";
-                loginMessage1 = "Login server offline.";
-                return;
-            }
-            if (k == 9) {
-                loginMessage0 = "Login limit exceeded.";
-                loginMessage1 = "Too many connections from your address.";
-                return;
-            }
-            if (k == 10) {
-                loginMessage0 = "Unable to connect.";
-                loginMessage1 = "Bad session id.";
-                return;
-            }
-            if (k == 11) {
-                loginMessage1 = "Login server rejected session.";
-                loginMessage1 = "Please try again.";
-                return;
-            }
-            if (k == 12) {
-                loginMessage0 = "You need a members account to login to this world.";
-                loginMessage1 = "Please subscribe, or use a different world.";
-                return;
-            }
-            if (k == 13) {
-                loginMessage0 = "Could not complete login.";
-                loginMessage1 = "Please try using a different world.";
-                return;
-            }
-            if (k == 14) {
-                loginMessage0 = "The server is being updated.";
-                loginMessage1 = "Please wait 1 minute and try again.";
-                return;
-            }
-            if (k == 15) {
-                ingame = true;
-                out.position = 0;
-                in.position = 0;
-                packetType = -1;
-                lastPacketType0 = -1;
-                lastPacketType1 = -1;
-                lastPacketType2 = -1;
-                packetSize = 0;
-                idleNetCycles = 0;
-                systemUpdateTimer = 0;
-                menuSize = 0;
-                menuVisible = false;
-                sceneLoadStartTime = System.currentTimeMillis();
-                return;
-            }
-            if (k == 16) {
-                loginMessage0 = "Login attempts exceeded.";
-                loginMessage1 = "Please wait 1 minute and try again.";
-                return;
-            }
-            if (k == 17) {
-                loginMessage0 = "You are standing in a members-only area.";
-                loginMessage1 = "To play on this world move to a free area first";
-                return;
-            }
-            if (k == 20) {
-                loginMessage0 = "Invalid loginserver requested";
-                loginMessage1 = "Please try using a different world.";
-                return;
-            }
-            if (k == 21) {
-                for (int k1 = connection.read(); k1 >= 0; k1--) {
-                    loginMessage0 = "You have only just left another world";
-                    loginMessage1 = "Your profile will be transferred in: " + k1 + " seconds";
-                    drawTitleScreen(true);
+
+            switch (response) {
+                case 1:
                     try {
-                        Thread.sleep(1000L);
+                        Thread.sleep(2000L);
                     } catch (Exception ignored) {
                     }
-                }
-                login(username, password, reconnect);
-                return;
-            }
-            if (k == -1) {
-                if (i1 == 0) {
-                    if (loginAttempts < 2) {
+                    login(username, password, reconnect);
+                    return;
+
+                case 2:
+                    rights = connection.read();
+                    flagged = connection.read() == 1;
+                    prevMousePressTime = 0L;
+                    lastWriteDuplicates = 0;
+                    mouseRecorder.length = 0;
+                    super.focused = true;
+                    _focused = true;
+                    ingame = true;
+                    out.position = 0;
+                    in.position = 0;
+                    packetType = -1;
+                    lastPacketType0 = -1;
+                    lastPacketType1 = -1;
+                    lastPacketType2 = -1;
+                    packetSize = 0;
+                    idleNetCycles = 0;
+                    systemUpdateTimer = 0;
+                    idleTimeout = 0;
+                    hintType = 0;
+                    menuSize = 0;
+                    menuVisible = false;
+                    super.idleCycles = 0;
+                    Arrays.fill(messageText, null);
+                    objSelected = 0;
+                    spellSelected = 0;
+                    sceneState = 0;
+                    waveCount = 0;
+                    cameraAnticheatOffsetX = (int) (Math.random() * 100D) - 50;
+                    cameraAnticheatOffsetZ = (int) (Math.random() * 110D) - 55;
+                    cameraAnticheatAngle = (int) (Math.random() * 80D) - 40;
+                    minimapAnticheatAngle = (int) (Math.random() * 120D) - 60;
+                    minimapZoom = (int) (Math.random() * 30D) - 20;
+                    orbitCameraYaw = ((int) (Math.random() * 20D) - 10) & 0x7ff;
+                    minimapState = 0;
+                    minimapLevel = -1;
+                    flagSceneTileX = 0;
+                    flagSceneTileZ = 0;
+                    playerCount = 0;
+                    npcCount = 0;
+                    for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+                        players[i] = null;
+                        playerAppearanceBuffer[i] = null;
+                    }
+                    for (int i = 0; i < 16384; i++) {
+                        npcs[i] = null;
+                    }
+                    localPlayer = players[LOCAL_PLAYER_INDEX] = new PlayerEntity();
+                    projectiles.clear();
+                    spotanims.clear();
+                    for (int level = 0; level < 4; level++) {
+                        for (int x = 0; x < 104; x++) {
+                            for (int z = 0; z < 104; z++) {
+                                levelObjStacks[level][x][z] = null;
+                            }
+                        }
+                    }
+                    temporaryLocs = new DoublyLinkedList();
+                    friendlistLoaded = 0;
+                    friendCount = 0;
+                    stickyChatbackComponentID = -1;
+                    chatInterfaceID = -1;
+                    viewportInterfaceID = -1;
+                    sidebarComponentID = -1;
+                    viewportOverlayComponentID = -1;
+                    pressedContinueOption = false;
+                    selectedTab = 3;
+                    chatbackInputType = 0;
+                    menuVisible = false;
+                    showSocialInput = false;
+                    modalMessage = null;
+                    multizone = 0;
+                    flashingTab = -1;
+                    designGenderMale = true;
+                    validateCharacterDesign();
+                    for (int i = 0; i < 5; i++) {
+                        designColors[i] = 0;
+                    }
+                    for (int i = 0; i < 5; i++) {
+                        playerOptions[i] = null;
+                        playerOptionPushDown[i] = false;
+                    }
+                    prepareGameScreen();
+                    return;
+
+                case 3:
+                    loginMessage0 = "";
+                    loginMessage1 = "Invalid username or password.";
+                    return;
+
+                case 4:
+                    loginMessage0 = "Your account has been disabled.";
+                    loginMessage1 = "Please check your message-centre for details.";
+                    return;
+
+                case 5:
+                    loginMessage0 = "Your account is already logged in.";
+                    loginMessage1 = "Try again in 60 secs...";
+                    return;
+
+                case 6:
+                    loginMessage0 = "RuneScape has been updated!";
+                    loginMessage1 = "Please reload this page.";
+                    return;
+
+                case 7:
+                    loginMessage0 = "This world is full.";
+                    loginMessage1 = "Please use a different world.";
+                    return;
+
+                case 8:
+                    loginMessage0 = "Unable to connect.";
+                    loginMessage1 = "Login server offline.";
+                    return;
+
+                case 9:
+                    loginMessage0 = "Login limit exceeded.";
+                    loginMessage1 = "Too many connections from your address.";
+                    return;
+
+                case 10:
+                    loginMessage0 = "Unable to connect.";
+                    loginMessage1 = "Bad session id.";
+                    return;
+
+                case 11:
+                    loginMessage0 = "Login server rejected session.";
+                    loginMessage1 = "Please try again.";
+                    return;
+
+                case 12:
+                    loginMessage0 = "You need a members account to login to this world.";
+                    loginMessage1 = "Please subscribe, or use a different world.";
+                    return;
+
+                case 13:
+                    loginMessage0 = "Could not complete login.";
+                    loginMessage1 = "Please try using a different world.";
+                    return;
+
+                case 14:
+                    loginMessage0 = "The server is being updated.";
+                    loginMessage1 = "Please wait 1 minute and try again.";
+                    return;
+
+                case 15:
+                    ingame = true;
+                    out.position = 0;
+                    in.position = 0;
+                    packetType = -1;
+                    lastPacketType0 = -1;
+                    lastPacketType1 = -1;
+                    lastPacketType2 = -1;
+                    packetSize = 0;
+                    idleNetCycles = 0;
+                    systemUpdateTimer = 0;
+                    menuSize = 0;
+                    menuVisible = false;
+                    sceneLoadStartTime = System.currentTimeMillis();
+                    return;
+
+                case 16:
+                    loginMessage0 = "Login attempts exceeded.";
+                    loginMessage1 = "Please wait 1 minute and try again.";
+                    return;
+
+                case 17:
+                    loginMessage0 = "You are standing in a members-only area.";
+                    loginMessage1 = "To play on this world move to a free area first";
+                    return;
+
+                case 20:
+                    loginMessage0 = "Invalid loginserver requested";
+                    loginMessage1 = "Please try using a different world.";
+                    return;
+
+                case 21:
+                    for (int remaining = connection.read(); remaining >= 0; remaining--) {
+                        loginMessage0 = "You have only just left another world";
+                        loginMessage1 = "Your profile will be transferred in: " + remaining + " seconds";
+                        drawTitleScreen(true);
+
                         try {
-                            Thread.sleep(2000L);
+                            Thread.sleep(1000L);
                         } catch (Exception ignored) {
                         }
-                        loginAttempts++;
-                        login(username, password, reconnect);
-                    } else {
-                        loginMessage0 = "No response from loginserver";
-                        loginMessage1 = "Please wait 1 minute and try again.";
                     }
-                } else {
-                    loginMessage0 = "No response from server";
+                    login(username, password, reconnect);
+                    return;
+
+                case -1:
+                    if (lastResponse == 0) {
+                        if (loginAttempts < 2) {
+                            try {
+                                Thread.sleep(2000L);
+                            } catch (Exception ignored) {
+                            }
+                            loginAttempts++;
+                            login(username, password, reconnect);
+                        } else {
+                            loginMessage0 = "No response from loginserver";
+                            loginMessage1 = "Please wait 1 minute and try again.";
+                        }
+                    } else {
+                        loginMessage0 = "No response from server";
+                        loginMessage1 = "Please try using a different world.";
+                    }
+                    break;
+
+                default:
+                    System.out.println("response:" + response);
+                    loginMessage0 = "Unexpected server response";
                     loginMessage1 = "Please try using a different world.";
-                }
-            } else {
-                System.out.println("response:" + k);
-                loginMessage0 = "Unexpected server response";
-                loginMessage1 = "Please try using a different world.";
+                    break;
             }
-            return;
         } catch (IOException _ex) {
             loginMessage0 = "";
+            loginMessage1 = "Error connecting to server.";
         }
-        loginMessage1 = "Error connecting to server.";
     }
 
     public boolean tryMove(int type, int srcX, int srcZ, int dx, int dz, int locType, int locWidth, int locLength, int locAngle, int locInteractionFlags, boolean tryNearest) {
