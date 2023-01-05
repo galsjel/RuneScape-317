@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 public class Scene {
 
-    public static final int[] DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_X = {53, -53, -53, 53};
-    public static final int[] DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_Z = {-53, -53, 53, 53};
-    public static final int[] anIntArray465 = {-45, 45, 45, -45};
-    public static final int[] anIntArray466 = {45, 45, -45, -45};
+    public static final int[] DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X = {53, -53, -53, 53};
+    public static final int[] DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z = {-53, -53, 53, 53};
+    public static final int[] DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X = {-45, 45, 45, -45};
+    public static final int[] DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z = {45, 45, -45, -45};
     /**
      * Occlusion flags for walls of kind 0, 2 and decorations 4, 5,
      */
@@ -1700,14 +1700,14 @@ public class Scene {
                         }
 
                         if (((wallDecoration.type & 0x100) != 0) && (nearestZ >= nearestX)) {
-                            int x = dx + DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_X[rotation];
-                            int z = dz + DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_Z[rotation];
+                            int x = dx + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X[rotation];
+                            int z = dz + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z[rotation];
                             wallDecoration.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, dy, z, wallDecoration.bitset);
                         }
 
                         if (((wallDecoration.type & 0x200) != 0) && (nearestZ <= nearestX)) {
-                            int x = dx + anIntArray465[rotation];
-                            int z = dz + anIntArray466[rotation];
+                            int x = dx + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X[rotation];
+                            int z = dz + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z[rotation];
                             wallDecoration.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, dy, z, wallDecoration.bitset);
                         }
                     }
@@ -1798,14 +1798,14 @@ public class Scene {
             }
 
             if (((wallDecoration.type & 0x100) != 0) && (nearestZ < nearestX)) {
-                int x = dx + DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_X[rotation];
-                int z = dz + DIAGONAL_WALL_DECORATION_ROTATION_OFFSET_Z[rotation];
+                int x = dx + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X[rotation];
+                int z = dz + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z[rotation];
                 wallDecoration.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, y, z, wallDecoration.bitset);
             }
 
             if (((wallDecoration.type & 0x200) != 0) && (nearestZ > nearestX)) {
-                int x = dx + anIntArray465[rotation];
-                int z = dz + anIntArray466[rotation];
+                int x = dx + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X[rotation];
+                int z = dz + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z[rotation];
                 wallDecoration.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, y, z, wallDecoration.bitset);
             }
         }
