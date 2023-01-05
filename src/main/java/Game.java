@@ -650,6 +650,8 @@ public class Game extends GameShell {
     public String loginMessage1 = "";
     public int baseX;
     public int baseZ;
+    public int bytesIn;
+    public int bytesOut;
     public BitmapFont fontPlain11;
     public BitmapFont fontPlain12;
     public BitmapFont fontBold12;
@@ -1709,7 +1711,7 @@ public class Game extends GameShell {
             Draw3D.clearTexels();
 
             clearCaches();
-            scene.clear();
+            scene.reset();
 
             for (int i = 0; i < 4; i++) {
                 levelCollisionMap[i].reset();
@@ -1805,8 +1807,8 @@ public class Game extends GameShell {
                     if (chunk == -1) {
                         continue;
                     }
-                    int i9 = (chunk >> 24) & 3;
-                    int l9 = (chunk >> 1) & 3;
+                    int mapLevel = (chunk >> 24) & 3;
+                    int chunkRotation = (chunk >> 1) & 3;
                     int mapX = (chunk >> 14) & 0x3ff;
                     int mapZ = (chunk >> 3) & 0x7ff;
                     int mapID = ((mapX / 8) << 8) + (mapZ / 8);
@@ -1814,7 +1816,7 @@ public class Game extends GameShell {
                         if ((sceneMapIndex[i] != mapID) || (sceneMapLandData[i] == null)) {
                             continue;
                         }
-                        builder.method179(i9, l9, levelCollisionMap, x * 8, (mapX & 7) * 8, sceneMapLandData[i], (mapZ & 7) * 8, level, z * 8);
+                        builder.readChunkTiles(levelCollisionMap, sceneMapLandData[i], (mapX & 7) * 8, (mapZ & 7) * 8, mapLevel, chunkRotation, x * 8, z * 8, level);
                         break;
                     }
                 }
@@ -1825,7 +1827,7 @@ public class Game extends GameShell {
             for (int chunkZ = 0; chunkZ < 13; chunkZ++) {
                 int bitset = levelChunkBitset[0][chunkX][chunkZ];
                 if (bitset == -1) {
-                    builder.method174(chunkZ * 8, 8, 8, chunkX * 8);
+                    builder.stitchHeightmap(chunkX * 8, chunkZ * 8, 8, 8);
                 }
             }
         }
@@ -1835,20 +1837,20 @@ public class Game extends GameShell {
         for (int level = 0; level < 4; level++) {
             for (int chunkX = 0; chunkX < 13; chunkX++) {
                 for (int chunkZ = 0; chunkZ < 13; chunkZ++) {
-                    int bitset = levelChunkBitset[level][chunkX][chunkZ];
-                    if (bitset == -1) {
+                    int chunkBitset = levelChunkBitset[level][chunkX][chunkZ];
+                    if (chunkBitset == -1) {
                         continue;
                     }
-                    int k10 = (bitset >> 24) & 3;
-                    int i11 = (bitset >> 1) & 3;
-                    int mapX = (bitset >> 14) & 0x3ff;
-                    int mapZ = (bitset >> 3) & 0x7ff;
+                    int mapLevel = (chunkBitset >> 24) & 3;
+                    int mapRotation = (chunkBitset >> 1) & 3;
+                    int mapX = (chunkBitset >> 14) & 0x3ff;
+                    int mapZ = (chunkBitset >> 3) & 0x7ff;
                     int mapID = ((mapX / 8) << 8) + (mapZ / 8);
-                    for (int k12 = 0; k12 < sceneMapIndex.length; k12++) {
-                        if ((sceneMapIndex[k12] != mapID) || (sceneMapLocData[k12] == null)) {
+                    for (int i = 0; i < sceneMapIndex.length; i++) {
+                        if ((sceneMapIndex[i] != mapID) || (sceneMapLocData[i] == null)) {
                             continue;
                         }
-                        builder.method183(levelCollisionMap, scene, k10, chunkX * 8, (mapZ & 7) * 8, level, sceneMapLocData[k12], (mapX & 7) * 8, i11, chunkZ * 8);
+                        builder.readChunkLocs(levelCollisionMap, scene, mapLevel, mapRotation, (mapX & 7) * 8, (mapZ & 7) * 8, chunkX * 8, chunkZ * 8, sceneMapLocData[i], level);
                         break;
                     }
                 }
@@ -1865,7 +1867,7 @@ public class Game extends GameShell {
             if (data != null) {
                 int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
                 int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
-                builder.method180(data, originZ, originX, (sceneCenterZoneX - 6) * 8, (sceneCenterZoneZ - 6) * 8, levelCollisionMap);
+                builder.readTiles(data, originZ, originX, (sceneCenterZoneX - 6) * 8, (sceneCenterZoneZ - 6) * 8, levelCollisionMap);
             }
         }
 
@@ -1874,7 +1876,7 @@ public class Game extends GameShell {
             if ((data == null) && (sceneCenterZoneZ < 800)) {
                 int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
                 int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
-                builder.method174(originZ, 64, 64, originX);
+                builder.stitchHeightmap(originX, originZ, 64, 64);
             }
         }
 
@@ -1885,7 +1887,7 @@ public class Game extends GameShell {
             if (data != null) {
                 int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
                 int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
-                builder.method190(originX, levelCollisionMap, originZ, scene, data);
+                builder.readLocs(levelCollisionMap, scene, originX, originZ, data);
             }
         }
     }
@@ -2068,7 +2070,7 @@ public class Game extends GameShell {
                 bitset += 0x80000000;
             }
 
-            scene.addTemporary(npc, currentLevel, npc.x, npc.z, getHeightmapY(currentLevel, npc.x, npc.z), npc.yaw, bitset, npc.needsForwardDrawPadding, ((npc.size - 1) * 64) + 60);
+            scene.pushTemporary(npc, currentLevel, npc.x, npc.z, getHeightmapY(currentLevel, npc.x, npc.z), npc.yaw, bitset, npc.needsForwardDrawPadding, ((npc.size - 1) * 64) + 60);
         }
     }
 
@@ -3111,7 +3113,7 @@ public class Game extends GameShell {
         username = "";
         password = "";
         clearCaches();
-        scene.clear();
+        scene.reset();
         for (int i = 0; i < 4; i++) {
             levelCollisionMap[i].reset();
         }
@@ -3220,7 +3222,7 @@ public class Game extends GameShell {
             if ((player.locModel != null) && (loopCycle >= player.locStartCycle) && (loopCycle < player.locStopCycle)) {
                 player.lowmem = false;
                 player.y = getHeightmapY(currentLevel, player.x, player.z);
-                scene.addTemporary(player, currentLevel, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
+                scene.pushTemporary(player, currentLevel, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
                 continue;
             }
 
@@ -3232,7 +3234,7 @@ public class Game extends GameShell {
             }
 
             player.y = getHeightmapY(currentLevel, player.x, player.z);
-            scene.addTemporary(player, currentLevel, player.x, player.z, player.y, player.yaw, index, player.needsForwardDrawPadding, 60);
+            scene.pushTemporary(player, currentLevel, player.x, player.z, player.y, player.yaw, index, player.needsForwardDrawPadding, 60);
         }
     }
 
@@ -3585,9 +3587,9 @@ public class Game extends GameShell {
             if (type.mapsceneIcon != -1) {
                 Image8 icon = imageMapscene[type.mapsceneIcon];
                 if (icon != null) {
-                    int offsetX = ((type.width * 4) - icon.width) / 2;
-                    int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
+                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
+                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
                 }
             } else {
                 if ((kind == 0) || (kind == 2)) {
@@ -3663,9 +3665,9 @@ public class Game extends GameShell {
                 Image8 icon = imageMapscene[type.mapsceneIcon];
 
                 if (icon != null) {
-                    int offsetX = ((type.width * 4) - icon.width) / 2;
-                    int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
+                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
+                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
                 }
             } else if (kind == 9) {
                 int rgb = 0xEEEEEE;
@@ -3701,9 +3703,9 @@ public class Game extends GameShell {
                 Image8 icon = imageMapscene[type.mapsceneIcon];
 
                 if (icon != null) {
-                    int offsetX = ((type.width * 4) - icon.width) / 2;
-                    int offsetY = ((type.length * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
+                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
+                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
                 }
             }
         }
@@ -3889,7 +3891,7 @@ public class Game extends GameShell {
                     }
                 }
                 proj.update(delta);
-                scene.addTemporary(proj, currentLevel, (int) proj.x, (int) proj.z, (int) proj.y, proj.yaw, -1, false, 60);
+                scene.pushTemporary(proj, currentLevel, (int) proj.x, (int) proj.z, (int) proj.y, proj.yaw, -1, false, 60);
             }
         }
     }
@@ -4238,6 +4240,8 @@ public class Game extends GameShell {
         }
 
         try {
+            bytesOut+=out.position;
+
             if ((connection != null) && (out.position > 0)) {
                 connection.write(out.data, 0, out.position);
                 out.position = 0;
@@ -4579,11 +4583,11 @@ public class Game extends GameShell {
             int width;
             int length;
             if ((angle == 0) || (angle == 2)) {
-                width = loc.width;
-                length = loc.length;
+                width = loc.sizeX;
+                length = loc.sizeZ;
             } else {
-                width = loc.length;
-                length = loc.width;
+                width = loc.sizeZ;
+                length = loc.sizeX;
             }
             int interactionFlags = loc.interactionSideFlags;
             if (angle != 0) {
@@ -8774,7 +8778,7 @@ public class Game extends GameShell {
                 if (anim.seqComplete) {
                     anim.unlink();
                 } else {
-                    scene.addTemporary(anim, anim.level, anim.x, anim.z, anim.y, 0, -1, false, 60);
+                    scene.pushTemporary(anim, anim.level, anim.x, anim.z, anim.y, 0, -1, false, 60);
                 }
             }
         }
@@ -9374,7 +9378,7 @@ public class Game extends GameShell {
                 color = 0xff0000;
             }
 
-            fontPlain11.drawStringRight(String.format("Fps: %d", super.fps), x, y, color);
+            fontPlain11.drawStringRight(String.format("%d fps", super.fps), x, y, color);
             y += 13;
 
             double ft = 0;
@@ -9383,23 +9387,27 @@ public class Game extends GameShell {
             }
             ft /= super.frameTime.length;
 
-            fontPlain11.drawStringRight(String.format("%04.4fms", ft), x, y, color);
+            fontPlain11.drawStringRight(String.format("%04.4f ms", ft), x, y, color);
             y += 13;
 
             Runtime runtime = Runtime.getRuntime();
             int mem = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
-            fontPlain11.drawStringRight("Mem: " + mem + "k", x, y, 0xffff00);
+            fontPlain11.drawStringRight(mem + " kB", x, y, 0xffff00);
             y += 13;
 
-            fontPlain11.drawStringRight("Occluders: " + Scene.levelOccluderCount[Scene.topLevel] + ", active: " + Scene.activeOccluderCount, x, y, 0xFFFF00);
+            fontPlain11.drawStringRight(bytesIn + " bytes in", x, y, 0xffff00);
             y += 13;
 
-            fontPlain11.drawStringRight("Active wall occluders: " + Scene.activeWallOccluderCount, x, y, 0xFFFF00);
+            fontPlain11.drawStringRight(bytesOut + " bytes out", x, y, 0xffff00);
             y += 13;
 
-            fontPlain11.drawStringRight("Active ground occluders: " + Scene.activeGroundOccluderCount, x, y, 0xFFFF00);
+            if ((loopCycle % 50) == 0) {
+                bytesIn = 0;
+                bytesOut = 0;
+            }
+
+            fontPlain11.drawStringRight(String.format("%d/%d occluders",Scene.activeOccluderCount,Scene.levelOccluderCount[Scene.topLevel]), x, y, 0xFFFF00);
             y += 13;
-            fontPlain11.drawStringRight("Tiles culled: " + Scene.tilesCulled, x, y, 0xFFFF00);
         }
     }
 
@@ -10771,12 +10779,12 @@ public class Game extends GameShell {
                 player.locStartCycle = delay + loopCycle;
                 player.locStopCycle = duration + loopCycle;
                 player.locModel = model;
-                int sizeX = type.width;
-                int sizeZ = type.length;
+                int sizeX = type.sizeX;
+                int sizeZ = type.sizeZ;
 
                 if ((rotation == 1) || (rotation == 3)) {
-                    sizeX = type.length;
-                    sizeZ = type.width;
+                    sizeX = type.sizeZ;
+                    sizeZ = type.sizeX;
                 }
 
                 player.locOffsetX = (x * 128) + (sizeX * 64);
@@ -11100,12 +11108,12 @@ public class Game extends GameShell {
                 scene.removeLoc(level, x, z);
                 LocType type = LocType.get(otherID);
 
-                if (((x + type.width) > 103) || ((z + type.width) > 103) || ((x + type.length) > 103) || ((z + type.length) > 103)) {
+                if (((x + type.sizeX) > 103) || ((z + type.sizeX) > 103) || ((x + type.sizeZ) > 103) || ((z + type.sizeZ) > 103)) {
                     return;
                 }
 
                 if (type.solid) {
-                    levelCollisionMap[level].remove(otherRotation, type.width, x, z, type.length, type.blocksProjectiles);
+                    levelCollisionMap[level].remove(otherRotation, type.sizeX, x, z, type.sizeZ, type.blocksProjectiles);
                 }
             }
 
@@ -11206,6 +11214,7 @@ public class Game extends GameShell {
                     packetType = (packetType - randomIn.nextInt()) & 0xff;
                 }
                 packetSize = PacketIn.SIZE[packetType];
+                bytesIn++;
                 available--;
             }
 
@@ -11224,6 +11233,7 @@ public class Game extends GameShell {
                     connection.read(in.data, 0, 2);
                     in.position = 0;
                     packetSize = in.read16U();
+                    bytesIn += 2;
                     available -= 2;
                 } else {
                     return false;
@@ -11241,6 +11251,7 @@ public class Game extends GameShell {
             lastPacketType2 = lastPacketType1;
             lastPacketType1 = lastPacketType0;
             lastPacketType0 = packetType;
+            bytesIn += packetSize;
 
             switch (packetType) {
                 case PacketIn.SYNC_PLAYERS:

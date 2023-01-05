@@ -4,30 +4,31 @@
 
 public class SceneBuilder {
 
-    public static final int[] anIntArray137 = {1, 0, -1, 0};
-    public static final int[] anIntArray144 = {0, -1, 0, 1};
+    public static final int[] WALL_DECORATION_FORWARD_X = {1, 0, -1, 0};
+    public static final int[] WALL_DECORATION_FORWARD_Z = {0, -1, 0, 1};
     public static int randomHueOffset = (int) (Math.random() * 17.0) - 8;
     public static int level;
     public static int randomLightnessOffset = (int) (Math.random() * 33.0) - 16;
     public static int minLevel = 99;
     public static boolean lowmem = true;
 
-    public static int method170(int i, int i_3_) {
-        int i_4_ = i + (i_3_ * 57);
-        i_4_ = (i_4_ << 13) ^ i_4_;
-        int i_5_ = ((i_4_ * ((i_4_ * i_4_ * 15731) + 789221)) + 1376312589) & 0x7fffffff;
-        return (i_5_ >> 19) & 0xff;
+    public static int noise(int x, int y) {
+        int n = x + (y * 57);
+        n = (n << 13) ^ n;
+        return ((((n * ((n * n * 15731) + 789221)) + 1376312589) & 0x7fffffff) >> 19) & 0xff;
     }
 
-    public static int method172(int i, int i_108_) {
-        int i_109_ = (method176(i + 45365, i_108_ + 91923, 4) - 128) + ((method176(i + 10294, i_108_ + 37821, 2) - 128) >> 1) + ((method176(i, i_108_, 1) - 128) >> 2);
-        i_109_ = (int) ((double) i_109_ * 0.3) + 35;
-        if (i_109_ < 10) {
-            i_109_ = 10;
-        } else if (i_109_ > 60) {
-            i_109_ = 60;
+    public static int perlin(int x, int z) {
+        int value = (perlin(x + 45365, z + 91923, 4) - 128) + ((perlin(x + 10294, z + 37821, 2) - 128) >> 1) + ((perlin(x, z, 1) - 128) >> 2);
+        value = (int) ((double) value * 0.3) + 35;
+
+        if (value < 10) {
+            value = 10;
+        } else if (value > 60) {
+            value = 60;
         }
-        return i_109_;
+
+        return value;
     }
 
     public static void method173(Buffer buffer, OnDemand onDemand) {
@@ -50,18 +51,18 @@ public class SceneBuilder {
         }
     }
 
-    public static int method176(int i, int i_144_, int i_145_) {
-        int i_146_ = i / i_145_;
-        int i_147_ = i & (i_145_ - 1);
-        int i_148_ = i_144_ / i_145_;
-        int i_149_ = i_144_ & (i_145_ - 1);
-        int i_150_ = method186(i_146_, i_148_);
-        int i_151_ = method186(i_146_ + 1, i_148_);
-        int i_152_ = method186(i_146_, i_148_ + 1);
-        int i_153_ = method186(i_146_ + 1, i_148_ + 1);
-        int i_154_ = method184(i_150_, i_151_, i_147_, i_145_);
-        int i_155_ = method184(i_152_, i_153_, i_147_, i_145_);
-        return method184(i_154_, i_155_, i_149_, i_145_);
+    public static int perlin(int x, int z, int scale) {
+        int intX = x / scale;
+        int intZ = z / scale;
+        int fracX = x & (scale - 1);
+        int fracZ = z & (scale - 1);
+        int v1 = smoothNoise(intX, intZ);
+        int v2 = smoothNoise(intX + 1, intZ);
+        int v3 = smoothNoise(intX, intZ + 1);
+        int v4 = smoothNoise(intX + 1, intZ + 1);
+        int i1 = interpolate(v1, v2, fracX, scale);
+        int i2 = interpolate(v3, v4, fracX, scale);
+        return interpolate(i1, i2, fracZ, scale);
     }
 
     /**
@@ -82,16 +83,16 @@ public class SceneBuilder {
         return type.validate(kind);
     }
 
-    public static int method184(int i, int i_216_, int i_217_, int i_218_) {
-        int i_219_ = (65536 - Draw3D.cos[(i_217_ * 1024) / i_218_]) >> 1;
-        return ((i * (65536 - i_219_)) >> 16) + ((i_216_ * i_219_) >> 16);
+    public static int interpolate(int a, int b, int x, int scale) {
+        int f = (65536 - Draw3D.cos[(x * 1024) / scale]) >> 1;
+        return ((a * (65536 - f)) >> 16) + ((b * f) >> 16);
     }
 
-    public static int method186(int i, int i_221_) {
-        int i_222_ = method170(i - 1, i_221_ - 1) + method170(i + 1, i_221_ - 1) + method170(i - 1, i_221_ + 1) + method170(i + 1, i_221_ + 1);
-        int i_223_ = method170(i - 1, i_221_) + method170(i + 1, i_221_) + method170(i, i_221_ - 1) + method170(i, i_221_ + 1);
-        int i_224_ = method170(i, i_221_);
-        return (i_222_ / 16) + (i_223_ / 8) + (i_224_ / 4);
+    public static int smoothNoise(int x, int y) {
+        int corners = noise(x - 1, y - 1) + noise(x + 1, y - 1) + noise(x - 1, y + 1) + noise(x + 1, y + 1);
+        int sides = noise(x - 1, y) + noise(x + 1, y) + noise(x, y - 1) + noise(x, y + 1);
+        int center = noise(x, y);
+        return (corners / 16) + (sides / 8) + (center / 4);
     }
 
     public static int mulHSL(int hsl, int lightness) {
@@ -108,7 +109,7 @@ public class SceneBuilder {
         return (hsl & 0xff80) + lightness;
     }
 
-    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, SceneCollisionMap collision, int[][][] levelHeightmap, int x, int locID, int dataLevel) {
+    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, SceneCollisionMap collision, int[][][] levelHeightmap, int x, int locID, int level) {
         int heightSW = levelHeightmap[tileLevel][x][z];
         int heightSE = levelHeightmap[tileLevel][x + 1][z];
         int heightNE = levelHeightmap[tileLevel][x + 1][z + 1];
@@ -116,7 +117,7 @@ public class SceneBuilder {
         int y = (heightSW + heightSE + heightNE + heightNW) >> 2;
 
         LocType loc = LocType.get(locID);
-        int bitset = x + (z << 7) + (locID << 14) + 1073741824;
+        int bitset = x + (z << 7) + (locID << 14) + 0x40000000;
 
         if (!loc.interactable) {
             bitset += 0x80000000;
@@ -125,138 +126,21 @@ public class SceneBuilder {
         byte info = (byte) ((rotation << 6) + kind);
 
         if (kind == 22) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(22, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 22, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.addGroundDecoration(entity, dataLevel, x, z, y, bitset, info);
-
-            if (loc.solid && loc.interactable) {
-                collision.addSolid(z, x);
-            }
+            addGroundDecoration(scene, rotation, z, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if ((kind == 10) || (kind == 11)) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(10, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 10, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            if (entity != null) {
-                int angle = 0;
-
-                if (kind == 11) {
-                    angle += 256;
-                }
-
-                int width;
-                int length;
-
-                if ((rotation == 1) || (rotation == 3)) {
-                    width = loc.length;
-                    length = loc.width;
-                } else {
-                    width = loc.width;
-                    length = loc.length;
-                }
-
-                scene.add(entity, dataLevel, x, z, y, width, length, angle, bitset, info);
-            }
-            if (loc.solid) {
-                collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
-            }
+            addLoc(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind >= 12) {
-            Entity entity;
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.add(entity, dataLevel, x, z, y, 1, 1, 0, bitset, info);
-
-            if (loc.solid) {
-                collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
-            }
+            addDiagonalWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind == 0) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(0, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 0, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
-
-            if (loc.solid) {
-                collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
-            }
+            addWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind == 1) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(1, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 1, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
-
-            if (loc.solid) {
-                collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
-            }
+            addDiagonalWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind == 2) {
-            int nextRotation = (rotation + 1) & 0x3;
-            Entity locA;
-            Entity locB;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                locA = loc.getModel(2, 4 + rotation, heightSW, heightSE, heightNE, heightNW, -1);
-                locB = loc.getModel(2, nextRotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                locA = new LocEntity(locID, 4 + rotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                locB = new LocEntity(locID, nextRotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], locA, Scene.ROTATION_WALL_TYPE[nextRotation], locB, dataLevel, x, z, y, bitset, info);
-
-            if (loc.solid) {
-                collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
-            }
+            addFullWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind == 3) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(3, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 3, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, dataLevel, x, z, y, bitset, info);
-
-            if (loc.solid) {
-                collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
-            }
+            addWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else if (kind == 9) {
-            Entity entity;
-
-            if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-            }
-
-            scene.add(entity, dataLevel, x, z, y, 1, 1, 0, bitset, info);
-
-            if (loc.solid) {
-                collision.add(loc.blocksProjectiles, loc.width, loc.length, x, z, rotation);
-            }
+            addDiagonalWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else {
             if (loc.adjustToTerrain) {
                 if (rotation == 1) {
@@ -282,64 +166,182 @@ public class SceneBuilder {
             }
 
             if (kind == 4) {
-                Entity entity;
-
-                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                    entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                }
-
-                scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, dataLevel, x, z, y, rotation * 512, 0, 0, bitset, info);
+                addWallDecoration(scene, rotation, z, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
             } else if (kind == 5) {
-                int padding = 16;
-                int wallBitset = scene.getWallBitset(dataLevel, x, z);
-
-                if (wallBitset > 0) {
-                    padding = LocType.get((wallBitset >> 14) & 0x7fff).decorationPadding;
-                }
-
-                Entity entity;
-
-                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                    entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                }
-
-                scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, dataLevel, x, z, y, rotation * 512, anIntArray137[rotation] * padding, anIntArray144[rotation] * padding, bitset, info);
+                addWallDecorationOutside(scene, rotation, z, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
             } else if (kind == 6) {
-                Entity entity;
-
-                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                    entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                }
-
-                scene.setWallDecoration(256, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationInside(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
             } else if (kind == 7) {
-                Entity entity;
-
-                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                    entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                }
-
-                scene.setWallDecoration(512, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationOutside(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
             } else if (kind == 8) {
-                Entity entity;
-
-                if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-                    entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-                }
-
-                scene.setWallDecoration(768, entity, dataLevel, x, z, y, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationBoth(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
             }
         }
+    }
+
+    private static void addGroundDecoration(Scene scene, int rotation, int z, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(22, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 22, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.addGroundDecoration(entity, level, x, z, y, bitset, info);
+
+        if (loc.solid && loc.interactable) {
+            collision.addSolid(z, x);
+        }
+    }
+
+    private static void addLoc(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(10, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 10, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        if (entity != null) {
+            int angle = 0;
+
+            if (kind == 11) {
+                angle += 256;
+            }
+
+            int width;
+            int length;
+
+            if ((rotation == 1) || (rotation == 3)) {
+                width = loc.sizeZ;
+                length = loc.sizeX;
+            } else {
+                width = loc.sizeX;
+                length = loc.sizeZ;
+            }
+
+            scene.push(entity, level, x, z, y, width, length, angle, bitset, info);
+        }
+        if (loc.solid) {
+            collision.add(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, x, z, rotation);
+        }
+    }
+
+    private static void addWall(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(0, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 0, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
+
+        if (loc.solid) {
+            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+        }
+    }
+
+    private static void addDiagonalWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(1, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 1, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
+
+        if (loc.solid) {
+            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+        }
+    }
+
+    private static void addFullWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        int nextRotation = (rotation + 1) & 0x3;
+        Entity locA;
+        Entity locB;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            locA = loc.getModel(2, 4 + rotation, heightSW, heightSE, heightNE, heightNW, -1);
+            locB = loc.getModel(2, nextRotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            locA = new LocEntity(locID, 4 + rotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+            locB = new LocEntity(locID, nextRotation, 2, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], locA, Scene.ROTATION_WALL_TYPE[nextRotation], locB, level, x, z, y, bitset, info);
+
+        if (loc.solid) {
+            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+        }
+    }
+
+    private static void addWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(3, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 3, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
+
+        if (loc.solid) {
+            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+        }
+    }
+
+    private static void addDiagonalWall(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.push(entity, level, x, z, y, 1, 1, 0, bitset, info);
+
+        if (loc.solid) {
+            collision.add(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, x, z, rotation);
+        }
+    }
+
+    private static void addWallDecoration(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, 0, 0, bitset, info);
+    }
+
+    private static void addWallDecorationOutside(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        int padding = 16;
+        int wallBitset = scene.getWallBitset(level, x, z);
+
+        if (wallBitset > 0) {
+            padding = LocType.get((wallBitset >> 14) & 0x7fff).decorationPadding;
+        }
+
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, WALL_DECORATION_FORWARD_X[rotation] * padding, WALL_DECORATION_FORWARD_Z[rotation] * padding, bitset, info);
     }
 
     /**
@@ -896,29 +898,42 @@ public class SceneBuilder {
         }
     }
 
-    public void method174(int i, int i_113_, int i_115_, int i_116_) {
-        for (int i_117_ = i; i_117_ <= (i + i_113_); i_117_++) {
-            for (int i_118_ = i_116_; i_118_ <= (i_116_ + i_115_); i_118_++) {
-                if ((i_118_ >= 0) && (i_118_ < maxTileX) && (i_117_ >= 0) && (i_117_ < maxTileZ)) {
-                    levelShademap[0][i_118_][i_117_] = (byte) 127;
-                    if ((i_118_ == i_116_) && (i_118_ > 0)) {
-                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_ - 1][i_117_];
-                    }
-                    if ((i_118_ == (i_116_ + i_115_)) && (i_118_ < (maxTileX - 1))) {
-                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_ + 1][i_117_];
-                    }
-                    if ((i_117_ == i) && (i_117_ > 0)) {
-                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_][i_117_ - 1];
-                    }
-                    if ((i_117_ == (i + i_113_)) && (i_117_ < (maxTileZ - 1))) {
-                        levelHeightmap[0][i_118_][i_117_] = levelHeightmap[0][i_118_][i_117_ + 1];
-                    }
+    /**
+     * Flattens the perimeter of the provided area.
+     * @param tileX the area x.
+     * @param tileZ the area z.
+     * @param tileSizeX the area size x.
+     * @param tileSizeZ the area size z.
+     */
+    public void stitchHeightmap(int tileX, int tileZ, int tileSizeX, int tileSizeZ) {
+        for (int z = tileZ; z <= (tileZ + tileSizeZ); z++) {
+            for (int x = tileX; x <= (tileX + tileSizeX); x++) {
+                if ((x < 0) || (x >= maxTileX) || (z < 0) || (z >= maxTileZ)) {
+                    continue;
+                }
+
+                levelShademap[0][x][z] = (byte) 127;
+
+                if ((x == tileX) && (x > 0)) {
+                    levelHeightmap[0][x][z] = levelHeightmap[0][x - 1][z];
+                }
+
+                if ((x == (tileX + tileSizeX)) && (x < (maxTileX - 1))) {
+                    levelHeightmap[0][x][z] = levelHeightmap[0][x + 1][z];
+                }
+
+                if ((z == tileZ) && (z > 0)) {
+                    levelHeightmap[0][x][z] = levelHeightmap[0][x][z - 1];
+                }
+
+                if ((z == (tileZ + tileSizeZ)) && (z < (maxTileZ - 1))) {
+                    levelHeightmap[0][x][z] = levelHeightmap[0][x][z + 1];
                 }
             }
         }
     }
 
-    public void method175(int z, Scene scene, SceneCollisionMap collision, int kind, int level, int x, int locID, int rotation) {
+    public void addLoc(Scene scene, SceneCollisionMap collision, int locID, int kind, int rotation, int level, int x, int z) {
         if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != SceneBuilder.level))) {
             return;
         }
@@ -975,14 +990,14 @@ public class SceneBuilder {
                 int height;
 
                 if ((rotation == 1) || (rotation == 3)) {
-                    width = type.length;
-                    height = type.width;
+                    width = type.sizeZ;
+                    height = type.sizeX;
                 } else {
-                    width = type.width;
-                    height = type.length;
+                    width = type.sizeX;
+                    height = type.sizeZ;
                 }
 
-                if (scene.add(entity, level, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
+                if (scene.push(entity, level, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
                     Model model;
 
                     if (entity instanceof Model) {
@@ -1010,7 +1025,7 @@ public class SceneBuilder {
             }
 
             if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.width, type.length, x, z, rotation);
+                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
             }
         } else if (kind >= 12) {
             Entity entity;
@@ -1021,14 +1036,14 @@ public class SceneBuilder {
                 entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
 
-            scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+            scene.push(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
 
             if ((kind >= 12) && (kind <= 17) && (kind != 13) && (level > 0)) {
                 levelOccludemap[level][x][z] |= 0b100_100_100_100;
             }
 
             if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.width, type.length, x, z, rotation);
+                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
             }
         } else if (kind == 0) {
             Entity entity;
@@ -1171,80 +1186,76 @@ public class SceneBuilder {
             } else {
                 entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
             }
-            scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+            scene.push(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
             if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.width, type.length, x, z, rotation);
+                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
             }
         } else {
             if (type.adjustToTerrain) {
                 if (rotation == 1) {
-                    int i_139_ = heightmapNW;
+                    int tmp = heightmapNW;
                     heightmapNW = heightmapNE;
                     heightmapNE = heightmapSE;
                     heightmapSE = heightmapSW;
-                    heightmapSW = i_139_;
+                    heightmapSW = tmp;
                 } else if (rotation == 2) {
-                    int i_140_ = heightmapNW;
+                    int tmp = heightmapNW;
                     heightmapNW = heightmapSE;
-                    heightmapSE = i_140_;
-                    i_140_ = heightmapNE;
+                    heightmapSE = tmp;
+                    tmp = heightmapNE;
                     heightmapNE = heightmapSW;
-                    heightmapSW = i_140_;
+                    heightmapSW = tmp;
                 } else if (rotation == 3) {
-                    int i_141_ = heightmapNW;
+                    int tmp = heightmapNW;
                     heightmapNW = heightmapSW;
                     heightmapSW = heightmapSE;
                     heightmapSE = heightmapNE;
-                    heightmapNE = i_141_;
+                    heightmapNE = tmp;
                 }
             }
+
             if (kind == 4) {
-                Entity entity;
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-                scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, heightmapAverage, rotation * 512, 0, 0, bitset, info);
+                addWallDecoration(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             } else if (kind == 5) {
-                int i_142_ = 16;
-                int i_143_ = scene.getWallBitset(level, x, z);
-                if (i_143_ > 0) {
-                    i_142_ = LocType.get((i_143_ >> 14) & 0x7fff).decorationPadding;
-                }
-                Entity entity;
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-                scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, heightmapAverage, rotation * 512, anIntArray137[rotation] * i_142_, anIntArray144[rotation] * i_142_, bitset, info);
+                addWallDecorationOutside(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             } else if (kind == 6) {
-                Entity entity;
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-                scene.setWallDecoration(256, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationInside(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             } else if (kind == 7) {
-                Entity entity;
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-                scene.setWallDecoration(512, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationOutside(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             } else if (kind == 8) {
-                Entity entity;
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-                scene.setWallDecoration(768, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+                addDiagonalWallDecorationBoth(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             }
         }
+    }
+
+    private static void addDiagonalWallDecorationBoth(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+        scene.setWallDecoration(0x300, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+    }
+
+    private static void addDiagonalWallDecorationOutside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+        scene.setWallDecoration(0x200, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+    }
+
+    private static void addDiagonalWallDecorationInside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+        scene.setWallDecoration(0x100, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
     }
 
     public int decimateHSL(int hue, int saturation, int lightness) {
@@ -1263,97 +1274,104 @@ public class SceneBuilder {
         return ((hue / 4) << 10) + ((saturation / 32) << 7) + (lightness / 2);
     }
 
-    public void method179(int i, int i_162_, SceneCollisionMap[] collisionMaps, int i_164_, int i_165_, byte[] is, int i_166_, int i_167_, int i_168_) {
-        for (int i_169_ = 0; i_169_ < 8; i_169_++) {
-            for (int i_170_ = 0; i_170_ < 8; i_170_++) {
-                if (((i_164_ + i_169_) > 0) && ((i_164_ + i_169_) < 103) && ((i_168_ + i_170_) > 0) && ((i_168_ + i_170_) < 103)) {
-                    collisionMaps[i_167_].flags[i_164_ + i_169_][i_168_ + i_170_] &= ~0x1000000;
+    public void readChunkTiles(SceneCollisionMap[] collisionMaps, byte[] data, int chunkX, int chunkZ, int mapLevel, int chunkRotation, int originX, int originZ, int level) {
+        for (int dx = 0; dx < 8; dx++) {
+            for (int dz = 0; dz < 8; dz++) {
+                if (((originX + dx) > 0) && ((originX + dx) < 103) && ((originZ + dz) > 0) && ((originZ + dz) < 103)) {
+                    collisionMaps[level].flags[originX + dx][originZ + dz] &= ~0x1000000;
                 }
             }
         }
-        Buffer buffer = new Buffer(is);
-        for (int i_172_ = 0; i_172_ < 4; i_172_++) {
-            for (int i_173_ = 0; i_173_ < 64; i_173_++) {
-                for (int i_174_ = 0; i_174_ < 64; i_174_++) {
-                    if ((i_172_ == i) && (i_173_ >= i_165_) && (i_173_ < (i_165_ + 8)) && (i_174_ >= i_166_) && (i_174_ < (i_166_ + 8))) {
-                        method181(i_168_ + ZoneUtil.method156(i_174_ & 0x7, i_162_, i_173_ & 0x7), 0, buffer, i_164_ + ZoneUtil.method155(i_162_, i_174_ & 0x7, i_173_ & 0x7), i_167_, i_162_, 0);
+        Buffer in = new Buffer(data);
+        for (int l = 0; l < 4; l++) {
+            for (int x = 0; x < 64; x++) {
+                for (int z = 0; z < 64; z++) {
+                    if ((l == mapLevel) && (x >= chunkX) && (x < (chunkX + 8)) && (z >= chunkZ) && (z < (chunkZ + 8))) {
+                        readTiles(in, 0, 0, level, originX + MapUtil.rotateX(x & 0x7, z & 0x7, chunkRotation), originZ + MapUtil.rotateZ(x & 0x7, z & 0x7, chunkRotation), chunkRotation);
                     } else {
-                        method181(-1, 0, buffer, -1, 0, 0, 0);
+                        readTiles(in, 0, 0, 0, -1, -1, 0);
                     }
                 }
             }
         }
     }
 
-    public void method180(byte[] is, int i, int i_175_, int i_176_, int i_177_, SceneCollisionMap[] collisionMaps) {
-        for (int i_179_ = 0; i_179_ < 4; i_179_++) {
-            for (int i_180_ = 0; i_180_ < 64; i_180_++) {
-                for (int i_181_ = 0; i_181_ < 64; i_181_++) {
-                    if (((i_175_ + i_180_) > 0) && ((i_175_ + i_180_) < 103) && ((i + i_181_) > 0) && ((i + i_181_) < 103)) {
-                        collisionMaps[i_179_].flags[i_175_ + i_180_][i + i_181_] &= ~0x1000000;
+    public void readTiles(byte[] data, int offsetZ, int offsetX, int originX, int originZ, SceneCollisionMap[] collisionMaps) {
+        for (int level = 0; level < 4; level++) {
+            for (int x = 0; x < 64; x++) {
+                for (int z = 0; z < 64; z++) {
+                    if (((offsetX + x) > 0) && ((offsetX + x) < 103) && ((offsetZ + z) > 0) && ((offsetZ + z) < 103)) {
+                        collisionMaps[level].flags[offsetX + x][offsetZ + z] &= ~0x1000000;
                     }
                 }
             }
         }
-        Buffer buffer = new Buffer(is);
-        for (int i_182_ = 0; i_182_ < 4; i_182_++) {
-            for (int i_183_ = 0; i_183_ < 64; i_183_++) {
-                for (int i_184_ = 0; i_184_ < 64; i_184_++) {
-                    method181(i_184_ + i, i_177_, buffer, i_183_ + i_175_, i_182_, 0, i_176_);
+
+        Buffer in = new Buffer(data);
+        for (int level = 0; level < 4; level++) {
+            for (int x = 0; x < 64; x++) {
+                for (int z = 0; z < 64; z++) {
+                    readTiles(in, originX, originZ, level, x + offsetX, z + offsetZ, 0);
                 }
             }
         }
     }
 
-    public void method181(int i, int i_185_, Buffer buffer, int i_186_, int i_187_, int i_188_, int i_190_) {
-        if ((i_186_ >= 0) && (i_186_ < 104) && (i >= 0) && (i < 104)) {
-            levelTileFlags[i_187_][i_186_][i] = (byte) 0;
+    public void readTiles(Buffer in, int originX, int originZ, int level, int x, int z, int mapRotation) {
+        if ((x >= 0) && (x < 104) && (z >= 0) && (z < 104)) {
+            levelTileFlags[level][x][z] = (byte) 0;
+
             for (; ; ) {
-                int i_191_ = buffer.read8U();
-                if (i_191_ == 0) {
-                    if (i_187_ == 0) {
-                        levelHeightmap[0][i_186_][i] = -method172(932731 + i_186_ + i_190_, 556238 + i + i_185_) * 8;
+                int type = in.read8U();
+
+                if (type == 0) {
+                    if (level == 0) {
+                        levelHeightmap[0][x][z] = -perlin(932731 + x + originX, 556238 + z + originZ) * 8;
                     } else {
-                        levelHeightmap[i_187_][i_186_][i] = levelHeightmap[i_187_ - 1][i_186_][i] - 240;
+                        levelHeightmap[level][x][z] = levelHeightmap[level - 1][x][z] - 240;
                         break;
                     }
                     break;
                 }
-                if (i_191_ == 1) {
-                    int i_192_ = buffer.read8U();
-                    if (i_192_ == 1) {
-                        i_192_ = 0;
+
+                if (type == 1) {
+                    int height = in.read8U();
+
+                    if (height == 1) {
+                        height = 0;
                     }
-                    if (i_187_ == 0) {
-                        levelHeightmap[0][i_186_][i] = -i_192_ * 8;
+
+                    if (level == 0) {
+                        levelHeightmap[0][x][z] = -height * 8;
                     } else {
-                        levelHeightmap[i_187_][i_186_][i] = levelHeightmap[i_187_ - 1][i_186_][i] - (i_192_ * 8);
+                        levelHeightmap[level][x][z] = levelHeightmap[level - 1][x][z] - (height * 8);
                         break;
                     }
                     break;
                 }
-                if (i_191_ <= 49) {
-                    levelTileOverlayIDs[i_187_][i_186_][i] = buffer.read();
-                    levelTileOverlayShape[i_187_][i_186_][i] = (byte) ((i_191_ - 2) / 4);
-                    levelTileOverlayRotation[i_187_][i_186_][i] = (byte) (((i_191_ - 2) + i_188_) & 0x3);
-                } else if (i_191_ <= 81) {
-                    levelTileFlags[i_187_][i_186_][i] = (byte) (i_191_ - 49);
+
+                if (type <= 49) {
+                    levelTileOverlayIDs[level][x][z] = in.read();
+                    levelTileOverlayShape[level][x][z] = (byte) ((type - 2) / 4);
+                    levelTileOverlayRotation[level][x][z] = (byte) (((type - 2) + mapRotation) & 0x3);
+                } else if (type <= 81) {
+                    levelTileFlags[level][x][z] = (byte) (type - 49);
                 } else {
-                    levelTileUnderlayIDs[i_187_][i_186_][i] = (byte) (i_191_ - 81);
+                    levelTileUnderlayIDs[level][x][z] = (byte) (type - 81);
                 }
             }
         } else {
             for (; ; ) {
-                int i_193_ = buffer.read8U();
-                if (i_193_ == 0) {
+                int type = in.read8U();
+                if (type == 0) {
                     break;
                 }
-                if (i_193_ == 1) {
-                    buffer.read8U();
+                if (type == 1) {
+                    in.read8U();
                     break;
                 }
-                if (i_193_ <= 49) {
-                    buffer.read8U();
+                if (type <= 49) {
+                    in.read8U();
                 }
             }
         }
@@ -1369,44 +1387,62 @@ public class SceneBuilder {
         return level;
     }
 
-    public void method183(SceneCollisionMap[] collisionMaps, Scene scene, int i, int i_197_, int i_198_, int i_199_, byte[] is, int i_200_, int i_201_, int i_202_) {
-        Buffer buffer = new Buffer(is);
-        int i_203_ = -1;
-        for (; ; ) {
-            int i_204_ = buffer.readSmartU();
-            if (i_204_ == 0) {
+    public void readChunkLocs(SceneCollisionMap[] collisionMaps, Scene scene, int mapLevel, int mapRotation, int mapChunkX, int mapChunkZ, int originX, int originZ, byte[] data, int level) {
+        Buffer in = new Buffer(data);
+        int locID = -1;
+
+        while (true) {
+            int deltaID = in.readSmartU();
+
+            if (deltaID == 0) {
                 break;
             }
-            i_203_ += i_204_;
-            int i_205_ = 0;
-            for (; ; ) {
-                int i_206_ = buffer.readSmartU();
-                if (i_206_ == 0) {
+
+            locID += deltaID;
+
+            int locData = 0;
+
+            while (true) {
+                int deltaData = in.readSmartU();
+
+                if (deltaData == 0) {
                     break;
                 }
-                i_205_ += i_206_ - 1;
-                int i_207_ = i_205_ & 0x3f;
-                int i_208_ = (i_205_ >> 6) & 0x3f;
-                int i_209_ = i_205_ >> 12;
-                int i_210_ = buffer.read8U();
-                int i_211_ = i_210_ >> 2;
-                int i_212_ = i_210_ & 0x3;
-                if ((i_209_ == i) && (i_208_ >= i_200_) && (i_208_ < (i_200_ + 8)) && (i_207_ >= i_198_) && (i_207_ < (i_198_ + 8))) {
-                    LocType type = LocType.get(i_203_);
-                    int i_213_ = i_197_ + ZoneUtil.method157(i_201_, type.length, i_208_ & 0x7, i_207_ & 0x7, type.width);
-                    int i_214_ = i_202_ + ZoneUtil.method158(i_207_ & 0x7, type.length, i_201_, type.width, i_208_ & 0x7);
-                    if ((i_213_ > 0) && (i_214_ > 0) && (i_213_ < 103) && (i_214_ < 103)) {
-                        int i_215_ = i_209_;
-                        if ((levelTileFlags[1][i_213_][i_214_] & 0x2) == 2) {
-                            i_215_--;
-                        }
-                        SceneCollisionMap collisionMap = null;
-                        if (i_215_ >= 0) {
-                            collisionMap = collisionMaps[i_215_];
-                        }
-                        method175(i_214_, scene, collisionMap, i_211_, i_199_, i_213_, i_203_, (i_212_ + i_201_) & 0x3);
-                    }
+
+                locData += deltaData - 1;
+
+                int locZ = locData & 0x3f;
+                int locX = (locData >> 6) & 0x3f;
+                int locLevel = locData >> 12;
+                int locInfo = in.read8U();
+                int locKind = locInfo >> 2;
+                int locRotation = locInfo & 0x3;
+
+                if ((locLevel != mapLevel) || (locX < mapChunkX) || (locX >= (mapChunkX + 8)) || (locZ < mapChunkZ) || (locZ >= (mapChunkZ + 8))) {
+                    continue;
                 }
+
+                LocType loc = LocType.get(locID);
+                int x = originX + MapUtil.rotateLocX(locX & 0x7, locZ & 0x7, loc.sizeX, loc.sizeZ, mapRotation);
+                int z = originZ + MapUtil.rotateLocZ(locX & 0x7, locZ & 0x7, loc.sizeX, loc.sizeZ, mapRotation);
+
+                if ((x <= 0) || (z <= 0) || (x >= 103) || (z >= 103)) {
+                    continue;
+                }
+
+                int collisionLevel = locLevel;
+
+                if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                    collisionLevel--;
+                }
+
+                SceneCollisionMap collisionMap = null;
+
+                if (collisionLevel >= 0) {
+                    collisionMap = collisionMaps[collisionLevel];
+                }
+
+                addLoc(scene, collisionMap, locID, locKind, (locRotation + mapRotation) & 0x3, level, x, z);
             }
         }
     }
@@ -1437,40 +1473,50 @@ public class SceneBuilder {
         return (hsl & 0xff80) + scalar;
     }
 
-    public void method190(int i, SceneCollisionMap[] collisionMaps, int i_263_, Scene scene, byte[] is) {
-        Buffer buffer = new Buffer(is);
-        int i_265_ = -1;
+    public void readLocs(SceneCollisionMap[] collisionMaps, Scene scene, int originX, int originZ, byte[] data) {
+        Buffer in = new Buffer(data);
+        int locID = -1;
         for (; ; ) {
-            int i_266_ = buffer.readSmartU();
-            if (i_266_ == 0) {
+            int deltaID = in.readSmartU();
+
+            if (deltaID == 0) {
                 break;
             }
-            i_265_ += i_266_;
-            int i_267_ = 0;
+
+            locID += deltaID;
+            int locData = 0;
+
             for (; ; ) {
-                int i_268_ = buffer.readSmartU();
-                if (i_268_ == 0) {
+                int deltaData = in.readSmartU();
+
+                if (deltaData == 0) {
                     break;
                 }
-                i_267_ += i_268_ - 1;
-                int i_269_ = i_267_ & 0x3f;
-                int i_270_ = (i_267_ >> 6) & 0x3f;
-                int i_271_ = i_267_ >> 12;
-                int i_272_ = buffer.read8U();
-                int i_273_ = i_272_ >> 2;
-                int i_274_ = i_272_ & 0x3;
-                int i_275_ = i_270_ + i;
-                int i_276_ = i_269_ + i_263_;
-                if ((i_275_ > 0) && (i_276_ > 0) && (i_275_ < 103) && (i_276_ < 103)) {
-                    int i_277_ = i_271_;
-                    if ((levelTileFlags[1][i_275_][i_276_] & 0x2) == 2) {
-                        i_277_--;
+
+                locData += deltaData - 1;
+                int locZ = locData & 0x3f;
+                int locX = (locData >> 6) & 0x3f;
+                int locLevel = locData >> 12;
+                int locInfo = in.read8U();
+                int locKind = locInfo >> 2;
+                int locRotation = locInfo & 0x3;
+                int x = locX + originX;
+                int z = locZ + originZ;
+
+                if ((x > 0) && (z > 0) && (x < 103) && (z < 103)) {
+                    int collisionLevel = locLevel;
+
+                    if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                        collisionLevel--;
                     }
+
                     SceneCollisionMap collisionMap = null;
-                    if (i_277_ >= 0) {
-                        collisionMap = collisionMaps[i_277_];
+
+                    if (collisionLevel >= 0) {
+                        collisionMap = collisionMaps[collisionLevel];
                     }
-                    method175(i_276_, scene, collisionMap, i_273_, i_271_, i_275_, i_265_, i_274_);
+
+                    addLoc(scene, collisionMap, locID, locKind, locRotation, locLevel, x, z);
                 }
             }
         }
