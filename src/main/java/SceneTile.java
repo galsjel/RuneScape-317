@@ -41,7 +41,7 @@ public class SceneTile extends DoublyLinkedList.Node {
 	public int checkLocSpans;
 	public int blockLocSpans;
 	public int inverseBlockLocSpans;
-	public int allowWallTypes;
+	public int backWallTypes;
 	public SceneTile bridge;
 
 	public SceneTile(int level, int x, int z) {

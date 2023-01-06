@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 public class Scene {
 
-    public static final int[] DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X = {53, -53, -53, 53};
-    public static final int[] DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z = {-53, -53, 53, 53};
-    public static final int[] DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X = {-45, 45, 45, -45};
-    public static final int[] DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z = {45, 45, -45, -45};
+    public static final int[] WALL_DECORATION_INSET_X = {53, -53, -53, 53};
+    public static final int[] WALL_DECORATION_INSET_Z = {-53, -53, 53, 53};
+    public static final int[] WALL_DECORATION_OUTSET_X = {-45, 45, 45, -45};
+    public static final int[] WALL_DECORATION_OUTSET_Z = {45, 45, -45, -45};
     /**
      * Occlusion flags for walls of kind 0, 2 and decorations 4, 5,
      */
@@ -28,7 +28,7 @@ public class Scene {
             1 << 6,
             1 << 7,
     };
-    public static final int[] DIRECTION_ALLOW_WALL_TYPE_PRIMARY = {
+    public static final int[] FRONT_WALL_TYPES = {
             0b00010011, // eyeTileX >  tileX  &&  eyeTileZ <  tileZ
             0b00110111, // eyeTileX == tileX  &&  eyeTileZ <  tileZ
             0b00100110, // eyeTileX <  tileX  &&  eyeTileZ <  tileZ
@@ -50,7 +50,7 @@ public class Scene {
             0b00110000, // eyeTileX =  tileX  &&  eyeTileZ >  tileZ
             0b10100000, // eyeTileX <  tileX  &&  eyeTileZ >  tileZ
     };
-    public static final int[] DIRECTION_ALLOW_WALL_TYPE_SECONDARY = {
+    public static final int[] BACK_WALL_TYPES = {
             0b01001100, // eyeTileX >  tileX  &&  eyeTileZ <  tileZ
             0b00001000, // eyeTileX == tileX  &&  eyeTileZ <  tileZ
             0b10001001, // eyeTileX <  tileX  &&  eyeTileZ <  tileZ
@@ -469,25 +469,25 @@ public class Scene {
         levelTiles[level][tileX][tileZ].wall = wall;
     }
 
-    public void setWallDecoration(int type, Entity entity, int level, int tileX, int tileZ, int y, int yaw, int offsetX, int offsetZ, int bitset, byte info) {
+    public void setWallDecoration(int type, Entity entity, int level, int tileX, int tileZ, int y, int rotation, int offsetX, int offsetZ, int bitset, byte info) {
         if (entity == null) {
             return;
         }
-        SceneWallDecoration deco = new SceneWallDecoration();
-        deco.bitset = bitset;
-        deco.info = info;
-        deco.x = (tileX * 128) + 64 + offsetX;
-        deco.z = (tileZ * 128) + 64 + offsetZ;
-        deco.y = y;
-        deco.entity = entity;
-        deco.type = type;
-        deco.rotation = yaw;
+        SceneWallDecoration decor = new SceneWallDecoration();
+        decor.bitset = bitset;
+        decor.info = info;
+        decor.x = (tileX * 128) + 64 + offsetX;
+        decor.z = (tileZ * 128) + 64 + offsetZ;
+        decor.y = y;
+        decor.entity = entity;
+        decor.type = type;
+        decor.rotation = rotation;
         for (int p = level; p >= 0; p--) {
             if (levelTiles[p][tileX][tileZ] == null) {
                 levelTiles[p][tileX][tileZ] = new SceneTile(p, tileX, tileZ);
             }
         }
-        levelTiles[level][tileX][tileZ].wallDecoration = deco;
+        levelTiles[level][tileX][tileZ].wallDecoration = decor;
     }
 
     public boolean add(Entity entity, int level, int tileX, int tileZ, int y, int width, int length, int yaw, int bitset, byte info) {
@@ -654,12 +654,12 @@ public class Scene {
         if (tile == null) {
             return;
         }
-        SceneWallDecoration decoration = tile.wallDecoration;
-        if (decoration != null) {
+        SceneWallDecoration decor = tile.wallDecoration;
+        if (decor != null) {
             int sx = (stx * 128) + 64;
             int sz = (stz * 128) + 64;
-            decoration.x = sx + (((decoration.x - sx) * offset) / 16);
-            decoration.z = sz + (((decoration.z - sz) * offset) / 16);
+            decor.x = sx + (((decor.x - sx) * offset) / 16);
+            decor.z = sz + (((decor.z - sz) * offset) / 16);
         }
     }
 
@@ -1366,12 +1366,12 @@ public class Scene {
                 boolean tileDrawn = drawTileUnderlayOrOverlay(tile, tileX, tileZ, occludeLevel);
 
                 int direction = 0;
-                int allowWallTypes = 0;
+                int frontWallTypes = 0;
 
                 SceneWall wall = tile.wall;
-                SceneWallDecoration wallDecoration = tile.wallDecoration;
+                SceneWallDecoration decor = tile.wallDecoration;
 
-                if ((wall != null) || (wallDecoration != null)) {
+                if ((wall != null) || (decor != null)) {
                     if (eyeTileX == tileX) {
                         direction++;
                     } else if (eyeTileX < tileX) {
@@ -1384,12 +1384,8 @@ public class Scene {
                         direction += 6;
                     }
 
-                    // Essentially what's happening here is when there are multiple wall types on the same tile, we have
-                    // to decide which ones to draw in which order. allowWallTypes determines the first walls that draw,
-                    // and then tile.allowWallTypes determines the second walls to draw. This order is dependent on the
-                    // direction the camera is relative to the tile.
-                    allowWallTypes = DIRECTION_ALLOW_WALL_TYPE_PRIMARY[direction];
-                    tile.allowWallTypes = DIRECTION_ALLOW_WALL_TYPE_SECONDARY[direction];
+                    frontWallTypes = FRONT_WALL_TYPES[direction];
+                    tile.backWallTypes = BACK_WALL_TYPES[direction];
                 }
 
                 if (wall != null) {
@@ -1423,26 +1419,24 @@ public class Scene {
                         tile.checkLocSpans = 0;
                     }
 
-                    if (((wall.typeA & allowWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
+                    if (((wall.typeA & frontWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
                         wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
 
-                    if (((wall.typeB & allowWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
+                    if (((wall.typeB & frontWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
                         wall.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
                 }
 
-                if (wallDecoration != null) {
-                    if (!occluded(occludeLevel, tileX, tileZ, wallDecoration.entity.minY)) {
-                        drawWallDecoration(allowWallTypes, wallDecoration);
-                    }
+                if (decor != null && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                    drawWallDecor(frontWallTypes, decor, true);
                 }
 
                 if (tileDrawn) {
-                    SceneGroundDecoration groundDecoration = tile.groundDecoration;
+                    SceneGroundDecoration groundDecor = tile.groundDecoration;
 
-                    if (groundDecoration != null) {
-                        groundDecoration.entity.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, groundDecoration.x - eyeX, groundDecoration.y - eyeY, groundDecoration.z - eyeZ, groundDecoration.bitset);
+                    if (groundDecor != null) {
+                        groundDecor.entity.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, groundDecor.x - eyeX, groundDecor.y - eyeY, groundDecor.z - eyeZ, groundDecor.bitset);
                     }
 
                     SceneObjStack stack = tile.objStack;
@@ -1455,28 +1449,28 @@ public class Scene {
                 int spans = tile.locSpans;
 
                 if (spans != 0) {
-                    if ((tileX < eyeTileX) && ((spans & 4) != 0)) {
+                    if ((tileX < eyeTileX) && ((spans & 0x4) != 0)) {
                         SceneTile adjacent = tiles[tileX + 1][tileZ];
                         if ((adjacent != null) && adjacent.update) {
                             drawTileQueue.pushBack(adjacent);
                         }
                     }
 
-                    if ((tileZ < eyeTileZ) && ((spans & 2) != 0)) {
+                    if ((tileZ < eyeTileZ) && ((spans & 0x2) != 0)) {
                         SceneTile adjacent = tiles[tileX][tileZ + 1];
                         if ((adjacent != null) && adjacent.update) {
                             drawTileQueue.pushBack(adjacent);
                         }
                     }
 
-                    if ((tileX > eyeTileX) && ((spans & 1) != 0)) {
+                    if ((tileX > eyeTileX) && ((spans & 0x1) != 0)) {
                         SceneTile adjacent = tiles[tileX - 1][tileZ];
                         if ((adjacent != null) && adjacent.update) {
                             drawTileQueue.pushBack(adjacent);
                         }
                     }
 
-                    if ((tileZ > eyeTileZ) && ((spans & 8) != 0)) {
+                    if ((tileZ > eyeTileZ) && ((spans & 0x8) != 0)) {
                         SceneTile adjacent = tiles[tileX][tileZ - 1];
                         if ((adjacent != null) && adjacent.update) {
                             drawTileQueue.pushBack(adjacent);
@@ -1606,8 +1600,8 @@ public class Scene {
                         SceneLoc farthest = locBuffer[farthestIndex];
                         farthest.cycle = cycle;
 
-                        if (!occluded(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
-                            farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
+                            if (!occluded(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
+                                farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
                         }
 
                         for (int x = farthest.minSceneTileX; x <= farthest.maxSceneTileX; x++) {
@@ -1672,54 +1666,21 @@ public class Scene {
                 drawObjStack(stack, stack.offset);
             }
 
-            if (tile.allowWallTypes != 0) {
-                SceneWallDecoration wallDecoration = tile.wallDecoration;
+            if (tile.backWallTypes != 0) {
+                SceneWallDecoration decor = tile.wallDecoration;
 
-                if ((wallDecoration != null) && !occluded(occludeLevel, tileX, tileZ, wallDecoration.entity.minY)) {
-                    if ((wallDecoration.type & tile.allowWallTypes) != 0) {
-                        wallDecoration.entity.draw(wallDecoration.rotation, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration.x - eyeX, wallDecoration.y - eyeY, wallDecoration.z - eyeZ, wallDecoration.bitset);
-                    } else if ((wallDecoration.type & 0x300) != 0) {
-                        int dx = wallDecoration.x - eyeX;
-                        int dy = wallDecoration.y - eyeY;
-                        int dz = wallDecoration.z - eyeZ;
-
-                        int rotation = wallDecoration.rotation;
-                        int nearestX;
-                        int nearestZ;
-
-                        if ((rotation == 1) || (rotation == 2)) {
-                            nearestX = -dx;
-                        } else {
-                            nearestX = dx;
-                        }
-
-                        if ((rotation == 2) || (rotation == 3)) {
-                            nearestZ = -dz;
-                        } else {
-                            nearestZ = dz;
-                        }
-
-                        if (((wallDecoration.type & 0x100) != 0) && (nearestZ >= nearestX)) {
-                            int x = dx + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X[rotation];
-                            int z = dz + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z[rotation];
-                            wallDecoration.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, dy, z, wallDecoration.bitset);
-                        }
-
-                        if (((wallDecoration.type & 0x200) != 0) && (nearestZ <= nearestX)) {
-                            int x = dx + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X[rotation];
-                            int z = dz + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z[rotation];
-                            wallDecoration.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, dy, z, wallDecoration.bitset);
-                        }
-                    }
+                if (decor != null && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                    drawWallDecor(tile.backWallTypes, decor, false);
                 }
 
                 SceneWall wall = tile.wall;
 
                 if (wall != null) {
-                    if (((wall.typeB & tile.allowWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
+                    if (((wall.typeB & tile.backWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
                         wall.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
-                    if (((wall.typeA & tile.allowWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
+
+                    if (((wall.typeA & tile.backWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
                         wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
                 }
@@ -1774,39 +1735,60 @@ public class Scene {
         }
     }
 
-    private static void drawWallDecoration(int occlusions, SceneWallDecoration wallDecoration) {
-        if ((wallDecoration.type & occlusions) != 0) {
-            wallDecoration.entity.draw(wallDecoration.rotation, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wallDecoration.x - eyeX, wallDecoration.y - eyeY, wallDecoration.z - eyeZ, wallDecoration.bitset);
-        } else if ((wallDecoration.type & 0x300) != 0) {
-            int dx = wallDecoration.x - eyeX;
-            int y = wallDecoration.y - eyeY;
-            int dz = wallDecoration.z - eyeZ;
-            int rotation = wallDecoration.rotation;
+    private static void drawWallDecor(int allowWallTypes, SceneWallDecoration decor, boolean front) {
+        if ((decor.type & allowWallTypes) != 0) {
+            decor.entity.draw(decor.rotation, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, decor.x - eyeX, decor.y - eyeY, decor.z - eyeZ, decor.bitset);
+        } else if ((decor.type & 0x300) != 0) {
+            int x = decor.x - eyeX;
+            int y = decor.y - eyeY;
+            int z = decor.z - eyeZ;
+            int rotation = decor.rotation;
 
             int nearestX;
             int nearestZ;
 
             if ((rotation == 1) || (rotation == 2)) {
-                nearestX = -dx;
+                nearestX = -x;
             } else {
-                nearestX = dx;
+                nearestX = x;
             }
+
             if ((rotation == 2) || (rotation == 3)) {
-                nearestZ = -dz;
+                nearestZ = -z;
             } else {
-                nearestZ = dz;
+                nearestZ = z;
             }
 
-            if (((wallDecoration.type & 0x100) != 0) && (nearestZ < nearestX)) {
-                int x = dx + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_X[rotation];
-                int z = dz + DIAGONAL_WALL_DECORATION0_ROTATION_OFFSET_Z[rotation];
-                wallDecoration.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, y, z, wallDecoration.bitset);
+            if ((decor.type & 0x100) != 0) {
+                boolean draw = false;
+
+                if (front && nearestZ < nearestX) {
+                    draw = true;
+                } else if (!front && nearestZ >= nearestX) {
+                    draw = true;
+                }
+
+                if (draw) {
+                    int drawX = x + WALL_DECORATION_INSET_X[rotation];
+                    int drawZ = z + WALL_DECORATION_INSET_Z[rotation];
+                    decor.entity.draw((rotation * 512) + 256, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, drawX, y, drawZ, decor.bitset);
+                }
             }
 
-            if (((wallDecoration.type & 0x200) != 0) && (nearestZ > nearestX)) {
-                int x = dx + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_X[rotation];
-                int z = dz + DIAGONAL_WALL_DECORATION1_ROTATION_OFFSET_Z[rotation];
-                wallDecoration.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, y, z, wallDecoration.bitset);
+            if ((decor.type & 0x200) != 0) {
+                boolean draw = false;
+
+                if (front && nearestZ > nearestX) {
+                    draw = true;
+                } else if (!front && nearestZ <= nearestX) {
+                    draw = true;
+                }
+
+                if (draw) {
+                    int drawX = x + WALL_DECORATION_OUTSET_X[rotation];
+                    int drawZ = z + WALL_DECORATION_OUTSET_Z[rotation];
+                    decor.entity.draw(((rotation * 512) + 1280) & 0x7ff, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, drawX, y, drawZ, decor.bitset);
+                }
             }
         }
     }

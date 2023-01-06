@@ -4,8 +4,8 @@
 
 public class SceneBuilder {
 
-    public static final int[] WALL_DECORATION_FORWARD_X = {1, 0, -1, 0};
-    public static final int[] WALL_DECORATION_FORWARD_Z = {0, -1, 0, 1};
+    public static final int[] WALL_DECORATION_ROTATION_FORWARD_X = {1, 0, -1, 0};
+    public static final int[] WALL_DECORATION_ROTATION_FORWARD_Z = {0, -1, 0, 1};
     public static int randomHueOffset = (int) (Math.random() * 17.0) - 8;
     public static int level;
     public static int randomLightnessOffset = (int) (Math.random() * 33.0) - 16;
@@ -114,7 +114,7 @@ public class SceneBuilder {
         return (hsl & 0xff80) + lightness;
     }
 
-    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, CollisionMap collision, int[][][] levelHeightmap, int x, int locID, int level) {
+    public static void addLoc(Scene scene, int rotation, int z, int type, int tileLevel, CollisionMap collision, int[][][] levelHeightmap, int x, int locID, int level) {
         int heightSW = levelHeightmap[tileLevel][x][z];
         int heightSE = levelHeightmap[tileLevel][x + 1][z];
         int heightNE = levelHeightmap[tileLevel][x + 1][z + 1];
@@ -128,24 +128,24 @@ public class SceneBuilder {
             bitset += 0x80000000;
         }
 
-        byte info = (byte) ((rotation << 6) + kind);
+        byte info = (byte) ((rotation << 6) + type);
 
-        if (kind == 22) {
+        if (type == LocType.TYPE_GROUND_DECOR) {
             addGroundDecoration(scene, rotation, z, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if ((kind == 10) || (kind == 11)) {
-            addLoc(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind >= 12) {
-            addDiagonalWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind == 0) {
-            addWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind == 1) {
-            addDiagonalWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind == 2) {
-            addFullWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind == 3) {
-            addWallCorner(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-        } else if (kind == 9) {
-            addDiagonalWall(scene, rotation, z, kind, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if ((type == LocType.TYPE_CENTREPIECE) || (type == LocType.TYPE_CENTREPIECE_DIAGONAL)) {
+            addLoc(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type >= LocType.TYPE_ROOF_STRAIGHT) {
+            addRoofOrDiagonalWall(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type == LocType.TYPE_WALL_STRAIGHT) {
+            addWallStraight(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type == LocType.TYPE_WALL_CORNER_DIAGONAL) {
+            addWallCornerDiagonal(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type == LocType.TYPE_WALL_L) {
+            addWallL(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type == LocType.TYPE_WALL_SQUARE_CORNER) {
+            addWallSquareCorner(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+        } else if (type == LocType.TYPE_WALL_DIAGONAL) {
+            addRoofOrDiagonalWall(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else {
             if (loc.adjustToTerrain) {
                 if (rotation == 1) {
@@ -170,16 +170,16 @@ public class SceneBuilder {
                 }
             }
 
-            if (kind == 4) {
-                addWallDecoration(scene, rotation, z, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-            } else if (kind == 5) {
-                addWallDecorationOutside(scene, rotation, z, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-            } else if (kind == 6) {
-                addDiagonalWallDecorationInside(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-            } else if (kind == 7) {
-                addDiagonalWallDecorationOutside(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
-            } else if (kind == 8) {
-                addDiagonalWallDecorationBoth(z, scene, level, x, locID, rotation, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+            if (type == LocType.TYPE_WALLDECOR_STRAIGHT) {
+                addWallDecor(scene, Scene.ROTATION_WALL_TYPE[rotation], loc, locID, bitset, info, level, x, z, rotation * 512, heightSW, heightSE, heightNE, heightNW, y);
+            } else if (type == LocType.TYPE_WALLDECOR_STRAIGHT_OFFSET) {
+                addWallDecorOffset(scene, rotation, z, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
+            } else if (type == LocType.TYPE_WALLDECOR_DIAGONAL_NOOFFSET) {
+                addWallDecor(scene, 0x100, loc, locID, bitset, info, level, x, z, rotation, heightSW, heightSE, heightNE, heightNW, y);
+            } else if (type == LocType.TYPE_WALLDECOR_DIAGONAL_OFFSET) {
+                addWallDecor(scene, 0x200, loc, locID, bitset, info, level, x, z, rotation, heightSW, heightSE, heightNE, heightNW, y);
+            } else if (type == LocType.TYPE_WALLDECOR_DIAGONAL_BOTH) {
+                addWallDecor(scene, 0x300, loc, locID, bitset, info, level, x, z, rotation, heightSW, heightSE, heightNE, heightNW, y);
             }
         }
     }
@@ -234,7 +234,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWallStraight(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -250,7 +250,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addDiagonalWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWallCornerDiagonal(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -266,7 +266,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addFullWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWallL(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         int nextRotation = (rotation + 1) & 0x3;
         Entity locA;
         Entity locB;
@@ -286,7 +286,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWallSquareCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -302,19 +302,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addWallDecoration(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
-
-        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-            entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
-        } else {
-            entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-        }
-
-        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, 0, 0, bitset, info);
-    }
-
-    private static void addDiagonalWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addRoofOrDiagonalWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -330,12 +318,12 @@ public class SceneBuilder {
         }
     }
 
-    private static void addWallDecorationOutside(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        int padding = 16;
+    private static void addWallDecorOffset(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        int offset = 16;
         int wallBitset = scene.getWallBitset(level, x, z);
 
         if (wallBitset > 0) {
-            padding = LocType.get((wallBitset >> 14) & 0x7fff).decorationPadding;
+            offset = LocType.get((wallBitset >> 14) & 0x7fff).decorOffset;
         }
 
         Entity entity;
@@ -346,7 +334,7 @@ public class SceneBuilder {
             entity = new LocEntity(locID, 0, 4, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
         }
 
-        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, WALL_DECORATION_FORWARD_X[rotation] * padding, WALL_DECORATION_FORWARD_Z[rotation] * padding, bitset, info);
+        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, WALL_DECORATION_ROTATION_FORWARD_X[rotation] * offset, WALL_DECORATION_ROTATION_FORWARD_Z[rotation] * offset, bitset, info);
     }
 
     /**
@@ -782,7 +770,7 @@ public class SceneBuilder {
 
             int area = ((maxLevel + 1) - minLevel) * ((maxTileZ - minTileZ) + 1);
 
-            if (area >= 2) {
+            if (area >= 8) {
                 int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
                 int maxY = levelHeightmap[minLevel][tileX][minTileZ];
 
@@ -835,7 +823,7 @@ public class SceneBuilder {
 
             int area = ((maxLevel + 1) - minLevel) * ((maxTileX - minTileX) + 1);
 
-            if (area >= 2) {
+            if (area >= 8) {
                 int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
                 int maxY = levelHeightmap[minLevel][minTileX][tileZ];
 
@@ -886,7 +874,7 @@ public class SceneBuilder {
                 }
             }
 
-            if ((((maxTileX - minTileX) + 1) * ((maxTileZ - minTileZ) + 1)) >= 4) {
+            if ((((maxTileX - minTileX) + 1) * ((maxTileZ - minTileZ) + 1)) >= 8) {
                 int y = levelHeightmap[level][minTileX][minTileZ];
 
                 Scene.addOccluder(topLevel, minTileX * 128, y, minTileZ * 128, (maxTileX * 128) + 128, y, (maxTileZ * 128) + 128, SceneOccluder.TYPE_GROUND);
@@ -968,13 +956,13 @@ public class SceneBuilder {
         } else if (kind == 0) {
             addWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 1) {
-            addDiagonalWallCorner(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+            addWallCornerDiagonal(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 2) {
             addFullWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 3) {
-            addWallCorner(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+            addWallSquareCorner(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 9) {
-            addDiagonalWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+            addRoofOrDiagonalWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else {
             if (type.adjustToTerrain) {
                 if (rotation == 1) {
@@ -1000,15 +988,15 @@ public class SceneBuilder {
             }
 
             if (kind == 4) {
-                addWallDecoration(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+                addWallDecor(scene, Scene.ROTATION_WALL_TYPE[rotation], type, locID, bitset, info, level, x, z, rotation * 512, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage);
             } else if (kind == 5) {
-                addWallDecorationOutside(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+                addWallDecorOffset(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
             } else if (kind == 6) {
-                addDiagonalWallDecorationInside(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+                addWallDecor(scene, 0x100, type, locID, bitset, info, level, x, z, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage);
             } else if (kind == 7) {
-                addDiagonalWallDecorationOutside(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+                addWallDecor(scene, 0x200, type, locID, bitset, info, level, x, z, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage);
             } else if (kind == 8) {
-                addDiagonalWallDecorationBoth(z, scene, level, x, locID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+                addWallDecor(scene, 0x300, type, locID, bitset, info, level, x, z, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage);
             }
         }
     }
@@ -1159,12 +1147,12 @@ public class SceneBuilder {
             collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
         }
 
-        if (type.decorationPadding != 16) {
-            scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
+        if (type.decorOffset != 16) {
+            scene.setWallDecorationOffset(level, x, z, type.decorOffset);
         }
     }
 
-    private void addDiagonalWallCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private void addWallCornerDiagonal(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         Entity entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1227,12 +1215,12 @@ public class SceneBuilder {
             collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
         }
 
-        if (type.decorationPadding != 16) {
-            scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
+        if (type.decorOffset != 16) {
+            scene.setWallDecorationOffset(level, x, z, type.decorOffset);
         }
     }
 
-    private void addWallCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private void addWallSquareCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         Entity entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1260,7 +1248,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addDiagonalWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private static void addRoofOrDiagonalWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         Entity entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
@@ -1275,34 +1263,14 @@ public class SceneBuilder {
         }
     }
 
-    private static void addDiagonalWallDecorationInside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private static void addWallDecor(Scene scene, int decorType, LocType type, int locID, int locBitset, byte locInfo, int level, int x, int z, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage) {
         Entity entity;
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
         } else {
             entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
         }
-        scene.setWallDecoration(0x100, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
-    }
-
-    private static void addDiagonalWallDecorationOutside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
-        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-            entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-        } else {
-            entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-        }
-        scene.setWallDecoration(0x200, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
-    }
-
-    private static void addDiagonalWallDecorationBoth(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
-        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-            entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-        } else {
-            entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-        }
-        scene.setWallDecoration(0x300, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+        scene.setWallDecoration(decorType, entity, level, x, z, heightmapAverage, rotation, 0, 0, locBitset, locInfo);
     }
 
     public int decimateHSL(int hue, int saturation, int lightness) {
