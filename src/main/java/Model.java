@@ -17,13 +17,10 @@ public class Model extends Entity {
 	public static int[] tmpVertexY = new int[2000];
 	public static int[] tmpVertexZ = new int[2000];
 	public static int[] tmpFaceAlpha = new int[2000];
-
 	public static Header[] headers;
 	public static OnDemand ondemand;
-
 	public static boolean[] faceClippedX = new boolean[4096];
 	public static boolean[] faceNearClipped = new boolean[4096];
-
 	public static int[] vertexScreenX = new int[4096];
 	public static int[] vertexScreenY = new int[4096];
 	public static int[] vertexScreenZ = new int[4096];
@@ -38,7 +35,6 @@ public class Model extends Entity {
 	public static int[] tmpPriority10FaceDepth = new int[2000];
 	public static int[] tmpPriority11FaceDepth = new int[2000];
 	public static int[] tmpPriorityDepthSum = new int[12];
-
 	public static int baseX;
 	public static int baseY;
 	public static int baseZ;
@@ -51,25 +47,24 @@ public class Model extends Entity {
 	public static int[] palette = Draw3D.palette;
 	public static int[] reciprical16 = Draw3D.reciprocal16;
 
-	public static class Header {
-
+	public static final class Header {
 		public byte[] data;
 		public int vertexCount;
 		public int faceCount;
 		public int texturedFaceCount;
-		public int obPoint1Position;
-		public int obPoint2Position;
-		public int obPoint3Position;
-		public int obPoint4Position;
-		public int obPoint5Position;
-		public int obVertex1Position;
-		public int obVertex2Position;
-		public int obFace1Position;
-		public int obFace2Position;
-		public int obFace3Position;
-		public int obFace4Position;
-		public int obFace5Position;
-		public int obAxisPosition;
+		public int vertexFlagsOffset;
+		public int vertexXOffset;
+		public int vertexYOffset;
+		public int vertexZOffset;
+		public int vertexLabelsOffset;
+		public int faceVerticesOffset;
+		public int faceOrientationsOffset;
+		public int faceColorsOffset;
+		public int faceInfosOffset;
+		public int facePrioritiesOffset;
+		public int faceAlphasOffset;
+		public int faceLabelsOffset;
+		public int faceTextureAxisOffset;
 
 	}
 
@@ -116,62 +111,75 @@ public class Model extends Entity {
 		header.vertexCount = buffer.read16U();
 		header.faceCount = buffer.read16U();
 		header.texturedFaceCount = buffer.read8U();
-		int k = buffer.read8U();
-		int l = buffer.read8U();
-		int i1 = buffer.read8U();
-		int j1 = buffer.read8U();
-		int k1 = buffer.read8U();
-		int l1 = buffer.read16U();
-		int i2 = buffer.read16U();
-		//noinspection unused
-		int j2 = buffer.read16U();
-		int k2 = buffer.read16U();
+
+		int hasInfo = buffer.read8U();
+		int priority = buffer.read8U();
+		int hasAlpha = buffer.read8U();
+		int hasFaceLabels = buffer.read8U();
+		int hasVertexLabels = buffer.read8U();
+
+		int dataLengthX = buffer.read16U();
+		int dataLengthY = buffer.read16U();
+		int dataLengthZ = buffer.read16U();
+		int dataLengthFaceOrientations = buffer.read16U();
+
 		int offset = 0;
-		header.obPoint1Position = offset;
+		header.vertexFlagsOffset = offset;
 		offset += header.vertexCount;
-		header.obVertex2Position = offset;
+
+		header.faceOrientationsOffset = offset;
 		offset += header.faceCount;
-		header.obFace3Position = offset;
-		if (l == 255) {
+
+		header.facePrioritiesOffset = offset;
+		if (priority == 255) {
 			offset += header.faceCount;
 		} else {
-			header.obFace3Position = -l - 1;
+			header.facePrioritiesOffset = -priority - 1;
 		}
-		header.obFace5Position = offset;
-		if (j1 == 1) {
+
+		header.faceLabelsOffset = offset;
+		if (hasFaceLabels == 1) {
 			offset += header.faceCount;
 		} else {
-			header.obFace5Position = -1;
+			header.faceLabelsOffset = -1;
 		}
-		header.obFace2Position = offset;
-		if (k == 1) {
+
+		header.faceInfosOffset = offset;
+		if (hasInfo == 1) {
 			offset += header.faceCount;
 		} else {
-			header.obFace2Position = -1;
+			header.faceInfosOffset = -1;
 		}
-		header.obPoint5Position = offset;
-		if (k1 == 1) {
+
+		header.vertexLabelsOffset = offset;
+		if (hasVertexLabels == 1) {
 			offset += header.vertexCount;
 		} else {
-			header.obPoint5Position = -1;
+			header.vertexLabelsOffset = -1;
 		}
-		header.obFace4Position = offset;
-		if (i1 == 1) {
+
+		header.faceAlphasOffset = offset;
+		if (hasAlpha == 1) {
 			offset += header.faceCount;
 		} else {
-			header.obFace4Position = -1;
+			header.faceAlphasOffset = -1;
 		}
-		header.obVertex1Position = offset;
-		offset += k2;
-		header.obFace1Position = offset;
+
+		header.faceVerticesOffset = offset;
+		offset += dataLengthFaceOrientations;
+
+		header.faceColorsOffset = offset;
 		offset += header.faceCount * 2;
-		header.obAxisPosition = offset;
+
+		header.faceTextureAxisOffset = offset;
 		offset += header.texturedFaceCount * 6;
-		header.obPoint2Position = offset;
-		offset += l1;
-		header.obPoint3Position = offset;
-		offset += i2;
-		header.obPoint4Position = offset;
+
+		header.vertexXOffset = offset;
+		offset += dataLengthX;
+		header.vertexYOffset = offset;
+		offset += dataLengthY;
+		header.vertexZOffset = offset;
+		offset += dataLengthZ;
 	}
 
 	public static void unload(int id) {
@@ -346,44 +354,44 @@ public class Model extends Entity {
 		texturedVertexB = new int[texturedFaceCount];
 		texturedVertexC = new int[texturedFaceCount];
 
-		if (header.obPoint5Position >= 0) {
+		if (header.vertexLabelsOffset >= 0) {
 			vertexLabel = new int[vertexCount];
 		}
 
-		if (header.obFace2Position >= 0) {
+		if (header.faceInfosOffset >= 0) {
 			faceInfo = new int[faceCount];
 		}
 
-		if (header.obFace3Position >= 0) {
+		if (header.facePrioritiesOffset >= 0) {
 			facePriority = new int[faceCount];
 		} else {
-			priority = -header.obFace3Position - 1;
+			priority = -header.facePrioritiesOffset - 1;
 		}
 
-		if (header.obFace4Position >= 0) {
+		if (header.faceAlphasOffset >= 0) {
 			faceAlpha = new int[faceCount];
 		}
 
-		if (header.obFace5Position >= 0) {
+		if (header.faceLabelsOffset >= 0) {
 			faceLabel = new int[faceCount];
 		}
 
 		faceColor = new int[faceCount];
 
 		Buffer buf0 = new Buffer(header.data);
-		buf0.position = header.obPoint1Position;
+		buf0.position = header.vertexFlagsOffset;
 
 		Buffer buf1 = new Buffer(header.data);
-		buf1.position = header.obPoint2Position;
+		buf1.position = header.vertexXOffset;
 
 		Buffer buf2 = new Buffer(header.data);
-		buf2.position = header.obPoint3Position;
+		buf2.position = header.vertexYOffset;
 
 		Buffer buf3 = new Buffer(header.data);
-		buf3.position = header.obPoint4Position;
+		buf3.position = header.vertexZOffset;
 
 		Buffer buf4 = new Buffer(header.data);
-		buf4.position = header.obPoint5Position;
+		buf4.position = header.vertexLabelsOffset;
 
 		int x = 0;
 		int y = 0;
@@ -421,11 +429,11 @@ public class Model extends Entity {
 			}
 		}
 
-		buf0.position = header.obFace1Position;
-		buf1.position = header.obFace2Position;
-		buf2.position = header.obFace3Position;
-		buf3.position = header.obFace4Position;
-		buf4.position = header.obFace5Position;
+		buf0.position = header.faceColorsOffset;
+		buf1.position = header.faceInfosOffset;
+		buf2.position = header.facePrioritiesOffset;
+		buf3.position = header.faceAlphasOffset;
+		buf4.position = header.faceLabelsOffset;
 
 		for (int face = 0; face < faceCount; face++) {
 			faceColor[face] = buf0.read16U();
@@ -447,8 +455,8 @@ public class Model extends Entity {
 			}
 		}
 
-		buf0.position = header.obVertex1Position;
-		buf1.position = header.obVertex2Position;
+		buf0.position = header.faceVerticesOffset;
+		buf1.position = header.faceOrientationsOffset;
 
 		int a = 0;
 		int b = 0;
@@ -497,9 +505,9 @@ public class Model extends Entity {
 
 			// reuse b, a, new c
 			if (orientation == 4) {
-				int a_ = a;
+				int tmp = a;
 				a = b;
-				b = a_;
+				b = tmp;
 				c = buf0.readSmart() + last;
 				last = c;
 				faceVertexA[face] = a;
@@ -508,7 +516,7 @@ public class Model extends Entity {
 			}
 		}
 
-		buf0.position = header.obAxisPosition;
+		buf0.position = header.faceTextureAxisOffset;
 
 		for (int face = 0; face < texturedFaceCount; face++) {
 			texturedVertexA[face] = buf0.read16U();

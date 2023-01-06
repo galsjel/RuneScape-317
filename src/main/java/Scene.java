@@ -413,15 +413,15 @@ public class Scene {
         levelTiles[tileLevel][tileX][tileZ].groundDecoration = decor;
     }
 
-    public void addObjStack(Entity obj0, Entity obj1, Entity obj2, int level, int stx, int stz, int y, int bitset) {
+    public void addObjStack(Entity topObj, Entity bottomObj, Entity middleObj, int level, int stx, int stz, int y, int bitset) {
         SceneObjStack stack = new SceneObjStack();
         stack.x = (stx * 128) + 64;
         stack.z = (stz * 128) + 64;
         stack.y = y;
         stack.bitset = bitset;
-        stack.obj0 = obj0;
-        stack.obj1 = obj1;
-        stack.obj2 = obj2;
+        stack.topObj = topObj;
+        stack.bottomObj = bottomObj;
+        stack.middleObj = middleObj;
 
         int stackOffset = 0;
 
@@ -1763,14 +1763,14 @@ public class Scene {
     }
 
     private static void drawObjStack(SceneObjStack stack, int offset) {
-        if (stack.obj1 != null) {
-            stack.obj1.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
+        if (stack.bottomObj != null) {
+            stack.bottomObj.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
         }
-        if (stack.obj2 != null) {
-            stack.obj2.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
+        if (stack.middleObj != null) {
+            stack.middleObj.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
         }
-        if (stack.obj0 != null) {
-            stack.obj0.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
+        if (stack.topObj != null) {
+            stack.topObj.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, stack.x - eyeX, stack.y - eyeY - offset, stack.z - eyeZ, stack.bitset);
         }
     }
 

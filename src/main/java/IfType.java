@@ -12,6 +12,22 @@ public class IfType {
 	public static LRUMap<Long, Image24> imageCache;
 	public static IfType[] instances;
 
+	public static final int TYPE_PARENT = 0;
+	public static final int TYPE_UNUSED = 1;
+	public static final int TYPE_INVENTORY = 2;
+	public static final int TYPE_RECT = 3;
+	public static final int TYPE_TEXT = 4;
+	public static final int TYPE_IMAGE = 5;
+	public static final int TYPE_MODEL = 6;
+	public static final int TYPE_INVENTORY_TEXT = 7;
+
+	public static final int OPTION_TYPE_STANDARD = 1;
+	public static final int OPTION_TYPE_SPELL = 2;
+	public static final int OPTION_TYPE_CLOSE = 3;
+	public static final int OPTION_TYPE_TOGGLE = 4;
+	public static final int OPTION_TYPE_SELECT = 5;
+	public static final int OPTION_TYPE_CONTINUE = 6;
+
 	public static void unpack(FileArchive config, BitmapFont[] fonts, FileArchive media) throws IOException {
 		imageCache = new LRUMap<>(500);
 		Buffer in = new Buffer(config.read("data"));
@@ -68,26 +84,26 @@ public class IfType {
 				}
 			}
 
-			if (iface.type == 0) {
+			if (iface.type == TYPE_PARENT) {
 				iface.scrollableHeight = in.read16U();
 				iface.hide = in.read8U() == 1;
 				int childCount = in.read16U();
-				iface.children = new int[childCount];
+				iface.childID = new int[childCount];
 				iface.childX = new int[childCount];
 				iface.childY = new int[childCount];
 				for (int i = 0; i < childCount; i++) {
-					iface.children[i] = in.read16U();
+					iface.childID[i] = in.read16U();
 					iface.childX[i] = in.read16();
 					iface.childY[i] = in.read16();
 				}
 			}
 
-			if (iface.type == 1) {
+			if (iface.type == TYPE_UNUSED) {
 				iface.unusedInt = in.read16U();
 				iface.unusedBool = in.read8U() == 1;
 			}
 
-			if (iface.type == 2) {
+			if (iface.type == TYPE_INVENTORY) {
 				iface.inventorySlotObjID = new int[iface.width * iface.height];
 				iface.inventorySlotObjCount = new int[iface.width * iface.height];
 				iface.inventoryDraggable = in.read8U() == 1;
@@ -99,19 +115,22 @@ public class IfType {
 				iface.inventorySlotOffsetX = new int[20];
 				iface.inventorySlotOffsetY = new int[20];
 				iface.inventorySlotImage = new Image24[20];
-				for (int j2 = 0; j2 < 20; j2++) {
-					int k3 = in.read8U();
-					if (k3 == 1) {
-						iface.inventorySlotOffsetX[j2] = in.read16();
-						iface.inventorySlotOffsetY[j2] = in.read16();
-						String s1 = in.readString();
-						if ((media != null) && (s1.length() > 0)) {
-							int i5 = s1.lastIndexOf(",");
-							iface.inventorySlotImage[j2] = getImage(Integer.parseInt(s1.substring(i5 + 1)), media, s1.substring(0, i5));
+
+				for (int slot = 0; slot < 20; slot++) {
+					if (in.read8U() == 1) {
+						iface.inventorySlotOffsetX[slot] = in.read16();
+						iface.inventorySlotOffsetY[slot] = in.read16();
+						String imageName = in.readString();
+
+						if ((media != null) && (imageName.length() > 0)) {
+							int imageID = imageName.lastIndexOf(",");
+							iface.inventorySlotImage[slot] = getImage(Integer.parseInt(imageName.substring(imageID + 1)), media, imageName.substring(0, imageID));
 						}
 					}
 				}
+
 				iface.inventoryOptions = new String[5];
+
 				for (int i = 0; i < 5; i++) {
 					iface.inventoryOptions[i] = in.readString();
 					if (iface.inventoryOptions[i].length() == 0) {
@@ -120,11 +139,11 @@ public class IfType {
 				}
 			}
 
-			if (iface.type == 3) {
+			if (iface.type == TYPE_RECT) {
 				iface.fill = in.read8U() == 1;
 			}
 
-			if ((iface.type == 4) || (iface.type == 1)) {
+			if ((iface.type == TYPE_TEXT) || (iface.type == TYPE_UNUSED)) {
 				iface.center = in.read8U() == 1;
 				int fontID = in.read8U();
 				if (fonts != null) {
@@ -133,22 +152,22 @@ public class IfType {
 				iface.shadow = in.read8U() == 1;
 			}
 
-			if (iface.type == 4) {
+			if (iface.type == TYPE_TEXT) {
 				iface.text = in.readString();
 				iface.activeText = in.readString();
 			}
 
-			if ((iface.type == 1) || (iface.type == 3) || (iface.type == 4)) {
+			if ((iface.type == TYPE_UNUSED) || (iface.type == TYPE_RECT) || (iface.type == TYPE_TEXT)) {
 				iface.color = in.read32();
 			}
 
-			if ((iface.type == 3) || (iface.type == 4)) {
+			if ((iface.type == TYPE_RECT) || (iface.type == TYPE_TEXT)) {
 				iface.activeColor = in.read32();
 				iface.hoverColor = in.read32();
 				iface.activeHoverColor = in.read32();
 			}
 
-			if (iface.type == 5) {
+			if (iface.type == TYPE_IMAGE) {
 				String s = in.readString();
 				if ((media != null) && (s.length() > 0)) {
 					int comma = s.lastIndexOf(",");
@@ -161,7 +180,7 @@ public class IfType {
 				}
 			}
 
-			if (iface.type == 6) {
+			if (iface.type == TYPE_MODEL) {
 				int tmp = in.read8U();
 				if (tmp != 0) {
 					iface.modelCategory = 1;
@@ -193,7 +212,7 @@ public class IfType {
 				iface.modelYaw = in.read16U();
 			}
 
-			if (iface.type == 7) {
+			if (iface.type == TYPE_INVENTORY_TEXT) {
 				iface.inventorySlotObjID = new int[iface.width * iface.height];
 				iface.inventorySlotObjCount = new int[iface.width * iface.height];
 				iface.center = in.read8U() == 1;
@@ -207,10 +226,10 @@ public class IfType {
 				iface.inventoryMarginY = in.read16();
 				iface.inventoryInteractable = in.read8U() == 1;
 				iface.inventoryOptions = new String[5];
-				for (int k4 = 0; k4 < 5; k4++) {
-					iface.inventoryOptions[k4] = in.readString();
-					if (iface.inventoryOptions[k4].length() == 0) {
-						iface.inventoryOptions[k4] = null;
+				for (int option = 0; option < 5; option++) {
+					iface.inventoryOptions[option] = in.readString();
+					if (iface.inventoryOptions[option].length() == 0) {
+						iface.inventoryOptions[option] = null;
 					}
 				}
 			}
@@ -219,22 +238,23 @@ public class IfType {
 				iface.spellAction = in.readString();
 			}
 
-			if ((iface.optionType == 2) || (iface.type == 2)) {
+			if ((iface.optionType == OPTION_TYPE_SPELL) || (iface.type == TYPE_INVENTORY)) {
 				iface.spellAction = in.readString();
 				iface.spellName = in.readString();
 				iface.spellFlags = in.read16U();
 			}
 
-			if ((iface.optionType == 1) || (iface.optionType == 4) || (iface.optionType == 5) || (iface.optionType == 6)) {
+			if (iface.optionType == OPTION_TYPE_STANDARD || iface.optionType == OPTION_TYPE_TOGGLE || iface.optionType == OPTION_TYPE_SELECT || iface.optionType == OPTION_TYPE_CONTINUE) {
 				iface.option = in.readString();
+
 				if (iface.option.length() == 0) {
-					if (iface.optionType == 1) {
+					if (iface.optionType == OPTION_TYPE_STANDARD) {
 						iface.option = "Ok";
-					} else if (iface.optionType == 4) {
+					} else if (iface.optionType == OPTION_TYPE_TOGGLE) {
 						iface.option = "Select";
-					} else if (iface.optionType == 5) {
+					} else if (iface.optionType == OPTION_TYPE_SELECT) {
 						iface.option = "Select";
-					} else if (iface.optionType == 6) {
+					} else if (iface.optionType == OPTION_TYPE_CONTINUE) {
 						iface.option = "Continue";
 					}
 				}
@@ -246,9 +266,11 @@ public class IfType {
 	public static Image24 getImage(int id, FileArchive media, String name) {
 		long uid = (StringUtil.hashCode(name) << 8) + (long) id;
 		Image24 image = imageCache.get(uid);
+
 		if (image != null) {
 			return image;
 		}
+
 		try {
 			image = new Image24(media, name, id);
 			imageCache.put(uid, image);
@@ -274,7 +296,7 @@ public class IfType {
 	public int activeSeqID;
 	public String activeText;
 	public boolean center;
-	public int[] children;
+	public int[] childID;
 	public int[] childX;
 	public int[] childY;
 	public int color;
@@ -285,7 +307,7 @@ public class IfType {
 	public int height;
 	/**
 	 * Hides this component. Only works for parent components by default.
-	 * @see Game#drawParentComponent(IfType, int, int, int)
+	 * @see Game#drawParentInterface(IfType, int, int, int)
 	 */
 	public boolean hide;
 	public int hoverColor;
@@ -308,20 +330,13 @@ public class IfType {
 	public int modelYaw;
 	public int modelZoom;
 	public String option;
-
-	public static final int OPTION_TYPE_STANDARD = 1;
-	public static final int OPTION_TYPE_SPELL = 2;
-	public static final int OPTION_TYPE_CLOSE = 3;
-	public static final int OPTION_TYPE_TOGGLE = 4;
-	public static final int OPTION_TYPE_SELECT = 5;
-	public static final int OPTION_TYPE_CONTINUE = 6;
 	public int optionType;
 	public int parentID;
 	public int[] scriptComparator;
 	public int[] scriptOperand;
 	public int[][] scripts;
 	public int scrollableHeight;
-	public int scrollPos;
+	public int scrollPosition;
 	public int seqCycle;
 	public int seqFrame;
 	public int seqID;

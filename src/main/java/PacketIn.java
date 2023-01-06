@@ -8,7 +8,7 @@ public final class PacketIn {
 	public static final int CAM_SETPOS = 166;
 	public static final int CAM_SHAKE = 35;
 	public static final int IF_CHAT = 164;
-	public static final int CHAT_COMPONENT_STICKY = 218;
+	public static final int IF_CHAT_STICKY = 218;
 	public static final int CHAT_FILTER_SETTINGS = 206;
 	public static final int CLEAR_MAP_FLAG = 78;
 	public static final int FRIENDLIST_LOADED = 221;
@@ -134,7 +134,7 @@ public final class PacketIn {
 		SIZE[IF_VIEWPORT_OVERLAY] = 2;
 		SIZE[IGNORE_LIST] = -2;
 		SIZE[OBJ_REVEAL] = 7;
-		SIZE[CHAT_COMPONENT_STICKY] = 2;
+		SIZE[IF_CHAT_STICKY] = 2;
 		SIZE[FRIENDLIST_LOADED] = 1;
 		SIZE[IF_SETANGLE] = 8;
 		SIZE[UPDATE_RUNWEIGHT] = 2;

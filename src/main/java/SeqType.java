@@ -36,7 +36,7 @@ public class SeqType {
 	public int[] transformIDs;
 
 	/**
-	 * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentComponent(IfType, int, int, int)}.
+	 * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentInterface(IfType, int, int, int)}.
 	 */
 	public int[] auxiliaryTransformIDs;
 
