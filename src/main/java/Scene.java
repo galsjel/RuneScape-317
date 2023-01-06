@@ -490,17 +490,17 @@ public class Scene {
         levelTiles[level][tileX][tileZ].wallDecoration = deco;
     }
 
-    public boolean push(Entity entity, int level, int tileX, int tileZ, int y, int width, int length, int yaw, int bitset, byte info) {
+    public boolean add(Entity entity, int level, int tileX, int tileZ, int y, int width, int length, int yaw, int bitset, byte info) {
         if (entity == null) {
             return true;
         } else {
             int sceneX = (tileX * 128) + (64 * width);
             int sceneZ = (tileZ * 128) + (64 * length);
-            return push(entity, level, tileX, tileZ, width, length, sceneX, sceneZ, y, yaw, bitset, info, false);
+            return add(entity, level, tileX, tileZ, width, length, sceneX, sceneZ, y, yaw, bitset, info, false);
         }
     }
 
-    public boolean pushTemporary(Entity entity, int level, int x, int z, int y, int yaw, int bitset, boolean forwardPadding, int padding) {
+    public boolean addTemporary(Entity entity, int level, int x, int z, int y, int yaw, int bitset, boolean forwardPadding, int padding) {
         if (entity == null) {
             return true;
         }
@@ -529,18 +529,18 @@ public class Scene {
         z0 /= 128;
         x1 /= 128;
         z1 /= 128;
-        return push(entity, level, x0, z0, (x1 - x0) + 1, (z1 - z0) + 1, x, z, y, yaw, bitset, (byte) 0, true);
+        return add(entity, level, x0, z0, (x1 - x0) + 1, (z1 - z0) + 1, x, z, y, yaw, bitset, (byte) 0, true);
     }
 
-    public boolean pushTemporary(Entity entity, int level, int minTileX, int minTileZ, int maxTileX, int maxTileZ, int x, int z, int y, int yaw, int bitset) {
+    public boolean addTemporary(Entity entity, int level, int minTileX, int minTileZ, int maxTileX, int maxTileZ, int x, int z, int y, int yaw, int bitset) {
         if (entity == null) {
             return true;
         } else {
-            return push(entity, level, minTileX, minTileZ, (maxTileX - minTileX) + 1, (maxTileZ - minTileZ) + 1, x, z, y, yaw, bitset, (byte) 0, true);
+            return add(entity, level, minTileX, minTileZ, (maxTileX - minTileX) + 1, (maxTileZ - minTileZ) + 1, x, z, y, yaw, bitset, (byte) 0, true);
         }
     }
 
-    public boolean push(Entity entity, int level, int tileX, int tileZ, int tileSizeX, int tileSizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
+    public boolean add(Entity entity, int level, int tileX, int tileZ, int tileSizeX, int tileSizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
         for (int tx = tileX; tx < (tileX + tileSizeX); tx++) {
             for (int tz = tileZ; tz < (tileZ + tileSizeZ); tz++) {
                 if ((tx < 0) || (tz < 0) || (tx >= maxTileX) || (tz >= maxTileZ)) {
@@ -2079,7 +2079,7 @@ public class Scene {
         for (int i = 0; i < count; i++) {
             SceneOccluder occluder = occluders[i];
 
-            if (occluder.type == 1) {
+            if (occluder.type == SceneOccluder.TYPE_WALL_X) {
                 int x = (occluder.minTileX - eyeTileX) + 25;
 
                 if ((x < 0) || (x > 50)) {
@@ -2134,7 +2134,7 @@ public class Scene {
                 continue;
             }
 
-            if (occluder.type == 2) {
+            if (occluder.type == SceneOccluder.TYPE_WALL_Z) {
                 int distanceMinTileZ = (occluder.minTileZ - eyeTileZ) + 25;
 
                 if ((distanceMinTileZ < 0) || (distanceMinTileZ > 50)) {
@@ -2184,7 +2184,7 @@ public class Scene {
                 occluder.maxDeltaY = ((occluder.maxY - eyeY) << 10) / deltaMinZ;
                 activeOccluders[activeOccluderCount++] = occluder;
                 activeWallOccluderCount++;
-            } else if (occluder.type == 4) {
+            } else if (occluder.type == SceneOccluder.TYPE_GROUND) {
                 int deltaMaxY = occluder.minY - eyeY;
 
                 if (deltaMaxY <= 128) {

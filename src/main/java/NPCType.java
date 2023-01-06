@@ -62,7 +62,7 @@ public class NPCType {
 	public int varpID = -1;
 	public int level = -1;
 	public String name;
-	public String[] op;
+	public String[] options;
 	public int seqWalkID = -1;
 	public byte size = 1;
 	public int[] colorDst;
@@ -75,14 +75,14 @@ public class NPCType {
 	public int turnSpeed = 32;
 	public int seqTurnLeftID = -1;
 	public boolean interactable = true;
-	public int anInt85;
-	public int anInt86 = 128;
+	public int lightAmbient;
+	public int scaleZ = 128;
 	public boolean showOnMinimap = true;
 	public int[] overrides;
 	public byte[] desc;
 	public int unusedInt1 = -1;
-	public int anInt91 = 128;
-	public int anInt92;
+	public int scaleXY = 128;
+	public int lightAttenuation;
 	/**
 	 * Causes the npc to render on top of other npcs.
 	 */
@@ -206,123 +206,131 @@ public class NPCType {
 			}
 
 			model.createLabelReferences();
-			model.calculateNormals(64 + anInt85, 850 + anInt92, -30, -50, -30, true);
+			model.calculateNormals(64 + lightAmbient, 850 + lightAttenuation, -30, -50, -30, true);
 			modelCache.put(uid, model);
 		}
 
-		Model model_1 = Model.EMPTY;
-		model_1.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
+		Model tmp = Model.EMPTY;
+		tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
 		if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-			model_1.applyTransforms(primaryTransformID, secondaryTransformID, seqMask);
+			tmp.applyTransforms(primaryTransformID, secondaryTransformID, seqMask);
 		} else if (primaryTransformID != -1) {
-			model_1.applyTransform(primaryTransformID);
+			tmp.applyTransform(primaryTransformID);
 		}
 
-		if ((anInt91 != 128) || (anInt86 != 128)) {
-			model_1.scale(anInt91, anInt91, anInt86);
+		if ((scaleXY != 128) || (scaleZ != 128)) {
+			tmp.scale(scaleXY, scaleXY, scaleZ);
 		}
-		model_1.calculateBoundsCylinder();
-		model_1.labelFaces = null;
-		model_1.labelVertices = null;
+
+		tmp.calculateBoundsCylinder();
+		tmp.labelFaces = null;
+		tmp.labelVertices = null;
 
 		if (size == 1) {
-			model_1.pickable = true;
+			tmp.pickable = true;
 		}
-		return model_1;
+
+		return tmp;
 	}
 
 	public void read(Buffer buffer) {
 		do {
-			int i = buffer.read8U();
-			if (i == 0) {
+			int opcode = buffer.read8U();
+
+			if (opcode == 0) {
 				return;
 			}
-			if (i == 1) {
-				int j = buffer.read8U();
-				modelIDs = new int[j];
-				for (int j1 = 0; j1 < j; j1++) {
-					modelIDs[j1] = buffer.read16U();
+
+			if (opcode == 1) {
+				int modelCount = buffer.read8U();
+				modelIDs = new int[modelCount];
+				for (int i = 0; i < modelCount; i++) {
+					modelIDs[i] = buffer.read16U();
 				}
-			} else if (i == 2) {
+			} else if (opcode == 2) {
 				name = buffer.readString();
-			} else if (i == 3) {
+			} else if (opcode == 3) {
 				desc = buffer.readStringRaw();
-			} else if (i == 12) {
+			} else if (opcode == 12) {
 				size = buffer.read();
-			} else if (i == 13) {
+			} else if (opcode == 13) {
 				seqStandID = buffer.read16U();
-			} else if (i == 14) {
+			} else if (opcode == 14) {
 				seqWalkID = buffer.read16U();
-			} else if (i == 17) {
+			} else if (opcode == 17) {
 				seqWalkID = buffer.read16U();
 				seqTurnAroundID = buffer.read16U();
 				seqTurnLeftID = buffer.read16U();
 				seqTurnRightID = buffer.read16U();
-			} else if ((i >= 30) && (i < 40)) {
-				if (op == null) {
-					op = new String[5];
+			} else if ((opcode >= 30) && (opcode < 40)) {
+				if (options == null) {
+					options = new String[5];
 				}
-				op[i - 30] = buffer.readString();
-				if (op[i - 30].equalsIgnoreCase("hidden")) {
-					op[i - 30] = null;
+				options[opcode - 30] = buffer.readString();
+				if (options[opcode - 30].equalsIgnoreCase("hidden")) {
+					options[opcode - 30] = null;
 				}
-			} else if (i == 40) {
-				int k = buffer.read8U();
-				colorSrc = new int[k];
-				colorDst = new int[k];
-				for (int k1 = 0; k1 < k; k1++) {
-					colorSrc[k1] = buffer.read16U();
-					colorDst[k1] = buffer.read16U();
+			} else if (opcode == 40) {
+				int recolorCount = buffer.read8U();
+				colorSrc = new int[recolorCount];
+				colorDst = new int[recolorCount];
+				for (int i = 0; i < recolorCount; i++) {
+					colorSrc[i] = buffer.read16U();
+					colorDst[i] = buffer.read16U();
 				}
-			} else if (i == 60) {
+			} else if (opcode == 60) {
 				int l = buffer.read8U();
 				headModelIDs = new int[l];
 				for (int l1 = 0; l1 < l; l1++) {
 					headModelIDs[l1] = buffer.read16U();
 				}
-			} else if (i == 90) {
+			} else if (opcode == 90) {
 				unusedInt2 = buffer.read16U();
-			} else if (i == 91) {
+			} else if (opcode == 91) {
 				unusedInt0 = buffer.read16U();
-			} else if (i == 92) {
+			} else if (opcode == 92) {
 				unusedInt1 = buffer.read16U();
-			} else if (i == 93) {
+			} else if (opcode == 93) {
 				showOnMinimap = false;
-			} else if (i == 95) {
+			} else if (opcode == 95) {
 				level = buffer.read16U();
-			} else if (i == 97) {
-				anInt91 = buffer.read16U();
-			} else if (i == 98) {
-				anInt86 = buffer.read16U();
-			} else if (i == 99) {
+			} else if (opcode == 97) {
+				scaleXY = buffer.read16U();
+			} else if (opcode == 98) {
+				scaleZ = buffer.read16U();
+			} else if (opcode == 99) {
 				important = true;
-			} else if (i == 100) {
-				anInt85 = buffer.read();
-			} else if (i == 101) {
-				anInt92 = buffer.read() * 5;
-			} else if (i == 102) {
+			} else if (opcode == 100) {
+				lightAmbient = buffer.read();
+			} else if (opcode == 101) {
+				lightAttenuation = buffer.read() * 5;
+			} else if (opcode == 102) {
 				headicon = buffer.read16U();
-			} else if (i == 103) {
+			} else if (opcode == 103) {
 				turnSpeed = buffer.read16U();
-			} else if (i == 106) {
+			} else if (opcode == 106) {
 				varbitID = buffer.read16U();
+
 				if (varbitID == 65535) {
 					varbitID = -1;
 				}
 				varpID = buffer.read16U();
+
 				if (varpID == 65535) {
 					varpID = -1;
 				}
-				int i1 = buffer.read8U();
-				overrides = new int[i1 + 1];
-				for (int i2 = 0; i2 <= i1; i2++) {
-					overrides[i2] = buffer.read16U();
-					if (overrides[i2] == 65535) {
-						overrides[i2] = -1;
+
+				int overrideCount = buffer.read8U();
+				overrides = new int[overrideCount + 1];
+
+				for (int i = 0; i <= overrideCount; i++) {
+					overrides[i] = buffer.read16U();
+					if (overrides[i] == 65535) {
+						overrides[i] = -1;
 					}
 				}
-			} else if (i == 107) {
+			} else if (opcode == 107) {
 				interactable = false;
 			}
 		} while (true);

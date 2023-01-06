@@ -49,37 +49,37 @@ public class VarpType {
 
 	public void read(Buffer buffer, int i) {
 		do {
-			int op = buffer.read8U();
-			if (op == 0) {
+			int opcode = buffer.read8U();
+			if (opcode == 0) {
 				return;
-			} else if (op == 1) {
+			} else if (opcode == 1) {
 				unusedInt0 = buffer.read8U();
-			} else if (op == 2) {
+			} else if (opcode == 2) {
 				unusedInt1 = buffer.read8U();
-			} else if (op == 3) {
+			} else if (opcode == 3) {
 				unusedBool0 = true;
 				anIntArray703[anInt702++] = i;
-			} else if (op == 4) {
+			} else if (opcode == 4) {
 				unusedBool1 = false;
-			} else if (op == 5) {
+			} else if (opcode == 5) {
 				type = buffer.read16U();
-			} else if (op == 6) {
+			} else if (opcode == 6) {
 				unusedBool2 = true;
-			} else if (op == 7) {
+			} else if (opcode == 7) {
 				unusedInt2 = buffer.read32();
-			} else if (op == 8) {
+			} else if (opcode == 8) {
 				unusedInt3 = 1;
 				unusedBool3 = true;
-			} else if (op == 10) {
+			} else if (opcode == 10) {
 				unusedString = buffer.readString();
-			} else if (op == 11) {
+			} else if (opcode == 11) {
 				unusedBool3 = true;
-			} else if (op == 12) {
+			} else if (opcode == 12) {
 				unusedInt4 = buffer.read32();
-			} else if (op == 13) {
+			} else if (opcode == 13) {
 				unusedInt3 = 2;
 			} else {
-				System.out.println("Error unrecognised config code: " + op);
+				System.out.println("Error unrecognised config code: " + opcode);
 			}
 		} while (true);
 	}

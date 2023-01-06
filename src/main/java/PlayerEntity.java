@@ -10,7 +10,7 @@ public class PlayerEntity extends PathingEntity {
 	public final int[] colors = new int[5];
 	public final int[] appearances = new int[12];
 	public long modelUID = -1L;
-	public NPCType npcType;
+	public NPCType transmogrify;
 	public boolean lowmem = false;
 	public int team;
 	public int gender;
@@ -79,34 +79,34 @@ public class PlayerEntity extends PathingEntity {
 			}
 
 			if ((Game.loopCycle >= locStartCycle) && (Game.loopCycle < locStopCycle)) {
-				Model model1 = this.locModel;
-				model1.translate(locOffsetX - super.x, locOffsetY - y, locOffsetZ - super.z);
+				Model locModel = this.locModel;
+				locModel.translate(locOffsetX - super.x, locOffsetY - y, locOffsetZ - super.z);
 
 				if (super.dstYaw == 512) {
-					model1.rotateY90();
-					model1.rotateY90();
-					model1.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
 				} else if (super.dstYaw == 1024) {
-					model1.rotateY90();
-					model1.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
 				} else if (super.dstYaw == 1536) {
-					model1.rotateY90();
+					locModel.rotateY90();
 				}
 
-				model = new Model(2, -819, new Model[]{model, model1});
+				model = new Model(2, -819, new Model[]{model, locModel});
 
 				if (super.dstYaw == 512) {
-					model1.rotateY90();
+					locModel.rotateY90();
 				} else if (super.dstYaw == 1024) {
-					model1.rotateY90();
-					model1.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
 				} else if (super.dstYaw == 1536) {
-					model1.rotateY90();
-					model1.rotateY90();
-					model1.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
+					locModel.rotateY90();
 				}
 
-				model1.translate(super.x - locOffsetX, y - locOffsetY, super.z - locOffsetZ);
+				locModel.translate(super.x - locOffsetX, y - locOffsetY, super.z - locOffsetZ);
 			}
 		}
 		
@@ -118,7 +118,7 @@ public class PlayerEntity extends PathingEntity {
 		buffer.position = 0;
 		gender = buffer.read8U();
 		headicons = buffer.read8U();
-		npcType = null;
+		transmogrify = null;
 		team = 0;
 
 		for (int part = 0; part < 12; part++) {
@@ -133,7 +133,7 @@ public class PlayerEntity extends PathingEntity {
 			appearances[part] = (msb << 8) + lsb;
 
 			if ((part == 0) && (appearances[0] == 65535)) {
-				npcType = NPCType.get(buffer.read16U());
+				transmogrify = NPCType.get(buffer.read16U());
 				break;
 			}
 
@@ -216,14 +216,14 @@ public class PlayerEntity extends PathingEntity {
 	}
 
 	public Model getSequencedModel() {
-		if (npcType != null) {
+		if (transmogrify != null) {
 			int transformID = -1;
 			if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
 				transformID = SeqType.instances[super.primarySeqID].transformIDs[super.primarySeqFrame];
 			} else if (super.secondarySeqID >= 0) {
 				transformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
 			}
-			return npcType.getSequencedModel(-1, transformID, null);
+			return transmogrify.getSequencedModel(-1, transformID, null);
 		}
 
 		long hashCode = this.appearanceHashcode;
@@ -338,19 +338,19 @@ public class PlayerEntity extends PathingEntity {
 			return model;
 		}
 
-		Model animated = Model.EMPTY;
-		animated.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
+		Model tmp = Model.EMPTY;
+		tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
 		if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-			animated.applyTransforms(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
+			tmp.applyTransforms(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
 		} else if (primaryTransformID != -1) {
-			animated.applyTransform(primaryTransformID);
+			tmp.applyTransform(primaryTransformID);
 		}
 
-		animated.calculateBoundsCylinder();
-		animated.labelFaces = null;
-		animated.labelVertices = null;
-		return animated;
+		tmp.calculateBoundsCylinder();
+		tmp.labelFaces = null;
+		tmp.labelVertices = null;
+		return tmp;
 	}
 
 	@Override
@@ -363,8 +363,8 @@ public class PlayerEntity extends PathingEntity {
 			return null;
 		}
 
-		if (npcType != null) {
-			return npcType.getUnlitHeadModel();
+		if (transmogrify != null) {
+			return transmogrify.getUnlitHeadModel();
 		}
 
 		boolean invalid = false;
@@ -403,15 +403,18 @@ public class PlayerEntity extends PathingEntity {
 				}
 			}
 		}
+
 		Model model = new Model(modelCount, models);
-		for (int j1 = 0; j1 < 5; j1++) {
-			if (colors[j1] != 0) {
-				model.recolor(Game.designPartColor[j1][0], Game.designPartColor[j1][colors[j1]]);
-				if (j1 == 1) {
-					model.recolor(Game.designHairColor[0], Game.designHairColor[colors[j1]]);
+
+		for (int part = 0; part < 5; part++) {
+			if (colors[part] != 0) {
+				model.recolor(Game.designPartColor[part][0], Game.designPartColor[part][colors[part]]);
+				if (part == 1) {
+					model.recolor(Game.designHairColor[0], Game.designHairColor[colors[part]]);
 				}
 			}
 		}
+		
 		return model;
 	}
 

@@ -31,19 +31,22 @@ public class SceneBuilder {
         return value;
     }
 
-    public static void method173(Buffer buffer, OnDemand onDemand) {
-        int i_110_ = -1;
+    public static void prefetchLocs(Buffer buffer, OnDemand onDemand) {
+        int locID = -1;
+
         for (; ; ) {
-            int i_111_ = buffer.readSmartU();
-            if (i_111_ == 0) {
+            int deltaID = buffer.readSmartU();
+
+            if (deltaID == 0) {
                 break;
             }
-            i_110_ += i_111_;
-            LocType type = LocType.get(i_110_);
-            type.method574(onDemand);
+
+            locID += deltaID;
+            LocType type = LocType.get(locID);
+            type.prefetch(onDemand);
+
             for (; ; ) {
-                int i_112_ = buffer.readSmartU();
-                if (i_112_ == 0) {
+                if (buffer.readSmartU() == 0) {
                     break;
                 }
                 buffer.read8U();
@@ -99,6 +102,7 @@ public class SceneBuilder {
         if (hsl == -1) {
             return 12345678;
         }
+
         lightness = (lightness * (hsl & 0x7f)) / 128;
 
         if (lightness < 2) {
@@ -106,10 +110,11 @@ public class SceneBuilder {
         } else if (lightness > 126) {
             lightness = 126;
         }
+
         return (hsl & 0xff80) + lightness;
     }
 
-    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, SceneCollisionMap collision, int[][][] levelHeightmap, int x, int locID, int level) {
+    public static void addLoc(Scene scene, int rotation, int z, int kind, int tileLevel, CollisionMap collision, int[][][] levelHeightmap, int x, int locID, int level) {
         int heightSW = levelHeightmap[tileLevel][x][z];
         int heightSE = levelHeightmap[tileLevel][x + 1][z];
         int heightNE = levelHeightmap[tileLevel][x + 1][z + 1];
@@ -179,7 +184,7 @@ public class SceneBuilder {
         }
     }
 
-    private static void addGroundDecoration(Scene scene, int rotation, int z, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addGroundDecoration(Scene scene, int rotation, int z, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -191,11 +196,11 @@ public class SceneBuilder {
         scene.addGroundDecoration(entity, level, x, z, y, bitset, info);
 
         if (loc.solid && loc.interactable) {
-            collision.addSolid(z, x);
+            collision.addSolid(x, z);
         }
     }
 
-    private static void addLoc(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addLoc(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -222,14 +227,14 @@ public class SceneBuilder {
                 length = loc.sizeZ;
             }
 
-            scene.push(entity, level, x, z, y, width, length, angle, bitset, info);
+            scene.add(entity, level, x, z, y, width, length, angle, bitset, info);
         }
         if (loc.solid) {
             collision.add(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, x, z, rotation);
         }
     }
 
-    private static void addWall(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -241,11 +246,11 @@ public class SceneBuilder {
         scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
 
         if (loc.solid) {
-            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+            collision.addWall(x, z, kind, rotation, loc.blocksProjectiles);
         }
     }
 
-    private static void addDiagonalWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addDiagonalWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -257,11 +262,11 @@ public class SceneBuilder {
         scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
 
         if (loc.solid) {
-            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+            collision.addWall(x, z, kind, rotation, loc.blocksProjectiles);
         }
     }
 
-    private static void addFullWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addFullWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         int nextRotation = (rotation + 1) & 0x3;
         Entity locA;
         Entity locB;
@@ -277,11 +282,11 @@ public class SceneBuilder {
         scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], locA, Scene.ROTATION_WALL_TYPE[nextRotation], locB, level, x, z, y, bitset, info);
 
         if (loc.solid) {
-            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
+            collision.addWall(x, z, kind, rotation, loc.blocksProjectiles);
         }
     }
 
-    private static void addWallCorner(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+    private static void addWallCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         Entity entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
@@ -293,23 +298,7 @@ public class SceneBuilder {
         scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, y, bitset, info);
 
         if (loc.solid) {
-            collision.addWall(z, rotation, x, kind, loc.blocksProjectiles);
-        }
-    }
-
-    private static void addDiagonalWall(Scene scene, int rotation, int z, int kind, SceneCollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
-
-        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
-            entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
-        } else {
-            entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
-        }
-
-        scene.push(entity, level, x, z, y, 1, 1, 0, bitset, info);
-
-        if (loc.solid) {
-            collision.add(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, x, z, rotation);
+            collision.addWall(x, z, kind, rotation, loc.blocksProjectiles);
         }
     }
 
@@ -323,6 +312,22 @@ public class SceneBuilder {
         }
 
         scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], entity, level, x, z, y, rotation * 512, 0, 0, bitset, info);
+    }
+
+    private static void addDiagonalWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
+        Entity entity;
+
+        if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
+            entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, kind, heightSE, heightNE, heightSW, heightNW, loc.seqID, true);
+        }
+
+        scene.add(entity, level, x, z, y, 1, 1, 0, bitset, info);
+
+        if (loc.solid) {
+            collision.add(loc.blocksProjectiles, loc.sizeX, loc.sizeZ, x, z, rotation);
+        }
     }
 
     private static void addWallDecorationOutside(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
@@ -359,14 +364,14 @@ public class SceneBuilder {
         int locID = -1;
 
         for (; ; ) {
-            int idDelta = buffer.readSmartU();
-            if (idDelta == 0) {
+            int deltaID = buffer.readSmartU();
+            if (deltaID == 0) {
                 break;
             }
 
-            locID += idDelta;
+            locID += deltaID;
 
-            int coordinate = 0;
+            int pos = 0;
             boolean skip = false;
 
             // this loop is for the same Loc ID.
@@ -377,16 +382,16 @@ public class SceneBuilder {
                     }
                     buffer.read8U();
                 } else {
-                    int coordinateDelta = buffer.readSmartU();
+                    int deltaPos = buffer.readSmartU();
 
-                    if (coordinateDelta == 0) {
+                    if (deltaPos == 0) {
                         break;
                     }
 
-                    coordinate += coordinateDelta - 1;
+                    pos += deltaPos - 1;
 
-                    int z = coordinate & 0x3f;
-                    int x = (coordinate >> 6) & 0x3f;
+                    int z = pos & 0x3f;
+                    int x = (pos >> 6) & 0x3f;
 
                     int kind = buffer.read8U() >> 2;
                     int localX = x + originX;
@@ -443,7 +448,7 @@ public class SceneBuilder {
         blendMagnitude = new int[this.maxTileZ];
     }
 
-    public void build(SceneCollisionMap[] levelCollisionMaps, Scene scene) {
+    public void build(CollisionMap[] levelCollisionMaps, Scene scene) {
         applyBlockFlags(levelCollisionMaps);
         randomize();
 
@@ -459,26 +464,23 @@ public class SceneBuilder {
         buildOccluders();
     }
 
-    private void applyBlockFlags(SceneCollisionMap[] levelCollisionMaps) {
+    private void applyBlockFlags(CollisionMap[] levelCollisionMaps) {
         for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
-                    // solid?
-                    if ((levelTileFlags[level][x][z] & 0x1) != 1) {
-                        continue;
+                    // solid
+                    if ((levelTileFlags[level][x][z] & 0x1) == 1) {
+                        int trueLevel = level;
+
+                        // bridge
+                        if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                            trueLevel--;
+                        }
+
+                        if (trueLevel >= 0) {
+                            levelCollisionMaps[trueLevel].addSolid(x, z);
+                        }
                     }
-
-                    int trueLevel = level;
-
-                    // bridge
-                    if ((levelTileFlags[1][x][z] & 0x2) == 2) {
-                        trueLevel--;
-                    }
-
-                    if (trueLevel >= 0) {
-                        levelCollisionMaps[trueLevel].addSolid(z, x);
-                    }
-
                 }
             }
         }
@@ -697,10 +699,10 @@ public class SceneBuilder {
                 int dx = levelHeightmap[level][x + 1][z] - levelHeightmap[level][x - 1][z];
                 int dz = levelHeightmap[level][x][z + 1] - levelHeightmap[level][x][z - 1];
                 int len = (int) Math.sqrt((dx * dx) + 65536 + (dz * dz));
-                int nx = (dx << 8) / len;
-                int ny = 65536 / len;
-                int nz = (dz << 8) / len;
-                int light = lightAmbient + (((lightX * nx) + (lightY * ny) + (lightZ * nz)) / lightMagnitude);
+                int normalX = (dx << 8) / len;
+                int normalY = 65536 / len;
+                int normalZ = (dz << 8) / len;
+                int light = lightAmbient + (((lightX * normalX) + (lightY * normalY) + (lightZ * normalZ)) / lightMagnitude);
                 int shade = (shademap[x - 1][z] >> 2) + (shademap[x + 1][z] >> 3) + (shademap[x][z - 1] >> 2) + (shademap[x][z + 1] >> 3) + (shademap[x][z] >> 1);
                 levelLightmap[x][z] = light - shade;
             }
@@ -722,26 +724,133 @@ public class SceneBuilder {
         int wall1 = 0b010; // this flag is set by walls with rotation 1 or 3
         int floor = 0b100; // this flag is set by floors which are flat
 
-        for (int top = 0; top < 4; top++) {
-            if (top > 0) {
+        for (int topLevel = 0; topLevel < 4; topLevel++) {
+            if (topLevel > 0) {
                 wall0 <<= 3;
                 wall1 <<= 3;
                 floor <<= 3;
             }
 
-            for (int level = 0; level <= top; level++) {
+            for (int level = 0; level <= topLevel; level++) {
                 for (int tileZ = 0; tileZ <= maxTileZ; tileZ++) {
                     for (int tileX = 0; tileX <= maxTileX; tileX++) {
-                        buildWallOccluders0(wall0, top, level, tileX, tileZ);
-                        buildWallOccluders1(wall1, top, level, tileX, tileZ);
-                        buildFloorOccluders(floor, top, level, tileX, tileZ);
+                        buildWallOccludersX(wall0, topLevel, level, tileX, tileZ);
+                        buildWallOccludersZ(wall1, topLevel, level, tileX, tileZ);
+                        buildFloorOccluders(floor, topLevel, level, tileX, tileZ);
                     }
                 }
             }
         }
     }
 
-    private void buildFloorOccluders(int floor, int top, int level, int tileX, int tileZ) {
+    private void buildWallOccludersX(int wall0, int topLevel, int level, int tileX, int tileZ) {
+        if ((levelOccludemap[level][tileX][tileZ] & wall0) != 0) {
+            int minTileZ = tileZ;
+            int maxTileZ = tileZ;
+            int minLevel = level;
+            int maxLevel = level;
+
+            for (/**/; minTileZ > 0; minTileZ--) {
+                if ((levelOccludemap[level][tileX][minTileZ - 1] & wall0) == 0) {
+                    break;
+                }
+            }
+
+            for (/**/; maxTileZ < this.maxTileZ; maxTileZ++) {
+                if ((levelOccludemap[level][tileX][maxTileZ + 1] & wall0) == 0) {
+                    break;
+                }
+            }
+
+            find_min_level:
+            for (/**/; minLevel > 0; minLevel--) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[minLevel - 1][tileX][z] & wall0) == 0) {
+                        break find_min_level;
+                    }
+                }
+            }
+
+            find_max_level:
+            for (/**/; maxLevel < topLevel; maxLevel++) {
+                for (int z = minTileZ; z <= maxTileZ; z++) {
+                    if ((levelOccludemap[maxLevel + 1][tileX][z] & wall0) == 0) {
+                        break find_max_level;
+                    }
+                }
+            }
+
+            int area = ((maxLevel + 1) - minLevel) * ((maxTileZ - minTileZ) + 1);
+
+            if (area >= 2) {
+                int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
+                int maxY = levelHeightmap[minLevel][tileX][minTileZ];
+
+                Scene.addOccluder(topLevel, tileX * 128, minY, minTileZ * 128, tileX * 128, maxY, (maxTileZ * 128) + 128, SceneOccluder.TYPE_WALL_X);
+
+                for (int l = minLevel; l <= maxLevel; l++) {
+                    for (int z = minTileZ; z <= maxTileZ; z++) {
+                        levelOccludemap[l][tileX][z] &= ~wall0;
+                    }
+                }
+            }
+        }
+    }
+
+    private void buildWallOccludersZ(int wall1, int topLevel, int level, int tileX, int tileZ) {
+        if ((levelOccludemap[level][tileX][tileZ] & wall1) != 0) {
+            int minTileX = tileX;
+            int maxTileX = tileX;
+            int minLevel = level;
+            int maxLevel = level;
+
+            for (/**/; minTileX > 0; minTileX--) {
+                if ((levelOccludemap[level][minTileX - 1][tileZ] & wall1) == 0) {
+                    break;
+                }
+            }
+            for (/**/; maxTileX < this.maxTileX; maxTileX++) {
+                if ((levelOccludemap[level][maxTileX + 1][tileZ] & wall1) == 0) {
+                    break;
+                }
+            }
+
+            find_min_level:
+            for (/**/; minLevel > 0; minLevel--) {
+                for (int x = minTileX; x <= maxTileX; x++) {
+                    if ((levelOccludemap[minLevel - 1][x][tileZ] & wall1) == 0) {
+                        break find_min_level;
+                    }
+                }
+            }
+
+            find_max_level:
+            for (/**/; maxLevel < topLevel; maxLevel++) {
+                for (int x = minTileX; x <= maxTileX; x++) {
+                    if ((levelOccludemap[maxLevel + 1][x][tileZ] & wall1) == 0) {
+                        break find_max_level;
+                    }
+                }
+            }
+
+            int area = ((maxLevel + 1) - minLevel) * ((maxTileX - minTileX) + 1);
+
+            if (area >= 2) {
+                int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
+                int maxY = levelHeightmap[minLevel][minTileX][tileZ];
+
+                Scene.addOccluder(topLevel, minTileX * 128, minY, tileZ * 128, (maxTileX * 128) + 128, maxY, tileZ * 128, SceneOccluder.TYPE_WALL_Z);
+
+                for (int l = minLevel; l <= maxLevel; l++) {
+                    for (int x = minTileX; x <= maxTileX; x++) {
+                        levelOccludemap[l][x][tileZ] &= ~wall1;
+                    }
+                }
+            }
+        }
+    }
+
+    private void buildFloorOccluders(int floor, int topLevel, int level, int tileX, int tileZ) {
         if ((levelOccludemap[level][tileX][tileZ] & floor) != 0) {
             int minTileX = tileX;
             int maxTileX = tileX;
@@ -780,118 +889,11 @@ public class SceneBuilder {
             if ((((maxTileX - minTileX) + 1) * ((maxTileZ - minTileZ) + 1)) >= 4) {
                 int y = levelHeightmap[level][minTileX][minTileZ];
 
-                Scene.addOccluder(top, minTileX * 128, y, minTileZ * 128, (maxTileX * 128) + 128, y, (maxTileZ * 128) + 128, 4);
+                Scene.addOccluder(topLevel, minTileX * 128, y, minTileZ * 128, (maxTileX * 128) + 128, y, (maxTileZ * 128) + 128, SceneOccluder.TYPE_GROUND);
 
                 for (int x = minTileX; x <= maxTileX; x++) {
                     for (int z = minTileZ; z <= maxTileZ; z++) {
                         levelOccludemap[level][x][z] &= ~floor;
-                    }
-                }
-            }
-        }
-    }
-
-    private void buildWallOccluders1(int wall1, int top, int level, int tileX, int tileZ) {
-        if ((levelOccludemap[level][tileX][tileZ] & wall1) != 0) {
-            int minTileX = tileX;
-            int maxTileX = tileX;
-            int minLevel = level;
-            int maxLevel = level;
-
-            for (/**/; minTileX > 0; minTileX--) {
-                if ((levelOccludemap[level][minTileX - 1][tileZ] & wall1) == 0) {
-                    break;
-                }
-            }
-            for (/**/; maxTileX < this.maxTileX; maxTileX++) {
-                if ((levelOccludemap[level][maxTileX + 1][tileZ] & wall1) == 0) {
-                    break;
-                }
-            }
-
-            find_min_level:
-            for (/**/; minLevel > 0; minLevel--) {
-                for (int x = minTileX; x <= maxTileX; x++) {
-                    if ((levelOccludemap[minLevel - 1][x][tileZ] & wall1) == 0) {
-                        break find_min_level;
-                    }
-                }
-            }
-
-            find_max_level:
-            for (/**/; maxLevel < top; maxLevel++) {
-                for (int x = minTileX; x <= maxTileX; x++) {
-                    if ((levelOccludemap[maxLevel + 1][x][tileZ] & wall1) == 0) {
-                        break find_max_level;
-                    }
-                }
-            }
-
-            int area = ((maxLevel + 1) - minLevel) * ((maxTileX - minTileX) + 1);
-
-            if (area >= 2) {
-                int minY = levelHeightmap[maxLevel][minTileX][tileZ] - 240;
-                int maxY = levelHeightmap[minLevel][minTileX][tileZ];
-
-                Scene.addOccluder(top, minTileX * 128, minY, tileZ * 128, (maxTileX * 128) + 128, maxY, tileZ * 128, 2);
-
-                for (int l = minLevel; l <= maxLevel; l++) {
-                    for (int x = minTileX; x <= maxTileX; x++) {
-                        levelOccludemap[l][x][tileZ] &= ~wall1;
-                    }
-                }
-            }
-        }
-    }
-
-    private void buildWallOccluders0(int wall0, int top, int level, int tileX, int tileZ) {
-        if ((levelOccludemap[level][tileX][tileZ] & wall0) != 0) {
-            int minTileZ = tileZ;
-            int maxTileZ = tileZ;
-            int minLevel = level;
-            int maxLevel = level;
-
-            for (/**/; minTileZ > 0; minTileZ--) {
-                if ((levelOccludemap[level][tileX][minTileZ - 1] & wall0) == 0) {
-                    break;
-                }
-            }
-
-            for (/**/; maxTileZ < this.maxTileZ; maxTileZ++) {
-                if ((levelOccludemap[level][tileX][maxTileZ + 1] & wall0) == 0) {
-                    break;
-                }
-            }
-
-            find_min_level:
-            for (/**/; minLevel > 0; minLevel--) {
-                for (int z = minTileZ; z <= maxTileZ; z++) {
-                    if ((levelOccludemap[minLevel - 1][tileX][z] & wall0) == 0) {
-                        break find_min_level;
-                    }
-                }
-            }
-
-            find_max_level:
-            for (/**/; maxLevel < top; maxLevel++) {
-                for (int z = minTileZ; z <= maxTileZ; z++) {
-                    if ((levelOccludemap[maxLevel + 1][tileX][z] & wall0) == 0) {
-                        break find_max_level;
-                    }
-                }
-            }
-
-            int area = ((maxLevel + 1) - minLevel) * ((maxTileZ - minTileZ) + 1);
-
-            if (area >= 2) {
-                int minY = levelHeightmap[maxLevel][tileX][minTileZ] - 240;
-                int maxY = levelHeightmap[minLevel][tileX][minTileZ];
-
-                Scene.addOccluder(top, tileX * 128, minY, minTileZ * 128, tileX * 128, maxY, (maxTileZ * 128) + 128, 1);
-
-                for (int l = minLevel; l <= maxLevel; l++) {
-                    for (int z = minTileZ; z <= maxTileZ; z++) {
-                        levelOccludemap[l][tileX][z] &= ~wall0;
                     }
                 }
             }
@@ -933,18 +935,21 @@ public class SceneBuilder {
         }
     }
 
-    public void addLoc(Scene scene, SceneCollisionMap collision, int locID, int kind, int rotation, int level, int x, int z) {
+    public void addLoc(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z) {
         if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != SceneBuilder.level))) {
             return;
         }
+
         if (level < minLevel) {
             minLevel = level;
         }
+
         int heightmapSW = levelHeightmap[level][x][z];
         int heightmapSE = levelHeightmap[level][x + 1][z];
         int heightmapNE = levelHeightmap[level][x + 1][z + 1];
         int heightmapNW = levelHeightmap[level][x][z + 1];
         int heightmapAverage = (heightmapSW + heightmapSE + heightmapNE + heightmapNW) >> 2;
+
         LocType type = LocType.get(locID);
         int bitset = x + (z << 7) + (locID << 14) + 0x40000000;
 
@@ -955,241 +960,21 @@ public class SceneBuilder {
         byte info = (byte) ((rotation << 6) + kind);
 
         if (kind == 22) {
-            if (!lowmem || type.interactable || type.important) {
-                Entity entity;
-
-                if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                    entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                } else {
-                    entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                }
-
-                scene.addGroundDecoration(entity, level, x, z, heightmapAverage, bitset, info);
-
-                if (type.solid && type.interactable && (collision != null)) {
-                    collision.addSolid(z, x);
-                }
-            }
+            addGroundDecoration(scene, collision, locID, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if ((kind == 10) || (kind == 11)) {
-            Entity entity;
-
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 10, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-
-            if (entity != null) {
-                int yaw = 0;
-
-                if (kind == 11) {
-                    yaw += 256;
-                }
-
-                int width;
-                int height;
-
-                if ((rotation == 1) || (rotation == 3)) {
-                    width = type.sizeZ;
-                    height = type.sizeX;
-                } else {
-                    width = type.sizeX;
-                    height = type.sizeZ;
-                }
-
-                if (scene.push(entity, level, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
-                    Model model;
-
-                    if (entity instanceof Model) {
-                        model = (Model) entity;
-                    } else {
-                        model = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                    }
-
-                    if (model != null) {
-                        for (int dx = 0; dx <= width; dx++) {
-                            for (int dz = 0; dz <= height; dz++) {
-                                int shade = model.radius / 4;
-
-                                if (shade > 30) {
-                                    shade = 30;
-                                }
-
-                                if (shade > levelShademap[level][x + dx][z + dz]) {
-                                    levelShademap[level][x + dx][z + dz] = (byte) shade;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
-            }
+            addLoc(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind >= 12) {
-            Entity entity;
-
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-
-            scene.push(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
-
-            if ((kind >= 12) && (kind <= 17) && (kind != 13) && (level > 0)) {
-                levelOccludemap[level][x][z] |= 0b100_100_100_100;
-            }
-
-            if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
-            }
+            addRoof(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 0) {
-            Entity entity;
-
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(0, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 0, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
-
-            if (rotation == 0) {
-                if (type.castShadow) {
-                    levelShademap[level][x][z] = (byte) 50;
-                    levelShademap[level][x][z + 1] = (byte) 50;
-                }
-                if (type.occludes) {
-                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
-                }
-            } else if (rotation == 1) {
-                if (type.castShadow) {
-                    levelShademap[level][x][z + 1] = (byte) 50;
-                    levelShademap[level][x + 1][z + 1] = (byte) 50;
-                }
-                if (type.occludes) {
-                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
-                }
-            } else if (rotation == 2) {
-                if (type.castShadow) {
-                    levelShademap[level][x + 1][z] = (byte) 50;
-                    levelShademap[level][x + 1][z + 1] = (byte) 50;
-                }
-                if (type.occludes) {
-                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
-                }
-            } else if (rotation == 3) {
-                if (type.castShadow) {
-                    levelShademap[level][x][z] = (byte) 50;
-                    levelShademap[level][x + 1][z] = (byte) 50;
-                }
-                if (type.occludes) {
-                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
-                }
-            }
-
-            if (type.solid && (collision != null)) {
-                collision.addWall(z, rotation, x, kind, type.blocksProjectiles);
-            }
-
-            if (type.decorationPadding != 16) {
-                scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
-            }
+            addWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 1) {
-            Entity entity;
-
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(1, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 1, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-
-            scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
-
-            if (type.castShadow) {
-                if (rotation == 0) {
-                    levelShademap[level][x][z + 1] = (byte) 50;
-                } else if (rotation == 1) {
-                    levelShademap[level][x + 1][z + 1] = (byte) 50;
-                } else if (rotation == 2) {
-                    levelShademap[level][x + 1][z] = (byte) 50;
-                } else if (rotation == 3) {
-                    levelShademap[level][x][z] = (byte) 50;
-                }
-            }
-
-            if (type.solid && (collision != null)) {
-                collision.addWall(z, rotation, x, kind, type.blocksProjectiles);
-            }
+            addDiagonalWallCorner(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 2) {
-            int nextRotation = (rotation + 1) & 0x3;
-            Entity entityA;
-            Entity entityB;
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entityA = type.getModel(2, 4 + rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-                entityB = type.getModel(2, nextRotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-                entityB = new LocEntity(locID, nextRotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-            scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entityA, Scene.ROTATION_WALL_TYPE[nextRotation], entityB, level, x, z, heightmapAverage, bitset, info);
-
-            if (type.occludes) {
-                if (rotation == 0) {
-                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
-                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
-                } else if (rotation == 1) {
-                    levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
-                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
-                } else if (rotation == 2) {
-                    levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
-                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
-                } else if (rotation == 3) {
-                    levelOccludemap[level][x][z] |= 0b010_010_010_010;
-                    levelOccludemap[level][x][z] |= 0b001_001_001_001;
-                }
-            }
-            if (type.solid && (collision != null)) {
-                collision.addWall(z, rotation, x, kind, type.blocksProjectiles);
-            }
-            if (type.decorationPadding != 16) {
-                scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
-            }
+            addFullWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 3) {
-            Entity entity;
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(3, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 3, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-            scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
-            if (type.castShadow) {
-                if (rotation == 0) {
-                    levelShademap[level][x][z + 1] = (byte) 50;
-                } else if (rotation == 1) {
-                    levelShademap[level][x + 1][z + 1] = (byte) 50;
-                } else if (rotation == 2) {
-                    levelShademap[level][x + 1][z] = (byte) 50;
-                } else if (rotation == 3) {
-                    levelShademap[level][x][z] = (byte) 50;
-                }
-            }
-            if (type.solid && (collision != null)) {
-                collision.addWall(z, rotation, x, kind, type.blocksProjectiles);
-            }
+            addWallCorner(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else if (kind == 9) {
-            Entity entity;
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
-            scene.push(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
-            if (type.solid && (collision != null)) {
-                collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
-            }
+            addDiagonalWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else {
             if (type.adjustToTerrain) {
                 if (rotation == 1) {
@@ -1228,14 +1013,276 @@ public class SceneBuilder {
         }
     }
 
-    private static void addDiagonalWallDecorationBoth(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private static void addGroundDecoration(Scene scene, CollisionMap collision, int locID, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        if (!lowmem || type.interactable || type.important) {
+            Entity entity;
+
+            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+                entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+            } else {
+                entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+            }
+
+            scene.addGroundDecoration(entity, level, x, z, heightmapAverage, bitset, info);
+
+            if (type.solid && type.interactable && (collision != null)) {
+                collision.addSolid(x, z);
+            }
+        }
+    }
+
+    private void addLoc(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 10, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        if (entity != null) {
+            int yaw = 0;
+
+            if (kind == 11) {
+                yaw += 256;
+            }
+
+            int width;
+            int height;
+
+            if ((rotation == 1) || (rotation == 3)) {
+                width = type.sizeZ;
+                height = type.sizeX;
+            } else {
+                width = type.sizeX;
+                height = type.sizeZ;
+            }
+
+            if (scene.add(entity, level, x, z, heightmapAverage, width, height, yaw, bitset, info) && type.castShadow) {
+                Model model;
+
+                if (entity instanceof Model) {
+                    model = (Model) entity;
+                } else {
+                    model = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+                }
+
+                if (model != null) {
+                    for (int dx = 0; dx <= width; dx++) {
+                        for (int dz = 0; dz <= height; dz++) {
+                            int shade = model.radius / 4;
+
+                            if (shade > 30) {
+                                shade = 30;
+                            }
+
+                            if (shade > levelShademap[level][x + dx][z + dz]) {
+                                levelShademap[level][x + dx][z + dz] = (byte) shade;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
+        }
+    }
+
+    private void addRoof(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+
+        if ((kind >= 12) && (kind <= 17) && (kind != 13) && (level > 0)) {
+            levelOccludemap[level][x][z] |= 0b100_100_100_100;
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
+        }
+    }
+
+    private void addWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(0, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 0, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
+
+        if (rotation == 0) {
+            if (type.castShadow) {
+                levelShademap[level][x][z] = (byte) 50;
+                levelShademap[level][x][z + 1] = (byte) 50;
+            }
+            if (type.occludes) {
+                levelOccludemap[level][x][z] |= 0b001_001_001_001;
+            }
+        } else if (rotation == 1) {
+            if (type.castShadow) {
+                levelShademap[level][x][z + 1] = (byte) 50;
+                levelShademap[level][x + 1][z + 1] = (byte) 50;
+            }
+            if (type.occludes) {
+                levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
+            }
+        } else if (rotation == 2) {
+            if (type.castShadow) {
+                levelShademap[level][x + 1][z] = (byte) 50;
+                levelShademap[level][x + 1][z + 1] = (byte) 50;
+            }
+            if (type.occludes) {
+                levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
+            }
+        } else if (rotation == 3) {
+            if (type.castShadow) {
+                levelShademap[level][x][z] = (byte) 50;
+                levelShademap[level][x + 1][z] = (byte) 50;
+            }
+            if (type.occludes) {
+                levelOccludemap[level][x][z] |= 0b010_010_010_010;
+            }
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
+        }
+
+        if (type.decorationPadding != 16) {
+            scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
+        }
+    }
+
+    private void addDiagonalWallCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(1, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 1, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
+
+        if (type.castShadow) {
+            if (rotation == 0) {
+                levelShademap[level][x][z + 1] = (byte) 50;
+            } else if (rotation == 1) {
+                levelShademap[level][x + 1][z + 1] = (byte) 50;
+            } else if (rotation == 2) {
+                levelShademap[level][x + 1][z] = (byte) 50;
+            } else if (rotation == 3) {
+                levelShademap[level][x][z] = (byte) 50;
+            }
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
+        }
+    }
+
+    private void addFullWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        int nextRotation = (rotation + 1) & 0x3;
+        Entity entityA;
+        Entity entityB;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entityA = type.getModel(2, 4 + rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+            entityB = type.getModel(2, nextRotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entityA = new LocEntity(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+            entityB = new LocEntity(locID, nextRotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_TYPE[rotation], entityA, Scene.ROTATION_WALL_TYPE[nextRotation], entityB, level, x, z, heightmapAverage, bitset, info);
+
+        if (type.occludes) {
+            if (rotation == 0) {
+                levelOccludemap[level][x][z] |= 0b001_001_001_001;
+                levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
+            } else if (rotation == 1) {
+                levelOccludemap[level][x][z + 1] |= 0b010_010_010_010;
+                levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
+            } else if (rotation == 2) {
+                levelOccludemap[level][x + 1][z] |= 0b001_001_001_001;
+                levelOccludemap[level][x][z] |= 0b010_010_010_010;
+            } else if (rotation == 3) {
+                levelOccludemap[level][x][z] |= 0b010_010_010_010;
+                levelOccludemap[level][x][z] |= 0b001_001_001_001;
+            }
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
+        }
+
+        if (type.decorationPadding != 16) {
+            scene.setWallDecorationOffset(level, x, z, type.decorationPadding);
+        }
+    }
+
+    private void addWallCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(3, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 3, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+
+        scene.setWall(Scene.ROTATION_WALL_CORNER_TYPE[rotation], entity, 0, null, level, x, z, heightmapAverage, bitset, info);
+
+        if (type.castShadow) {
+            if (rotation == 0) {
+                levelShademap[level][x][z + 1] = (byte) 50;
+            } else if (rotation == 1) {
+                levelShademap[level][x + 1][z + 1] = (byte) 50;
+            } else if (rotation == 2) {
+                levelShademap[level][x + 1][z] = (byte) 50;
+            } else if (rotation == 3) {
+                levelShademap[level][x][z] = (byte) 50;
+            }
+        }
+
+        if (type.solid && (collision != null)) {
+            collision.addWall(x, z, kind, rotation, type.blocksProjectiles);
+        }
+    }
+
+    private static void addDiagonalWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+        Entity entity;
+
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
+        scene.add(entity, level, x, z, heightmapAverage, 1, 1, 0, bitset, info);
+
+        if (type.solid && (collision != null)) {
+            collision.add(type.blocksProjectiles, type.sizeX, type.sizeZ, x, z, rotation);
+        }
+    }
+
+    private static void addDiagonalWallDecorationInside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         Entity entity;
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
         } else {
             entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
         }
-        scene.setWallDecoration(0x300, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+        scene.setWallDecoration(0x100, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
     }
 
     private static void addDiagonalWallDecorationOutside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
@@ -1248,14 +1295,14 @@ public class SceneBuilder {
         scene.setWallDecoration(0x200, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
     }
 
-    private static void addDiagonalWallDecorationInside(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
+    private static void addDiagonalWallDecorationBoth(int z, Scene scene, int level, int x, int locID, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         Entity entity;
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
         } else {
             entity = new LocEntity(locID, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
         }
-        scene.setWallDecoration(0x100, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
+        scene.setWallDecoration(0x300, entity, level, x, z, heightmapAverage, rotation, 0, 0, bitset, info);
     }
 
     public int decimateHSL(int hue, int saturation, int lightness) {
@@ -1274,11 +1321,11 @@ public class SceneBuilder {
         return ((hue / 4) << 10) + ((saturation / 32) << 7) + (lightness / 2);
     }
 
-    public void readChunkTiles(SceneCollisionMap[] collisionMaps, byte[] data, int chunkX, int chunkZ, int mapLevel, int chunkRotation, int originX, int originZ, int level) {
+    public void readChunkTiles(CollisionMap[] collisionMaps, byte[] data, int chunkX, int chunkZ, int mapLevel, int chunkRotation, int originX, int originZ, int level) {
         for (int dx = 0; dx < 8; dx++) {
             for (int dz = 0; dz < 8; dz++) {
                 if (((originX + dx) > 0) && ((originX + dx) < 103) && ((originZ + dz) > 0) && ((originZ + dz) < 103)) {
-                    collisionMaps[level].flags[originX + dx][originZ + dz] &= ~0x1000000;
+                    collisionMaps[level].flags[originX + dx][originZ + dz] &= ~CollisionMap.FLAG_UNINITIALIZED;
                 }
             }
         }
@@ -1296,12 +1343,12 @@ public class SceneBuilder {
         }
     }
 
-    public void readTiles(byte[] data, int offsetZ, int offsetX, int originX, int originZ, SceneCollisionMap[] collisionMaps) {
+    public void readTiles(byte[] data, int offsetZ, int offsetX, int originX, int originZ, CollisionMap[] collisionMaps) {
         for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 64; x++) {
                 for (int z = 0; z < 64; z++) {
                     if (((offsetX + x) > 0) && ((offsetX + x) < 103) && ((offsetZ + z) > 0) && ((offsetZ + z) < 103)) {
-                        collisionMaps[level].flags[offsetX + x][offsetZ + z] &= ~0x1000000;
+                        collisionMaps[level].flags[offsetX + x][offsetZ + z] &= ~CollisionMap.FLAG_UNINITIALIZED;
                     }
                 }
             }
@@ -1387,7 +1434,7 @@ public class SceneBuilder {
         return level;
     }
 
-    public void readChunkLocs(SceneCollisionMap[] collisionMaps, Scene scene, int mapLevel, int mapRotation, int mapChunkX, int mapChunkZ, int originX, int originZ, byte[] data, int level) {
+    public void readChunkLocs(CollisionMap[] collisionMaps, Scene scene, int mapLevel, int mapRotation, int mapChunkX, int mapChunkZ, int originX, int originZ, byte[] data, int level) {
         Buffer in = new Buffer(data);
         int locID = -1;
 
@@ -1436,7 +1483,7 @@ public class SceneBuilder {
                     collisionLevel--;
                 }
 
-                SceneCollisionMap collisionMap = null;
+                CollisionMap collisionMap = null;
 
                 if (collisionLevel >= 0) {
                     collisionMap = collisionMaps[collisionLevel];
@@ -1473,7 +1520,7 @@ public class SceneBuilder {
         return (hsl & 0xff80) + scalar;
     }
 
-    public void readLocs(SceneCollisionMap[] collisionMaps, Scene scene, int originX, int originZ, byte[] data) {
+    public void readLocs(CollisionMap[] collisionMaps, Scene scene, int originX, int originZ, byte[] data) {
         Buffer in = new Buffer(data);
         int locID = -1;
         for (; ; ) {
@@ -1510,7 +1557,7 @@ public class SceneBuilder {
                         collisionLevel--;
                     }
 
-                    SceneCollisionMap collisionMap = null;
+                    CollisionMap collisionMap = null;
 
                     if (collisionLevel >= 0) {
                         collisionMap = collisionMaps[collisionLevel];

@@ -471,7 +471,7 @@ public class OnDemand implements Runnable {
 		}
 	}
 
-	public void method560(int file, int store) {
+	public void prefetch(int file, int store) {
 		if (game.filestores[0] == null) {
 			return;
 		}

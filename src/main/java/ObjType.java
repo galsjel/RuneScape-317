@@ -29,10 +29,10 @@ public class ObjType {
 		Buffer idx = new Buffer(archive.read("obj.idx"));
 		count = idx.read16U();
 		typeOffset = new int[count];
-		int i = 2;
+		int offset = 2;
 		for (int j = 0; j < count; j++) {
-			typeOffset[j] = i;
-			i += idx.read16U();
+			typeOffset[j] = offset;
+			offset += idx.read16U();
 		}
 		cached = new ObjType[10];
 		for (int k = 0; k < 10; k++) {
@@ -58,7 +58,7 @@ public class ObjType {
 		if (!Game.members && type.members) {
 			type.name = "Members Object";
 			type.examine = "Login to a members' server to use this object.".getBytes();
-			type.groundOptions = null;
+			type.options = null;
 			type.inventoryOptions = null;
 			type.team = 0;
 		}
@@ -81,15 +81,15 @@ public class ObjType {
 
 		ObjType type = get(id);
 
-		if (type.stackIDs == null) {
+		if (type.stackID == null) {
 			amount = -1;
 		}
 
 		if (amount > 1) {
 			int newID = -1;
 			for (int j1 = 0; j1 < 10; j1++) {
-				if ((amount >= type.stackAmount[j1]) && (type.stackAmount[j1] != 0)) {
-					newID = type.stackIDs[j1];
+				if ((amount >= type.stackCount[j1]) && (type.stackCount[j1] != 0)) {
+					newID = type.stackID[j1];
 				}
 			}
 			if (newID != -1) {
@@ -234,37 +234,37 @@ public class ObjType {
 	public int id = -1;
 	public int[] dstColor;
 	public boolean members;
-	public int femaleModelId2;
+	public int femaleModelID2;
 	public int certificateID;
-	public int femaleModelId1;
-	public int maleModelId0;
-	public int maleHeadModelId1;
+	public int femaleModelID1;
+	public int maleModelID0;
+	public int maleHeadModelID1;
 	public int scaleX;
-	public String[] groundOptions;
+	public String[] options;
 	public int iconOffsetX;
 	public String name;
-	public int femaleHeadModel1;
+	public int femaleHeadModelID1;
 	public int modelID;
-	public int maleHeadModelId0;
+	public int maleHeadModelID0;
 	public boolean stackable;
 	public byte[] examine;
 	public int linkedID;
 	public int iconZoom;
 	public int lightAttenuation;
-	public int maleModelId2;
-	public int maleModelId1;
+	public int maleModelID2;
+	public int maleModelID1;
 	public String[] inventoryOptions;
 	public int iconPitch;
 	public int scaleY;
 	public int scaleZ;
-	public int[] stackIDs;
+	public int[] stackID;
 	public int iconOffsetY;
 	public int lightAmbient;
-	public int femaleHeadModel0;
+	public int femaleHeadModelID0;
 	public int iconYaw;
 	public int unusedInt;
-	public int femaleModelId0;
-	public int[] stackAmount;
+	public int femaleModelID0;
+	public int[] stackCount;
 	public int team;
 	public int iconRoll;
 	public byte maleOffsetY;
@@ -273,36 +273,45 @@ public class ObjType {
 	}
 
 	public boolean validateHeadModel(int gender) {
-		int m0 = maleHeadModelId0;
-		int m1 = maleHeadModelId1;
+		int modelID0 = maleHeadModelID0;
+		int modelID1 = maleHeadModelID1;
+
 		if (gender == 1) {
-			m0 = femaleHeadModel0;
-			m1 = femaleHeadModel1;
+			modelID0 = femaleHeadModelID0;
+			modelID1 = femaleHeadModelID1;
 		}
-		if (m0 == -1) {
+
+		if (modelID0 == -1) {
 			return true;
 		}
-		boolean valid = Model.validate(m0);
-		if ((m1 != -1) && !Model.validate(m1)) {
+
+		boolean valid = Model.validate(modelID0);
+
+		if ((modelID1 != -1) && !Model.validate(modelID1)) {
 			valid = false;
 		}
 		return valid;
 	}
 
 	public Model getHeadModel(int gender) {
-		int m0 = maleHeadModelId0;
-		int m1 = maleHeadModelId1;
+		int modelID0 = maleHeadModelID0;
+		int modelID1 = maleHeadModelID1;
+
 		if (gender == 1) {
-			m0 = femaleHeadModel0;
-			m1 = femaleHeadModel1;
+			modelID0 = femaleHeadModelID0;
+			modelID1 = femaleHeadModelID1;
 		}
-		if (m0 == -1) {
+
+		if (modelID0 == -1) {
 			return null;
 		}
-		Model model = Model.tryGet(m0);
-		if (m1 != -1) {
-			model = new Model(2, new Model[]{model, Model.tryGet(m1)});
+
+		Model model = Model.tryGet(modelID0);
+
+		if (modelID1 != -1) {
+			model = new Model(2, new Model[]{model, Model.tryGet(modelID1)});
 		}
+
 		if (srcColor != null) {
 			for (int i = 0; i < srcColor.length; i++) {
 				model.recolor(srcColor[i], dstColor[i]);
@@ -312,49 +321,55 @@ public class ObjType {
 	}
 
 	public boolean validateWornModel(int gender) {
-		int m0 = maleModelId0;
-		int m1 = maleModelId1;
-		int m2 = maleModelId2;
+		int modelID0 = maleModelID0;
+		int modelID1 = maleModelID1;
+		int modelID2 = maleModelID2;
+
 		if (gender == 1) {
-			m0 = femaleModelId0;
-			m1 = femaleModelId1;
-			m2 = femaleModelId2;
+			modelID0 = femaleModelID0;
+			modelID1 = femaleModelID1;
+			modelID2 = femaleModelID2;
 		}
-		if (m0 == -1) {
+
+		if (modelID0 == -1) {
 			return true;
 		}
-		boolean valid = Model.validate(m0);
-		if ((m1 != -1) && !Model.validate(m1)) {
+
+		boolean valid = Model.validate(modelID0);
+
+		if ((modelID1 != -1) && !Model.validate(modelID1)) {
 			valid = false;
 		}
-		if ((m2 != -1) && !Model.validate(m2)) {
+
+		if ((modelID2 != -1) && !Model.validate(modelID2)) {
 			valid = false;
 		}
+
 		return valid;
 	}
 
 	public Model getWornModel(int gender) {
-		int m0 = maleModelId0;
-		int m1 = maleModelId1;
-		int m2 = maleModelId2;
+		int modelID0 = maleModelID0;
+		int modelID1 = maleModelID1;
+		int modelID2 = maleModelID2;
 
 		if (gender == 1) {
-			m0 = femaleModelId0;
-			m1 = femaleModelId1;
-			m2 = femaleModelId2;
+			modelID0 = femaleModelID0;
+			modelID1 = femaleModelID1;
+			modelID2 = femaleModelID2;
 		}
 
-		if (m0 == -1) {
+		if (modelID0 == -1) {
 			return null;
 		}
 
-		Model model = Model.tryGet(m0);
+		Model model = Model.tryGet(modelID0);
 
-		if (m1 != -1) {
-			if (m2 != -1) {
-				model = new Model(3, new Model[]{model, Model.tryGet(m1), Model.tryGet(m2)});
+		if (modelID1 != -1) {
+			if (modelID2 != -1) {
+				model = new Model(3, new Model[]{model, Model.tryGet(modelID1), Model.tryGet(modelID2)});
 			} else {
-				model = new Model(2, new Model[]{model, Model.tryGet(m1)});
+				model = new Model(2, new Model[]{model, Model.tryGet(modelID1)});
 			}
 		}
 
@@ -367,8 +382,8 @@ public class ObjType {
 		}
 
 		if (srcColor != null) {
-			for (int i1 = 0; i1 < srcColor.length; i1++) {
-				model.recolor(srcColor[i1], dstColor[i1]);
+			for (int i = 0; i < srcColor.length; i++) {
+				model.recolor(srcColor[i], dstColor[i]);
 			}
 		}
 
@@ -391,22 +406,22 @@ public class ObjType {
 		stackable = false;
 		cost = 1;
 		members = false;
-		groundOptions = null;
+		options = null;
 		inventoryOptions = null;
-		maleModelId0 = -1;
-		maleModelId1 = -1;
+		maleModelID0 = -1;
+		maleModelID1 = -1;
 		maleOffsetY = 0;
-		femaleModelId0 = -1;
-		femaleModelId1 = -1;
+		femaleModelID0 = -1;
+		femaleModelID1 = -1;
 		femaleOffsetY = 0;
-		maleModelId2 = -1;
-		femaleModelId2 = -1;
-		maleHeadModelId0 = -1;
-		maleHeadModelId1 = -1;
-		femaleHeadModel0 = -1;
-		femaleHeadModel1 = -1;
-		stackIDs = null;
-		stackAmount = null;
+		maleModelID2 = -1;
+		femaleModelID2 = -1;
+		maleHeadModelID0 = -1;
+		maleHeadModelID1 = -1;
+		femaleHeadModelID0 = -1;
+		femaleHeadModelID1 = -1;
+		stackID = null;
+		stackCount = null;
 		linkedID = -1;
 		certificateID = -1;
 		scaleX = 128;
@@ -432,25 +447,30 @@ public class ObjType {
 		name = linked.name;
 		members = linked.members;
 		cost = linked.cost;
+
 		String s = "a";
 		char c = linked.name.charAt(0);
+
 		if ((c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U')) {
 			s = "an";
 		}
+
 		examine = ("Swap this note at any bank for " + s + " " + linked.name + ".").getBytes();
 		stackable = true;
 	}
 
-	public Model getModel(int amount) {
-		if ((stackIDs != null) && (amount > 1)) {
-			int newID = -1;
-			for (int k = 0; k < 10; k++) {
-				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
-					newID = stackIDs[k];
+	public Model getModel(int count) {
+		if ((stackID != null) && (count > 1)) {
+			int id = -1;
+
+			for (int i = 0; i < 10; i++) {
+				if ((count >= stackCount[i]) && (stackCount[i] != 0)) {
+					id = stackID[i];
 				}
 			}
-			if (newID != -1) {
-				return get(newID).getModel(1);
+
+			if (id != -1) {
+				return get(id).getModel(1);
 			}
 		}
 
@@ -471,8 +491,8 @@ public class ObjType {
 		}
 
 		if (srcColor != null) {
-			for (int l = 0; l < srcColor.length; l++) {
-				model.recolor(srcColor[l], dstColor[l]);
+			for (int i = 0; i < srcColor.length; i++) {
+				model.recolor(srcColor[i], dstColor[i]);
 			}
 		}
 
@@ -482,25 +502,30 @@ public class ObjType {
 		return model;
 	}
 
-	public Model getUnlitModel(int amount) {
-		if ((stackIDs != null) && (amount > 1)) {
-			int j = -1;
-			for (int k = 0; k < 10; k++) {
-				if ((amount >= stackAmount[k]) && (stackAmount[k] != 0)) {
-					j = stackIDs[k];
+	public Model getUnlitModel(int count) {
+		if ((stackID != null) && (count > 1)) {
+			int id = -1;
+
+			for (int i = 0; i < 10; i++) {
+				if ((count >= stackCount[i]) && (stackCount[i] != 0)) {
+					id = stackID[i];
 				}
 			}
-			if (j != -1) {
-				return get(j).getUnlitModel(1);
+
+			if (id != -1) {
+				return get(id).getUnlitModel(1);
 			}
 		}
+
 		Model model = Model.tryGet(modelID);
+
 		if (model == null) {
 			return null;
 		}
+
 		if (srcColor != null) {
-			for (int l = 0; l < srcColor.length; l++) {
-				model.recolor(srcColor[l], dstColor[l]);
+			for (int i = 0; i < srcColor.length; i++) {
+				model.recolor(srcColor[i], dstColor[i]);
 			}
 		}
 		return model;
@@ -508,107 +533,111 @@ public class ObjType {
 
 	public void read(Buffer buffer) {
 		do {
-			int i = buffer.read8U();
-			if (i == 0) {
+			int opcode = buffer.read8U();
+
+			if (opcode == 0) {
 				return;
 			}
-			if (i == 1) {
+
+			if (opcode == 1) {
 				modelID = buffer.read16U();
-			} else if (i == 2) {
+			} else if (opcode == 2) {
 				name = buffer.readString();
-			} else if (i == 3) {
+			} else if (opcode == 3) {
 				examine = buffer.readStringRaw();
-			} else if (i == 4) {
+			} else if (opcode == 4) {
 				iconZoom = buffer.read16U();
-			} else if (i == 5) {
+			} else if (opcode == 5) {
 				iconPitch = buffer.read16U();
-			} else if (i == 6) {
+			} else if (opcode == 6) {
 				iconYaw = buffer.read16U();
-			} else if (i == 7) {
+			} else if (opcode == 7) {
 				iconOffsetX = buffer.read16U();
 				if (iconOffsetX > 32767) {
 					iconOffsetX -= 0x10000;
 				}
-			} else if (i == 8) {
+			} else if (opcode == 8) {
 				iconOffsetY = buffer.read16U();
 				if (iconOffsetY > 32767) {
 					iconOffsetY -= 0x10000;
 				}
-			} else if (i == 10) {
+			} else if (opcode == 10) {
 				unusedInt = buffer.read16U();
-			} else if (i == 11) {
+			} else if (opcode == 11) {
 				stackable = true;
-			} else if (i == 12) {
+			} else if (opcode == 12) {
 				cost = buffer.read32();
-			} else if (i == 16) {
+			} else if (opcode == 16) {
 				members = true;
-			} else if (i == 23) {
-				maleModelId0 = buffer.read16U();
+			} else if (opcode == 23) {
+				maleModelID0 = buffer.read16U();
 				maleOffsetY = buffer.read();
-			} else if (i == 24) {
-				maleModelId1 = buffer.read16U();
-			} else if (i == 25) {
-				femaleModelId0 = buffer.read16U();
+			} else if (opcode == 24) {
+				maleModelID1 = buffer.read16U();
+			} else if (opcode == 25) {
+				femaleModelID0 = buffer.read16U();
 				femaleOffsetY = buffer.read();
-			} else if (i == 26) {
-				femaleModelId1 = buffer.read16U();
-			} else if ((i >= 30) && (i < 35)) {
-				if (groundOptions == null) {
-					groundOptions = new String[5];
+			} else if (opcode == 26) {
+				femaleModelID1 = buffer.read16U();
+			} else if ((opcode >= 30) && (opcode < 35)) {
+				if (options == null) {
+					options = new String[5];
 				}
-				groundOptions[i - 30] = buffer.readString();
-				if (groundOptions[i - 30].equalsIgnoreCase("hidden")) {
-					groundOptions[i - 30] = null;
+
+				options[opcode - 30] = buffer.readString();
+
+				if (options[opcode - 30].equalsIgnoreCase("hidden")) {
+					options[opcode - 30] = null;
 				}
-			} else if ((i >= 35) && (i < 40)) {
+			} else if ((opcode >= 35) && (opcode < 40)) {
 				if (inventoryOptions == null) {
 					inventoryOptions = new String[5];
 				}
-				inventoryOptions[i - 35] = buffer.readString();
-			} else if (i == 40) {
-				int j = buffer.read8U();
-				srcColor = new int[j];
-				dstColor = new int[j];
-				for (int k = 0; k < j; k++) {
-					srcColor[k] = buffer.read16U();
-					dstColor[k] = buffer.read16U();
+				inventoryOptions[opcode - 35] = buffer.readString();
+			} else if (opcode == 40) {
+				int recolorCount = buffer.read8U();
+				srcColor = new int[recolorCount];
+				dstColor = new int[recolorCount];
+				for (int i = 0; i < recolorCount; i++) {
+					srcColor[i] = buffer.read16U();
+					dstColor[i] = buffer.read16U();
 				}
-			} else if (i == 78) {
-				maleModelId2 = buffer.read16U();
-			} else if (i == 79) {
-				femaleModelId2 = buffer.read16U();
-			} else if (i == 90) {
-				maleHeadModelId0 = buffer.read16U();
-			} else if (i == 91) {
-				femaleHeadModel0 = buffer.read16U();
-			} else if (i == 92) {
-				maleHeadModelId1 = buffer.read16U();
-			} else if (i == 93) {
-				femaleHeadModel1 = buffer.read16U();
-			} else if (i == 95) {
+			} else if (opcode == 78) {
+				maleModelID2 = buffer.read16U();
+			} else if (opcode == 79) {
+				femaleModelID2 = buffer.read16U();
+			} else if (opcode == 90) {
+				maleHeadModelID0 = buffer.read16U();
+			} else if (opcode == 91) {
+				femaleHeadModelID0 = buffer.read16U();
+			} else if (opcode == 92) {
+				maleHeadModelID1 = buffer.read16U();
+			} else if (opcode == 93) {
+				femaleHeadModelID1 = buffer.read16U();
+			} else if (opcode == 95) {
 				iconRoll = buffer.read16U();
-			} else if (i == 97) {
+			} else if (opcode == 97) {
 				linkedID = buffer.read16U();
-			} else if (i == 98) {
+			} else if (opcode == 98) {
 				certificateID = buffer.read16U();
-			} else if ((i >= 100) && (i < 110)) {
-				if (stackIDs == null) {
-					stackIDs = new int[10];
-					stackAmount = new int[10];
+			} else if ((opcode >= 100) && (opcode < 110)) {
+				if (stackID == null) {
+					stackID = new int[10];
+					stackCount = new int[10];
 				}
-				stackIDs[i - 100] = buffer.read16U();
-				stackAmount[i - 100] = buffer.read16U();
-			} else if (i == 110) {
+				stackID[opcode - 100] = buffer.read16U();
+				stackCount[opcode - 100] = buffer.read16U();
+			} else if (opcode == 110) {
 				scaleX = buffer.read16U();
-			} else if (i == 111) {
+			} else if (opcode == 111) {
 				scaleZ = buffer.read16U();
-			} else if (i == 112) {
+			} else if (opcode == 112) {
 				scaleY = buffer.read16U();
-			} else if (i == 113) {
+			} else if (opcode == 113) {
 				lightAmbient = buffer.read();
-			} else if (i == 114) {
+			} else if (opcode == 114) {
 				lightAttenuation = buffer.read() * 5;
-			} else if (i == 115) {
+			} else if (opcode == 115) {
 				team = buffer.read8U();
 			}
 		} while (true);

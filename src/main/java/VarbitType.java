@@ -49,23 +49,23 @@ public class VarbitType {
 
 	public void read(Buffer buffer) {
 		do {
-			int op = buffer.read8U();
-			if (op == 0) {
+			int opcode = buffer.read8U();
+			if (opcode == 0) {
 				return;
-			} else if (op == 1) {
+			} else if (opcode == 1) {
 				varp = buffer.read16U();
 				lsb = buffer.read8U();
 				msb = buffer.read8U();
-			} else if (op == 10) {
+			} else if (opcode == 10) {
 				unusedString = buffer.readString();
-			} else if (op == 2) {
+			} else if (opcode == 2) {
 				unusedBool = true;
-			} else if (op == 3) {
+			} else if (opcode == 3) {
 				unusedInt0 = buffer.read32();
-			} else if (op == 4) {
+			} else if (opcode == 4) {
 				unusedInt1 = buffer.read32();
 			} else {
-				System.out.println("Error unrecognised config code: " + op);
+				System.out.println("Error unrecognised config code: " + opcode);
 			}
 		} while (true);
 	}

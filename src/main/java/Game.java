@@ -607,7 +607,7 @@ public class Game extends GameShell {
     public int chatbackInputType;
     public int song;
     public boolean songFading = true;
-    public SceneCollisionMap[] levelCollisionMap = new SceneCollisionMap[4];
+    public CollisionMap[] levelCollisionMap = new CollisionMap[4];
     public boolean redrawPrivacySettings = false;
     public int[] sceneMapIndex;
     public int[] sceneMapLandFile;
@@ -735,7 +735,7 @@ public class Game extends GameShell {
             scene = new Scene(104, 104, levelHeightmap, 4);
 
             for (int level = 0; level < 4; level++) {
-                levelCollisionMap[level] = new SceneCollisionMap(104, 104);
+                levelCollisionMap[level] = new CollisionMap(104, 104);
             }
 
             imageMinimap = new Image24(512, 512);
@@ -1785,11 +1785,11 @@ public class Game extends GameShell {
                 if ((mapX == minMapX) || (mapX == maxMapX) || (mapZ == minMapZ) || (mapZ == maxMapZ)) {
                     int mapFile = ondemand.getMapFile(0, mapX, mapZ);
                     if (mapFile != -1) {
-                        ondemand.method560(mapFile, 3);
+                        ondemand.prefetch(mapFile, 3);
                     }
                     int locFile = ondemand.getMapFile(1, mapX, mapZ);
                     if (locFile != -1) {
-                        ondemand.method560(locFile, 3);
+                        ondemand.prefetch(locFile, 3);
                     }
                 }
             }
@@ -2068,7 +2068,7 @@ public class Game extends GameShell {
                 bitset += 0x80000000;
             }
 
-            scene.pushTemporary(npc, currentLevel, npc.x, npc.z, getHeightmapY(currentLevel, npc.x, npc.z), npc.yaw, bitset, npc.needsForwardDrawPadding, ((npc.size - 1) * 64) + 60);
+            scene.addTemporary(npc, currentLevel, npc.x, npc.z, getHeightmapY(currentLevel, npc.x, npc.z), npc.yaw, bitset, npc.needsForwardDrawPadding, ((npc.size - 1) * 64) + 60);
         }
     }
 
@@ -3225,7 +3225,7 @@ public class Game extends GameShell {
             if ((player.locModel != null) && (loopCycle >= player.locStartCycle) && (loopCycle < player.locStopCycle)) {
                 player.lowmem = false;
                 player.y = getHeightmapY(currentLevel, player.x, player.z);
-                scene.pushTemporary(player, currentLevel, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
+                scene.addTemporary(player, currentLevel, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
                 continue;
             }
 
@@ -3237,7 +3237,7 @@ public class Game extends GameShell {
             }
 
             player.y = getHeightmapY(currentLevel, player.x, player.z);
-            scene.pushTemporary(player, currentLevel, player.x, player.z, player.y, player.yaw, index, player.needsForwardDrawPadding, 60);
+            scene.addTemporary(player, currentLevel, player.x, player.z, player.y, player.yaw, index, player.needsForwardDrawPadding, 60);
         }
     }
 
@@ -3894,7 +3894,7 @@ public class Game extends GameShell {
                     }
                 }
                 proj.update(delta);
-                scene.pushTemporary(proj, currentLevel, (int) proj.x, (int) proj.z, (int) proj.y, proj.yaw, -1, false, 60);
+                scene.addTemporary(proj, currentLevel, (int) proj.x, (int) proj.z, (int) proj.y, proj.yaw, -1, false, 60);
             }
         }
     }
@@ -4020,7 +4020,7 @@ public class Game extends GameShell {
                     }
                 }
             } while ((request.store != 93) || !ondemand.method564(request.file));
-            SceneBuilder.method173(new Buffer(request.data), ondemand);
+            SceneBuilder.prefetchLocs(new Buffer(request.data), ondemand);
         } while (true);
     }
 
@@ -5984,8 +5984,8 @@ public class Game extends GameShell {
                 }
             } else {
                 for (int option = 4; option >= 0; option--) {
-                    if ((type.groundOptions != null) && (type.groundOptions[option] != null)) {
-                        menuOption[menuSize] = type.groundOptions[option] + " @lre@" + type.name;
+                    if ((type.options != null) && (type.options[option] != null)) {
+                        menuOption[menuSize] = type.options[option] + " @lre@" + type.name;
 
                         if (option == 0) {
                             menuAction[menuSize] = 652;
@@ -7400,17 +7400,17 @@ public class Game extends GameShell {
             }
 
             if (locType != 0) {
-                if (((locType < 5) || (locType == 10)) && levelCollisionMap[currentLevel].method219(x, z, dx, dz, locAngle, locType - 1)) {
+                if (((locType < 5) || (locType == 10)) && levelCollisionMap[currentLevel].reachedDestination(x, z, dx, dz, locAngle, locType - 1)) {
                     arrived = true;
                     break;
                 }
-                if ((locType < 10) && levelCollisionMap[currentLevel].method220(x, z, dx, dz, locType - 1, locAngle)) {
+                if ((locType < 10) && levelCollisionMap[currentLevel].reachedWall(x, z, dx, dz, locType - 1, locAngle)) {
                     arrived = true;
                     break;
                 }
             }
 
-            if ((locWidth != 0) && (locLength != 0) && levelCollisionMap[currentLevel].method221(x, z, dx, dz, locWidth, locLength, locInteractionFlags)) {
+            if ((locWidth != 0) && (locLength != 0) && levelCollisionMap[currentLevel].reachedLoc(x, z, dx, dz, locWidth, locLength, locInteractionFlags)) {
                 arrived = true;
                 break;
             }
@@ -7758,10 +7758,10 @@ public class Game extends GameShell {
                 menuSize++;
             }
         } else {
-            if (type.op != null) {
+            if (type.options != null) {
                 for (int option = 4; option >= 0; option--) {
-                    if ((type.op[option] != null) && !type.op[option].equalsIgnoreCase("attack")) {
-                        menuOption[menuSize] = type.op[option] + " @yel@" + text;
+                    if ((type.options[option] != null) && !type.options[option].equalsIgnoreCase("attack")) {
+                        menuOption[menuSize] = type.options[option] + " @yel@" + text;
 
                         if (option == 0) {
                             menuAction[menuSize] = 20;
@@ -7782,15 +7782,15 @@ public class Game extends GameShell {
                     }
                 }
             }
-            if (type.op != null) {
+            if (type.options != null) {
                 for (int option = 4; option >= 0; option--) {
-                    if ((type.op[option] != null) && type.op[option].equalsIgnoreCase("attack")) {
+                    if ((type.options[option] != null) && type.options[option].equalsIgnoreCase("attack")) {
                         int offset = 0;
 
                         if (type.level > localPlayer.combatLevel) {
                             offset = 2000;
                         }
-                        menuOption[menuSize] = type.op[option] + " @yel@" + text;
+                        menuOption[menuSize] = type.options[option] + " @yel@" + text;
 
                         if (option == 0) {
                             menuAction[menuSize] = 20 + offset;
@@ -8565,7 +8565,7 @@ public class Game extends GameShell {
 
         if (chatInterfaceID == -1) {
             chatInterface.scrollPosition = chatScrollHeight - chatScrollOffset - 77;
-            
+
             if ((super.mouseX > 448) && (super.mouseX < 560) && (super.mouseY > 332)) {
                 handleScrollInput(463, 77, super.mouseX - 17, super.mouseY - 357, chatInterface, 0, false, chatScrollHeight);
             }
@@ -8818,7 +8818,7 @@ public class Game extends GameShell {
                 if (anim.seqComplete) {
                     anim.unlink();
                 } else {
-                    scene.pushTemporary(anim, anim.level, anim.x, anim.z, anim.y, 0, -1, false, 60);
+                    scene.addTemporary(anim, anim.level, anim.x, anim.z, anim.y, 0, -1, false, 60);
                 }
             }
         }
@@ -9898,43 +9898,43 @@ public class Game extends GameShell {
             int arith = 0;
 
             do {
-                int op = script[pos++];
-                int reg = 0;
+                int opcode = script[pos++];
+                int register = 0;
                 byte nextArithmetic = 0;
 
-                if (op == 0) {
+                if (opcode == 0) {
                     return acc;
-                } else if (op == 1) { // load_skill_level {skill}
-                    reg = skillLevel[script[pos++]];
-                } else if (op == 2) { // load_skill_base_level {skill}
-                    reg = skillBaseLevel[script[pos++]];
-                } else if (op == 3) { // load_skill_exp {skill}
-                    reg = skillExperience[script[pos++]];
-                } else if (op == 4) {// load_inv_count {interface id} {obj id}
+                } else if (opcode == 1) { // load_skill_level {skill}
+                    register = skillLevel[script[pos++]];
+                } else if (opcode == 2) { // load_skill_base_level {skill}
+                    register = skillBaseLevel[script[pos++]];
+                } else if (opcode == 3) { // load_skill_exp {skill}
+                    register = skillExperience[script[pos++]];
+                } else if (opcode == 4) {// load_inv_count {interface id} {obj id}
                     IfType inventory = IfType.instances[script[pos++]];
                     int objID = script[pos++];
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
                         for (int slot = 0; slot < inventory.inventorySlotObjID.length; slot++) {
                             if (inventory.inventorySlotObjID[slot] == (objID + 1)) {
-                                reg += inventory.inventorySlotObjCount[slot];
+                                register += inventory.inventorySlotObjCount[slot];
                             }
                         }
                     }
-                } else if (op == 5) { // load_var {id}
-                    reg = varps[script[pos++]];
-                } else if (op == 6) { // load_next_level_xp {skill}
-                    reg = levelExperience[skillBaseLevel[script[pos++]] - 1];
-                } else if (op == 7) {
-                    reg = (varps[script[pos++]] * 100) / 46875;
-                } else if (op == 8) { // load_combat_level
-                    reg = localPlayer.combatLevel;
-                } else if (op == 9) { // load_total_level
+                } else if (opcode == 5) { // load_var {id}
+                    register = varps[script[pos++]];
+                } else if (opcode == 6) { // load_next_level_xp {skill}
+                    register = levelExperience[skillBaseLevel[script[pos++]] - 1];
+                } else if (opcode == 7) {
+                    register = (varps[script[pos++]] * 100) / 46875;
+                } else if (opcode == 8) { // load_combat_level
+                    register = localPlayer.combatLevel;
+                } else if (opcode == 9) { // load_total_level
                     for (int skill = 0; skill < Skill.COUNT; skill++) {
                         if (Skill.ENABLED[skill]) {
-                            reg += skillBaseLevel[skill];
+                            register += skillBaseLevel[skill];
                         }
                     }
-                } else if (op == 10) {// load_inv_contains {interface id} {obj id}
+                } else if (opcode == 10) {// load_inv_contains {interface id} {obj id}
                     IfType c = IfType.instances[script[pos++]];
                     int objID = script[pos++] + 1;
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
@@ -9942,48 +9942,48 @@ public class Game extends GameShell {
                             if (c.inventorySlotObjID[slot] != objID) {
                                 continue;
                             }
-                            reg = 999999999;
+                            register = 999999999;
                             break;
                         }
                     }
-                } else if (op == 11) { // load_energy
-                    reg = energy;
-                } else if (op == 12) { // load_weight
-                    reg = weightCarried;
-                } else if (op == 13) {// load_bool {varp} {bit: 0..31}
+                } else if (opcode == 11) { // load_energy
+                    register = energy;
+                } else if (opcode == 12) { // load_weight
+                    register = weightCarried;
+                } else if (opcode == 13) {// load_bool {varp} {bit: 0..31}
                     int varp = varps[script[pos++]];
                     int bit = script[pos++];
-                    reg = ((varp & (1 << bit)) == 0) ? 0 : 1;
-                } else if (op == 14) {// load_varbit {varbit}
+                    register = ((varp & (1 << bit)) == 0) ? 0 : 1;
+                } else if (opcode == 14) {// load_varbit {varbit}
                     VarbitType varbit = VarbitType.instances[script[pos++]];
                     int lsb = varbit.lsb;
-                    reg = (varps[varbit.varp] >> lsb) & BITMASK[varbit.msb - lsb];
-                } else if (op == 15) { // sub
+                    register = (varps[varbit.varp] >> lsb) & BITMASK[varbit.msb - lsb];
+                } else if (opcode == 15) { // sub
                     nextArithmetic = 1;
-                } else if (op == 16) { // div
+                } else if (opcode == 16) { // div
                     nextArithmetic = 2;
-                } else if (op == 17) { // mul
+                } else if (opcode == 17) { // mul
                     nextArithmetic = 3;
-                } else if (op == 18) { // load_world_x
-                    reg = (localPlayer.x >> 7) + sceneBaseTileX;
-                } else if (op == 19) { // load_world_z
-                    reg = (localPlayer.z >> 7) + sceneBaseTileZ;
-                } else if (op == 20) { // load {value}
-                    reg = script[pos++];
+                } else if (opcode == 18) { // load_world_x
+                    register = (localPlayer.x >> 7) + sceneBaseTileX;
+                } else if (opcode == 19) { // load_world_z
+                    register = (localPlayer.z >> 7) + sceneBaseTileZ;
+                } else if (opcode == 20) { // load {value}
+                    register = script[pos++];
                 }
 
                 if (nextArithmetic == 0) {
                     if (arith == 0) {
-                        acc += reg;
+                        acc += register;
                     }
                     if (arith == 1) {
-                        acc -= reg;
+                        acc -= register;
                     }
-                    if ((arith == 2) && (reg != 0)) {
-                        acc /= reg;
+                    if ((arith == 2) && (register != 0)) {
+                        acc /= register;
                     }
                     if (arith == 3) {
-                        acc *= reg;
+                        acc *= register;
                     }
                     arith = 0;
                 } else {
@@ -11164,7 +11164,7 @@ public class Game extends GameShell {
                 scene.removeWall(x, level, z);
                 LocType type = LocType.get(otherID);
                 if (type.solid) {
-                    levelCollisionMap[level].remove(otherRotation, otherKind, type.blocksProjectiles, x, z);
+                    levelCollisionMap[level].remove(x, z, otherRotation, otherKind, type.blocksProjectiles);
                 }
             }
 
@@ -11188,8 +11188,9 @@ public class Game extends GameShell {
             if (classID == 3) {
                 scene.removeGroundDecoration(level, x, z);
                 LocType type = LocType.get(otherID);
+
                 if (type.solid && type.interactable) {
-                    levelCollisionMap[level].method218(z, x);
+                    levelCollisionMap[level].removeSolid(x, z);
                 }
             }
         }
@@ -11656,10 +11657,10 @@ public class Game extends GameShell {
         IfType iface = IfType.instances[interfaceID];
         iface.modelCategory = 3;
 
-        if (localPlayer.npcType == null) {
+        if (localPlayer.transmogrify == null) {
             iface.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
         } else {
-            iface.modelID = (int) (0x12345678L + localPlayer.npcType.uid);
+            iface.modelID = (int) (0x12345678L + localPlayer.transmogrify.uid);
         }
     }
 

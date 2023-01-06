@@ -58,7 +58,7 @@ public class SeqType {
 
 	/**
 	 * Adds additional space to the render bounds.
-	 * @see Scene#pushTemporary(Entity, int, int, int, int, int, int, boolean, int)
+	 * @see Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)
 	 */
 	public boolean forwardRenderPadding = false;
 
@@ -131,10 +131,10 @@ public class SeqType {
 
 	public void load(Buffer buffer) {
 		do {
-			int op = buffer.read8U();
-			if (op == 0) {
+			int opcode = buffer.read8U();
+			if (opcode == 0) {
 				break;
-			} else if (op == 1) {
+			} else if (opcode == 1) {
 				frameCount = buffer.read8U();
 				transformIDs = new int[frameCount];
 				auxiliaryTransformIDs = new int[frameCount];
@@ -147,35 +147,35 @@ public class SeqType {
 					}
 					frameDuration[f] = buffer.read16U();
 				}
-			} else if (op == 2) {
+			} else if (opcode == 2) {
 				loopFrameCount = buffer.read16U();
-			} else if (op == 3) {
+			} else if (opcode == 3) {
 				int count = buffer.read8U();
 				mask = new int[count + 1];
 				for (int l = 0; l < count; l++) {
 					mask[l] = buffer.read8U();
 				}
 				mask[count] = 9999999;
-			} else if (op == 4) {
+			} else if (opcode == 4) {
 				forwardRenderPadding = true;
-			} else if (op == 5) {
+			} else if (opcode == 5) {
 				priority = buffer.read8U();
-			} else if (op == 6) {
+			} else if (opcode == 6) {
 				rightHandOverride = buffer.read16U();
-			} else if (op == 7) {
+			} else if (opcode == 7) {
 				leftHandOverride = buffer.read16U();
-			} else if (op == 8) {
+			} else if (opcode == 8) {
 				loopCount = buffer.read8U();
-			} else if (op == 9) {
+			} else if (opcode == 9) {
 				moveStyle = buffer.read8U();
-			} else if (op == 10) {
+			} else if (opcode == 10) {
 				idleStyle = buffer.read8U();
-			} else if (op == 11) {
+			} else if (opcode == 11) {
 				replayStyle = buffer.read8U();
-			} else if (op == 12) {
+			} else if (opcode == 12) {
 				unusedInt = buffer.read32();
 			} else {
-				System.out.println("Error unrecognised seq config code: " + op);
+				System.out.println("Error unrecognised seq config code: " + opcode);
 			}
 		} while (true);
 

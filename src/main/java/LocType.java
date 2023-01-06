@@ -153,12 +153,12 @@ public class LocType {
         overrideTypeIDs = null;
     }
 
-    public void method574(OnDemand onDemand) {
+    public void prefetch(OnDemand onDemand) {
         if (modelIDs == null) {
             return;
         }
-        for (int k : modelIDs) {
-            onDemand.method560(k & 0xffff, 0);
+        for (int modelID : modelIDs) {
+            onDemand.prefetch(modelID & 0xffff, 0);
         }
     }
 
