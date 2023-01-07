@@ -36,7 +36,8 @@ public class Game extends GameShell {
     public static boolean started;
     public static int drawCycle;
     public static PlayerEntity localPlayer;
-    public static boolean showFps;
+    public static boolean showPerformance;
+    public static boolean showTraffic;
     public static boolean showOccluders;
     public static int loopCycle;
     public static boolean flagged;
@@ -6089,18 +6090,18 @@ public class Game extends GameShell {
                     debug();
                 }
                 if (chatTyped.equals("::prefetchmusic")) {
-                    for (int j1 = 0; j1 < ondemand.getFileCount(2); j1++) {
-                        ondemand.prefetch((byte) 1, 2, j1);
+                    for (int i = 0; i < ondemand.getFileCount(2); i++) {
+                        ondemand.prefetch((byte) 1, 2, i);
                     }
                 }
-                if (chatTyped.equals("::fps")) {
-                    showFps = !showFps;
+                if (chatTyped.equals("::perf")) {
+                    showPerformance = !showPerformance;
                 }
                 if (chatTyped.equals("::occluders")) {
                     showOccluders = !showOccluders;
                 }
-                if (chatTyped.equals("::toggleoccluders")) {
-                    Scene.disableOccluders = !Scene.disableOccluders;
+                if (chatTyped.equals("::traffic")) {
+                    showTraffic = !showTraffic;
                 }
                 if (chatTyped.equals("::noclip")) {
                     for (int level = 0; level < 4; level++) {
@@ -6769,9 +6770,9 @@ public class Game extends GameShell {
                     }
                 }
                 if ((k == 6) && (privateChatSetting < 2)) {
-                    int j1 = 329 - (i * 13);
-                    font.drawString("To " + s + ": " + messageText[j], 4, j1, 0);
-                    font.drawString("To " + s + ": " + messageText[j], 4, j1 - 1, 65535);
+                    int y = 329 - (i * 13);
+                    font.drawString("To " + s + ": " + messageText[j], 4, y, 0);
+                    font.drawString("To " + s + ": " + messageText[j], 4, y - 1, 65535);
                     if (++i >= 5) {
                         return;
                     }
@@ -6904,19 +6905,20 @@ public class Game extends GameShell {
     }
 
     public void drawMinimapHint(Image24 image, int x, int y) {
-        int l = (x * x) + (y * y);
-        if ((l > 4225) && (l < 90000)) {
-            int i1 = (orbitCameraYaw + minimapAnticheatAngle) & 0x7ff;
-            int j1 = Model.sin[i1];
-            int k1 = Model.cos[i1];
-            j1 = (j1 * 256) / (minimapZoom + 256);
-            k1 = (k1 * 256) / (minimapZoom + 256);
-            int l1 = ((y * j1) + (x * k1)) >> 16;
-            int i2 = ((y * k1) - (x * j1)) >> 16;
-            double d = Math.atan2(l1, i2);
-            int j2 = (int) (Math.sin(d) * 63D);
-            int k2 = (int) (Math.cos(d) * 57D);
-            imageMapedge.drawRotated((94 + j2 + 4) - 10, 83 - k2 - 20, 20, 20, 15, 15, d, 256);
+        int distance2 = (x * x) + (y * y);
+
+        if ((distance2 > 4225) && (distance2 < 90000)) {
+            int angle = (orbitCameraYaw + minimapAnticheatAngle) & 0x7ff;
+            int sinAngle = Model.sin[angle];
+            int cosAngle = Model.cos[angle];
+            sinAngle = (sinAngle * 256) / (minimapZoom + 256);
+            cosAngle = (cosAngle * 256) / (minimapZoom + 256);
+            int directionX = ((y * sinAngle) + (x * cosAngle)) >> 16;
+            int directionY = ((y * cosAngle) - (x * sinAngle)) >> 16;
+            double directionAngle = Math.atan2(directionX, directionY);
+            int hintX = (int) (Math.sin(directionAngle) * 63D);
+            int hintY = (int) (Math.cos(directionAngle) * 57D);
+            imageMapedge.drawRotated((94 + hintX + 4) - 10, 83 - hintY - 20, 20, 20, 15, 15, directionAngle, 256);
         } else {
             drawOnMinimap(image, x, y);
         }
@@ -9434,9 +9436,10 @@ public class Game extends GameShell {
             }
         }
 
-        if (showFps) {
-            int x = 507;
-            int y = 20;
+        int x = 507;
+        int y = 20;
+
+        if (showPerformance) {
             int color = 0xffff00;
 
             if (super.fps < 15) {
@@ -9459,7 +9462,9 @@ public class Game extends GameShell {
             int mem = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
             fontPlain11.drawStringRight(mem + " kB", x, y, 0xffff00);
             y += 13;
+        }
 
+        if (showTraffic) {
             fontPlain11.drawStringRight(bytesIn + " bytes in", x, y, 0xffff00);
             y += 13;
 
@@ -9470,11 +9475,10 @@ public class Game extends GameShell {
                 bytesIn = 0;
                 bytesOut = 0;
             }
+        }
 
+        if (showOccluders) {
             fontPlain11.drawStringRight(String.format("%d/%d occluders", Scene.activeOccluderCount, Scene.levelOccluderCount[Scene.topLevel]), x, y, 0xFFFF00);
-            y += 13;
-
-            fontPlain11.drawStringRight(String.format("Mouse: %d, %d", super.mouseX, super.mouseY), x, y, 0xffff00);
             y += 13;
         }
     }
@@ -10038,12 +10042,28 @@ public class Game extends GameShell {
         imageMinimap.drawRotatedMasked(25, 5, 146, 151, anchorX, anchorY, 256 + minimapZoom, angle, minimapMaskLineLengths, minimapMaskLineOffsets);
         imageCompass.drawRotatedMasked(0, 0, 33, 33, 25, 25, 256, orbitCameraYaw, compassMaskLineLengths, compassMaskLineOffsets);
 
+        drawMinimapFunctions();
+        drawMinimapObjs();
+        drawMinimapNPCs();
+        drawMinimapPlayers();
+        drawMinimapHint();
+        drawMinimapFlag();
+
+        // center dot
+        Draw2D.fillRect(97, 78, 3, 3, 0xffffff);
+
+        areaViewport.bind();
+    }
+
+    private void drawMinimapFunctions() {
         for (int i = 0; i < activeMapFunctionCount; i++) {
             int x = ((activeMapFunctionX[i] * 4) + 2) - (localPlayer.x / 32);
             int y = ((activeMapFunctionZ[i] * 4) + 2) - (localPlayer.z / 32);
             drawOnMinimap(activeMapFunctions[i], x, y);
         }
+    }
 
+    private void drawMinimapObjs() {
         for (int ltx = 0; ltx < 104; ltx++) {
             for (int ltz = 0; ltz < 104; ltz++) {
                 DoublyLinkedList stack = levelObjStacks[currentLevel][ltx][ltz];
@@ -10055,7 +10075,9 @@ public class Game extends GameShell {
                 }
             }
         }
+    }
 
+    private void drawMinimapNPCs() {
         for (int i = 0; i < npcCount; i++) {
             NPCEntity npc = npcs[npcIDs[i]];
             if ((npc == null) || !npc.isVisible()) {
@@ -10071,7 +10093,9 @@ public class Game extends GameShell {
                 drawOnMinimap(imageMapdot1, x, y);
             }
         }
+    }
 
+    private void drawMinimapPlayers() {
         for (int i = 0; i < playerCount; i++) {
             PlayerEntity player = players[playerIDs[i]];
 
@@ -10102,10 +10126,13 @@ public class Game extends GameShell {
                 drawOnMinimap(imageMapdot2, x, y);
             }
         }
+    }
 
+    private void drawMinimapHint() {
         if ((hintType != 0) && ((loopCycle % 20) < 10)) {
             if ((hintType == 1) && (hintNPC >= 0) && (hintNPC < npcs.length)) {
                 NPCEntity npc = npcs[hintNPC];
+
                 if (npc != null) {
                     int x = (npc.x / 32) - (localPlayer.x / 32);
                     int y = (npc.z / 32) - (localPlayer.z / 32);
@@ -10128,13 +10155,14 @@ public class Game extends GameShell {
                 }
             }
         }
+    }
+
+    private void drawMinimapFlag() {
         if (flagSceneTileX != 0) {
-            int j2 = ((flagSceneTileX * 4) + 2) - (localPlayer.x / 32);
-            int l4 = ((flagSceneTileZ * 4) + 2) - (localPlayer.z / 32);
-            drawOnMinimap(imageMapmarker0, j2, l4);
+            int flagX = ((flagSceneTileX * 4) + 2) - (localPlayer.x / 32);
+            int flagY = ((flagSceneTileZ * 4) + 2) - (localPlayer.z / 32);
+            drawOnMinimap(imageMapmarker0, flagX, flagY);
         }
-        Draw2D.fillRect(97, 78, 3, 3, 0xffffff);
-        areaViewport.bind();
     }
 
     /**

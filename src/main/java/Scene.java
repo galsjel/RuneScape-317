@@ -136,7 +136,6 @@ public class Scene {
     public static int clickTileZ = -1;
     public static int[] levelOccluderCount = new int[LEVEL_COUNT];
     public static SceneOccluder[][] levelOccluders = new SceneOccluder[LEVEL_COUNT][1000];
-    public static boolean disableOccluders;
     public static int activeOccluderCount;
     public static int activeWallOccluderCount;
     public static int activeGroundOccluderCount;
@@ -2050,10 +2049,6 @@ public class Scene {
         activeGroundOccluderCount = 0;
         activeWallOccluderCount = 0;
         tilesCulled = 0;
-
-        if (disableOccluders) {
-            return;
-        }
 
         int count = levelOccluderCount[topLevel];
         SceneOccluder[] occluders = levelOccluders[topLevel];
