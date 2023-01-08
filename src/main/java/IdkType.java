@@ -19,7 +19,7 @@ public class IdkType {
 			if (instances[j] == null) {
 				instances[j] = new IdkType();
 			}
-			instances[j].method536(buffer);
+			instances[j].read(buffer);
 		}
 	}
 
@@ -33,30 +33,31 @@ public class IdkType {
 	public IdkType() {
 	}
 
-	public void method536(Buffer buffer) {
+	public void read(Buffer in) {
 		do {
-			int i = buffer.read8U();
-			if (i == 0) {
+			int opcode = in.read8U();
+			if (opcode == 0) {
 				return;
 			}
-			if (i == 1) {
-				type = buffer.read8U();
-			} else if (i == 2) {
-				int j = buffer.read8U();
+
+			if (opcode == 1) {
+				type = in.read8U();
+			} else if (opcode == 2) {
+				int j = in.read8U();
 				modelIDs = new int[j];
 				for (int k = 0; k < j; k++) {
-					modelIDs[k] = buffer.read16U();
+					modelIDs[k] = in.read16U();
 				}
-			} else if (i == 3) {
+			} else if (opcode == 3) {
 				selectable = true;
-			} else if ((i >= 40) && (i < 50)) {
-				colorSrc[i - 40] = buffer.read16U();
-			} else if ((i >= 50) && (i < 60)) {
-				colorDst[i - 50] = buffer.read16U();
-			} else if ((i >= 60) && (i < 70)) {
-				headModelIDs[i - 60] = buffer.read16U();
+			} else if ((opcode >= 40) && (opcode < 50)) {
+				colorSrc[opcode - 40] = in.read16U();
+			} else if ((opcode >= 50) && (opcode < 60)) {
+				colorDst[opcode - 50] = in.read16U();
+			} else if ((opcode >= 60) && (opcode < 70)) {
+				headModelIDs[opcode - 60] = in.read16U();
 			} else {
-				System.out.println("Error unrecognised config code: " + i);
+				System.out.println("Error unrecognised config code: " + opcode);
 			}
 		} while (true);
 	}
@@ -78,22 +79,26 @@ public class IdkType {
 		if (modelIDs == null) {
 			return null;
 		}
-		Model[] aclass30_sub2_sub4_sub6 = new Model[modelIDs.length];
+		Model[] models = new Model[modelIDs.length];
 		for (int i = 0; i < modelIDs.length; i++) {
-			aclass30_sub2_sub4_sub6[i] = Model.tryGet(modelIDs[i]);
+			models[i] = Model.tryGet(modelIDs[i]);
 		}
+
 		Model model;
-		if (aclass30_sub2_sub4_sub6.length == 1) {
-			model = aclass30_sub2_sub4_sub6[0];
+
+		if (models.length == 1) {
+			model = models[0];
 		} else {
-			model = new Model(aclass30_sub2_sub4_sub6.length, aclass30_sub2_sub4_sub6);
+			model = new Model(models.length, models);
 		}
-		for (int j = 0; j < 6; j++) {
-			if (colorSrc[j] == 0) {
+
+		for (int i = 0; i < 6; i++) {
+			if (colorSrc[i] == 0) {
 				break;
 			}
-			model.recolor(colorSrc[j], colorDst[j]);
+			model.recolor(colorSrc[i], colorDst[i]);
 		}
+
 		return model;
 	}
 
@@ -107,20 +112,20 @@ public class IdkType {
 		return loaded;
 	}
 
-	public Model method540() {
-		Model[] aclass30_sub2_sub4_sub6 = new Model[5];
-		int j = 0;
-		for (int k = 0; k < 5; k++) {
-			if (headModelIDs[k] != -1) {
-				aclass30_sub2_sub4_sub6[j++] = Model.tryGet(headModelIDs[k]);
+	public Model getHeadModel() {
+		Model[] models = new Model[5];
+		int i = 0;
+		for (int j = 0; j < 5; j++) {
+			if (headModelIDs[j] != -1) {
+				models[i++] = Model.tryGet(headModelIDs[j]);
 			}
 		}
-		Model model = new Model(j, aclass30_sub2_sub4_sub6);
-		for (int l = 0; l < 6; l++) {
-			if (colorSrc[l] == 0) {
+		Model model = new Model(i, models);
+		for (int k = 0; k < 6; k++) {
+			if (colorSrc[k] == 0) {
 				break;
 			}
-			model.recolor(colorSrc[l], colorDst[l]);
+			model.recolor(colorSrc[k], colorDst[k]);
 		}
 		return model;
 	}

@@ -358,13 +358,13 @@ public class PlayerEntity extends PathingEntity {
 		return visible;
 	}
 
-	public Model getUnlitHeadModel() {
+	public Model getHeadModel() {
 		if (!visible) {
 			return null;
 		}
 
 		if (transmogrify != null) {
-			return transmogrify.getUnlitHeadModel();
+			return transmogrify.getHeadModel();
 		}
 
 		boolean invalid = false;
@@ -391,7 +391,7 @@ public class PlayerEntity extends PathingEntity {
 			int value = appearances[part];
 
 			if ((value >= 256) && (value < 512)) {
-				Model model = IdkType.instances[value - 256].method540();
+				Model model = IdkType.instances[value - 256].getHeadModel();
 				if (model != null) {
 					models[modelCount++] = model;
 				}

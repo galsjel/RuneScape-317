@@ -133,7 +133,7 @@ public class LocType {
         public int seqID;
         public int translateZ;
         public int[] srcColor;
-        public String[] actions;
+        public String[] options;
 
         public LocType() {
         }
@@ -157,7 +157,7 @@ public class LocType {
             decorOffset = 16;
             lightAmbient = 0;
             lightAttenuation = 0;
-            actions = null;
+            options = null;
             mapfunctionIcon = -1;
             mapsceneIcon = -1;
             invert = false;
@@ -475,12 +475,12 @@ public class LocType {
                     } else if (j == 39) {
                         lightAttenuation = buffer.read();
                     } else if ((j >= 30) && (j < 39)) {
-                        if (actions == null) {
-                            actions = new String[5];
+                        if (options == null) {
+                            options = new String[5];
                         }
-                        actions[j - 30] = buffer.readString();
-                        if (actions[j - 30].equalsIgnoreCase("hidden")) {
-                            actions[j - 30] = null;
+                        options[j - 30] = buffer.readString();
+                        if (options[j - 30].equalsIgnoreCase("hidden")) {
+                            options[j - 30] = null;
                         }
                     } else if (j == 40) {
                         int i1 = buffer.read8U();
@@ -543,7 +543,7 @@ public class LocType {
             } while (true);
             if (i == -1) {
                 interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
-                if (actions != null) {
+                if (options != null) {
                     interactable = true;
                 }
             }

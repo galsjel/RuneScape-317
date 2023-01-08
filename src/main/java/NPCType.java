@@ -93,13 +93,13 @@ public class NPCType {
 	public NPCType() {
 	}
 
-	public Model getUnlitHeadModel() {
+	public Model getHeadModel() {
 		if (overrides != null) {
 			NPCType type = getOverrideType();
 			if (type == null) {
 				return null;
 			} else {
-				return type.getUnlitHeadModel();
+				return type.getHeadModel();
 			}
 		}
 

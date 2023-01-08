@@ -41,6 +41,11 @@ public class Game extends GameShell {
     public static boolean showOccluders;
     public static int loopCycle;
     public static boolean flagged;
+    public static final int[] INV_OP_ACTION = {632,78,867,431,53};
+    public static final int[] OBJ_OP_ACTION = {652,567,234,244,214};
+    public static final int[] OBJ_IOP_ACTION = {74,454,539,493, 847};
+    public static final int[] LOC_OP_ACTION = {502,900,113,872,1062};
+    public static final int[] NPC_OP_ACTION = {20,412,225,965,478};
 
     static {
         levelExperience = new int[99];
@@ -2130,10 +2135,7 @@ public class Game extends GameShell {
             }
 
             if (!override) {
-                menuOption[menuSize] = child.option;
-                menuAction[menuSize] = 315;
-                menuParamB[menuSize] = child.id;
-                menuSize++;
+                addMenuOption(child.option, 315, 0, child.id, 0);
             }
         } else if (child.optionType == IfType.OPTION_TYPE_SPELL) {
             if (spellSelected == 0) {
@@ -2141,176 +2143,107 @@ public class Game extends GameShell {
                 if (prefix.contains(" ")) {
                     prefix = prefix.substring(0, prefix.indexOf(" "));
                 }
-                menuOption[menuSize] = prefix + " @gre@" + child.spellName;
-                menuAction[menuSize] = 626;
-                menuParamB[menuSize] = child.id;
-                menuSize++;
+                addMenuOption(prefix + " @gre@" + child.spellName, 626, 0, child.id, 0);
             }
         } else if (child.optionType == IfType.OPTION_TYPE_CLOSE) {
-            menuOption[menuSize] = "Close";
-            menuAction[menuSize] = 200;
-            menuParamB[menuSize] = child.id;
-            menuSize++;
+            addMenuOption("Close", 200, 0, child.id, 0);
         } else if (child.optionType == IfType.OPTION_TYPE_TOGGLE) {
-            menuOption[menuSize] = child.option;
-            menuAction[menuSize] = 169;
-            menuParamB[menuSize] = child.id;
-            menuSize++;
+            addMenuOption(child.option, 169, 0, child.id, 0);
         } else if (child.optionType == IfType.OPTION_TYPE_SELECT) {
-            menuOption[menuSize] = child.option;
-            menuAction[menuSize] = 646;
-            menuParamB[menuSize] = child.id;
-            menuSize++;
+            addMenuOption(child.option, 646, 0, child.id, 0);
         } else if (child.optionType == IfType.OPTION_TYPE_CONTINUE) {
             if (!pressedContinueOption) {
-                menuOption[menuSize] = child.option;
-                menuAction[menuSize] = 679;
-                menuParamB[menuSize] = child.id;
-                menuSize++;
+                addMenuOption(child.option, 679, 0, child.id, 0);
             }
         }
     }
 
-    private void handleInterfaceInventoryInput(int interfaceX, int interfaceY, IfType child) {
-        int mouseY = super.mouseY;
-        int mouseX = super.mouseX;
+
+
+    private void handleInterfaceInventoryInput(int x, int y, IfType iface) {
         int slot = 0;
-        for (int row = 0; row < child.height; row++) {
-            for (int column = 0; column < child.width; column++) {
-                int x = interfaceX + (column * (32 + child.inventoryMarginX));
-                int y = interfaceY + (row * (32 + child.inventoryMarginY));
+
+        for (int row = 0; row < iface.height; row++) {
+            for (int col = 0; col < iface.width; col++) {
+                int slotX = x + (col * (32 + iface.inventoryMarginX));
+                int slotY = y + (row * (32 + iface.inventoryMarginY));
 
                 if (slot < 20) {
-                    x += child.inventorySlotOffsetX[slot];
-                    y += child.inventorySlotOffsetY[slot];
+                    slotX += iface.inventorySlotOffsetX[slot];
+                    slotY += iface.inventorySlotOffsetY[slot];
                 }
 
-                if ((mouseX >= x) && (mouseY >= y) && (mouseX < (x + 32)) && (mouseY < (y + 32))) {
-                    hoveredSlot = slot;
-                    hoveredSlotParentID = child.id;
+                if ((super.mouseX < slotX) || (super.mouseY < slotY) || (super.mouseX >= (slotX + 32)) || (super.mouseY >= (slotY + 32))) {
+                    slot++;
+                    continue;
+                }
 
-                    if (child.inventorySlotObjID[slot] > 0) {
-                        ObjType obj = ObjType.get(child.inventorySlotObjID[slot] - 1);
+                hoveredSlot = slot;
+                hoveredSlotParentID = iface.id;
 
-                        if ((objSelected == 1) && child.inventoryInteractable) {
-                            if ((child.id != selectedObjInterfaceID) || (slot != selectedObjSlot)) {
-                                menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + obj.name;
-                                menuAction[menuSize] = 870;
-                                menuParamC[menuSize] = obj.id;
-                                menuParamA[menuSize] = slot;
-                                menuParamB[menuSize] = child.id;
-                                menuSize++;
-                            }
-                        } else if ((spellSelected == 1) && child.inventoryInteractable) {
-                            if ((activeSpellFlags & 0x10) == 0x10) {
-                                menuOption[menuSize] = spellCaption + " @lre@" + obj.name;
-                                menuAction[menuSize] = 543;
-                                menuParamC[menuSize] = obj.id;
-                                menuParamA[menuSize] = slot;
-                                menuParamB[menuSize] = child.id;
-                                menuSize++;
-                            }
-                        } else {
-                            if (child.inventoryInteractable) {
-                                for (int option = 4; option >= 3; option--) {
-                                    if ((obj.inventoryOptions != null) && (obj.inventoryOptions[option] != null)) {
-                                        menuOption[menuSize] = obj.inventoryOptions[option] + " @lre@" + obj.name;
-                                        if (option == 3) {
-                                            menuAction[menuSize] = 493;
-                                        }
-                                        if (option == 4) {
-                                            menuAction[menuSize] = 847;
-                                        }
-                                        menuParamC[menuSize] = obj.id;
-                                        menuParamA[menuSize] = slot;
-                                        menuParamB[menuSize] = child.id;
-                                        menuSize++;
-                                    } else if (option == 4) {
-                                        menuOption[menuSize] = "Drop @lre@" + obj.name;
-                                        menuAction[menuSize] = 847;
-                                        menuParamC[menuSize] = obj.id;
-                                        menuParamA[menuSize] = slot;
-                                        menuParamB[menuSize] = child.id;
-                                        menuSize++;
-                                    }
-                                }
-                            }
+                if (iface.inventorySlotObjID[slot] <= 0) {
+                    slot++;
+                    continue;
+                }
 
-                            if (child.inventoryUsable) {
-                                menuOption[menuSize] = "Use @lre@" + obj.name;
-                                menuAction[menuSize] = 447;
-                                menuParamC[menuSize] = obj.id;
-                                menuParamA[menuSize] = slot;
-                                menuParamB[menuSize] = child.id;
-                                menuSize++;
-                            }
+                ObjType obj = ObjType.get(iface.inventorySlotObjID[slot] - 1);
 
-                            if (child.inventoryInteractable && (obj.inventoryOptions != null)) {
-                                for (int option = 2; option >= 0; option--) {
-                                    if (obj.inventoryOptions[option] != null) {
-                                        menuOption[menuSize] = obj.inventoryOptions[option] + " @lre@" + obj.name;
-                                        if (option == 0) {
-                                            menuAction[menuSize] = 74;
-                                        }
-                                        if (option == 1) {
-                                            menuAction[menuSize] = 454;
-                                        }
-                                        if (option == 2) {
-                                            menuAction[menuSize] = 539;
-                                        }
-                                        menuParamC[menuSize] = obj.id;
-                                        menuParamA[menuSize] = slot;
-                                        menuParamB[menuSize] = child.id;
-                                        menuSize++;
-                                    }
-                                }
+                if ((objSelected == 1) && iface.inventoryInteractable) {
+                    if ((iface.id != selectedObjInterfaceID) || (slot != selectedObjSlot)) {
+                        addMenuOption("Use " + selectedObjName + " with @lre@" + obj.name, 870, slot, iface.id, obj.id);
+                    }
+                } else if ((spellSelected == 1) && iface.inventoryInteractable) {
+                    if ((activeSpellFlags & 0x10) == 0x10) {
+                        addMenuOption(spellCaption + " @lre@" + obj.name, 543, slot, iface.id, obj.id);
+                    }
+                } else {
+                    if (iface.inventoryInteractable) {
+                        for (int op = 4; op >= 3; op--) {
+                            if ((obj.inventoryOptions != null) && (obj.inventoryOptions[op] != null)) {
+                                addMenuOption(obj.inventoryOptions[op] + " @lre@" + obj.name, OBJ_IOP_ACTION[op], slot, iface.id, obj.id);
+                            } else if (op == 4) {
+                                addMenuOption("Drop @lre@" + obj.name, 847, slot, iface.id, obj.id);
                             }
-                            if (child.inventoryOptions != null) {
-                                for (int option = 4; option >= 0; option--) {
-                                    if (child.inventoryOptions[option] != null) {
-                                        menuOption[menuSize] = child.inventoryOptions[option] + " @lre@" + obj.name;
-                                        if (option == 0) {
-                                            menuAction[menuSize] = 632;
-                                        }
-                                        if (option == 1) {
-                                            menuAction[menuSize] = 78;
-                                        }
-                                        if (option == 2) {
-                                            menuAction[menuSize] = 867;
-                                        }
-                                        if (option == 3) {
-                                            menuAction[menuSize] = 431;
-                                        }
-                                        if (option == 4) {
-                                            menuAction[menuSize] = 53;
-                                        }
-                                        menuParamC[menuSize] = obj.id;
-                                        menuParamA[menuSize] = slot;
-                                        menuParamB[menuSize] = child.id;
-                                        menuSize++;
-                                    }
-                                }
-                            }
-                            menuOption[menuSize] = "Examine @lre@" + obj.name;
-                            menuAction[menuSize] = 1125;
-                            menuParamC[menuSize] = obj.id;
-                            menuParamA[menuSize] = slot;
-                            menuParamB[menuSize] = child.id;
-                            menuSize++;
                         }
                     }
+
+                    if (iface.inventoryUsable) {
+                        addMenuOption("Use @lre@" + obj.name, 447, slot, iface.id, obj.id);
+                    }
+
+                    if (iface.inventoryInteractable && (obj.inventoryOptions != null)) {
+                        for (int op = 2; op >= 0; op--) {
+                            if (obj.inventoryOptions[op] != null) {
+                                addMenuOption(obj.inventoryOptions[op] + " @lre@" + obj.name, OBJ_IOP_ACTION[op], slot, iface.id, obj.id);
+                            }
+                        }
+                    }
+
+                    if (iface.inventoryOptions != null) {
+                        for (int op = 4; op >= 0; op--) {
+                            if (iface.inventoryOptions[op] != null) {
+                                addMenuOption(iface.inventoryOptions[op] + " @lre@" + obj.name, INV_OP_ACTION[op], slot, iface.id, obj.id);
+                            }
+                        }
+                    }
+
+                    addMenuOption("Examine @lre@" + obj.name, 1125, slot, iface.id, obj.id);
                 }
                 slot++;
             }
         }
     }
 
+    public void addMenuOption(String option, int action) {
+        addMenuOption(option, action, 0, 0, 0);
+    }
+
     public void addMenuOption(String option, int action, int a, int b, int c) {
         menuOption[menuSize] = option;
         menuAction[menuSize] = action;
-        menuParamC[menuSize] = c;
         menuParamA[menuSize] = a;
         menuParamB[menuSize] = b;
+        menuParamC[menuSize] = c;
         menuSize++;
     }
 
@@ -5814,11 +5747,7 @@ public class Game extends GameShell {
 
     public void handleViewportOptions() {
         if ((objSelected == 0) && (spellSelected == 0)) {
-            menuOption[menuSize] = "Walk here";
-            menuAction[menuSize] = 516;
-            menuParamA[menuSize] = super.mouseX;
-            menuParamB[menuSize] = super.mouseY;
-            menuSize++;
+            addMenuOption("Walk here", 516, super.mouseX, super.mouseY, 0);
         }
 
         int lastBitset = -1;
@@ -5863,54 +5792,20 @@ public class Game extends GameShell {
         }
 
         if (objSelected == 1) {
-            menuOption[menuSize] = "Use " + selectedObjName + " with @cya@" + loc.name;
-            menuAction[menuSize] = 62;
-            menuParamC[menuSize] = bitset;
-            menuParamA[menuSize] = x;
-            menuParamB[menuSize] = z;
-            menuSize++;
+            addMenuOption("Use " + selectedObjName + " with @cya@" + loc.name, 62, x, z, bitset);
         } else if (spellSelected == 1) {
             if ((activeSpellFlags & 4) == 4) {
-                menuOption[menuSize] = spellCaption + " @cya@" + loc.name;
-                menuAction[menuSize] = 956;
-                menuParamC[menuSize] = bitset;
-                menuParamA[menuSize] = x;
-                menuParamB[menuSize] = z;
-                menuSize++;
+                addMenuOption(spellCaption + " @cya@" + loc.name, 956, x, z, bitset);
             }
         } else {
-            if (loc.actions != null) {
-                for (int i2 = 4; i2 >= 0; i2--) {
-                    if (loc.actions[i2] != null) {
-                        menuOption[menuSize] = loc.actions[i2] + " @cya@" + loc.name;
-                        if (i2 == 0) {
-                            menuAction[menuSize] = 502;
-                        }
-                        if (i2 == 1) {
-                            menuAction[menuSize] = 900;
-                        }
-                        if (i2 == 2) {
-                            menuAction[menuSize] = 113;
-                        }
-                        if (i2 == 3) {
-                            menuAction[menuSize] = 872;
-                        }
-                        if (i2 == 4) {
-                            menuAction[menuSize] = 1062;
-                        }
-                        menuParamC[menuSize] = bitset;
-                        menuParamA[menuSize] = x;
-                        menuParamB[menuSize] = z;
-                        menuSize++;
+            if (loc.options != null) {
+                for (int op = 4; op >= 0; op--) {
+                    if (loc.options[op] != null) {
+                        addMenuOption(loc.options[op] + " @cya@" + loc.name, LOC_OP_ACTION[op], x,z,bitset);
                     }
                 }
             }
-            menuOption[menuSize] = "Examine @cya@" + loc.name;
-            menuAction[menuSize] = 1226;
-            menuParamC[menuSize] = loc.index << 14;
-            menuParamA[menuSize] = x;
-            menuParamB[menuSize] = z;
-            menuSize++;
+            addMenuOption("Examine @cya@" + loc.name, 1226, x, z, loc.index << 14);
         }
     }
 
@@ -5968,58 +5863,21 @@ public class Game extends GameShell {
             ObjType type = ObjType.get(obj.id);
 
             if (objSelected == 1) {
-                menuOption[menuSize] = "Use " + selectedObjName + " with @lre@" + type.name;
-                menuAction[menuSize] = 511;
-                menuParamC[menuSize] = obj.id;
-                menuParamA[menuSize] = x;
-                menuParamB[menuSize] = z;
-                menuSize++;
+                addMenuOption("Use " + selectedObjName + " with @lre@" + type.name, 511, x, z, obj.id);
             } else if (spellSelected == 1) {
                 if ((activeSpellFlags & 1) == 1) {
-                    menuOption[menuSize] = spellCaption + " @lre@" + type.name;
-                    menuAction[menuSize] = 94;
-                    menuParamC[menuSize] = obj.id;
-                    menuParamA[menuSize] = x;
-                    menuParamB[menuSize] = z;
-                    menuSize++;
+                    addMenuOption(spellCaption + " @lre@" + type.name, 94, x, z, obj.id);
                 }
             } else {
-                for (int option = 4; option >= 0; option--) {
-                    if ((type.options != null) && (type.options[option] != null)) {
-                        menuOption[menuSize] = type.options[option] + " @lre@" + type.name;
-
-                        if (option == 0) {
-                            menuAction[menuSize] = 652;
-                        } else if (option == 1) {
-                            menuAction[menuSize] = 567;
-                        } else if (option == 2) {
-                            menuAction[menuSize] = 234;
-                        } else if (option == 3) {
-                            menuAction[menuSize] = 244;
-                        } else if (option == 4) {
-                            menuAction[menuSize] = 213;
-                        }
-
-                        menuParamC[menuSize] = obj.id;
-                        menuParamA[menuSize] = x;
-                        menuParamB[menuSize] = z;
-                        menuSize++;
-                    } else if (option == 2) {
-                        menuOption[menuSize] = "Take @lre@" + type.name;
-                        menuAction[menuSize] = 234;
-                        menuParamC[menuSize] = obj.id;
-                        menuParamA[menuSize] = x;
-                        menuParamB[menuSize] = z;
-                        menuSize++;
+                for (int op = 4; op >= 0; op--) {
+                    if ((type.options != null) && (type.options[op] != null)) {
+                        addMenuOption(type.options[op] + " @lre@" + type.name, OBJ_OP_ACTION[op], x,z,obj.id);
+                    } else if (op == 2) {
+                        addMenuOption("Take @lre@" + type.name, 234, x, z, obj.id);
                     }
                 }
 
-                menuOption[menuSize] = "Examine @lre@" + type.name;
-                menuAction[menuSize] = 1448;
-                menuParamC[menuSize] = obj.id;
-                menuParamA[menuSize] = x;
-                menuParamB[menuSize] = z;
-                menuSize++;
+                addMenuOption("Examine @lre@" + type.name, 1448, x, z, obj.id);
             }
         }
     }
@@ -6356,16 +6214,10 @@ public class Game extends GameShell {
             if (((type == 1) || (type == 2)) && ((type == 1) || (publicChatSetting == 0) || ((publicChatSetting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y) && !s.equals(localPlayer.name)) {
                     if (rights >= 1) {
-                        menuOption[menuSize] = "Report abuse @whi@" + s;
-                        menuAction[menuSize] = 606;
-                        menuSize++;
+                        addMenuOption("Report abuse @whi@" + s, 606);
                     }
-                    menuOption[menuSize] = "Add ignore @whi@" + s;
-                    menuAction[menuSize] = 42;
-                    menuSize++;
-                    menuOption[menuSize] = "Add friend @whi@" + s;
-                    menuAction[menuSize] = 337;
-                    menuSize++;
+                    addMenuOption("Add ignore @whi@" + s, 42);
+                    addMenuOption("Add friend @whi@" + s, 337);
                 }
                 line++;
             }
@@ -6373,35 +6225,28 @@ public class Game extends GameShell {
             if (((type == 3) || (type == 7)) && (splitPrivateChat == 0) && ((type == 7) || (privateChatSetting == 0) || ((privateChatSetting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
                     if (rights >= 1) {
-                        menuOption[menuSize] = "Report abuse @whi@" + s;
-                        menuAction[menuSize] = 606;
-                        menuSize++;
+                        addMenuOption("Report abuse @whi@" + s, 606);
                     }
-                    menuOption[menuSize] = "Add ignore @whi@" + s;
-                    menuAction[menuSize] = 42;
-                    menuSize++;
-                    menuOption[menuSize] = "Add friend @whi@" + s;
-                    menuAction[menuSize] = 337;
-                    menuSize++;
+                    addMenuOption("Add ignore @whi@" + s, 42);
+                    addMenuOption("Add friend @whi@" + s, 337);
                 }
                 line++;
             }
+
             if ((type == 4) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
-                    menuOption[menuSize] = "Accept trade @whi@" + s;
-                    menuAction[menuSize] = 484;
-                    menuSize++;
+                    addMenuOption("Accept trade @whi@" + s, 484);
                 }
                 line++;
             }
+
             if (((type == 5) || (type == 6)) && (splitPrivateChat == 0) && (privateChatSetting < 2)) {
                 line++;
             }
+
             if ((type == 8) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
-                    menuOption[menuSize] = "Accept challenge @whi@" + s;
-                    menuAction[menuSize] = 6;
-                    menuSize++;
+                    addMenuOption("Accept challenge @whi@" + s, 6);
                 }
                 line++;
             }
@@ -6573,9 +6418,10 @@ public class Game extends GameShell {
                 model.applyTransform(SeqType.instances[localPlayer.seqStandID].transformIDs[0]);
                 model.calculateNormals(64, 850, -30, -50, -30, true);
 
-                iface.modelCategory = 5;
+                iface.modelType = IfType.MODEL_TYPE_PLAYER_DESIGN;
                 iface.modelID = 0;
-                IfType.cacheModel(0, 5, model);
+
+                IfType.cacheModel(0, IfType.MODEL_TYPE_PLAYER_DESIGN, model);
             }
             return;
         }
@@ -7741,87 +7587,36 @@ public class Game extends GameShell {
         }
 
         if (objSelected == 1) {
-            menuOption[menuSize] = "Use " + selectedObjName + " with @yel@" + text;
-            menuAction[menuSize] = 582;
-            menuParamC[menuSize] = npcID;
-            menuParamA[menuSize] = tileX;
-            menuParamB[menuSize] = tileZ;
-            menuSize++;
+            addMenuOption("Use " + selectedObjName + " with @yel@" + text, 582, tileX, tileZ, npcID);
             return;
         }
 
         if (spellSelected == 1) {
             if ((activeSpellFlags & 2) == 2) {
-                menuOption[menuSize] = spellCaption + " @yel@" + text;
-                menuAction[menuSize] = 413;
-                menuParamC[menuSize] = npcID;
-                menuParamA[menuSize] = tileX;
-                menuParamB[menuSize] = tileZ;
-                menuSize++;
+                addMenuOption(spellCaption + " @yel@" + text, 413, tileX, tileZ, npcID);
             }
         } else {
             if (type.options != null) {
                 for (int option = 4; option >= 0; option--) {
                     if ((type.options[option] != null) && !type.options[option].equalsIgnoreCase("attack")) {
-                        menuOption[menuSize] = type.options[option] + " @yel@" + text;
-
-                        if (option == 0) {
-                            menuAction[menuSize] = 20;
-                        } else if (option == 1) {
-                            menuAction[menuSize] = 412;
-                        } else if (option == 2) {
-                            menuAction[menuSize] = 225;
-                        } else if (option == 3) {
-                            menuAction[menuSize] = 965;
-                        } else if (option == 4) {
-                            menuAction[menuSize] = 478;
-                        }
-
-                        menuParamC[menuSize] = npcID;
-                        menuParamA[menuSize] = tileX;
-                        menuParamB[menuSize] = tileZ;
-                        menuSize++;
+                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option],tileX,tileZ,npcID);
                     }
                 }
             }
+
             if (type.options != null) {
                 for (int option = 4; option >= 0; option--) {
                     if ((type.options[option] != null) && type.options[option].equalsIgnoreCase("attack")) {
                         int offset = 0;
-
                         if (type.level > localPlayer.combatLevel) {
                             offset = 2000;
                         }
-                        menuOption[menuSize] = type.options[option] + " @yel@" + text;
-
-                        if (option == 0) {
-                            menuAction[menuSize] = 20 + offset;
-                        }
-                        if (option == 1) {
-                            menuAction[menuSize] = 412 + offset;
-                        }
-                        if (option == 2) {
-                            menuAction[menuSize] = 225 + offset;
-                        }
-                        if (option == 3) {
-                            menuAction[menuSize] = 965 + offset;
-                        }
-                        if (option == 4) {
-                            menuAction[menuSize] = 478 + offset;
-                        }
-                        menuParamC[menuSize] = npcID;
-                        menuParamA[menuSize] = tileX;
-                        menuParamB[menuSize] = tileZ;
-                        menuSize++;
+                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option] + offset, tileX, tileZ, npcID);
                     }
                 }
             }
-            menuOption[menuSize] = "Examine @yel@" + text;
-            menuAction[menuSize] = 1025;
-            menuParamC[menuSize] = npcID;
-            menuParamA[menuSize] = tileX;
-            menuParamB[menuSize] = tileZ;
-            menuSize++;
+
+            addMenuOption("Examine @yel@" + text, 1025, tileX, tileZ, npcID);
         }
     }
 
@@ -7843,68 +7638,56 @@ public class Game extends GameShell {
         }
 
         if (objSelected == 1) {
-            menuOption[menuSize] = "Use " + selectedObjName + " with @whi@" + caption;
-            menuAction[menuSize] = 491;
-            menuParamC[menuSize] = playerID;
-            menuParamA[menuSize] = tileX;
-            menuParamB[menuSize] = tileZ;
-            menuSize++;
+            addMenuOption("Use " + selectedObjName + " with @whi@" + caption, 491, tileX, tileZ, playerID);
         } else if (spellSelected == 1) {
             if ((activeSpellFlags & 8) == 8) {
-                menuOption[menuSize] = spellCaption + " @whi@" + caption;
-                menuAction[menuSize] = 365;
-                menuParamC[menuSize] = playerID;
-                menuParamA[menuSize] = tileX;
-                menuParamB[menuSize] = tileZ;
-                menuSize++;
+                addMenuOption(spellCaption + " @whi@" + caption, 365, tileX, tileZ, playerID);
             }
         } else {
             for (int option = 4; option >= 0; option--) {
-                if (playerOptions[option] != null) {
-                    menuOption[menuSize] = playerOptions[option] + " @whi@" + caption;
+                if (playerOptions[option] == null) {
+                    continue;
+                }
+                int offset = 0;
 
-                    int offset = 0;
-
-                    if (playerOptions[option].equalsIgnoreCase("attack")) {
-                        if (player.combatLevel > localPlayer.combatLevel) {
-                            offset = 2000;
-                        }
-                        if ((localPlayer.team != 0) && (player.team != 0)) {
-                            if (localPlayer.team == player.team) {
-                                offset = 2000;
-                            } else {
-                                offset = 0;
-                            }
-                        }
-                    } else if (playerOptionPushDown[option]) {
+                if (playerOptions[option].equalsIgnoreCase("attack")) {
+                    if (player.combatLevel > localPlayer.combatLevel) {
                         offset = 2000;
                     }
 
-                    if (option == 0) {
-                        menuAction[menuSize] = 561 + offset;
+                    if ((localPlayer.team != 0) && (player.team != 0)) {
+                        if (localPlayer.team == player.team) {
+                            offset = 2000;
+                        } else {
+                            offset = 0;
+                        }
                     }
-                    if (option == 1) {
-                        menuAction[menuSize] = 779 + offset;
-                    }
-                    if (option == 2) {
-                        menuAction[menuSize] = 27 + offset;
-                    }
-                    if (option == 3) {
-                        menuAction[menuSize] = 577 + offset;
-                    }
-                    if (option == 4) {
-                        menuAction[menuSize] = 729 + offset;
-                    }
-                    menuParamC[menuSize] = playerID;
-                    menuParamA[menuSize] = tileX;
-                    menuParamB[menuSize] = tileZ;
-                    menuSize++;
+                } else if (playerOptionPushDown[option]) {
+                    offset = 2000;
                 }
+
+                int action = 0;
+
+                if (option == 0) {
+                    action = 561;
+                } else if (option == 1) {
+                    action = 779;
+                } else if (option == 2) {
+                    action = 27;
+                } else if (option == 3) {
+                    action = 577;
+                } else if (option == 4) {
+                    action = 729;
+                }
+
+                action += offset;
+
+                addMenuOption(playerOptions[option] + " @whi@" + caption, action, tileX, tileZ, playerID);
             }
         }
-        for (int i1 = 0; i1 < menuSize; i1++) {
-            if (menuAction[i1] == 516) {
-                menuOption[i1] = "Walk here @whi@" + caption;
+        for (int i = 0; i < menuSize; i++) {
+            if (menuAction[i] == 516) {
+                menuOption[i] = "Walk here @whi@" + caption;
                 return;
             }
         }
@@ -8596,12 +8379,15 @@ public class Game extends GameShell {
         if (actionArea == 3) {
             redrawChatback = true;
         }
+
         if (objDragArea == 3) {
             redrawChatback = true;
         }
+
         if (modalMessage != null) {
             redrawChatback = true;
         }
+
         if (menuVisible && (mouseArea == 2)) {
             redrawChatback = true;
         }
@@ -8791,18 +8577,12 @@ public class Game extends GameShell {
             } else {
                 type--;
             }
-            menuOption[menuSize] = "Remove @whi@" + friendName[type];
-            menuAction[menuSize] = 792;
-            menuSize++;
-            menuOption[menuSize] = "Message @whi@" + friendName[type];
-            menuAction[menuSize] = 639;
-            menuSize++;
+            addMenuOption("Remove @whi@" + friendName[type], 792);
+            addMenuOption("Message @whi@" + friendName[type], 639);
             return true;
         }
         if ((type >= 401) && (type <= 500)) {
-            menuOption[menuSize] = "Remove @whi@" + iface.text;
-            menuAction[menuSize] = 322;
-            menuSize++;
+            addMenuOption("Remove @whi@" + iface.text, 322);
             return true;
         } else {
             return false;
@@ -9149,7 +8929,7 @@ public class Game extends GameShell {
             model = iface.getModel(-1, -1, active);
         } else {
             SeqType type = SeqType.instances[seqID];
-            model = iface.getModel(type.auxiliaryTransformIDs[iface.seqFrame], type.transformIDs[iface.seqFrame], active);
+            model = iface.getModel(type.transformIDs[iface.seqFrame], type.auxiliaryTransformIDs[iface.seqFrame], active);
         }
 
         if (model != null) {
@@ -10261,16 +10041,10 @@ public class Game extends GameShell {
 
                     if (super.mouseX < (4 + w)) {
                         if (rights >= 1) {
-                            menuOption[menuSize] = "Report abuse @whi@" + sender;
-                            menuAction[menuSize] = 2606;
-                            menuSize++;
+                            addMenuOption("Report abuse @whi@" + sender, 2606);
                         }
-                        menuOption[menuSize] = "Add ignore @whi@" + sender;
-                        menuAction[menuSize] = 2042;
-                        menuSize++;
-                        menuOption[menuSize] = "Add friend @whi@" + sender;
-                        menuAction[menuSize] = 2337;
-                        menuSize++;
+                        addMenuOption("Add ignore @whi@" + sender, 2042);
+                        addMenuOption("Add friend @whi@" + sender, 2337);
                     }
                 }
                 if (++count >= 5) {
@@ -11683,7 +11457,7 @@ public class Game extends GameShell {
     private void readIfSetPlayerHead() {
         int interfaceID = in.read16ULEA();
         IfType iface = IfType.instances[interfaceID];
-        iface.modelCategory = 3;
+        iface.modelType = IfType.MODEL_TYPE_PLAYER;
 
         if (localPlayer.transmogrify == null) {
             iface.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
@@ -12074,7 +11848,7 @@ public class Game extends GameShell {
     private void readIfSetNPCHead() {
         int npcID = in.read16ULEA();
         int interfaceID = in.read16ULEA();
-        IfType.instances[interfaceID].modelCategory = 2;
+        IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NPC;
         IfType.instances[interfaceID].modelID = npcID;
     }
 
@@ -12397,15 +12171,17 @@ public class Game extends GameShell {
         int interfaceID = in.read16ULE();
         int zoom = in.read16U();
         int objID = in.read16U();
-        if (objID == 65535) {
-            IfType.instances[interfaceID].modelCategory = 0;
-        } else {
+
+        if (objID != 65535) {
             ObjType type = ObjType.get(objID);
-            IfType.instances[interfaceID].modelCategory = 4;
-            IfType.instances[interfaceID].modelID = objID;
-            IfType.instances[interfaceID].modelPitch = type.iconPitch;
-            IfType.instances[interfaceID].modelYaw = type.iconYaw;
-            IfType.instances[interfaceID].modelZoom = (type.iconZoom * 100) / zoom;
+            IfType iface = IfType.instances[interfaceID];
+            iface.modelType = IfType.MODEL_TYPE_OBJ;
+            iface.modelID = objID;
+            iface.modelPitch = type.iconPitch;
+            iface.modelYaw = type.iconYaw;
+            iface.modelZoom = (type.iconZoom * 100) / zoom;
+        } else {
+            IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NONE;
         }
     }
 
@@ -12465,7 +12241,7 @@ public class Game extends GameShell {
     private void readIfSetModel() {
         int interfaceID = in.read16ULEA();
         int modelID = in.read16U();
-        IfType.instances[interfaceID].modelCategory = 1;
+        IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NORMAL;
         IfType.instances[interfaceID].modelID = modelID;
     }
 

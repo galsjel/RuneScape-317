@@ -459,6 +459,11 @@ public class ObjType {
 		stackable = true;
 	}
 
+	/**
+	 * Retrieves a fully built ground model of this {@link ObjType}.
+	 * @param count the stack count.
+	 * @return the model or <code>null</code> if unavailable.
+	 */
 	public Model getModel(int count) {
 		if ((stackID != null) && (count > 1)) {
 			int id = -1;
@@ -502,7 +507,12 @@ public class ObjType {
 		return model;
 	}
 
-	public Model getUnlitModel(int count) {
+	/**
+	 * Retrieves the ground model of this {@link ObjType} without caching, rescaling, calculating normals, applying lighting, or making pickable. As opposed to {@link #getModel(int)}.
+	 * @param count the stack count.
+	 * @return the model or <code>null</code> if unavailable.
+	 */
+	public Model getInterfaceModel(int count) {
 		if ((stackID != null) && (count > 1)) {
 			int id = -1;
 
@@ -513,7 +523,7 @@ public class ObjType {
 			}
 
 			if (id != -1) {
-				return get(id).getUnlitModel(1);
+				return get(id).getInterfaceModel(1);
 			}
 		}
 
