@@ -78,7 +78,7 @@ public class NPCType {
     public int scaleZ = 128;
     public boolean showOnMinimap = true;
     public int[] overrides;
-    public byte[] desc;
+    public String examine;
     public int scaleXY = 128;
     public int lightAttenuation;
     /**
@@ -246,7 +246,7 @@ public class NPCType {
             } else if (code == 2) {
                 name = buffer.readString();
             } else if (code == 3) {
-                desc = buffer.readStringRaw();
+                examine = buffer.readString();
             } else if (code == 12) {
                 size = buffer.read();
             } else if (code == 13) {

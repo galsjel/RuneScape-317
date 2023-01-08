@@ -5440,8 +5440,8 @@ public class Game extends GameShell {
         }
 
         String message;
-        if (type.desc != null) {
-            message = new String(type.desc);
+        if (type.examine != null) {
+            message = type.examine;
         } else {
             message = "It's a " + type.name + ".";
         }
@@ -5688,7 +5688,7 @@ public class Game extends GameShell {
         if ((iface != null) && (iface.inventorySlotObjCount[slot] >= 0x186a0)) {
             message = iface.inventorySlotObjCount[slot] + " x " + type.name;
         } else if (type.examine != null) {
-            message = new String(type.examine);
+            message = type.examine;
         } else {
             message = "It's a " + type.name + ".";
         }
@@ -5722,8 +5722,8 @@ public class Game extends GameShell {
         int locID = (bitset >> 14) & 0x7fff;
         LocType type = LocType.get(locID);
         String message;
-        if (type.description != null) {
-            message = type.description;
+        if (type.examine != null) {
+            message = type.examine;
         } else {
             message = "It's a " + type.name + ".";
         }
@@ -5749,7 +5749,7 @@ public class Game extends GameShell {
         ObjType obj = ObjType.get(objID);
         String message;
         if (obj.examine != null) {
-            message = new String(obj.examine);
+            message = obj.examine;
         } else {
             message = "It's a " + obj.name + ".";
         }

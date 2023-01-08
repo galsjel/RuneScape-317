@@ -57,7 +57,7 @@ public class ObjType {
         }
         if (!Game.members && type.members) {
             type.name = "Members Object";
-            type.examine = "Login to a members' server to use this object.".getBytes();
+            type.examine = "Login to a members' server to use this object.";
             type.options = null;
             type.inventoryOptions = null;
             type.team = 0;
@@ -247,7 +247,7 @@ public class ObjType {
     public int modelID;
     public int maleHeadModelID0;
     public boolean stackable;
-    public byte[] examine;
+    public String examine;
     public int linkedID;
     public int iconZoom;
     public int lightAttenuation;
@@ -461,7 +461,7 @@ public class ObjType {
             s = "an";
         }
 
-        examine = ("Swap this note at any bank for " + s + " " + linked.name + ".").getBytes();
+        examine = "Swap this note at any bank for " + s + " " + linked.name + ".";
         stackable = true;
     }
 
@@ -560,7 +560,7 @@ public class ObjType {
             } else if (code == 2) {
                 name = buffer.readString();
             } else if (code == 3) {
-                examine = buffer.readStringRaw();
+                examine = buffer.readString();
             } else if (code == 4) {
                 iconZoom = buffer.read16U();
             } else if (code == 5) {

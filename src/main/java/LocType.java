@@ -127,7 +127,7 @@ public class LocType {
     public int varbit;
     public int decorOffset;
     public int[] modelKinds;
-    public String description;
+    public String examine;
     public boolean interactable;
     public boolean castShadow;
     public int seqID;
@@ -142,7 +142,7 @@ public class LocType {
         modelIDs = null;
         modelKinds = null;
         name = null;
-        description = null;
+        examine = null;
         srcColor = null;
         dstColor = null;
         sizeX = 1;
@@ -430,7 +430,7 @@ public class LocType {
                 } else if (j == 2) {
                     name = buffer.readString();
                 } else if (j == 3) {
-                    description = buffer.readString();
+                    examine = buffer.readString();
                 } else if (j == 5) {
                     int l = buffer.read8U();
                     if (l > 0) {
