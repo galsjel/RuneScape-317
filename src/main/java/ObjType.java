@@ -87,9 +87,9 @@ public class ObjType {
 
         if (amount > 1) {
             int newID = -1;
-            for (int j1 = 0; j1 < 10; j1++) {
-                if ((amount >= type.stackCount[j1]) && (type.stackCount[j1] != 0)) {
-                    newID = type.stackID[j1];
+            for (int stack = 0; stack < 10; stack++) {
+                if ((amount >= type.stackCount[stack]) && (type.stackCount[stack] != 0)) {
+                    newID = type.stackID[stack];
                 }
             }
             if (newID != -1) {
@@ -103,13 +103,13 @@ public class ObjType {
             return null;
         }
 
-        // this will typically be the certificate item for noted stuff
-        Image24 originalIcon = null;
+        // this will be the original item icon to draw over the certificate icon (if present)
+        Image24 linkedIcon = null;
 
         if (type.certificateID != -1) {
-            originalIcon = getIcon(type.linkedID, 10, -1);
+            linkedIcon = getIcon(type.linkedID, 10, -1);
 
-            if (originalIcon == null) {
+            if (linkedIcon == null) {
                 return null;
             }
         }
@@ -197,13 +197,13 @@ public class ObjType {
         }
 
         if (type.certificateID != -1) {
-            int w = originalIcon.cropW;
-            int h = originalIcon.cropH;
-            originalIcon.cropW = 32;
-            originalIcon.cropH = 32;
-            originalIcon.draw(0, 0);
-            originalIcon.cropW = w;
-            originalIcon.cropH = h;
+            int w = linkedIcon.cropW;
+            int h = linkedIcon.cropH;
+            linkedIcon.cropW = 32;
+            linkedIcon.cropH = 32;
+            linkedIcon.draw(0, 0);
+            linkedIcon.cropW = w;
+            linkedIcon.cropH = h;
         }
 
         if (outlineColor == 0) {
@@ -307,6 +307,10 @@ public class ObjType {
 
         Model model = Model.tryGet(modelID0);
 
+        if (model == null) {
+            return null;
+        }
+
         if (modelID1 != -1) {
             model = new Model(2, new Model[]{model, Model.tryGet(modelID1)});
         }
@@ -363,6 +367,10 @@ public class ObjType {
         }
 
         Model model = Model.tryGet(modelID0);
+
+        if (model == null) {
+            return null;
+        }
 
         if (modelID1 != -1) {
             if (modelID2 != -1) {

@@ -657,10 +657,10 @@ public class Model extends Entity {
                 faceCount++;
             }
 
-            for (int tface = 0; tface < model.texturedFaceCount; tface++) {
-                texturedVertexA[texturedFaceCount] = addVertex(model, model.texturedVertexA[tface]);
-                texturedVertexB[texturedFaceCount] = addVertex(model, model.texturedVertexB[tface]);
-                texturedVertexC[texturedFaceCount] = addVertex(model, model.texturedVertexC[tface]);
+            for (int face = 0; face < model.texturedFaceCount; face++) {
+                texturedVertexA[texturedFaceCount] = addVertex(model, model.texturedVertexA[face]);
+                texturedVertexB[texturedFaceCount] = addVertex(model, model.texturedVertexB[face]);
+                texturedVertexC[texturedFaceCount] = addVertex(model, model.texturedVertexC[face]);
                 texturedFaceCount++;
             }
 

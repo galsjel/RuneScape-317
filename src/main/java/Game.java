@@ -871,8 +871,8 @@ public class Game extends GameShell {
 
             total = ondemand.getFileCount(0);
 
-            for (int i = 0; i < total; i++) {
-                int flags = ondemand.getModelFlags(i);
+            for (int modelID = 0; modelID < total; modelID++) {
+                int flags = ondemand.getModelFlags(modelID);
                 byte priority = 0;
                 if ((flags & 8) != 0) {
                     priority = 10;
@@ -889,20 +889,22 @@ public class Game extends GameShell {
                 } else if ((flags & 4) != 0) {
                     priority = 4;
                 }
+
                 if ((flags & 1) != 0) {
                     priority = 3;
                 }
+
                 if (priority != 0) {
-                    ondemand.prefetch(priority, 0, i);
+                    ondemand.prefetch(priority, 0, modelID);
                 }
             }
             ondemand.prefetchMaps(members);
 
             if (!lowmem) {
-                int l = ondemand.getFileCount(2);
-                for (int i3 = 1; i3 < l; i3++) {
-                    if (ondemand.method569(i3)) {
-                        ondemand.prefetch((byte) 1, 2, i3);
+                int midiCount = ondemand.getFileCount(2);
+                for (int midi = 1; midi < midiCount; midi++) {
+                    if (ondemand.hasMidi(midi)) {
+                        ondemand.prefetch((byte) 1, 2, midi);
                     }
                 }
             }
@@ -921,33 +923,33 @@ public class Game extends GameShell {
             imageMapedge = new Image24(archiveMedia, "mapedge", 0);
             imageMapedge.crop();
             try {
-                for (int k3 = 0; k3 < 100; k3++) {
-                    imageMapscene[k3] = new Image8(archiveMedia, "mapscene", k3);
+                for (int i = 0; i < 100; i++) {
+                    imageMapscene[i] = new Image8(archiveMedia, "mapscene", i);
                 }
             } catch (Exception ignored) {
             }
             try {
-                for (int l3 = 0; l3 < 100; l3++) {
-                    imageMapfunction[l3] = new Image24(archiveMedia, "mapfunction", l3);
+                for (int i = 0; i < 100; i++) {
+                    imageMapfunction[i] = new Image24(archiveMedia, "mapfunction", i);
                 }
             } catch (Exception ignored) {
             }
             try {
-                for (int i4 = 0; i4 < 20; i4++) {
-                    imageHitmarks[i4] = new Image24(archiveMedia, "hitmarks", i4);
+                for (int i = 0; i < 20; i++) {
+                    imageHitmarks[i] = new Image24(archiveMedia, "hitmarks", i);
                 }
             } catch (Exception ignored) {
             }
             try {
-                for (int j4 = 0; j4 < 20; j4++) {
-                    imageHeadicons[j4] = new Image24(archiveMedia, "headicons", j4);
+                for (int i = 0; i < 20; i++) {
+                    imageHeadicons[i] = new Image24(archiveMedia, "headicons", i);
                 }
             } catch (Exception ignored) {
             }
             imageMapmarker0 = new Image24(archiveMedia, "mapmarker", 0);
             imageMapmarker1 = new Image24(archiveMedia, "mapmarker", 1);
-            for (int k4 = 0; k4 < 8; k4++) {
-                imageCrosses[k4] = new Image24(archiveMedia, "cross", k4);
+            for (int i = 0; i < 8; i++) {
+                imageCrosses[i] = new Image24(archiveMedia, "cross", i);
             }
             imageMapdot0 = new Image24(archiveMedia, "mapdots", 0);
             imageMapdot1 = new Image24(archiveMedia, "mapdots", 1);
@@ -1791,7 +1793,7 @@ public class Game extends GameShell {
 
         System.gc();
         Draw3D.initPool(20);
-        ondemand.method566();
+        ondemand.clearPrefetches();
 
         int minMapX = ((sceneCenterZoneX - 6) / 8) - 1;
         int maxMapX = ((sceneCenterZoneX + 6) / 8) + 1;
@@ -11483,14 +11485,18 @@ public class Game extends GameShell {
         if ((lastAddress != 0) && (viewportInterfaceID == -1)) {
             Signlink.dnslookup(StringUtil.formatIPv4(lastAddress));
             closeInterfaces();
-            char cmpType = 650;
+
+            int reportAbuseContentType = 650;
+
             if ((daysSinceRecoveriesChanged != 201) || (warnMembersInNonMembers == 1)) {
-                cmpType = 655;
+                reportAbuseContentType = 655;
             }
+
             reportAbuseInput = "";
             reportAbuseMuteOption = false;
+
             for (int i = 0; i < IfType.instances.length; i++) {
-                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != cmpType)) {
+                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != reportAbuseContentType)) {
                     continue;
                 }
                 viewportInterfaceID = IfType.instances[i].parentID;

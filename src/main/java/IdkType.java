@@ -65,8 +65,8 @@ public class IdkType {
             return true;
         }
         boolean loaded = true;
-        for (int modelId : modelIDs) {
-            if (!Model.validate(modelId)) {
+        for (int modelID : modelIDs) {
+            if (!Model.validate(modelID)) {
                 loaded = false;
             }
         }

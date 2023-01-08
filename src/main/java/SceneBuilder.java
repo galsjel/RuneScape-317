@@ -45,10 +45,7 @@ public class SceneBuilder {
             LocType type = LocType.get(locID);
             type.prefetch(onDemand);
 
-            for (; ; ) {
-                if (buffer.readSmartU() == 0) {
-                    break;
-                }
+            while (buffer.readSmartU() != 0) {
                 buffer.read8U();
             }
         }
@@ -586,7 +583,7 @@ public class SceneBuilder {
                     int underlayID = levelTileUnderlayIDs[level][x0][z0] & 0xff;
                     int overlayID = levelTileOverlayIDs[level][x0][z0] & 0xff;
 
-                    if ((underlayID <= 0) && (overlayID <= 0)) {
+                    if ((underlayID == 0) && (overlayID == 0)) {
                         continue;
                     }
 
@@ -623,11 +620,7 @@ public class SceneBuilder {
                     }
 
                     if (level > 0) {
-                        boolean occludes = true;
-
-                        if ((underlayID == 0) && (levelTileOverlayShape[level][x0][z0] != 0)) {
-                            occludes = false;
-                        }
+                        boolean occludes = (underlayID != 0) || (levelTileOverlayShape[level][x0][z0] == 0);
 
                         if ((overlayID > 0) && !FloType.instances[overlayID - 1].occludes) {
                             occludes = false;

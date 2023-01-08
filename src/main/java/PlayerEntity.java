@@ -206,9 +206,9 @@ public class PlayerEntity extends PathingEntity {
             appearanceHashcode += (appearances[1] - 256) >> 8;
         }
 
-        for (int i2 = 0; i2 < 5; i2++) {
+        for (int part = 0; part < 5; part++) {
             appearanceHashcode <<= 3;
-            appearanceHashcode += colors[i2];
+            appearanceHashcode += colors[part];
         }
 
         appearanceHashcode <<= 1;

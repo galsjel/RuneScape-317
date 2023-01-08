@@ -815,12 +815,6 @@ public class Scene {
 
     /**
      * Merges touching normals of all Locs (Walls, Ground Decorations, etc) and then reapplies their lighting.
-     *
-     * @param lightAmbient
-     * @param lightAttenuation
-     * @param lightSrcX
-     * @param lightSrcY
-     * @param lightSrcZ
      */
     public void buildModels(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ) {
         int lightMagnitude = (int) Math.sqrt((lightSrcX * lightSrcX) + (lightSrcY * lightSrcY) + (lightSrcZ * lightSrcZ));
@@ -1390,9 +1384,6 @@ public class Scene {
                 if (wall != null) {
                     if ((wall.typeA & DIRECTION_ALLOW_WALL_CORNER_TYPE[direction]) != 0) {
                         switch (wall.typeA) {
-                            /**
-                             * @see SceneTile#locSpans
-                             */
                             case 16:
                                 tile.checkLocSpans = 0b0011;
                                 tile.blockLocSpans = WALL_CORNER_TYPE_16_BLOCK_LOC_SPANS[direction];
@@ -1418,16 +1409,16 @@ public class Scene {
                         tile.checkLocSpans = 0;
                     }
 
-                    if (((wall.typeA & frontWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
+                    if (((wall.typeA & frontWallTypes) != 0) && wallVisible(occludeLevel, tileX, tileZ, wall.typeA)) {
                         wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
 
-                    if (((wall.typeB & frontWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
+                    if (((wall.typeB & frontWallTypes) != 0) && wallVisible(occludeLevel, tileX, tileZ, wall.typeB)) {
                         wall.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
                 }
 
-                if ((decor != null) && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                if ((decor != null) && visible(occludeLevel, tileX, tileZ, decor.entity.minY)) {
                     drawWallDecor(frontWallTypes, decor, true);
                 }
 
@@ -1490,7 +1481,7 @@ public class Scene {
                 if (draw) {
                     SceneWall wall = tile.wall;
 
-                    if (!wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
+                    if (wallVisible(occludeLevel, tileX, tileZ, wall.typeA)) {
                         wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
 
@@ -1599,7 +1590,7 @@ public class Scene {
                         SceneLoc farthest = locBuffer[farthestIndex];
                         farthest.cycle = cycle;
 
-                        if (!occluded(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
+                        if (locVisible(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
                             farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
                         }
 
@@ -1668,18 +1659,18 @@ public class Scene {
             if (tile.backWallTypes != 0) {
                 SceneWallDecoration decor = tile.wallDecoration;
 
-                if ((decor != null) && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                if ((decor != null) && visible(occludeLevel, tileX, tileZ, decor.entity.minY)) {
                     drawWallDecor(tile.backWallTypes, decor, false);
                 }
 
                 SceneWall wall = tile.wall;
 
                 if (wall != null) {
-                    if (((wall.typeB & tile.backWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeB)) {
+                    if (((wall.typeB & tile.backWallTypes) != 0) && wallVisible(occludeLevel, tileX, tileZ, wall.typeB)) {
                         wall.entityB.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
 
-                    if (((wall.typeA & tile.backWallTypes) != 0) && !wallOccluded(occludeLevel, tileX, tileZ, wall.typeA)) {
+                    if (((wall.typeA & tile.backWallTypes) != 0) && wallVisible(occludeLevel, tileX, tileZ, wall.typeA)) {
                         wall.entityA.draw(0, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, wall.x - eyeX, wall.y - eyeY, wall.z - eyeZ, wall.bitset);
                     }
                 }
@@ -1794,11 +1785,11 @@ public class Scene {
 
     private boolean drawTileUnderlayOrOverlay(SceneTile tile, int x, int z, int level) {
         if (tile.underlay != null) {
-            if (!tileOccluded(level, x, z)) {
+            if (tileVisible(level, x, z)) {
                 drawTileUnderlay(tile.underlay, level, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, x, z);
                 return true;
             }
-        } else if ((tile.overlay != null) && !tileOccluded(level, x, z)) {
+        } else if ((tile.overlay != null) && tileVisible(level, x, z)) {
             drawTileOverlay(x, sinEyePitch, sinEyeYaw, tile.overlay, cosEyePitch, z, cosEyeYaw);
             return true;
         }
@@ -2219,15 +2210,15 @@ public class Scene {
         }
     }
 
-    public boolean tileOccluded(int level, int x, int z) {
+    public boolean tileVisible(int level, int x, int z) {
         int cycle = levelTileOcclusionCycles[level][x][z];
 
         if (cycle == -Scene.cycle) {
-            return false;
+            return true;
         }
 
         if (cycle == Scene.cycle) {
-            return true;
+            return false;
         }
 
         int sx = x << 7;
@@ -2236,16 +2227,16 @@ public class Scene {
         if (occluded(sx + 1, levelHeightmaps[level][x][z], sz + 1) && occluded((sx + 128) - 1, levelHeightmaps[level][x + 1][z], sz + 1) && occluded((sx + 128) - 1, levelHeightmaps[level][x + 1][z + 1], (sz + 128) - 1) && occluded(sx + 1, levelHeightmaps[level][x][z + 1], (sz + 128) - 1)) {
             levelTileOcclusionCycles[level][x][z] = Scene.cycle;
             tilesCulled++;
-            return true;
+            return false;
         } else {
             levelTileOcclusionCycles[level][x][z] = -Scene.cycle;
-            return false;
+            return true;
         }
     }
 
-    public boolean wallOccluded(int level, int tileX, int tileZ, int type) {
-        if (!tileOccluded(level, tileX, tileZ)) {
-            return false;
+    public boolean wallVisible(int level, int tileX, int tileZ, int type) {
+        if (tileVisible(level, tileX, tileZ)) {
+            return true;
         }
 
         int sceneX = tileX << 7;
@@ -2259,131 +2250,131 @@ public class Scene {
             if (type == 1) {
                 if (sceneX > eyeX) {
                     if (!occluded(sceneX, sceneY, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX, sceneY, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (level > 0) {
                     if (!occluded(sceneX, y0, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX, y0, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (!occluded(sceneX, y1, sceneZ)) {
-                    return false;
+                    return true;
                 }
-                return occluded(sceneX, y1, sceneZ + 128);
+                return !occluded(sceneX, y1, sceneZ + 128);
             } else if (type == 2) {
                 if (sceneZ < eyeZ) {
                     if (!occluded(sceneX, sceneY, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, sceneY, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (level > 0) {
                     if (!occluded(sceneX, y0, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, y0, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (!occluded(sceneX, y1, sceneZ + 128)) {
-                    return false;
+                    return true;
                 }
-                return occluded(sceneX + 128, y1, sceneZ + 128);
+                return !occluded(sceneX + 128, y1, sceneZ + 128);
             } else if (type == 4) {
                 if (sceneX < eyeX) {
                     if (!occluded(sceneX + 128, sceneY, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, sceneY, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (level > 0) {
                     if (!occluded(sceneX + 128, y0, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, y0, sceneZ + 128)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (!occluded(sceneX + 128, y1, sceneZ)) {
-                    return false;
+                    return true;
                 }
-                return occluded(sceneX + 128, y1, sceneZ + 128);
+                return !occluded(sceneX + 128, y1, sceneZ + 128);
             } else if (type == 8) {
                 if (sceneZ > eyeZ) {
                     if (!occluded(sceneX, sceneY, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, sceneY, sceneZ)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (level > 0) {
                     if (!occluded(sceneX, y0, sceneZ)) {
-                        return false;
+                        return true;
                     }
                     if (!occluded(sceneX + 128, y0, sceneZ)) {
-                        return false;
+                        return true;
                     }
                 }
                 if (!occluded(sceneX, y1, sceneZ)) {
-                    return false;
+                    return true;
                 }
-                return occluded(sceneX + 128, y1, sceneZ);
+                return !occluded(sceneX + 128, y1, sceneZ);
             }
         }
 
         if (!occluded(sceneX + 64, y2, sceneZ + 64)) {
-            return false;
+            return true;
         }
 
         if (type == 16) {
-            return occluded(sceneX, y1, sceneZ + 128);
+            return !occluded(sceneX, y1, sceneZ + 128);
         } else if (type == 32) {
-            return occluded(sceneX + 128, y1, sceneZ + 128);
+            return !occluded(sceneX + 128, y1, sceneZ + 128);
         } else if (type == 64) {
-            return occluded(sceneX + 128, y1, sceneZ);
+            return !occluded(sceneX + 128, y1, sceneZ);
         } else if (type == 128) {
-            return occluded(sceneX, y1, sceneZ);
+            return !occluded(sceneX, y1, sceneZ);
         } else {
             System.out.println("Warning unsupported wall type");
-            return true;
+            return false;
         }
     }
 
-    public boolean occluded(int level, int tileX, int tileZ, int y) {
-        if (!tileOccluded(level, tileX, tileZ)) {
-            return false;
+    public boolean visible(int level, int tileX, int tileZ, int y) {
+        if (tileVisible(level, tileX, tileZ)) {
+            return true;
         }
         int x = tileX << 7;
         int z = tileZ << 7;
-        return occluded(x + 1, levelHeightmaps[level][tileX][tileZ] - y, z + 1) && occluded((x + 128) - 1, levelHeightmaps[level][tileX + 1][tileZ] - y, z + 1) && occluded((x + 128) - 1, levelHeightmaps[level][tileX + 1][tileZ + 1] - y, (z + 128) - 1) && occluded(x + 1, levelHeightmaps[level][tileX][tileZ + 1] - y, (z + 128) - 1);
+        return !occluded(x + 1, levelHeightmaps[level][tileX][tileZ] - y, z + 1) || !occluded((x + 128) - 1, levelHeightmaps[level][tileX + 1][tileZ] - y, z + 1) || !occluded((x + 128) - 1, levelHeightmaps[level][tileX + 1][tileZ + 1] - y, (z + 128) - 1) || !occluded(x + 1, levelHeightmaps[level][tileX][tileZ + 1] - y, (z + 128) - 1);
     }
 
-    public boolean occluded(int level, int minTileX, int maxTileX, int minTileZ, int maxTileZ, int y) {
+    public boolean locVisible(int level, int minTileX, int maxTileX, int minTileZ, int maxTileZ, int y) {
         if ((minTileX == maxTileX) && (minTileZ == maxTileZ)) {
-            if (!tileOccluded(level, minTileX, minTileZ)) {
-                return false;
+            if (tileVisible(level, minTileX, minTileZ)) {
+                return true;
             }
             int x = minTileX << 7;
             int z = minTileZ << 7;
-            return occluded(x + 1, levelHeightmaps[level][minTileX][minTileZ] - y, z + 1) && occluded((x + 128) - 1, levelHeightmaps[level][minTileX + 1][minTileZ] - y, z + 1) && occluded((x + 128) - 1, levelHeightmaps[level][minTileX + 1][minTileZ + 1] - y, (z + 128) - 1) && occluded(x + 1, levelHeightmaps[level][minTileX][minTileZ + 1] - y, (z + 128) - 1);
+            return !occluded(x + 1, levelHeightmaps[level][minTileX][minTileZ] - y, z + 1) || !occluded((x + 128) - 1, levelHeightmaps[level][minTileX + 1][minTileZ] - y, z + 1) || !occluded((x + 128) - 1, levelHeightmaps[level][minTileX + 1][minTileZ + 1] - y, (z + 128) - 1) || !occluded(x + 1, levelHeightmaps[level][minTileX][minTileZ + 1] - y, (z + 128) - 1);
         }
 
         for (int stx = minTileX; stx <= maxTileX; stx++) {
             for (int stz = minTileZ; stz <= maxTileZ; stz++) {
                 if (levelTileOcclusionCycles[level][stx][stz] == -cycle) {
-                    return false;
+                    return true;
                 }
             }
         }
@@ -2393,22 +2384,22 @@ public class Scene {
         int y0 = levelHeightmaps[level][minTileX][minTileZ] - y;
 
         if (!occluded(x0, y0, z0)) {
-            return false;
+            return true;
         }
 
         int x1 = (maxTileX << 7) - 1;
 
         if (!occluded(x1, y0, z0)) {
-            return false;
+            return true;
         }
 
         int z1 = (maxTileZ << 7) - 1;
 
         if (!occluded(x0, y0, z1)) {
-            return false;
+            return true;
         }
 
-        return occluded(x1, y0, z1);
+        return !occluded(x1, y0, z1);
     }
 
     public boolean occluded(int x, int y, int z) {

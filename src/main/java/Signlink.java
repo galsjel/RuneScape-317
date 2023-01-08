@@ -107,9 +107,9 @@ public class Signlink implements Runnable {
     }
 
 
-    public static synchronized void dnslookup(String s) {
-        dns = s;
-        dnsreq = s;
+    public static synchronized void dnslookup(String dns) {
+        Signlink.dns = dns;
+        dnsreq = dns;
     }
 
     public static synchronized boolean wavesave(byte[] src, int len) {

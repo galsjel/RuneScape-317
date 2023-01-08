@@ -12,11 +12,10 @@ public class OnDemand implements Runnable {
 
     public final DoublyLinkedList pending = new DoublyLinkedList();
     public final CRC32 crc32 = new CRC32();
-    public final byte[] bbuf = new byte[500];
+    public final byte[] buffer = new byte[500];
     public final byte[][] storeFilePriorities = new byte[4][];
-    public final DoublyLinkedList aList_1344 = new DoublyLinkedList();
+    public final DoublyLinkedList prefetches = new DoublyLinkedList();
     public final DoublyLinkedList completed = new DoublyLinkedList();
-    public final byte[] aByteArray1359 = new byte[65000];
     public final LinkedList<OnDemandRequest> requests = new LinkedList<>();
     public final int[][] storeFileVersions = new int[4][];
     public final int[][] storeFileChecksums = new int[4][];
@@ -40,7 +39,7 @@ public class OnDemand implements Runnable {
     public boolean running = true;
     public OutputStream out;
     public int[] mapPrefetched;
-    public boolean aBoolean1357 = false;
+    public boolean active = false;
     public int[] animIndex;
     public InputStream in;
     public Socket socket;
@@ -54,22 +53,23 @@ public class OnDemand implements Runnable {
     public OnDemand() {
     }
 
-    public boolean validate(int version, int crc, byte[] src) {
+    public boolean validate(int expectedVersion, int crc, byte[] src) {
         if (src != null) {
             return true;
         }
+
         if ((src == null) || (src.length < 2)) {
             return false;
         }
-        int foot = src.length - 2;
-        int footVersion = ((src[foot] & 0xff) << 8) + (src[foot + 1] & 0xff);
+
+        int fileEndPos = src.length - 2;
+        int fileVersion = ((src[fileEndPos] & 0xff) << 8) + (src[fileEndPos + 1] & 0xff);
+
         crc32.reset();
-        crc32.update(src, 0, foot);
-        int srcCrc = (int) crc32.getValue();
-        if (footVersion != version) {
-            return false;
-        }
-        return srcCrc == crc;
+        crc32.update(src, 0, fileEndPos);
+
+        return fileVersion == expectedVersion && (int) crc32.getValue() == crc;
+
     }
 
     public void read() {
@@ -77,14 +77,14 @@ public class OnDemand implements Runnable {
             int available = in.available();
 
             if ((partAvailable == 0) && (available >= 6)) {
-                aBoolean1357 = true;
+                active = true;
 
-                in.read(bbuf, 0, 6);
+                in.read(buffer, 0, 6);
 
-                int store = bbuf[0] & 0xff;
-                int file = ((bbuf[1] & 0xff) << 8) + (bbuf[2] & 0xff);
-                int size = ((bbuf[3] & 0xff) << 8) + (bbuf[4] & 0xff);
-                int part = bbuf[5] & 0xff;
+                int store = buffer[0] & 0xff;
+                int file = ((buffer[1] & 0xff) << 8) + (buffer[2] & 0xff);
+                int size = ((buffer[3] & 0xff) << 8) + (buffer[4] & 0xff);
+                int part = buffer[5] & 0xff;
 
                 current = null;
 
@@ -134,8 +134,8 @@ public class OnDemand implements Runnable {
             }
 
             if ((partAvailable > 0) && (available >= partAvailable)) {
-                aBoolean1357 = true;
-                byte[] dst = bbuf;
+                active = true;
+                byte[] dst = buffer;
                 int offset = 0;
 
                 if (current != null) {
@@ -300,19 +300,19 @@ public class OnDemand implements Runnable {
                 waitCycles = 0;
             }
 
-            bbuf[0] = (byte) request.store;
-            bbuf[1] = (byte) (request.file >> 8);
-            bbuf[2] = (byte) request.file;
+            buffer[0] = (byte) request.store;
+            buffer[1] = (byte) (request.file >> 8);
+            buffer[2] = (byte) request.file;
 
             if (request.important) {
-                bbuf[3] = 2;
+                buffer[3] = 2;
             } else if (!game.ingame) {
-                bbuf[3] = 1;
+                buffer[3] = 1;
             } else {
-                bbuf[3] = 0;
+                buffer[3] = 0;
             }
 
-            out.write(bbuf, 0, 4);
+            out.write(buffer, 0, 4);
             heartbeatCycle = 0;
             failCount = -10000;
             return;
@@ -381,23 +381,23 @@ public class OnDemand implements Runnable {
                 } catch (Exception ignored) {
                 }
 
-                aBoolean1357 = true;
+                active = true;
 
                 for (int j = 0; j < 100; j++) {
-                    if (!aBoolean1357) {
+                    if (!active) {
                         break;
                     }
 
-                    aBoolean1357 = false;
+                    active = false;
 
                     handleQueue();
-                    method565();
+                    handlePending();
 
                     if ((importantCount == 0) && (j >= 5)) {
                         break;
                     }
 
-                    method568();
+                    handleExtras();
 
                     if (in != null) {
                         read();
@@ -453,13 +453,13 @@ public class OnDemand implements Runnable {
 
                     if (heartbeatCycle > 500) {
                         heartbeatCycle = 0;
-                        bbuf[0] = 0;
-                        bbuf[1] = 0;
-                        bbuf[2] = 0;
-                        bbuf[3] = 10;
+                        buffer[0] = 0;
+                        buffer[1] = 0;
+                        buffer[2] = 0;
+                        buffer[3] = 10;
 
                         try {
-                            out.write(bbuf, 0, 4);
+                            out.write(buffer, 0, 4);
                         } catch (IOException _ex) {
                             waitCycles = 5000;
                         }
@@ -488,8 +488,8 @@ public class OnDemand implements Runnable {
         request.store = store;
         request.file = file;
         request.important = false;
-        synchronized (aList_1344) {
-            aList_1344.pushBack(request);
+        synchronized (prefetches) {
+            prefetches.pushBack(request);
         }
     }
 
@@ -569,7 +569,7 @@ public class OnDemand implements Runnable {
         return false;
     }
 
-    public void method565() {
+    public void handlePending() {
         importantCount = 0;
         requestCount = 0;
 
@@ -596,13 +596,13 @@ public class OnDemand implements Runnable {
             pending.pushBack(request);
             importantCount++;
             send(request);
-            aBoolean1357 = true;
+            active = true;
         }
     }
 
-    public void method566() {
-        synchronized (aList_1344) {
-            aList_1344.clear();
+    public void clearPrefetches() {
+        synchronized (prefetches) {
+            prefetches.clear();
         }
     }
 
@@ -613,7 +613,7 @@ public class OnDemand implements Runnable {
         }
 
         while (request != null) {
-            aBoolean1357 = true;
+            active = true;
             byte[] data = null;
 
             if (game.filestores[0] != null) {
@@ -638,7 +638,7 @@ public class OnDemand implements Runnable {
         }
     }
 
-    public void method568() {
+    public void handleExtras() {
         while ((importantCount == 0) && (requestCount < 10)) {
             if (topPriority == 0) {
                 break;
@@ -646,8 +646,8 @@ public class OnDemand implements Runnable {
 
             OnDemandRequest extra;
 
-            synchronized (aList_1344) {
-                extra = (OnDemandRequest) aList_1344.pollFront();
+            synchronized (prefetches) {
+                extra = (OnDemandRequest) prefetches.pollFront();
             }
 
             while (extra != null) {
@@ -655,7 +655,7 @@ public class OnDemand implements Runnable {
                     storeFilePriorities[extra.store][extra.file] = 0;
                     pending.pushBack(extra);
                     send(extra);
-                    aBoolean1357 = true;
+                    active = true;
 
                     if (loadedPretechFiles < totalPrefetchFiles) {
                         loadedPretechFiles++;
@@ -668,8 +668,8 @@ public class OnDemand implements Runnable {
                         return;
                     }
                 }
-                synchronized (aList_1344) {
-                    extra = (OnDemandRequest) aList_1344.pollFront();
+                synchronized (prefetches) {
+                    extra = (OnDemandRequest) prefetches.pollFront();
                 }
             }
 
@@ -682,18 +682,21 @@ public class OnDemand implements Runnable {
 
                     priorities[file] = 0;
 
-                    OnDemandRequest request_1 = new OnDemandRequest();
-                    request_1.store = store;
-                    request_1.file = file;
-                    request_1.important = false;
-                    pending.pushBack(request_1);
-                    send(request_1);
-                    aBoolean1357 = true;
+                    OnDemandRequest req = new OnDemandRequest();
+                    req.store = store;
+                    req.file = file;
+                    req.important = false;
+                    pending.pushBack(req);
+                    send(req);
+                    active = true;
+
                     if (loadedPretechFiles < totalPrefetchFiles) {
                         loadedPretechFiles++;
                     }
+
                     message = "Loading extra files - " + loadedPretechFiles * 100 / totalPrefetchFiles + "%";
                     requestCount++;
+
                     if (requestCount == 10) {
                         return;
                     }
@@ -703,7 +706,7 @@ public class OnDemand implements Runnable {
         }
     }
 
-    public boolean method569(int i) {
+    public boolean hasMidi(int i) {
         return midiIndex[i] == 1;
     }
 
