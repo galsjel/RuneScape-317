@@ -127,7 +127,7 @@ public class Game extends GameShell {
         }
 
         Signlink.storeid = Integer.parseInt(args[4]);
-        Signlink.startpriv(InetAddress.getLocalHost());
+        Signlink.startpriv();
 
         Game game = new Game();
         game.init(765, 503);
@@ -227,7 +227,7 @@ public class Game extends GameShell {
     public int[] flameBuffer3;
     public int[] flameBuffer2;
     public volatile boolean flameActive = false;
-    public Socket aSocket832;
+    public Socket jaggrabSocket;
     public int titleScreenState;
     public Buffer chatBuffer = new Buffer(new byte[5000]);
     public NPCEntity[] npcs = new NPCEntity[16384];
@@ -699,10 +699,6 @@ public class Game extends GameShell {
     @Override
     public void load() throws IOException {
         drawProgress(20, "Starting up");
-
-        if (Signlink.sunjava) {
-            super.mindel = 5;
-        }
 
         if (started) {
             errorStarted = true;
@@ -1274,11 +1270,7 @@ public class Game extends GameShell {
         if (priority > 10) {
             priority = 10;
         }
-        if (Signlink.mainapp != null) {
-            Signlink.startthread(runnable, priority);
-        } else {
-            super.startThread(runnable, priority);
-        }
+        super.startThread(runnable, priority);
     }
 
     @Override
@@ -4062,9 +4054,8 @@ public class Game extends GameShell {
     public boolean wavesave(byte[] src, int len) {
         if (src == null) {
             return true;
-        } else {
-            return Signlink.wavesave(src, len);
         }
+        return Signlink.wavesave(src, len);
     }
 
     public void resetInterfaceAnimation(int interfaceID) {
@@ -4576,58 +4567,76 @@ public class Game extends GameShell {
         return true;
     }
 
-    public FileArchive loadArchive(int fileId, String caption, String fileName, int checksum, int progress) throws IOException {
+    public FileArchive loadArchive(int fileId, String caption, String fileName, int expectedChecksum, int progress) throws IOException {
         byte[] data = null;
         int wait = 5;
+
         try {
             if (filestores[0] != null) {
                 data = filestores[0].read(fileId);
             }
         } catch (Exception ignored) {
         }
+
         if (data != null) {
             crc32.reset();
             crc32.update(data);
-            if ((int) crc32.getValue() != checksum) {
+            if ((int) crc32.getValue() != expectedChecksum) {
                 data = null;
             }
         }
+
         if (data != null) {
             return new FileArchive(data);
         }
-        int j1 = 0;
+
+        int checksumErrors = 0;
         while (data == null) {
-            String s2 = "Unknown error";
+            String error = "Unknown error";
             drawProgress(progress, "Requesting " + caption);
+
             try {
-                int k1 = 0;
-                DataInputStream datainputstream = openURL(fileName + checksum);
-                byte[] abyte1 = new byte[6];
-                datainputstream.readFully(abyte1, 0, 6);
-                Buffer buffer = new Buffer(abyte1);
+                int lastPercent = 0;
+
+                DataInputStream in = openURL(fileName + expectedChecksum);
+                Buffer buffer = new Buffer(new byte[6]);
+                in.readFully(buffer.data, 0, 6);
                 buffer.position = 3;
-                int i2 = buffer.read24() + 6;
-                int j2 = 6;
-                data = new byte[i2];
-                System.arraycopy(abyte1, 0, data, 0, 6);
-                while (j2 < i2) {
-                    int l2 = i2 - j2;
-                    if (l2 > 1000) {
-                        l2 = 1000;
+
+                int fileSize = buffer.read24() + 6;
+                int totalRead = 6;
+
+                data = new byte[fileSize];
+
+                System.arraycopy(buffer.data, 0, data, 0, 6);
+
+                while (totalRead < fileSize) {
+                    int remaining = fileSize - totalRead;
+
+                    if (remaining > 1000) {
+                        remaining = 1000;
                     }
-                    int j3 = datainputstream.read(data, j2, l2);
-                    if (j3 < 0) {
-                        s2 = "Length error: " + j2 + "/" + i2;
+
+                    int read = in.read(data, totalRead, remaining);
+
+                    if (read < 0) {
+                        error = "Length error: " + totalRead + "/" + fileSize;
                         throw new IOException("EOF");
                     }
-                    j2 += j3;
-                    int k3 = (j2 * 100) / i2;
-                    if (k3 != k1) {
-                        drawProgress(progress, "Loading " + caption + " - " + k3 + "%");
+
+                    totalRead += read;
+
+                    int percent = (totalRead * 100) / fileSize;
+
+                    if (percent != lastPercent) {
+                        drawProgress(progress, "Loading " + caption + " - " + percent + "%");
                     }
-                    k1 = k3;
+
+                    lastPercent = percent;
                 }
-                datainputstream.close();
+
+                in.close();
+
                 try {
                     if (filestores[0] != null) {
                         filestores[0].write(data, fileId, data.length);
@@ -4635,47 +4644,50 @@ public class Game extends GameShell {
                 } catch (Exception _ex) {
                     filestores[0] = null;
                 }
+
                 if (data != null) {
                     crc32.reset();
                     crc32.update(data);
-                    int i3 = (int) crc32.getValue();
-                    if (i3 != checksum) {
-                        //data = null;
-                        j1++;
-                        s2 = "Checksum error: " + i3;
+                    int calculatedChecksum = (int) crc32.getValue();
+
+                    if (calculatedChecksum != expectedChecksum) {
+                        data = null;
+                        checksumErrors++;
+                        error = "Checksum error: " + calculatedChecksum;
                     }
                 }
             } catch (IOException ioexception) {
-                if (s2.equals("Unknown error")) {
-                    s2 = "Connection error";
+                if (error.equals("Unknown error")) {
+                    error = "Connection error";
                 }
                 data = null;
             } catch (NullPointerException _ex) {
-                s2 = "Null error";
+                error = "Null error";
                 data = null;
                 if (!Signlink.reporterror) {
                     return null;
                 }
             } catch (ArrayIndexOutOfBoundsException _ex) {
-                s2 = "Bounds error";
+                error = "Bounds error";
                 data = null;
                 if (!Signlink.reporterror) {
                     return null;
                 }
             } catch (Exception _ex) {
-                s2 = "Unexpected error";
+                error = "Unexpected error";
                 data = null;
                 if (!Signlink.reporterror) {
                     return null;
                 }
             }
+
             if (data == null) {
-                for (int l1 = wait; l1 > 0; l1--) {
-                    if (j1 >= 3) {
+                for (int remaining = wait; remaining > 0; remaining--) {
+                    if (checksumErrors >= 3) {
                         drawProgress(progress, "Game updated - please reload page");
-                        l1 = 10;
+                        remaining = 10;
                     } else {
-                        drawProgress(progress, s2 + " - Retrying in " + l1);
+                        drawProgress(progress, error + " - Retrying in " + remaining);
                     }
                     try {
                         Thread.sleep(1000L);
@@ -4705,15 +4717,16 @@ public class Game extends GameShell {
         areaViewport.draw(super.graphics, 4, 4);
         minimapState = 0;
         flagSceneTileX = 0;
-        Connection connection = this.connection;
         ingame = false;
         loginAttempts = 0;
         login(username, password, true);
+
         if (!ingame) {
             logout();
         }
+
         try {
-            connection.close();
+            this.connection.close();
         } catch (Exception ignored) {
         }
     }
@@ -10170,25 +10183,22 @@ public class Game extends GameShell {
 
     public DataInputStream openURL(String s) throws IOException {
         if (!jaggrabEnabled) {
-            if (Signlink.mainapp != null) {
-                return Signlink.openurl(s);
-            } else {
-                return new DataInputStream(new URL(getCodeBase(), s).openStream());
-            }
+            return new DataInputStream(new URL(getCodeBase(), s).openStream());
         }
-        if (aSocket832 != null) {
+
+        if (jaggrabSocket != null) {
             try {
-                aSocket832.close();
+                jaggrabSocket.close();
             } catch (Exception ignored) {
             }
-            aSocket832 = null;
+            jaggrabSocket = null;
         }
-        aSocket832 = openSocket(43595);
-        aSocket832.setSoTimeout(10000);
-        java.io.InputStream inputstream = aSocket832.getInputStream();
-        OutputStream outputstream = aSocket832.getOutputStream();
-        outputstream.write(("JAGGRAB /" + s + "\n\n").getBytes());
-        return new DataInputStream(inputstream);
+        jaggrabSocket = openSocket(43595);
+        jaggrabSocket.setSoTimeout(10000);
+        java.io.InputStream in = jaggrabSocket.getInputStream();
+        OutputStream out = jaggrabSocket.getOutputStream();
+        out.write(("JAGGRAB /" + s + "\n\n").getBytes());
+        return new DataInputStream(in);
     }
 
     public void drawFlames() {
