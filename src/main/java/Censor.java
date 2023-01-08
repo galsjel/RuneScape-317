@@ -303,6 +303,7 @@ public class Censor {
         }
     }
 
+    // I stopped caring right here.
     public static void filterTLD(char[] ac, char[] ac1, int i, char[] ac2, char[] ac3) {
         if (ac1.length > ac3.length) {
             return;
@@ -524,7 +525,7 @@ public class Censor {
                     continue;
                 }
 
-                if ((fragmentOffset >= fragment.length) || !isNotLowerCaseAlpha(b)) {
+                if ((fragmentOffset >= fragment.length) || isLowerCaseAlpha(b)) {
                     break;
                 }
 
@@ -692,132 +693,132 @@ public class Censor {
         return ((a != 'l') || (b != 'i')) ? 0 : 1;
     }
 
-    public static int getEmulatedSize(char a, char b, char c) {
-        if (a == b) {
+    public static int getEmulatedSize(char original, char b, char c) {
+        if (original == b) {
             return 1;
         }
 
-        if ((a >= 'a') && (a <= 'm')) {
-            if (a == 'a') {
+        if ((original >= 'a') && (original <= 'm')) {
+            if (original == 'a') {
                 if ((b == '4') || (b == '@') || (b == '^')) {
                     return 1;
                 }
                 return ((b != '/') || (c != '\\')) ? 0 : 2;
             }
-            if (a == 'b') {
+            if (original == 'b') {
                 if ((b == '6') || (b == '8')) {
                     return 1;
                 }
                 return (((b != '1') || (c != '3')) && ((b != 'i') || (c != '3'))) ? 0 : 2;
             }
-            if (a == 'c') {
+            if (original == 'c') {
                 return ((b != '(') && (b != '<') && (b != '{') && (b != '[')) ? 0 : 1;
             }
-            if (a == 'd') {
+            if (original == 'd') {
                 return (((b != '[') || (c != ')')) && ((b != 'i') || (c != ')'))) ? 0 : 2;
             }
-            if (a == 'e') {
+            if (original == 'e') {
                 return ((b != '3') && (b != '€')) ? 0 : 1;
             }
-            if (a == 'f') {
+            if (original == 'f') {
                 if ((b == 'p') && (c == 'h')) {
                     return 2;
                 }
-                return (b != '\243') ? 0 : 1;
+                return (b != '£') ? 0 : 1;
             }
-            if (a == 'g') {
+            if (original == 'g') {
                 return ((b != '9') && (b != '6') && (b != 'q')) ? 0 : 1;
             }
-            if (a == 'h') {
+            if (original == 'h') {
                 return (b != '#') ? 0 : 1;
             }
-            if (a == 'i') {
+            if (original == 'i') {
                 return ((b != 'y') && (b != 'l') && (b != 'j') && (b != '1') && (b != '!') && (b != ':') && (b != ';') && (b != '|')) ? 0 : 1;
             }
-            if (a == 'j') {
+            if (original == 'j') {
                 return 0;
             }
-            if (a == 'k') {
+            if (original == 'k') {
                 return 0;
             }
-            if (a == 'l') {
+            if (original == 'l') {
                 return ((b != '1') && (b != '|') && (b != 'i')) ? 0 : 1;
             }
-            if (a == 'm') {
+            if (original == 'm') {
                 return 0;
             }
         }
-        if ((a >= 'n') && (a <= 'z')) {
-            if (a == 'n') {
+        if ((original >= 'n') && (original <= 'z')) {
+            if (original == 'n') {
                 return 0;
             }
-            if (a == 'o') {
+            if (original == 'o') {
                 if ((b == '0') || (b == '*')) {
                     return 1;
                 }
                 return (((b != '(') || (c != ')')) && ((b != '[') || (c != ']')) && ((b != '{') || (c != '}')) && ((b != '<') || (c != '>'))) ? 0 : 2;
             }
-            if (a == 'p') {
+            if (original == 'p') {
                 return 0;
             }
-            if (a == 'q') {
+            if (original == 'q') {
                 return 0;
             }
-            if (a == 'r') {
+            if (original == 'r') {
                 return 0;
             }
-            if (a == 's') {
+            if (original == 's') {
                 return ((b != '5') && (b != 'z') && (b != '$') && (b != '2')) ? 0 : 1;
             }
-            if (a == 't') {
+            if (original == 't') {
                 return ((b != '7') && (b != '+')) ? 0 : 1;
             }
 
             int v = (((b != '\\') || (c != '/')) && ((b != '\\') || (c != '|')) && ((b != '|') || (c != '/'))) ? 0 : 2;
 
-            if (a == 'u') {
+            if (original == 'u') {
                 if (b == 'v') {
                     return 1;
                 }
                 return v;
             }
 
-            if (a == 'v') {
+            if (original == 'v') {
                 return v;
             }
-            if (a == 'w') {
+            if (original == 'w') {
                 return ((b != 'v') || (c != 'v')) ? 0 : 2;
             }
-            if (a == 'x') {
+            if (original == 'x') {
                 return (((b != ')') || (c != '(')) && ((b != '}') || (c != '{')) && ((b != ']') || (c != '[')) && ((b != '>') || (c != '<'))) ? 0 : 2;
             }
-            if (a == 'y') {
+            if (original == 'y') {
                 return 0;
             }
-            if (a == 'z') {
+            if (original == 'z') {
                 return 0;
             }
         }
-        if ((a >= '0') && (a <= '9')) {
-            if (a == '0') {
+        if ((original >= '0') && (original <= '9')) {
+            if (original == '0') {
                 if ((b == 'o') || (b == 'O')) {
                     return 1;
                 }
                 return (((b != '(') || (c != ')')) && ((b != '{') || (c != '}')) && ((b != '[') || (c != ']'))) ? 0 : 2;
             }
-            if (a == '1') {
+            if (original == '1') {
                 return (b != 'l') ? 0 : 1;
             } else {
                 return 0;
             }
         }
-        if (a == ',') {
+        if (original == ',') {
             return (b != '.') ? 0 : 1;
         }
-        if (a == '.') {
+        if (original == '.') {
             return (b != ',') ? 0 : 1;
         }
-        if (a == '!') {
+        if (original == '!') {
             return (b != 'i') ? 0 : 1;
         } else {
             return 0;
@@ -848,7 +849,7 @@ public class Censor {
             boolean foundLowercase = false;
 
             for (int i = end; (i >= 0) && (i < index) && !foundLowercase; i++) {
-                if (!isSymbol(in[i]) && !isNotLowerCaseAlpha(in[i])) {
+                if (!isSymbol(in[i]) && isLowerCaseAlpha(in[i])) {
                     foundLowercase = true;
                 }
             }
@@ -911,11 +912,11 @@ public class Censor {
         return !isAlpha(c) && !isNumber(c);
     }
 
-    public static boolean isNotLowerCaseAlpha(char c) {
+    public static boolean isLowerCaseAlpha(char c) {
         if ((c < 'a') || (c > 'z')) {
-            return true;
+            return false;
         }
-        return (c == 'v') || (c == 'x') || (c == 'j') || (c == 'q') || (c == 'z');
+        return (c != 'v') && (c != 'x') && (c != 'j') && (c != 'q') && (c != 'z');
     }
 
     public static boolean isAlpha(char c) {
@@ -934,46 +935,51 @@ public class Censor {
         return (c >= 'A') && (c <= 'Z');
     }
 
-    // I stopped caring right about here. -Dane
     public static boolean isBadFragment(char[] in) {
-        boolean flag = true;
+        boolean bad = true;
         for (char c : in) {
             if (!isNumber(c) && (c != 0)) {
-                flag = false;
+                bad = false;
                 break;
             }
         }
-        if (flag) {
+
+        if (bad) {
             return true;
         }
 
-        int index = method524(in);
-        int k = 0;
-        int l = fragments.length - 1;
-        if ((index == fragments[k]) || (index == fragments[l])) {
+        int id = firstFragmentID(in);
+        int start = 0;
+        int end = fragments.length - 1;
+
+        if ((id == fragments[start]) || (id == fragments[end])) {
             return true;
         }
+
         do {
-            int mid = (k + l) / 2;
-            if (index == fragments[mid]) {
+            int mid = (start + end) / 2;
+
+            if (id == fragments[mid]) {
                 return true;
             }
-            if (index < fragments[mid]) {
-                l = mid;
+
+            if (id < fragments[mid]) {
+                end = mid;
             } else {
-                k = mid;
+                start = mid;
             }
-        } while ((k != l) && ((k + 1) != l));
+        } while ((start != end) && ((start + 1) != end));
         return false;
     }
 
-    public static int method524(char[] ac) {
-        if (ac.length > 6) {
+    public static int firstFragmentID(char[] in) {
+        if (in.length > 6) {
             return 0;
         }
+
         int index = 0;
-        for (int l = 0; l < ac.length; l++) {
-            char c = ac[ac.length - l - 1];
+        for (int l = 0; l < in.length; l++) {
+            char c = in[in.length - l - 1];
             if ((c >= 'a') && (c <= 'z')) {
                 index = (((index * 38) + c) - 97) + 1;
             } else if (c == '\'') {
