@@ -8050,7 +8050,6 @@ public class Game extends GameShell {
         }
     }
 
-
     public void startForceMovement(PathingEntity entity) {
         if ((entity.forceMoveStartCycle == loopCycle) || (entity.primarySeqID == -1) || (entity.primarySeqDelay != 0) || ((entity.primarySeqCycle + 1) > SeqType.instances[entity.primarySeqID].getFrameDuration(entity.primarySeqFrame))) {
             int duration = entity.forceMoveStartCycle - entity.forceMoveEndCycle;

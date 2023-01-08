@@ -1478,9 +1478,9 @@ public class Model extends Entity {
      */
     public void rotateY90() {
         for (int v = 0; v < vertexCount; v++) {
-            int x_ = vertexX[v];
+            int tmp = vertexX[v];
             vertexX[v] = vertexZ[v];
-            vertexZ[v] = -x_;
+            vertexZ[v] = -tmp;
         }
     }
 
@@ -1493,9 +1493,9 @@ public class Model extends Entity {
         int sin = Model.sin[angle];
         int cos = Model.cos[angle];
         for (int v = 0; v < vertexCount; v++) {
-            int y_ = ((vertexY[v] * cos) - (vertexZ[v] * sin)) >> 16;
+            int tmp = ((vertexY[v] * cos) - (vertexZ[v] * sin)) >> 16;
             vertexZ[v] = ((vertexY[v] * sin) + (vertexZ[v] * cos)) >> 16;
-            vertexY[v] = y_;
+            vertexY[v] = tmp;
         }
     }
 

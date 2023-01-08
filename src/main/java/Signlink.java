@@ -106,7 +106,6 @@ public class Signlink implements Runnable {
         }
     }
 
-
     public static synchronized void dnslookup(String dns) {
         Signlink.dns = dns;
         dnsreq = dns;

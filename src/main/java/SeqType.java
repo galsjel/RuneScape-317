@@ -115,7 +115,6 @@ public class SeqType {
      */
     public int replayStyle = 1;
 
-
     public SeqType() {
     }
 
