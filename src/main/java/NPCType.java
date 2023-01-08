@@ -33,13 +33,13 @@ public class NPCType {
     public static void unpack(FileArchive archive) throws IOException {
         dat = new Buffer(archive.read("npc.dat"));
         Buffer buffer = new Buffer(archive.read("npc.idx"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         offsets = new int[count];
 
         int offset = 2;
         for (int i = 0; i < count; i++) {
             offsets[i] = offset;
-            offset += buffer.read16U();
+            offset += buffer.readU16();
         }
 
         cache = new NPCType[20];
@@ -233,31 +233,31 @@ public class NPCType {
 
     public void read(Buffer in) {
         while (true) {
-            int code = in.read8U();
+            int code = in.readU8();
 
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                int modelCount = in.read8U();
+                int modelCount = in.readU8();
                 modelIDs = new int[modelCount];
                 for (int i = 0; i < modelCount; i++) {
-                    modelIDs[i] = in.read16U();
+                    modelIDs[i] = in.readU16();
                 }
             } else if (code == 2) {
                 name = in.readString();
             } else if (code == 3) {
                 examine = in.readString();
             } else if (code == 12) {
-                size = in.read();
+                size = in.read8();
             } else if (code == 13) {
-                seqStandID = in.read16U();
+                seqStandID = in.readU16();
             } else if (code == 14) {
-                seqWalkID = in.read16U();
+                seqWalkID = in.readU16();
             } else if (code == 17) {
-                seqWalkID = in.read16U();
-                seqTurnAroundID = in.read16U();
-                seqTurnLeftID = in.read16U();
-                seqTurnRightID = in.read16U();
+                seqWalkID = in.readU16();
+                seqTurnAroundID = in.readU16();
+                seqTurnLeftID = in.readU16();
+                seqTurnRightID = in.readU16();
             } else if ((code >= 30) && (code < 40)) {
                 if (options == null) {
                     options = new String[5];
@@ -269,58 +269,58 @@ public class NPCType {
                     options[code - 30] = null;
                 }
             } else if (code == 40) {
-                int count = in.read8U();
+                int count = in.readU8();
                 colorSrc = new int[count];
                 colorDst = new int[count];
 
                 for (int i = 0; i < count; i++) {
-                    colorSrc[i] = in.read16U();
-                    colorDst[i] = in.read16U();
+                    colorSrc[i] = in.readU16();
+                    colorDst[i] = in.readU16();
                 }
             } else if (code == 60) {
-                int count = in.read8U();
+                int count = in.readU8();
                 headModelIDs = new int[count];
                 for (int l1 = 0; l1 < count; l1++) {
-                    headModelIDs[l1] = in.read16U();
+                    headModelIDs[l1] = in.readU16();
                 }
             } else if ((code == 90) || (code == 91) || (code == 92)) {
-                in.read16U();
+                in.readU16();
             } else if (code == 93) {
                 showOnMinimap = false;
             } else if (code == 95) {
-                level = in.read16U();
+                level = in.readU16();
             } else if (code == 97) {
-                scaleXY = in.read16U();
+                scaleXY = in.readU16();
             } else if (code == 98) {
-                scaleZ = in.read16U();
+                scaleZ = in.readU16();
             } else if (code == 99) {
                 important = true;
             } else if (code == 100) {
-                lightAmbient = in.read();
+                lightAmbient = in.read8();
             } else if (code == 101) {
-                lightAttenuation = in.read() * 5;
+                lightAttenuation = in.read8() * 5;
             } else if (code == 102) {
-                headicon = in.read16U();
+                headicon = in.readU16();
             } else if (code == 103) {
-                turnSpeed = in.read16U();
+                turnSpeed = in.readU16();
             } else if (code == 106) {
-                varbitID = in.read16U();
+                varbitID = in.readU16();
 
                 if (varbitID == 65535) {
                     varbitID = -1;
                 }
 
-                varpID = in.read16U();
+                varpID = in.readU16();
 
                 if (varpID == 65535) {
                     varpID = -1;
                 }
 
-                int overrideCount = in.read8U();
+                int overrideCount = in.readU8();
                 overrides = new int[overrideCount + 1];
 
                 for (int i = 0; i <= overrideCount; i++) {
-                    overrides[i] = in.read16U();
+                    overrides[i] = in.readU16();
 
                     if (overrides[i] == 65535) {
                         overrides[i] = -1;

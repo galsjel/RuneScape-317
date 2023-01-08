@@ -11,7 +11,7 @@ public class SeqType {
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("seq.dat"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         if (instances == null) {
             instances = new SeqType[count];
         }
@@ -137,48 +137,48 @@ public class SeqType {
 
     public void load(Buffer buffer) {
         while (true) {
-            int code = buffer.read8U();
+            int code = buffer.readU8();
 
             if (code == 0) {
                 break;
             } else if (code == 1) {
-                frameCount = buffer.read8U();
+                frameCount = buffer.readU8();
                 transformIDs = new int[frameCount];
                 auxiliaryTransformIDs = new int[frameCount];
                 frameDuration = new int[frameCount];
                 for (int f = 0; f < frameCount; f++) {
-                    transformIDs[f] = buffer.read16U();
-                    auxiliaryTransformIDs[f] = buffer.read16U();
+                    transformIDs[f] = buffer.readU16();
+                    auxiliaryTransformIDs[f] = buffer.readU16();
                     if (auxiliaryTransformIDs[f] == 65535) {
                         auxiliaryTransformIDs[f] = -1;
                     }
-                    frameDuration[f] = buffer.read16U();
+                    frameDuration[f] = buffer.readU16();
                 }
             } else if (code == 2) {
-                loopFrameCount = buffer.read16U();
+                loopFrameCount = buffer.readU16();
             } else if (code == 3) {
-                int count = buffer.read8U();
+                int count = buffer.readU8();
                 mask = new int[count + 1];
                 for (int l = 0; l < count; l++) {
-                    mask[l] = buffer.read8U();
+                    mask[l] = buffer.readU8();
                 }
                 mask[count] = 9999999;
             } else if (code == 4) {
                 forwardRenderPadding = true;
             } else if (code == 5) {
-                priority = buffer.read8U();
+                priority = buffer.readU8();
             } else if (code == 6) {
-                rightHandOverride = buffer.read16U();
+                rightHandOverride = buffer.readU16();
             } else if (code == 7) {
-                leftHandOverride = buffer.read16U();
+                leftHandOverride = buffer.readU16();
             } else if (code == 8) {
-                loopCount = buffer.read8U();
+                loopCount = buffer.readU8();
             } else if (code == 9) {
-                moveStyle = buffer.read8U();
+                moveStyle = buffer.readU8();
             } else if (code == 10) {
-                idleStyle = buffer.read8U();
+                idleStyle = buffer.readU8();
             } else if (code == 11) {
-                replayStyle = buffer.read8U();
+                replayStyle = buffer.readU8();
             } else if (code == 12) {
                 buffer.read32();
             } else {

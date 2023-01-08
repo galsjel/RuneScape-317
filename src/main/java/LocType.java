@@ -78,12 +78,12 @@ public class LocType {
     public static void unpack(FileArchive archive) throws IOException {
         dat = new Buffer(archive.read("loc.dat"));
         Buffer buffer = new Buffer(archive.read("loc.idx"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         offsets = new int[count];
         int offset = 2;
         for (int j = 0; j < count; j++) {
             offsets[j] = offset;
-            offset += buffer.read16U();
+            offset += buffer.readU16();
         }
         cache = new LocType[20];
         for (int i = 0; i < 20; i++) {
@@ -409,19 +409,19 @@ public class LocType {
         do {
             int j;
             do {
-                j = buffer.read8U();
+                j = buffer.readU8();
                 if (j == 0) {
                     break label0;
                 }
                 if (j == 1) {
-                    int k = buffer.read8U();
+                    int k = buffer.readU8();
                     if (k > 0) {
                         if ((modelIDs == null) || lowmem) {
                             modelKinds = new int[k];
                             modelIDs = new int[k];
                             for (int k1 = 0; k1 < k; k1++) {
-                                modelIDs[k1] = buffer.read16U();
-                                modelKinds[k1] = buffer.read8U();
+                                modelIDs[k1] = buffer.readU16();
+                                modelKinds[k1] = buffer.readU8();
                             }
                         } else {
                             buffer.position += k * 3;
@@ -432,28 +432,28 @@ public class LocType {
                 } else if (j == 3) {
                     examine = buffer.readString();
                 } else if (j == 5) {
-                    int l = buffer.read8U();
+                    int l = buffer.readU8();
                     if (l > 0) {
                         if ((modelIDs == null) || lowmem) {
                             modelKinds = null;
                             modelIDs = new int[l];
                             for (int l1 = 0; l1 < l; l1++) {
-                                modelIDs[l1] = buffer.read16U();
+                                modelIDs[l1] = buffer.readU16();
                             }
                         } else {
                             buffer.position += l * 2;
                         }
                     }
                 } else if (j == 14) {
-                    sizeX = buffer.read8U();
+                    sizeX = buffer.readU8();
                 } else if (j == 15) {
-                    sizeZ = buffer.read8U();
+                    sizeZ = buffer.readU8();
                 } else if (j == 17) {
                     solid = false;
                 } else if (j == 18) {
                     blocksProjectiles = false;
                 } else if (j == 19) {
-                    i = buffer.read8U();
+                    i = buffer.readU8();
                     if (i == 1) {
                         interactable = true;
                     }
@@ -464,16 +464,16 @@ public class LocType {
                 } else if (j == 23) {
                     occludes = true;
                 } else if (j == 24) {
-                    seqID = buffer.read16U();
+                    seqID = buffer.readU16();
                     if (seqID == 65535) {
                         seqID = -1;
                     }
                 } else if (j == 28) {
-                    decorOffset = buffer.read8U();
+                    decorOffset = buffer.readU8();
                 } else if (j == 29) {
-                    lightAmbient = buffer.read();
+                    lightAmbient = buffer.read8();
                 } else if (j == 39) {
-                    lightAttenuation = buffer.read();
+                    lightAttenuation = buffer.read8();
                 } else if ((j >= 30) && (j < 39)) {
                     if (options == null) {
                         options = new String[5];
@@ -483,29 +483,29 @@ public class LocType {
                         options[j - 30] = null;
                     }
                 } else if (j == 40) {
-                    int i1 = buffer.read8U();
+                    int i1 = buffer.readU8();
                     srcColor = new int[i1];
                     dstColor = new int[i1];
                     for (int i2 = 0; i2 < i1; i2++) {
-                        srcColor[i2] = buffer.read16U();
-                        dstColor[i2] = buffer.read16U();
+                        srcColor[i2] = buffer.readU16();
+                        dstColor[i2] = buffer.readU16();
                     }
                 } else if (j == 60) {
-                    mapfunctionIcon = buffer.read16U();
+                    mapfunctionIcon = buffer.readU16();
                 } else if (j == 62) {
                     invert = true;
                 } else if (j == 64) {
                     castShadow = false;
                 } else if (j == 65) {
-                    scaleX = buffer.read16U();
+                    scaleX = buffer.readU16();
                 } else if (j == 66) {
-                    scaleZ = buffer.read16U();
+                    scaleZ = buffer.readU16();
                 } else if (j == 67) {
-                    scaleY = buffer.read16U();
+                    scaleY = buffer.readU16();
                 } else if (j == 68) {
-                    mapsceneIcon = buffer.read16U();
+                    mapsceneIcon = buffer.readU16();
                 } else if (j == 69) {
-                    interactionSideFlags = buffer.read8U();
+                    interactionSideFlags = buffer.readU8();
                 } else if (j == 70) {
                     translateX = buffer.read16();
                 } else if (j == 71) {
@@ -520,22 +520,22 @@ public class LocType {
                     if (j != 75) {
                         continue;
                     }
-                    supportsObj = buffer.read8U();
+                    supportsObj = buffer.readU8();
                 }
                 continue label0;
             } while (j != 77);
-            varbit = buffer.read16U();
+            varbit = buffer.readU16();
             if (varbit == 65535) {
                 varbit = -1;
             }
-            varp = buffer.read16U();
+            varp = buffer.readU16();
             if (varp == 65535) {
                 varp = -1;
             }
-            int j1 = buffer.read8U();
+            int j1 = buffer.readU8();
             overrideTypeIDs = new int[j1 + 1];
             for (int j2 = 0; j2 <= j1; j2++) {
-                overrideTypeIDs[j2] = buffer.read16U();
+                overrideTypeIDs[j2] = buffer.readU16();
                 if (overrideTypeIDs[j2] == 65535) {
                     overrideTypeIDs[j2] = -1;
                 }

@@ -11,7 +11,7 @@ public class FloType {
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("flo.dat"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         if (instances == null) {
             instances = new FloType[count];
         }
@@ -38,14 +38,14 @@ public class FloType {
 
     public void read(Buffer in) {
         while (true) {
-            int code = in.read8U();
+            int code = in.readU8();
             if (code == 0) {
                 return;
             } else if (code == 1) {
                 rgb = in.read24();
                 setColor(rgb);
             } else if (code == 2) {
-                textureID = in.read8U();
+                textureID = in.readU8();
             } else if (code == 3) {
             } else if (code == 5) {
                 occludes = false;

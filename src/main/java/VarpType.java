@@ -11,7 +11,7 @@ public class VarpType {
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("varp.dat"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         if (instances == null) {
             instances = new VarpType[count];
         }
@@ -33,13 +33,13 @@ public class VarpType {
 
     public void read(Buffer in) {
         while (true) {
-            int code = in.read8U();
+            int code = in.readU8();
             if (code == 0) {
                 return;
             } else if (code == 1 || code == 2) {
-                in.read8U();
+                in.readU8();
             } else if (code == 5) {
-                type = in.read16U();
+                type = in.readU16();
             } else if (code == 7 || code == 12) {
                 in.read32();
             } else if (code == 10) {

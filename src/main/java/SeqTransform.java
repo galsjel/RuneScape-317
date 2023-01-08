@@ -67,38 +67,38 @@ public class SeqTransform {
 
         int offset = 0;
         header.position = offset;
-        offset += offsets.read16U() + 2;
+        offset += offsets.readU16() + 2;
 
         tran1.position = offset;
-        offset += offsets.read16U();
+        offset += offsets.readU16();
 
         tran2.position = offset;
-        offset += offsets.read16U();
+        offset += offsets.readU16();
 
         del.position = offset;
-        offset += offsets.read16U();
+        offset += offsets.readU16();
 
         skel.position = offset;
 
         SeqSkeleton skeleton = new SeqSkeleton(skel);
 
-        int frameCount = header.read16U();
+        int frameCount = header.readU16();
         int[] bases = new int[500];
         int[] x = new int[500];
         int[] y = new int[500];
         int[] z = new int[500];
 
         for (int i = 0; i < frameCount; i++) {
-            SeqTransform transform = instances[header.read16U()] = new SeqTransform();
-            transform.delay = del.read8U();
+            SeqTransform transform = instances[header.readU16()] = new SeqTransform();
+            transform.delay = del.readU8();
             transform.skeleton = skeleton;
 
-            int baseCount = header.read8U();
+            int baseCount = header.readU8();
             int lastBase = -1;
             int length = 0;
 
             for (int base = 0; base < baseCount; base++) {
-                int flags = tran1.read8U();
+                int flags = tran1.readU8();
 
                 if (flags <= 0) {
                     continue;

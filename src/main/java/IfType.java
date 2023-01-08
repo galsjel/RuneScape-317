@@ -38,91 +38,91 @@ public class IfType {
         Buffer in = new Buffer(config.read("data"));
 
         int parentID = -1;
-        int count = in.read16U();
+        int count = in.readU16();
 
         instances = new IfType[count];
 
         while (in.position < in.data.length) {
-            int id = in.read16U();
+            int id = in.readU16();
 
             if (id == 65535) {
-                parentID = in.read16U();
-                id = in.read16U();
+                parentID = in.readU16();
+                id = in.readU16();
             }
 
             IfType iface = instances[id] = new IfType();
             iface.id = id;
             iface.parentID = parentID;
-            iface.type = in.read8U();
-            iface.optionType = in.read8U();
-            iface.contentType = in.read16U();
-            iface.width = in.read16U();
-            iface.height = in.read16U();
-            iface.transparency = (byte) in.read8U();
-            iface.delegateHover = in.read8U();
+            iface.type = in.readU8();
+            iface.optionType = in.readU8();
+            iface.contentType = in.readU16();
+            iface.width = in.readU16();
+            iface.height = in.readU16();
+            iface.transparency = (byte) in.readU8();
+            iface.delegateHover = in.readU8();
 
             if (iface.delegateHover != 0) {
-                iface.delegateHover = ((iface.delegateHover - 1) << 8) + in.read8U();
+                iface.delegateHover = ((iface.delegateHover - 1) << 8) + in.readU8();
             } else {
                 iface.delegateHover = -1;
             }
 
-            int comparatorCount = in.read8U();
+            int comparatorCount = in.readU8();
             if (comparatorCount > 0) {
                 iface.scriptComparator = new int[comparatorCount];
                 iface.scriptOperand = new int[comparatorCount];
                 for (int i = 0; i < comparatorCount; i++) {
-                    iface.scriptComparator[i] = in.read8U();
-                    iface.scriptOperand[i] = in.read16U();
+                    iface.scriptComparator[i] = in.readU8();
+                    iface.scriptOperand[i] = in.readU16();
                 }
             }
 
-            int scriptCount = in.read8U();
+            int scriptCount = in.readU8();
             if (scriptCount > 0) {
                 iface.scripts = new int[scriptCount][];
                 for (int scriptID = 0; scriptID < scriptCount; scriptID++) {
-                    int length = in.read16U();
+                    int length = in.readU16();
                     iface.scripts[scriptID] = new int[length];
                     for (int i = 0; i < length; i++) {
-                        iface.scripts[scriptID][i] = in.read16U();
+                        iface.scripts[scriptID][i] = in.readU16();
                     }
                 }
             }
 
             if (iface.type == TYPE_PARENT) {
-                iface.scrollableHeight = in.read16U();
-                iface.hide = in.read8U() == 1;
-                int childCount = in.read16U();
+                iface.scrollableHeight = in.readU16();
+                iface.hide = in.readU8() == 1;
+                int childCount = in.readU16();
                 iface.childID = new int[childCount];
                 iface.childX = new int[childCount];
                 iface.childY = new int[childCount];
                 for (int i = 0; i < childCount; i++) {
-                    iface.childID[i] = in.read16U();
+                    iface.childID[i] = in.readU16();
                     iface.childX[i] = in.read16();
                     iface.childY[i] = in.read16();
                 }
             }
 
             if (iface.type == TYPE_UNUSED) {
-                in.read16U();
-                in.read8U();
+                in.readU16();
+                in.readU8();
             }
 
             if (iface.type == TYPE_INVENTORY) {
                 iface.inventorySlotObjID = new int[iface.width * iface.height];
                 iface.inventorySlotObjCount = new int[iface.width * iface.height];
-                iface.inventoryDraggable = in.read8U() == 1;
-                iface.inventoryInteractable = in.read8U() == 1;
-                iface.inventoryUsable = in.read8U() == 1;
-                iface.inventoryMoveReplaces = in.read8U() == 1;
-                iface.inventoryMarginX = in.read8U();
-                iface.inventoryMarginY = in.read8U();
+                iface.inventoryDraggable = in.readU8() == 1;
+                iface.inventoryInteractable = in.readU8() == 1;
+                iface.inventoryUsable = in.readU8() == 1;
+                iface.inventoryMoveReplaces = in.readU8() == 1;
+                iface.inventoryMarginX = in.readU8();
+                iface.inventoryMarginY = in.readU8();
                 iface.inventorySlotOffsetX = new int[20];
                 iface.inventorySlotOffsetY = new int[20];
                 iface.inventorySlotImage = new Image24[20];
 
                 for (int slot = 0; slot < 20; slot++) {
-                    if (in.read8U() == 1) {
+                    if (in.readU8() == 1) {
                         iface.inventorySlotOffsetX[slot] = in.read16();
                         iface.inventorySlotOffsetY[slot] = in.read16();
                         String imageName = in.readString();
@@ -145,16 +145,16 @@ public class IfType {
             }
 
             if (iface.type == TYPE_RECT) {
-                iface.fill = in.read8U() == 1;
+                iface.fill = in.readU8() == 1;
             }
 
             if ((iface.type == TYPE_TEXT) || (iface.type == TYPE_UNUSED)) {
-                iface.center = in.read8U() == 1;
-                int fontID = in.read8U();
+                iface.center = in.readU8() == 1;
+                int fontID = in.readU8();
                 if (fonts != null) {
                     iface.font = fonts[fontID];
                 }
-                iface.shadow = in.read8U() == 1;
+                iface.shadow = in.readU8() == 1;
             }
 
             if (iface.type == TYPE_TEXT) {
@@ -186,50 +186,50 @@ public class IfType {
             }
 
             if (iface.type == TYPE_MODEL) {
-                int tmp = in.read8U();
+                int tmp = in.readU8();
                 if (tmp != 0) {
                     iface.modelType = MODEL_TYPE_NORMAL;
-                    iface.modelID = ((tmp - 1) << 8) + in.read8U();
+                    iface.modelID = ((tmp - 1) << 8) + in.readU8();
                 }
 
-                tmp = in.read8U();
+                tmp = in.readU8();
                 if (tmp != 0) {
                     iface.activeModelType = MODEL_TYPE_NORMAL;
-                    iface.activeModelID = ((tmp - 1) << 8) + in.read8U();
+                    iface.activeModelID = ((tmp - 1) << 8) + in.readU8();
                 }
 
-                tmp = in.read8U();
+                tmp = in.readU8();
                 if (tmp != 0) {
-                    iface.seqID = ((tmp - 1) << 8) + in.read8U();
+                    iface.seqID = ((tmp - 1) << 8) + in.readU8();
                 } else {
                     iface.seqID = -1;
                 }
 
-                tmp = in.read8U();
+                tmp = in.readU8();
                 if (tmp != 0) {
-                    iface.activeSeqID = ((tmp - 1) << 8) + in.read8U();
+                    iface.activeSeqID = ((tmp - 1) << 8) + in.readU8();
                 } else {
                     iface.activeSeqID = -1;
                 }
 
-                iface.modelZoom = in.read16U();
-                iface.modelPitch = in.read16U();
-                iface.modelYaw = in.read16U();
+                iface.modelZoom = in.readU16();
+                iface.modelPitch = in.readU16();
+                iface.modelYaw = in.readU16();
             }
 
             if (iface.type == TYPE_INVENTORY_TEXT) {
                 iface.inventorySlotObjID = new int[iface.width * iface.height];
                 iface.inventorySlotObjCount = new int[iface.width * iface.height];
-                iface.center = in.read8U() == 1;
-                int fontID = in.read8U();
+                iface.center = in.readU8() == 1;
+                int fontID = in.readU8();
                 if (fonts != null) {
                     iface.font = fonts[fontID];
                 }
-                iface.shadow = in.read8U() == 1;
+                iface.shadow = in.readU8() == 1;
                 iface.color = in.read32();
                 iface.inventoryMarginX = in.read16();
                 iface.inventoryMarginY = in.read16();
-                iface.inventoryInteractable = in.read8U() == 1;
+                iface.inventoryInteractable = in.readU8() == 1;
                 iface.inventoryOptions = new String[5];
                 for (int option = 0; option < 5; option++) {
                     iface.inventoryOptions[option] = in.readString();
@@ -246,7 +246,7 @@ public class IfType {
             if ((iface.optionType == OPTION_TYPE_SPELL) || (iface.type == TYPE_INVENTORY)) {
                 iface.spellAction = in.readString();
                 iface.spellName = in.readString();
-                iface.spellFlags = in.read16U();
+                iface.spellFlags = in.readU16();
             }
 
             if ((iface.optionType == OPTION_TYPE_STANDARD) || (iface.optionType == OPTION_TYPE_TOGGLE) || (iface.optionType == OPTION_TYPE_SELECT) || (iface.optionType == OPTION_TYPE_CONTINUE)) {

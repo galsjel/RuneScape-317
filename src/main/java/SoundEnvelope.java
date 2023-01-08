@@ -22,19 +22,19 @@ public class SoundEnvelope {
     }
 
     public void read(Buffer in) {
-        form = in.read8U();
+        form = in.readU8();
         start = in.read32();
         end = in.read32();
         readShape(in);
     }
 
     public void readShape(Buffer buffer) {
-        length = buffer.read8U();
+        length = buffer.readU8();
         shapeDelta = new int[length];
         shapePeak = new int[length];
         for (int i = 0; i < length; i++) {
-            shapeDelta[i] = buffer.read16U();
-            shapePeak[i] = buffer.read16U();
+            shapeDelta[i] = buffer.readU16();
+            shapePeak[i] = buffer.readU16();
         }
     }
 

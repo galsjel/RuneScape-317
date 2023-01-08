@@ -42,10 +42,10 @@ public class Image24 extends DoublyLinkedList.Node {
     public Image24(FileArchive archive, String file, int index) throws IOException {
         Buffer dat = new Buffer(archive.read(file + ".dat"));
         Buffer idx = new Buffer(archive.read("index.dat"));
-        idx.position = dat.read16U();
-        cropW = idx.read16U();
-        cropH = idx.read16U();
-        int paletteSize = idx.read8U();
+        idx.position = dat.readU16();
+        cropW = idx.readU16();
+        cropH = idx.readU16();
+        int paletteSize = idx.readU8();
         int[] palette = new int[paletteSize];
         for (int k = 0; k < (paletteSize - 1); k++) {
             palette[k + 1] = idx.read24();
@@ -55,26 +55,26 @@ public class Image24 extends DoublyLinkedList.Node {
         }
         for (int i = 0; i < index; i++) {
             idx.position += 2;
-            dat.position += idx.read16U() * idx.read16U();
+            dat.position += idx.readU16() * idx.readU16();
             idx.position++;
         }
-        cropX = idx.read8U();
-        cropY = idx.read8U();
-        width = idx.read16U();
-        height = idx.read16U();
-        int layout = idx.read8U();
+        cropX = idx.readU8();
+        cropY = idx.readU8();
+        width = idx.readU16();
+        height = idx.readU16();
+        int layout = idx.readU8();
         int pixelLen = width * height;
         pixels = new int[pixelLen];
         if (layout == 0) {
             for (int i = 0; i < pixelLen; i++) {
-                pixels[i] = palette[dat.read8U()];
+                pixels[i] = palette[dat.readU8()];
             }
             return;
         }
         if (layout == 1) {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    pixels[x + (y * width)] = palette[dat.read8U()];
+                    pixels[x + (y * width)] = palette[dat.readU8()];
                 }
             }
         }

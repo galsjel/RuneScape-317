@@ -80,28 +80,28 @@ public class SoundFilter {
     }
 
     public void read(Buffer in, SoundEnvelope envelope) {
-        int count = in.read8U();
+        int count = in.readU8();
         pairs[0] = count >> 4;
         pairs[1] = count & 0xf;
 
         if (count != 0) {
-            unities[0] = in.read16U();
-            unities[1] = in.read16U();
+            unities[0] = in.readU16();
+            unities[1] = in.readU16();
 
-            int migration = in.read8U();
+            int migration = in.readU8();
 
             for (int direction = 0; direction < 2; direction++) {
                 for (int pair = 0; pair < pairs[direction]; pair++) {
-                    frequencies[direction][0][pair] = in.read16U();
-                    ranges[direction][0][pair] = in.read16U();
+                    frequencies[direction][0][pair] = in.readU16();
+                    ranges[direction][0][pair] = in.readU16();
                 }
             }
 
             for (int direction = 0; direction < 2; direction++) {
                 for (int pair = 0; pair < pairs[direction]; pair++) {
                     if ((migration & (1 << (direction * 4) << pair)) != 0) {
-                        frequencies[direction][1][pair] = in.read16U();
-                        ranges[direction][1][pair] = in.read16U();
+                        frequencies[direction][1][pair] = in.readU16();
+                        ranges[direction][1][pair] = in.readU16();
                     } else {
                         frequencies[direction][1][pair] = frequencies[direction][0][pair];
                         ranges[direction][1][pair] = ranges[direction][0][pair];

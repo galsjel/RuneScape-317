@@ -9,7 +9,7 @@ public class SoundTrack {
         SoundTone.init();
 
         do {
-            int id = in.read16U();
+            int id = in.readU16();
 
             if (id == 65535) {
                 return;
@@ -39,14 +39,14 @@ public class SoundTrack {
 
     public void read(Buffer in) {
         for (int tone = 0; tone < 10; tone++) {
-            if (in.read8U() != 0) {
+            if (in.readU8() != 0) {
                 in.position--;
                 tones[tone] = new SoundTone();
                 tones[tone].read(in);
             }
         }
-        loopBegin = in.read16U();
-        loopEnd = in.read16U();
+        loopBegin = in.readU16();
+        loopEnd = in.readU16();
     }
 
     public int trim() {

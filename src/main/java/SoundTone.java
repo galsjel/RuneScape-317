@@ -277,7 +277,7 @@ public class SoundTone {
         amplitudeBase = new SoundEnvelope();
         amplitudeBase.read(in);
 
-        if (in.read8U() != 0) {
+        if (in.readU8() != 0) {
             in.position--;
             frequencyModRate = new SoundEnvelope();
             frequencyModRate.read(in);
@@ -285,7 +285,7 @@ public class SoundTone {
             frequencyModRange.read(in);
         }
 
-        if (in.read8U() != 0) {
+        if (in.readU8() != 0) {
             in.position--;
             amplitudeModRate = new SoundEnvelope();
             amplitudeModRate.read(in);
@@ -293,7 +293,7 @@ public class SoundTone {
             amplitudeModRange.read(in);
         }
 
-        if (in.read8U() != 0) {
+        if (in.readU8() != 0) {
             in.position--;
             release = new SoundEnvelope();
             release.read(in);
@@ -302,7 +302,7 @@ public class SoundTone {
         }
 
         for (int i = 0; i < 10; i++) {
-            int volume = in.readSmartU();
+            int volume = in.readUSmart();
 
             if (volume == 0) {
                 break;
@@ -310,14 +310,14 @@ public class SoundTone {
 
             harmonicVolume[i] = volume;
             harmonicSemitone[i] = in.readSmart();
-            harmonicDelay[i] = in.readSmartU();
+            harmonicDelay[i] = in.readUSmart();
         }
 
-        reverbDelay = in.readSmartU();
-        reverbVolume = in.readSmartU();
+        reverbDelay = in.readUSmart();
+        reverbVolume = in.readUSmart();
 
-        length = in.read16U();
-        start = in.read16U();
+        length = in.readU16();
+        start = in.readU16();
 
         filter = new SoundFilter();
         filterRange = new SoundEnvelope();

@@ -108,20 +108,20 @@ public class Model extends Entity {
         buffer.position = src.length - 18;
         Header header = headers[id] = new Header();
         header.data = src;
-        header.vertexCount = buffer.read16U();
-        header.faceCount = buffer.read16U();
-        header.texturedFaceCount = buffer.read8U();
+        header.vertexCount = buffer.readU16();
+        header.faceCount = buffer.readU16();
+        header.texturedFaceCount = buffer.readU8();
 
-        int hasInfo = buffer.read8U();
-        int priority = buffer.read8U();
-        int hasAlpha = buffer.read8U();
-        int hasFaceLabels = buffer.read8U();
-        int hasVertexLabels = buffer.read8U();
+        int hasInfo = buffer.readU8();
+        int priority = buffer.readU8();
+        int hasAlpha = buffer.readU8();
+        int hasFaceLabels = buffer.readU8();
+        int hasVertexLabels = buffer.readU8();
 
-        int dataLengthX = buffer.read16U();
-        int dataLengthY = buffer.read16U();
-        int dataLengthZ = buffer.read16U();
-        int dataLengthFaceOrientations = buffer.read16U();
+        int dataLengthX = buffer.readU16();
+        int dataLengthY = buffer.readU16();
+        int dataLengthZ = buffer.readU16();
+        int dataLengthFaceOrientations = buffer.readU16();
 
         int offset = 0;
         header.vertexFlagsOffset = offset;
@@ -398,7 +398,7 @@ public class Model extends Entity {
         int z = 0;
 
         for (int v = 0; v < vertexCount; v++) {
-            int flags = buf0.read8U();
+            int flags = buf0.readU8();
 
             int dx = 0;
             int dy = 0;
@@ -425,7 +425,7 @@ public class Model extends Entity {
             z = vertexZ[v];
 
             if (vertexLabel != null) {
-                vertexLabel[v] = buf4.read8U();
+                vertexLabel[v] = buf4.readU8();
             }
         }
 
@@ -436,22 +436,22 @@ public class Model extends Entity {
         buf4.position = header.faceLabelsOffset;
 
         for (int face = 0; face < faceCount; face++) {
-            faceColor[face] = buf0.read16U();
+            faceColor[face] = buf0.readU16();
 
             if (faceInfo != null) {
-                faceInfo[face] = buf1.read8U();
+                faceInfo[face] = buf1.readU8();
             }
 
             if (facePriority != null) {
-                facePriority[face] = buf2.read8U();
+                facePriority[face] = buf2.readU8();
             }
 
             if (faceAlpha != null) {
-                faceAlpha[face] = buf3.read8U();
+                faceAlpha[face] = buf3.readU8();
             }
 
             if (faceLabel != null) {
-                faceLabel[face] = buf4.read8U();
+                faceLabel[face] = buf4.readU8();
             }
         }
 
@@ -464,7 +464,7 @@ public class Model extends Entity {
         int last = 0;
 
         for (int face = 0; face < faceCount; face++) {
-            int orientation = buf1.read8U();
+            int orientation = buf1.readU8();
 
             // fancy shmansy compression type stuff.
             // vertex indices stored as deltas, with some faces
@@ -519,9 +519,9 @@ public class Model extends Entity {
         buf0.position = header.faceTextureAxisOffset;
 
         for (int face = 0; face < texturedFaceCount; face++) {
-            texturedVertexA[face] = buf0.read16U();
-            texturedVertexB[face] = buf0.read16U();
-            texturedVertexC[face] = buf0.read16U();
+            texturedVertexA[face] = buf0.readU16();
+            texturedVertexB[face] = buf0.readU16();
+            texturedVertexC[face] = buf0.readU16();
         }
     }
 

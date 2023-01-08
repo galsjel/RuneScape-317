@@ -10,7 +10,7 @@ public class VarbitType {
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("varbit.dat"));
-        int count = buffer.read16U();
+        int count = buffer.readU16();
 
         if (instances == null) {
             instances = new VarbitType[count];
@@ -42,13 +42,13 @@ public class VarbitType {
 
     public void read(Buffer in) {
         do {
-            int code = in.read8U();
+            int code = in.readU8();
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                varp = in.read16U();
-                lsb = in.read8U();
-                msb = in.read8U();
+                varp = in.readU16();
+                lsb = in.readU8();
+                msb = in.readU8();
             } else if (code == 10) {
                 in.readString();
             } else if (code == 3 || code == 4) {

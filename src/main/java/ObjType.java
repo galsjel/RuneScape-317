@@ -27,12 +27,12 @@ public class ObjType {
     public static void unpack(FileArchive archive) throws IOException {
         dat = new Buffer(archive.read("obj.dat"));
         Buffer idx = new Buffer(archive.read("obj.idx"));
-        count = idx.read16U();
+        count = idx.readU16();
         typeOffset = new int[count];
         int offset = 2;
         for (int j = 0; j < count; j++) {
             typeOffset[j] = offset;
-            offset += idx.read16U();
+            offset += idx.readU16();
         }
         recent = new ObjType[10];
         for (int k = 0; k < 10; k++) {
@@ -556,34 +556,34 @@ public class ObjType {
 
     public void read(Buffer in) {
         while (true) {
-            int code = in.read8U();
+            int code = in.readU8();
 
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                modelID = in.read16U();
+                modelID = in.readU16();
             } else if (code == 2) {
                 name = in.readString();
             } else if (code == 3) {
                 examine = in.readString();
             } else if (code == 4) {
-                iconZoom = in.read16U();
+                iconZoom = in.readU16();
             } else if (code == 5) {
-                iconPitch = in.read16U();
+                iconPitch = in.readU16();
             } else if (code == 6) {
-                iconYaw = in.read16U();
+                iconYaw = in.readU16();
             } else if (code == 7) {
-                iconOffsetX = in.read16U();
+                iconOffsetX = in.readU16();
                 if (iconOffsetX > 32767) {
                     iconOffsetX -= 0x10000;
                 }
             } else if (code == 8) {
-                iconOffsetY = in.read16U();
+                iconOffsetY = in.readU16();
                 if (iconOffsetY > 32767) {
                     iconOffsetY -= 0x10000;
                 }
             } else if (code == 10) {
-                in.read16U();
+                in.readU16();
             } else if (code == 11) {
                 stackable = true;
             } else if (code == 12) {
@@ -591,15 +591,15 @@ public class ObjType {
             } else if (code == 16) {
                 members = true;
             } else if (code == 23) {
-                maleModelID0 = in.read16U();
-                maleOffsetY = in.read();
+                maleModelID0 = in.readU16();
+                maleOffsetY = in.read8();
             } else if (code == 24) {
-                maleModelID1 = in.read16U();
+                maleModelID1 = in.readU16();
             } else if (code == 25) {
-                femaleModelID0 = in.read16U();
-                femaleOffsetY = in.read();
+                femaleModelID0 = in.readU16();
+                femaleOffsetY = in.read8();
             } else if (code == 26) {
-                femaleModelID1 = in.read16U();
+                femaleModelID1 = in.readU16();
             } else if ((code >= 30) && (code < 35)) {
                 if (options == null) {
                     options = new String[5];
@@ -614,50 +614,50 @@ public class ObjType {
                 }
                 inventoryOptions[code - 35] = in.readString();
             } else if (code == 40) {
-                int recolorCount = in.read8U();
+                int recolorCount = in.readU8();
                 srcColor = new int[recolorCount];
                 dstColor = new int[recolorCount];
                 for (int i = 0; i < recolorCount; i++) {
-                    srcColor[i] = in.read16U();
-                    dstColor[i] = in.read16U();
+                    srcColor[i] = in.readU16();
+                    dstColor[i] = in.readU16();
                 }
             } else if (code == 78) {
-                maleModelID2 = in.read16U();
+                maleModelID2 = in.readU16();
             } else if (code == 79) {
-                femaleModelID2 = in.read16U();
+                femaleModelID2 = in.readU16();
             } else if (code == 90) {
-                maleHeadModelID0 = in.read16U();
+                maleHeadModelID0 = in.readU16();
             } else if (code == 91) {
-                femaleHeadModelID0 = in.read16U();
+                femaleHeadModelID0 = in.readU16();
             } else if (code == 92) {
-                maleHeadModelID1 = in.read16U();
+                maleHeadModelID1 = in.readU16();
             } else if (code == 93) {
-                femaleHeadModelID1 = in.read16U();
+                femaleHeadModelID1 = in.readU16();
             } else if (code == 95) {
-                iconRoll = in.read16U();
+                iconRoll = in.readU16();
             } else if (code == 97) {
-                linkedID = in.read16U();
+                linkedID = in.readU16();
             } else if (code == 98) {
-                certificateID = in.read16U();
+                certificateID = in.readU16();
             } else if ((code >= 100) && (code < 110)) {
                 if (stackID == null) {
                     stackID = new int[10];
                     stackCount = new int[10];
                 }
-                stackID[code - 100] = in.read16U();
-                stackCount[code - 100] = in.read16U();
+                stackID[code - 100] = in.readU16();
+                stackCount[code - 100] = in.readU16();
             } else if (code == 110) {
-                scaleX = in.read16U();
+                scaleX = in.readU16();
             } else if (code == 111) {
-                scaleZ = in.read16U();
+                scaleZ = in.readU16();
             } else if (code == 112) {
-                scaleY = in.read16U();
+                scaleY = in.readU16();
             } else if (code == 113) {
-                lightAmbient = in.read();
+                lightAmbient = in.read8();
             } else if (code == 114) {
-                lightAttenuation = in.read() * 5;
+                lightAttenuation = in.read8() * 5;
             } else if (code == 115) {
-                team = in.read8U();
+                team = in.readU8();
             }
         }
     }

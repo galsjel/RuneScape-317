@@ -1080,7 +1080,7 @@ public class Game extends GameShell {
             areaViewportOffsets = Draw3D.lineOffset;
 
             Scene.init(512, 334);
-            Censor.method487(archiveWordenc);
+            Censor.unpack(archiveWordenc);
 
             mouseRecorder = new MouseRecorder(this);
             startThread(mouseRecorder = new MouseRecorder(this), 10);
@@ -3311,10 +3311,10 @@ public class Game extends GameShell {
         for (int i = 0; i < entityUpdateCount; i++) {
             int playerID = entityUpdateIDs[i];
             PlayerEntity player = players[playerID];
-            int updates = in.read8U();
+            int updates = in.readU8();
 
             if ((updates & 0x40) != 0) {
-                updates += in.read8U() << 8;
+                updates += in.readU8() << 8;
             }
 
             if ((updates & 0x400) != 0) {
@@ -3360,20 +3360,20 @@ public class Game extends GameShell {
     }
 
     private void readPlayerForceMovement(PlayerEntity player) {
-        player.forceMoveStartSceneTileX = in.read8US();
-        player.forceMoveStartSceneTileZ = in.read8US();
-        player.forceMoveEndSceneTileX = in.read8US();
-        player.forceMoveEndSceneTileZ = in.read8US();
-        player.forceMoveEndCycle = in.read16ULEA() + loopCycle;
-        player.forceMoveStartCycle = in.read16UA() + loopCycle;
-        player.forceMoveFaceDirection = in.read8US();
+        player.forceMoveStartSceneTileX = in.readU8S();
+        player.forceMoveStartSceneTileZ = in.readU8S();
+        player.forceMoveEndSceneTileX = in.readU8S();
+        player.forceMoveEndSceneTileZ = in.readU8S();
+        player.forceMoveEndCycle = in.readU16LEA() + loopCycle;
+        player.forceMoveStartCycle = in.readU16A() + loopCycle;
+        player.forceMoveFaceDirection = in.readU8S();
         player.resetPath();
     }
 
     private void readPlayerGraphic(PlayerEntity player) {
-        player.spotanimID = in.read16ULE();
-        player.spotanimOffset = in.read16U();
-        player.spotanimLastCycle = loopCycle + in.read16U();
+        player.spotanimID = in.readU16LE();
+        player.spotanimOffset = in.readU16();
+        player.spotanimLastCycle = loopCycle + in.readU16();
         player.spotanimFrame = 0;
         player.spotanimCycle = 0;
 
@@ -3387,13 +3387,13 @@ public class Game extends GameShell {
     }
 
     private void readPlayerAnimation(PlayerEntity player) {
-        int seqID = in.read16ULE();
+        int seqID = in.readU16LE();
 
         if (seqID == 65535) {
             seqID = -1;
         }
 
-        int delay = in.read8UC();
+        int delay = in.readU8C();
 
         if ((seqID == player.primarySeqID) && (seqID != -1)) {
             int style = SeqType.instances[seqID].replayStyle;
@@ -3434,9 +3434,9 @@ public class Game extends GameShell {
     }
 
     private void readPlayerChat(PlayerEntity player) {
-        int colorStyle = in.read16ULE();
-        int role = in.read8U();
-        int length = in.read8UC();
+        int colorStyle = in.readU16LE();
+        int role = in.readU8();
+        int length = in.readU8C();
         int start = in.position;
 
         if ((player.name != null) && player.visible) {
@@ -3460,7 +3460,7 @@ public class Game extends GameShell {
                     chatBuffer.position = 0;
 
                     String chat = ChatCompression.unpack(length, chatBuffer);
-                    chat = Censor.apply(chat);
+                    chat = Censor.filter(chat);
 
                     player.chat = chat;
                     player.chatColor = colorStyle >> 8;
@@ -3484,7 +3484,7 @@ public class Game extends GameShell {
     }
 
     private void readPlayerTargetEntity(PlayerEntity player) {
-        player.targetID = in.read16ULE();
+        player.targetID = in.readU16LE();
 
         if (player.targetID == 65535) {
             player.targetID = -1;
@@ -3492,33 +3492,33 @@ public class Game extends GameShell {
     }
 
     private void readPlayerAppearance(int playerID, PlayerEntity player) {
-        Buffer buffer = new Buffer(new byte[in.read8UC()]);
+        Buffer buffer = new Buffer(new byte[in.readU8C()]);
         in.read(buffer.data);
         playerAppearanceBuffer[playerID] = buffer;
         player.read(buffer);
     }
 
     private void readPlayerTargetTile(PlayerEntity player) {
-        player.targetTileX = in.read16ULEA();
-        player.targetTileZ = in.read16ULE();
+        player.targetTileX = in.readU16LEA();
+        player.targetTileZ = in.readU16LE();
     }
 
     private void readPlayerDamage0(PlayerEntity player) {
-        int damage = in.read8U();
-        int type = in.read8UA();
+        int damage = in.readU8();
+        int type = in.readU8A();
         player.hit(type, damage);
         player.combatCycle = loopCycle + 300;
-        player.health = in.read8UC();
-        player.totalHealth = in.read8U();
+        player.health = in.readU8C();
+        player.totalHealth = in.readU8();
     }
 
     private void readPlayerDamage1(PlayerEntity player) {
-        int damage = in.read8U();
-        int type = in.read8US();
+        int damage = in.readU8();
+        int type = in.readU8S();
         player.hit(type, damage);
         player.combatCycle = loopCycle + 300;
-        player.health = in.read8U();
-        player.totalHealth = in.read8UC();
+        player.health = in.readU8();
+        player.totalHealth = in.readU8C();
     }
 
     public void drawMinimapLoc(int tileZ, int wallRGB, int tileX, int doorRGB, int level) {
@@ -6095,7 +6095,7 @@ public class Game extends GameShell {
                 out.writeA(chatBuffer.data, 0, chatBuffer.position);
                 out.writeSize(out.position - startPosition);
                 chatTyped = ChatCompression.format(chatTyped);
-                chatTyped = Censor.apply(chatTyped);
+                chatTyped = Censor.filter(chatTyped);
                 localPlayer.chat = chatTyped;
                 localPlayer.chatColor = color;
                 localPlayer.chatStyle = style;
@@ -6198,7 +6198,7 @@ public class Game extends GameShell {
                 ChatCompression.pack(socialInput, out);
                 out.writeSize(out.position - start);
                 socialInput = ChatCompression.format(socialInput);
-                socialInput = Censor.apply(socialInput);
+                socialInput = Censor.filter(socialInput);
                 addMessage(6, StringUtil.formatName(StringUtil.fromBase37(inputFriendName37)), socialInput);
                 if (privateChatSetting == 2) {
                     privateChatSetting = 1;
@@ -7483,7 +7483,7 @@ public class Game extends GameShell {
 
         for (int i = 0; i < entityUpdateCount; i++) {
             NPCEntity npc = npcs[entityUpdateIDs[i]];
-            int updates = in.read8U();
+            int updates = in.readU8();
 
             if ((updates & 0x10) != 0) {
                 readNPCAnimation(npc);
@@ -7520,9 +7520,9 @@ public class Game extends GameShell {
     }
 
     private void readNPCGraphic(NPCEntity npc) {
-        npc.spotanimID = in.read16U();
-        npc.spotanimOffset = in.read16U();
-        npc.spotanimLastCycle = loopCycle + in.read16U();
+        npc.spotanimID = in.readU16();
+        npc.spotanimOffset = in.readU16();
+        npc.spotanimLastCycle = loopCycle + in.readU16();
         npc.spotanimFrame = 0;
         npc.spotanimCycle = 0;
         if (npc.spotanimLastCycle > loopCycle) {
@@ -7534,15 +7534,15 @@ public class Game extends GameShell {
     }
 
     private void readNPCTargetEntity(NPCEntity npc) {
-        npc.targetID = in.read16U();
+        npc.targetID = in.readU16();
         if (npc.targetID == 65535) {
             npc.targetID = -1;
         }
     }
 
     private void readNPCTargetTile(NPCEntity npc) {
-        npc.targetTileX = in.read16ULE();
-        npc.targetTileZ = in.read16ULE();
+        npc.targetTileX = in.readU16LE();
+        npc.targetTileZ = in.readU16LE();
     }
 
     private void readNPCChat(NPCEntity npc) {
@@ -7551,16 +7551,16 @@ public class Game extends GameShell {
     }
 
     private void readNPCDamage1(NPCEntity npc) {
-        int damage = in.read8UC();
-        int type = in.read8US();
+        int damage = in.readU8C();
+        int type = in.readU8S();
         npc.hit(type, damage);
         npc.combatCycle = loopCycle + 300;
-        npc.health = in.read8US();
-        npc.totalHealth = in.read8UC();
+        npc.health = in.readU8S();
+        npc.totalHealth = in.readU8C();
     }
 
     private void readNPCTransform(NPCEntity npc) {
-        npc.type = NPCType.get(in.read16ULEA());
+        npc.type = NPCType.get(in.readU16LEA());
         npc.size = npc.type.size;
         npc.turnSpeed = npc.type.turnSpeed;
         npc.seqWalkID = npc.type.seqWalkID;
@@ -7571,13 +7571,13 @@ public class Game extends GameShell {
     }
 
     private void readNPCAnimation(NPCEntity npc) {
-        int seqID = in.read16ULE();
+        int seqID = in.readU16LE();
 
         if (seqID == 65535) {
             seqID = -1;
         }
 
-        int delay = in.read8U();
+        int delay = in.readU8();
         if ((seqID == npc.primarySeqID) && (seqID != -1)) {
             int style = SeqType.instances[seqID].replayStyle;
 
@@ -7602,12 +7602,12 @@ public class Game extends GameShell {
     }
 
     private void readNPCDamage0(NPCEntity npc) {
-        int damage = in.read8UA();
-        int type = in.read8UC();
+        int damage = in.readU8A();
+        int type = in.readU8C();
         npc.hit(type, damage);
         npc.combatCycle = loopCycle + 300;
-        npc.health = in.read8UA();
-        npc.totalHealth = in.read8U();
+        npc.health = in.readU8A();
+        npc.totalHealth = in.readU8();
     }
 
     public void addNPCOptions(NPCType type, int npcID, int tileZ, int tileX) {
@@ -10502,9 +10502,9 @@ public class Game extends GameShell {
     }
 
     private void readObjAdd() {
-        int objID = in.read16ULEA();
-        int objCount = in.read16U();
-        int pos = in.read8U();
+        int objID = in.readU16LEA();
+        int objCount = in.readU16();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
@@ -10520,12 +10520,12 @@ public class Game extends GameShell {
     }
 
     private void readObjReveal() {
-        int objID = in.read16UA();
-        int pos = in.read8US();
+        int objID = in.readU16A();
+        int pos = in.readU8S();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int ownerPID = in.read16UA();
-        int objCount = in.read16U();
+        int ownerPID = in.readU16A();
+        int objCount = in.readU16();
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
             ObjEntity obj = new ObjEntity();
             obj.id = objID;
@@ -10539,12 +10539,12 @@ public class Game extends GameShell {
     }
 
     private void readObjCount() {
-        int pos = in.read8U();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int objID = in.read16U();
-        int oldCount = in.read16U();
-        int newCount = in.read16U();
+        int objID = in.readU16();
+        int oldCount = in.readU16();
+        int newCount = in.readU16();
 
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
             DoublyLinkedList stacks = levelObjStacks[currentLevel][x][z];
@@ -10562,10 +10562,10 @@ public class Game extends GameShell {
     }
 
     private void readObjDelete() {
-        int pos = in.read8UA();
+        int pos = in.readU8A();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int objID = in.read16U();
+        int objID = in.readU16();
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
             DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
             if (list != null) {
@@ -10585,11 +10585,11 @@ public class Game extends GameShell {
     }
 
     private void readLocAdd() {
-        int pos = in.read8UA();
+        int pos = in.readU8A();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int id = in.read16ULE();
-        int info = in.read8US();
+        int id = in.readU16LE();
+        int info = in.readU8S();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
@@ -10599,14 +10599,14 @@ public class Game extends GameShell {
     }
 
     private void readLocChange() {
-        int pos = in.read8US();
+        int pos = in.readU8S();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int info = in.read8US();
+        int info = in.readU8S();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
-        int seqID = in.read16UA();
+        int seqID = in.readU16A();
 
         if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
             return;
@@ -10662,11 +10662,11 @@ public class Game extends GameShell {
     }
 
     private void readLocDelete() {
-        int info = in.read8UC();
+        int info = in.readU8C();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
-        int pos = in.read8U();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
@@ -10675,20 +10675,20 @@ public class Game extends GameShell {
     }
 
     private void readLocPlayer() {
-        int pos = in.read8US();
+        int pos = in.readU8S();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int pid = in.read16U();
+        int pid = in.readU16();
         byte maxX = in.read8S();
-        int delay = in.read16ULE();
+        int delay = in.readU16LE();
         byte maxZ = in.read8C();
-        int duration = in.read16U();
-        int info = in.read8US();
+        int duration = in.readU16();
+        int info = in.readU8S();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
-        byte minX = in.read();
-        int locID = in.read16U();
+        byte minX = in.read8();
+        int locID = in.readU16();
         byte minZ = in.read8C();
         PlayerEntity player;
 
@@ -10746,12 +10746,12 @@ public class Game extends GameShell {
     }
 
     private void readMapAnim() {
-        int pos = in.read8U();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int id = in.read16U();
-        int y = in.read8U();
-        int delay = in.read16U();
+        int id = in.readU16();
+        int y = in.readU8();
+        int delay = in.readU16();
 
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
             x = (x * 128) + 64;
@@ -10762,11 +10762,11 @@ public class Game extends GameShell {
     }
 
     private void readMapSound() {
-        int pos = in.read8U();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int waveID = in.read16U();
-        int info = in.read8U();
+        int waveID = in.readU16();
+        int info = in.readU8();
         int maxDist = (info >> 4) & 0xf;
         int loopCount = info & 0b111;
         if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && waveEnabled && !lowmem && (waveCount < 50)) {
@@ -10778,19 +10778,19 @@ public class Game extends GameShell {
     }
 
     private void readMapProjectile() {
-        int pos = in.read8U();
+        int pos = in.readU8();
         int srcX = baseX + ((pos >> 4) & 7);
         int srcZ = baseZ + (pos & 7);
-        int dstX = srcX + in.read();
-        int dstZ = srcZ + in.read();
+        int dstX = srcX + in.read8();
+        int dstZ = srcZ + in.read8();
         int targetID = in.read16();
-        int spotanimID = in.read16U();
-        int srcY = in.read8U() * 4;
-        int dstY = in.read8U() * 4;
-        int delay = in.read16U();
-        int duration = in.read16U();
-        int peakPitch = in.read8U();
-        int arcSize = in.read8U();
+        int spotanimID = in.readU16();
+        int srcY = in.readU8() * 4;
+        int dstY = in.readU8() * 4;
+        int delay = in.readU16();
+        int duration = in.readU16();
+        int peakPitch = in.readU8();
+        int arcSize = in.readU8();
         if ((srcX >= 0) && (srcZ >= 0) && (srcX < 104) && (srcZ < 104) && (dstX >= 0) && (dstZ >= 0) && (dstX < 104) && (dstZ < 104) && (spotanimID != 65535)) {
             srcX = (srcX * 128) + 64;
             srcZ = (srcZ * 128) + 64;
@@ -11167,7 +11167,7 @@ public class Game extends GameShell {
                 if (available > 1) {
                     connection.read(in.data, 0, 2);
                     in.position = 0;
-                    packetSize = in.read16U();
+                    packetSize = in.readU16();
                     bytesIn += 2;
                     available -= 2;
                 } else {
@@ -11259,7 +11259,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.MINIMAP_TOGGLE:
-                    minimapState = in.read8U();
+                    minimapState = in.readU8();
                     break;
 
                 case PacketIn.IF_SETNPCHEAD:
@@ -11267,7 +11267,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_REBOOT_TIMER:
-                    systemUpdateTimer = in.read16ULE() * 30;
+                    systemUpdateTimer = in.readU16LE() * 30;
                     break;
 
                 case PacketIn.ZONE_UPDATE:
@@ -11327,8 +11327,8 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.ZONE_BASE:
-                    baseZ = in.read8UC();
-                    baseX = in.read8UC();
+                    baseZ = in.readU8C();
+                    baseX = in.readU8C();
                     break;
 
                 case PacketIn.TAB_HINT:
@@ -11376,13 +11376,13 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.FRIENDLIST_LOADED:
-                    friendlistStatus = in.read8U();
+                    friendlistStatus = in.readU8();
                     redrawSidebar = true;
                     break;
 
                 case PacketIn.LOCAL_PLAYER:
-                    isMember = in.read8UA();
-                    localPID = in.read16ULEA();
+                    isMember = in.readU8A();
+                    localPID = in.readU16LEA();
                     break;
 
                 case PacketIn.SYNC_NPCS:
@@ -11415,7 +11415,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.MULTIZONE:
-                    multizone = in.read8U();
+                    multizone = in.readU8();
                     break;
 
                 case PacketIn.IF_SETANIM:
@@ -11475,11 +11475,11 @@ public class Game extends GameShell {
     }
 
     private void readLastLoginInfo() {
-        daysSinceRecoveriesChanged = in.read8UC();
-        unreadMessages = in.read16UA();
-        warnMembersInNonMembers = in.read8U();
+        daysSinceRecoveriesChanged = in.readU8C();
+        unreadMessages = in.readU16A();
+        warnMembersInNonMembers = in.readU8();
         lastAddress = in.read32ME();
-        daysSinceLastLogin = in.read16U();
+        daysSinceLastLogin = in.readU16();
 
         if ((lastAddress != 0) && (viewportInterfaceID == -1)) {
             Signlink.dnslookup(StringUtil.formatIPv4(lastAddress));
@@ -11505,8 +11505,8 @@ public class Game extends GameShell {
     }
 
     private void readZoneClear() {
-        baseX = in.read8UC();
-        baseZ = in.read8US();
+        baseX = in.readU8C();
+        baseZ = in.readU8S();
         for (int x = baseX; x < (baseX + 8); x++) {
             for (int z = baseZ; z < (baseZ + 8); z++) {
                 if (levelObjStacks[currentLevel][x][z] != null) {
@@ -11523,7 +11523,7 @@ public class Game extends GameShell {
     }
 
     private void readIfSetPlayerHead() {
-        int interfaceID = in.read16ULEA();
+        int interfaceID = in.readU16LEA();
         IfType iface = IfType.instances[interfaceID];
         iface.modelType = IfType.MODEL_TYPE_PLAYER;
 
@@ -11542,7 +11542,7 @@ public class Game extends GameShell {
     }
 
     private void readInventoryClear() {
-        int interfaceID = in.read16ULE();
+        int interfaceID = in.readU16LE();
         IfType iface = IfType.instances[interfaceID];
         for (int slot = 0; slot < iface.inventorySlotObjID.length; slot++) {
             iface.inventorySlotObjID[slot] = -1;
@@ -11559,11 +11559,11 @@ public class Game extends GameShell {
 
     private void readCameraSetPos() {
         cutscene = true;
-        cutsceneSrcLocalTileX = in.read8U();
-        cutsceneSrcLocalTileZ = in.read8U();
-        cutsceneSrcHeight = in.read16U();
-        cutsceneMoveSpeed = in.read8U();
-        cutsceneMoveAcceleration = in.read8U();
+        cutsceneSrcLocalTileX = in.readU8();
+        cutsceneSrcLocalTileZ = in.readU8();
+        cutsceneSrcHeight = in.readU16();
+        cutsceneMoveSpeed = in.readU8();
+        cutsceneMoveAcceleration = in.readU8();
 
         if (cutsceneMoveAcceleration >= 100) {
             cameraX = (cutsceneSrcLocalTileX * 128) + 64;
@@ -11574,11 +11574,11 @@ public class Game extends GameShell {
 
     private void readCameraLookAt() {
         cutscene = true;
-        cutsceneDstLocalTileX = in.read8U();
-        cutsceneDstLocalTileZ = in.read8U();
-        cutsceneDstHeight = in.read16U();
-        cutsceneRotateSpeed = in.read8U();
-        cutsceneRotateAcceleration = in.read8U();
+        cutsceneDstLocalTileX = in.readU8();
+        cutsceneDstLocalTileZ = in.readU8();
+        cutsceneDstHeight = in.readU16();
+        cutsceneRotateSpeed = in.readU8();
+        cutsceneRotateAcceleration = in.readU8();
 
         if (cutsceneRotateAcceleration >= 100) {
             int sceneX = (cutsceneDstLocalTileX * 128) + 64;
@@ -11601,9 +11601,9 @@ public class Game extends GameShell {
 
     private void readUpdateStat() {
         redrawSidebar = true;
-        int skill = in.read8U();
+        int skill = in.readU8();
         int experience = in.read32RME();
-        int level = in.read8U();
+        int level = in.readU8();
         skillExperience[skill] = experience;
         skillLevel[skill] = level;
         skillBaseLevel[skill] = 1;
@@ -11615,8 +11615,8 @@ public class Game extends GameShell {
     }
 
     private void readIfTab() {
-        int interfaceID = in.read16U();
-        int tab = in.read8UA();
+        int interfaceID = in.readU16();
+        int tab = in.readU8A();
         if (interfaceID == 65535) {
             interfaceID = -1;
         }
@@ -11626,7 +11626,7 @@ public class Game extends GameShell {
     }
 
     private void readMidiSong() {
-        int next = in.read16ULE();
+        int next = in.readU16LE();
         if (next == 65535) {
             next = -1;
         }
@@ -11639,8 +11639,8 @@ public class Game extends GameShell {
     }
 
     private void readMidiJingle() {
-        int next = in.read16ULEA();
-        int delay = in.read16UA();
+        int next = in.readU16LEA();
+        int delay = in.readU16A();
         if (midiEnabled && !lowmem) {
             song = next;
             songFading = false;
@@ -11652,7 +11652,7 @@ public class Game extends GameShell {
     private void readIfSetPosition() {
         int x = in.read16();
         int y = in.read16LE();
-        int interfaceID = in.read16ULE();
+        int interfaceID = in.readU16LE();
         IfType iface = IfType.instances[interfaceID];
         iface.x = x;
         iface.y = y;
@@ -11663,13 +11663,13 @@ public class Game extends GameShell {
         int zoneZ = sceneCenterZoneZ;
 
         if (packetType == PacketIn.REBUILD_REGION) {
-            zoneX = in.read16UA();
-            zoneZ = in.read16U();
+            zoneX = in.readU16A();
+            zoneZ = in.readU16();
             sceneInstanced = false;
         }
 
         if (packetType == PacketIn.REBUILD_REGION_INSTANCE) {
-            zoneZ = in.read16UA();
+            zoneZ = in.readU16A();
             in.accessBits();
 
             for (int level = 0; level < 4; level++) {
@@ -11685,7 +11685,7 @@ public class Game extends GameShell {
             }
 
             in.accessBytes();
-            zoneX = in.read16U();
+            zoneX = in.readU16();
             sceneInstanced = true;
         }
 
@@ -11914,25 +11914,25 @@ public class Game extends GameShell {
     }
 
     private void readIfSetNPCHead() {
-        int npcID = in.read16ULEA();
-        int interfaceID = in.read16ULEA();
+        int npcID = in.readU16LEA();
+        int interfaceID = in.readU16LEA();
         IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NPC;
         IfType.instances[interfaceID].modelID = npcID;
     }
 
     private void readZoneUpdate() {
-        baseZ = in.read8U();
-        baseX = in.read8UC();
+        baseZ = in.readU8();
+        baseX = in.readU8C();
         while (in.position < packetSize) {
-            readZonePacket(in.read8U());
+            readZonePacket(in.readU8());
         }
     }
 
     private void readCameraShake() {
-        int type = in.read8U();
-        int jitterScale = in.read8U();
-        int wobbleScale = in.read8U();
-        int wobbleSpeed = in.read8U();
+        int type = in.readU8();
+        int jitterScale = in.readU8();
+        int wobbleScale = in.readU8();
+        int wobbleSpeed = in.readU8();
         cameraModifierEnabled[type] = true;
         cameraModifierJitter[type] = jitterScale;
         cameraModifierWobbleScale[type] = wobbleScale;
@@ -11941,9 +11941,9 @@ public class Game extends GameShell {
     }
 
     private void readSynthSound() {
-        int waveID = in.read16U();
-        int loopCount = in.read8U();
-        int delay = in.read16U();
+        int waveID = in.readU16();
+        int loopCount = in.readU8();
+        int delay = in.readU16();
         if (waveEnabled && !lowmem && (waveCount < 50)) {
             waveIDs[waveCount] = waveID;
             waveLoops[waveCount] = loopCount;
@@ -11953,8 +11953,8 @@ public class Game extends GameShell {
     }
 
     private void readSetPlayerOp() {
-        int option = in.read8UC();
-        int priority = in.read8UA();
+        int option = in.readU8C();
+        int priority = in.readU8A();
         String text = in.readString();
         if ((option >= 1) && (option <= 5)) {
             if (text.equalsIgnoreCase("null")) {
@@ -12035,7 +12035,7 @@ public class Game extends GameShell {
 
     private void readFriendStatus() {
         long name37 = in.read64();
-        int world = in.read8U();
+        int world = in.readU8();
         String name = StringUtil.formatName(StringUtil.fromBase37(name37));
 
         for (int i = 0; i < friendCount; i++) {
@@ -12090,14 +12090,14 @@ public class Game extends GameShell {
         if (selectedTab == 12) {
             redrawSidebar = true;
         }
-        energy = in.read8U();
+        energy = in.readU8();
     }
 
     private void readHintArrow() {
-        hintType = in.read8U();
+        hintType = in.readU8();
 
         if (hintType == 1) {
-            hintNPC = in.read16U();
+            hintNPC = in.readU16();
         }
 
         if ((hintType >= 2) && (hintType <= 6)) {
@@ -12122,19 +12122,19 @@ public class Game extends GameShell {
                 hintOffsetZ = 128;
             }
             hintType = 2;
-            hintTileX = in.read16U();
-            hintTileZ = in.read16U();
-            hintHeight = in.read8U();
+            hintTileX = in.readU16();
+            hintTileZ = in.readU16();
+            hintHeight = in.readU8();
         }
 
         if (hintType == 10) {
-            hintPlayer = in.read16U();
+            hintPlayer = in.readU16();
         }
     }
 
     private void readIfViewportAndSidebar() {
-        int viewportInterfaceID = in.read16UA();
-        int sidebarInterfaceID = in.read16U();
+        int viewportInterfaceID = in.readU16A();
+        int sidebarInterfaceID = in.readU16();
 
         if (chatInterfaceID != -1) {
             chatInterfaceID = -1;
@@ -12154,8 +12154,8 @@ public class Game extends GameShell {
     }
 
     private void readIfSetScrollPos() {
-        int interfaceID = in.read16ULE();
-        int scrollPos = in.read16UA();
+        int interfaceID = in.readU16LE();
+        int scrollPos = in.readU16A();
         IfType iface = IfType.instances[interfaceID];
         if ((iface != null) && (iface.type == IfType.TYPE_PARENT)) {
             if (scrollPos < 0) {
@@ -12181,7 +12181,7 @@ public class Game extends GameShell {
     private void readMessagePublic() {
         long name37 = in.read64();
         int messageID = in.read32();
-        int role = in.read8U();
+        int role = in.readU8();
         boolean ignore = false;
         for (int i = 0; i < 100; i++) {
             if (messageIDs[i] == messageID) {
@@ -12206,7 +12206,7 @@ public class Game extends GameShell {
                 String message = ChatCompression.unpack(packetSize - 13, in);
 
                 if (role != 3) {
-                    message = Censor.apply(message);
+                    message = Censor.filter(message);
                 }
 
                 if ((role == 2) || (role == 3)) {
@@ -12223,7 +12223,7 @@ public class Game extends GameShell {
     }
 
     private void readTabHint() {
-        flashingTab = in.read8US();
+        flashingTab = in.readU8S();
         if (flashingTab == selectedTab) {
             if (flashingTab == 3) {
                 selectedTab = 1;
@@ -12235,9 +12235,9 @@ public class Game extends GameShell {
     }
 
     private void readIfSetObject() {
-        int interfaceID = in.read16ULE();
-        int zoom = in.read16U();
-        int objID = in.read16U();
+        int interfaceID = in.readU16LE();
+        int zoom = in.readU16();
+        int objID = in.readU16();
 
         if (objID != 65535) {
             ObjType type = ObjType.get(objID);
@@ -12253,13 +12253,13 @@ public class Game extends GameShell {
     }
 
     private void readIfSetHide() {
-        boolean hide = in.read8U() == 1;
-        int interfaceID = in.read16U();
+        boolean hide = in.readU8() == 1;
+        int interfaceID = in.readU16();
         IfType.instances[interfaceID].hide = hide;
     }
 
     private void readIfStopAnim() {
-        int interfaceID = in.read16ULE();
+        int interfaceID = in.readU16LE();
         resetInterfaceAnimation(interfaceID);
         if (chatInterfaceID != -1) {
             chatInterfaceID = -1;
@@ -12278,7 +12278,7 @@ public class Game extends GameShell {
 
     private void readIfSetText() {
         String text = in.readString();
-        int interfaceID = in.read16UA();
+        int interfaceID = in.readU16A();
         if ((interfaceID >= 0) && (interfaceID < IfType.instances.length)) {
             IfType iface = IfType.instances[interfaceID];
             if (iface != null) {
@@ -12291,9 +12291,9 @@ public class Game extends GameShell {
     }
 
     private void readChatFilterSettings() {
-        publicChatSetting = in.read8U();
-        privateChatSetting = in.read8U();
-        tradeChatSetting = in.read8U();
+        publicChatSetting = in.readU8();
+        privateChatSetting = in.readU8();
+        tradeChatSetting = in.readU8();
         redrawPrivacySettings = true;
         redrawChatback = true;
     }
@@ -12306,15 +12306,15 @@ public class Game extends GameShell {
     }
 
     private void readIfSetModel() {
-        int interfaceID = in.read16ULEA();
-        int modelID = in.read16U();
+        int interfaceID = in.readU16LEA();
+        int modelID = in.readU16();
         IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NORMAL;
         IfType.instances[interfaceID].modelID = modelID;
     }
 
     private void readIfSetColor() {
-        int interfaceID = in.read16ULEA();
-        int rgb555 = in.read16ULEA();
+        int interfaceID = in.readU16LEA();
+        int rgb555 = in.readU16LEA();
         int r = (rgb555 >> 10) & 0x1f;
         int g = (rgb555 >> 5) & 0x1f;
         int b = rgb555 & 0x1f;
@@ -12323,21 +12323,21 @@ public class Game extends GameShell {
 
     private void readUpdateInvFull() {
         redrawSidebar = true;
-        int interfaceID = in.read16U();
+        int interfaceID = in.readU16();
         IfType iface = IfType.instances[interfaceID];
-        int lastSlot = in.read16U();
+        int lastSlot = in.readU16();
 
         for (int slot = 0; slot < lastSlot; slot++) {
-            int objCount = in.read8U();
+            int objCount = in.readU8();
 
             if (objCount == 255) {
                 objCount = in.read32ME();
             }
 
             if (slot >= iface.inventorySlotObjID.length) {
-                in.read16ULEA();
+                in.readU16LEA();
             } else {
-                iface.inventorySlotObjID[slot] = in.read16ULEA();
+                iface.inventorySlotObjID[slot] = in.readU16LEA();
                 iface.inventorySlotObjCount[slot] = objCount;
             }
         }
@@ -12350,10 +12350,10 @@ public class Game extends GameShell {
     }
 
     private void readIfSetAngle() {
-        int zoom = in.read16UA();
-        int interfaceID = in.read16U();
-        int pitch = in.read16U();
-        int yaw = in.read16ULEA();
+        int zoom = in.readU16A();
+        int interfaceID = in.readU16();
+        int pitch = in.readU16();
+        int yaw = in.readU16LEA();
         IfType.instances[interfaceID].modelPitch = pitch;
         IfType.instances[interfaceID].modelYaw = yaw;
         IfType.instances[interfaceID].modelZoom = zoom;
@@ -12385,13 +12385,13 @@ public class Game extends GameShell {
     }
 
     private void readViewportInterface() {
-        int interfaceID = in.read16U();
+        int interfaceID = in.readU16();
         resetInterfaceAnimation(interfaceID);
         openViewportInterface(interfaceID);
     }
 
     private void readVarpLarge() {
-        int varpID = in.read16ULE();
+        int varpID = in.readU16LE();
         int value = in.read32RME();
         varCache[varpID] = value;
 
@@ -12406,8 +12406,8 @@ public class Game extends GameShell {
     }
 
     private void readVarpSmall() {
-        int varpID = in.read16ULE();
-        byte value = in.read();
+        int varpID = in.readU16LE();
+        byte value = in.read8();
         varCache[varpID] = value;
 
         if (varps[varpID] != value) {
@@ -12421,7 +12421,7 @@ public class Game extends GameShell {
     }
 
     private void readIfSetAnim() {
-        int interfaceID = in.read16U();
+        int interfaceID = in.readU16();
         int seqID = in.read16();
         IfType iface = IfType.instances[interfaceID];
         iface.seqID = seqID;
@@ -12433,13 +12433,13 @@ public class Game extends GameShell {
 
     private void readUpdateInvPartial() {
         redrawSidebar = true;
-        int interfaceID = in.read16U();
+        int interfaceID = in.readU16();
         IfType iface = IfType.instances[interfaceID];
 
         while (in.position < packetSize) {
-            int slot = in.readSmartU();
-            int objID = in.read16U();
-            int objCount = in.read8U();
+            int slot = in.readUSmart();
+            int objID = in.readU16();
+            int objCount = in.readU8();
             if (objCount == 255) {
                 objCount = in.read32();
             }
@@ -12451,13 +12451,13 @@ public class Game extends GameShell {
     }
 
     private void readTabSelected() {
-        selectedTab = in.read8UC();
+        selectedTab = in.readU8C();
         redrawSidebar = true;
         redrawSideicons = true;
     }
 
     private void readIfChat() {
-        int interfaceID = in.read16ULE();
+        int interfaceID = in.readU16LE();
         resetInterfaceAnimation(interfaceID);
         if (sidebarInterfaceID != -1) {
             sidebarInterfaceID = -1;

@@ -35,7 +35,7 @@ public class SceneBuilder {
         int locID = -1;
 
         for (; ; ) {
-            int deltaID = buffer.readSmartU();
+            int deltaID = buffer.readUSmart();
 
             if (deltaID == 0) {
                 break;
@@ -45,8 +45,8 @@ public class SceneBuilder {
             LocType type = LocType.get(locID);
             type.prefetch(onDemand);
 
-            while (buffer.readSmartU() != 0) {
-                buffer.read8U();
+            while (buffer.readUSmart() != 0) {
+                buffer.readU8();
             }
         }
     }
@@ -350,7 +350,7 @@ public class SceneBuilder {
         int locID = -1;
 
         for (; ; ) {
-            int deltaID = buffer.readSmartU();
+            int deltaID = buffer.readUSmart();
             if (deltaID == 0) {
                 break;
             }
@@ -363,12 +363,12 @@ public class SceneBuilder {
             // this loop is for the same Loc ID.
             for (; ; ) {
                 if (skip) {
-                    if (buffer.readSmartU() == 0) {
+                    if (buffer.readUSmart() == 0) {
                         break;
                     }
-                    buffer.read8U();
+                    buffer.readU8();
                 } else {
-                    int deltaPos = buffer.readSmartU();
+                    int deltaPos = buffer.readUSmart();
 
                     if (deltaPos == 0) {
                         break;
@@ -379,7 +379,7 @@ public class SceneBuilder {
                     int z = pos & 0x3f;
                     int x = (pos >> 6) & 0x3f;
 
-                    int kind = buffer.read8U() >> 2;
+                    int kind = buffer.readU8() >> 2;
                     int localX = x + originX;
                     int localZ = z + originZ;
 
@@ -1332,7 +1332,7 @@ public class SceneBuilder {
             levelTileFlags[level][x][z] = (byte) 0;
 
             for (; ; ) {
-                int type = in.read8U();
+                int type = in.readU8();
 
                 if (type == 0) {
                     if (level == 0) {
@@ -1345,7 +1345,7 @@ public class SceneBuilder {
                 }
 
                 if (type == 1) {
-                    int height = in.read8U();
+                    int height = in.readU8();
 
                     if (height == 1) {
                         height = 0;
@@ -1361,7 +1361,7 @@ public class SceneBuilder {
                 }
 
                 if (type <= 49) {
-                    levelTileOverlayIDs[level][x][z] = in.read();
+                    levelTileOverlayIDs[level][x][z] = in.read8();
                     levelTileOverlayShape[level][x][z] = (byte) ((type - 2) / 4);
                     levelTileOverlayRotation[level][x][z] = (byte) (((type - 2) + mapRotation) & 0x3);
                 } else if (type <= 81) {
@@ -1372,16 +1372,16 @@ public class SceneBuilder {
             }
         } else {
             for (; ; ) {
-                int type = in.read8U();
+                int type = in.readU8();
                 if (type == 0) {
                     break;
                 }
                 if (type == 1) {
-                    in.read8U();
+                    in.readU8();
                     break;
                 }
                 if (type <= 49) {
-                    in.read8U();
+                    in.readU8();
                 }
             }
         }
@@ -1402,7 +1402,7 @@ public class SceneBuilder {
         int locID = -1;
 
         while (true) {
-            int deltaID = in.readSmartU();
+            int deltaID = in.readUSmart();
 
             if (deltaID == 0) {
                 break;
@@ -1413,7 +1413,7 @@ public class SceneBuilder {
             int locData = 0;
 
             while (true) {
-                int deltaData = in.readSmartU();
+                int deltaData = in.readUSmart();
 
                 if (deltaData == 0) {
                     break;
@@ -1424,7 +1424,7 @@ public class SceneBuilder {
                 int locZ = locData & 0x3f;
                 int locX = (locData >> 6) & 0x3f;
                 int locLevel = locData >> 12;
-                int locInfo = in.read8U();
+                int locInfo = in.readU8();
                 int locKind = locInfo >> 2;
                 int locRotation = locInfo & 0x3;
 
@@ -1487,7 +1487,7 @@ public class SceneBuilder {
         Buffer in = new Buffer(data);
         int locID = -1;
         for (; ; ) {
-            int deltaID = in.readSmartU();
+            int deltaID = in.readUSmart();
 
             if (deltaID == 0) {
                 break;
@@ -1497,7 +1497,7 @@ public class SceneBuilder {
             int locData = 0;
 
             for (; ; ) {
-                int deltaData = in.readSmartU();
+                int deltaData = in.readUSmart();
 
                 if (deltaData == 0) {
                     break;
@@ -1507,7 +1507,7 @@ public class SceneBuilder {
                 int locZ = locData & 0x3f;
                 int locX = (locData >> 6) & 0x3f;
                 int locLevel = locData >> 12;
-                int locInfo = in.read8U();
+                int locInfo = in.readU8();
                 int locKind = locInfo >> 2;
                 int locRotation = locInfo & 0x3;
                 int x = locX + originX;

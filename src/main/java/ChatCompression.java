@@ -19,7 +19,7 @@ public final class ChatCompression {
         int carry = -1;
 
         for (int i = 0; i < length; i++) {
-            int value = in.read8U();
+            int value = in.readU8();
             int nibble = (value >> 4) & 0b1111;
 
             if (carry == -1) {

@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A {@link Buffer} encapsulates a finite amount of data and provides methods for reading and writing to that data.
  * The <code>write()</code> and <code>read()</code> methods describe the type of data they use by attributes in their
- * suffix. The naming convention is <code>(read|write)[type][U:unsigned][endianness][modifier]</code>.
+ * suffix. The naming convention is <code>(read[U:unsigned]|write)[type][endianness][modifier]</code>.
  * <p>
  * <b>Types:</b><br/>
  * # — the number of bytes<br/>
@@ -135,7 +135,7 @@ public class Buffer extends DoublyLinkedList.Node {
         }
     }
 
-    public byte read() {
+    public byte read8() {
         return data[position++];
     }
 
@@ -147,19 +147,19 @@ public class Buffer extends DoublyLinkedList.Node {
         return (byte) (128 - data[position++]);
     }
 
-    public int read8U() {
+    public int readU8() {
         return data[position++] & 0xff;
     }
 
-    public int read8UA() {
+    public int readU8A() {
         return (data[position++] - 128) & 0xff;
     }
 
-    public int read8UC() {
+    public int readU8C() {
         return -data[position++] & 0xff;
     }
 
-    public int read8US() {
+    public int readU8S() {
         return (128 - data[position++]) & 0xff;
     }
 
@@ -170,9 +170,9 @@ public class Buffer extends DoublyLinkedList.Node {
      */
     public int readSmart() {
         if ((data[position] & 0xff) < 128) {
-            return read8U() - 64;
+            return readU8() - 64;
         } else {
-            return read16U() - 49152;
+            return readU16() - 49152;
         }
     }
 
@@ -181,30 +181,30 @@ public class Buffer extends DoublyLinkedList.Node {
      *
      * @return the value.
      */
-    public int readSmartU() {
+    public int readUSmart() {
         if ((data[position] & 0xff) < 128) {
-            return read8U();
+            return readU8();
         } else {
-            return read16U() - 32768;
+            return readU16() - 32768;
         }
     }
 
-    public int read16U() {
+    public int readU16() {
         position += 2;
         return ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
     }
 
-    public int read16UA() {
+    public int readU16A() {
         position += 2;
         return ((data[position - 2] & 0xff) << 8) + ((data[position - 1] - 128) & 0xff);
     }
 
-    public int read16ULE() {
+    public int readU16LE() {
         position += 2;
         return ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
     }
 
-    public int read16ULEA() {
+    public int readU16LEA() {
         position += 2;
         return ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
     }

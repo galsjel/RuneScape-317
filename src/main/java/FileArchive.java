@@ -37,7 +37,7 @@ public class FileArchive {
             unpacked = false;
         }
 
-        fileCount = buffer.read16U();
+        fileCount = buffer.readU16();
         fileHash = new int[fileCount];
         fileSizeInflated = new int[fileCount];
         fileSizeDeflated = new int[fileCount];

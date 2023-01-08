@@ -11,7 +11,7 @@ public class IdkType {
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("idk.dat"));
-        count = buffer.read16U();
+        count = buffer.readU16();
         if (instances == null) {
             instances = new IdkType[count];
         }
@@ -35,25 +35,25 @@ public class IdkType {
 
     public void read(Buffer in) {
         while (true) {
-            int code = in.read8U();
+            int code = in.readU8();
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                type = in.read8U();
+                type = in.readU8();
             } else if (code == 2) {
-                int j = in.read8U();
+                int j = in.readU8();
                 modelIDs = new int[j];
                 for (int k = 0; k < j; k++) {
-                    modelIDs[k] = in.read16U();
+                    modelIDs[k] = in.readU16();
                 }
             } else if (code == 3) {
                 selectable = true;
             } else if ((code >= 40) && (code < 50)) {
-                colorSrc[code - 40] = in.read16U();
+                colorSrc[code - 40] = in.readU16();
             } else if ((code >= 50) && (code < 60)) {
-                colorDst[code - 50] = in.read16U();
+                colorDst[code - 50] = in.readU16();
             } else if ((code >= 60) && (code < 70)) {
-                headModelIDs[code - 60] = in.read16U();
+                headModelIDs[code - 60] = in.readU16();
             } else {
                 System.out.println("Error unrecognised identikit config code: " + code);
             }
