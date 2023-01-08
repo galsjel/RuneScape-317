@@ -63,7 +63,7 @@ public class LocType {
         dat.position = offsets[locID];
         type.index = locID;
         type.reset();
-        type.method582(dat);
+        type.read(dat);
         return type;
     }
 
@@ -403,154 +403,160 @@ public class LocType {
         return modified;
     }
 
-    public void method582(Buffer buffer) {
-        int i = -1;
-        label0:
-        do {
-            int j;
-            do {
-                j = buffer.readU8();
-                if (j == 0) {
-                    break label0;
-                }
-                if (j == 1) {
-                    int k = buffer.readU8();
-                    if (k > 0) {
-                        if ((modelIDs == null) || lowmem) {
-                            modelKinds = new int[k];
-                            modelIDs = new int[k];
-                            for (int k1 = 0; k1 < k; k1++) {
-                                modelIDs[k1] = buffer.readU16();
-                                modelKinds[k1] = buffer.readU8();
-                            }
-                        } else {
-                            buffer.position += k * 3;
+    public void read(Buffer buffer) {
+        int interactable = -1;
+
+        while (true) {
+            int code = buffer.readU8();
+
+            if (code == 0) {
+                break;
+            } else if (code == 1) {
+                int k = buffer.readU8();
+                if (k > 0) {
+                    if ((modelIDs == null) || lowmem) {
+                        modelKinds = new int[k];
+                        modelIDs = new int[k];
+                        for (int k1 = 0; k1 < k; k1++) {
+                            modelIDs[k1] = buffer.readU16();
+                            modelKinds[k1] = buffer.readU8();
                         }
+                    } else {
+                        buffer.position += k * 3;
                     }
-                } else if (j == 2) {
-                    name = buffer.readString();
-                } else if (j == 3) {
-                    examine = buffer.readString();
-                } else if (j == 5) {
-                    int l = buffer.readU8();
-                    if (l > 0) {
-                        if ((modelIDs == null) || lowmem) {
-                            modelKinds = null;
-                            modelIDs = new int[l];
-                            for (int l1 = 0; l1 < l; l1++) {
-                                modelIDs[l1] = buffer.readU16();
-                            }
-                        } else {
-                            buffer.position += l * 2;
+                }
+            } else if (code == 2) {
+                name = buffer.readString();
+            } else if (code == 3) {
+                examine = buffer.readString();
+            } else if (code == 5) {
+                int modelCount = buffer.readU8();
+                if (modelCount > 0) {
+                    if ((modelIDs == null) || lowmem) {
+                        modelKinds = null;
+                        modelIDs = new int[modelCount];
+                        for (int l1 = 0; l1 < modelCount; l1++) {
+                            modelIDs[l1] = buffer.readU16();
                         }
+                    } else {
+                        buffer.position += modelCount * 2;
                     }
-                } else if (j == 14) {
-                    sizeX = buffer.readU8();
-                } else if (j == 15) {
-                    sizeZ = buffer.readU8();
-                } else if (j == 17) {
-                    solid = false;
-                } else if (j == 18) {
-                    blocksProjectiles = false;
-                } else if (j == 19) {
-                    i = buffer.readU8();
-                    if (i == 1) {
-                        interactable = true;
-                    }
-                } else if (j == 21) {
-                    adjustToTerrain = true;
-                } else if (j == 22) {
-                    dynamic = true;
-                } else if (j == 23) {
-                    occludes = true;
-                } else if (j == 24) {
-                    seqID = buffer.readU16();
-                    if (seqID == 65535) {
-                        seqID = -1;
-                    }
-                } else if (j == 28) {
-                    decorOffset = buffer.readU8();
-                } else if (j == 29) {
-                    lightAmbient = buffer.read8();
-                } else if (j == 39) {
-                    lightAttenuation = buffer.read8();
-                } else if ((j >= 30) && (j < 39)) {
-                    if (options == null) {
-                        options = new String[5];
-                    }
-                    options[j - 30] = buffer.readString();
-                    if (options[j - 30].equalsIgnoreCase("hidden")) {
-                        options[j - 30] = null;
-                    }
-                } else if (j == 40) {
-                    int i1 = buffer.readU8();
-                    srcColor = new int[i1];
-                    dstColor = new int[i1];
-                    for (int i2 = 0; i2 < i1; i2++) {
-                        srcColor[i2] = buffer.readU16();
-                        dstColor[i2] = buffer.readU16();
-                    }
-                } else if (j == 60) {
-                    mapfunctionIcon = buffer.readU16();
-                } else if (j == 62) {
-                    invert = true;
-                } else if (j == 64) {
-                    castShadow = false;
-                } else if (j == 65) {
-                    scaleX = buffer.readU16();
-                } else if (j == 66) {
-                    scaleZ = buffer.readU16();
-                } else if (j == 67) {
-                    scaleY = buffer.readU16();
-                } else if (j == 68) {
-                    mapsceneIcon = buffer.readU16();
-                } else if (j == 69) {
-                    interactionSideFlags = buffer.readU8();
-                } else if (j == 70) {
-                    translateX = buffer.read16();
-                } else if (j == 71) {
-                    translateY = buffer.read16();
-                } else if (j == 72) {
-                    translateZ = buffer.read16();
-                } else if (j == 73) {
-                    important = true;
-                } else if (j == 74) {
-                    decorative = true;
-                } else {
-                    if (j != 75) {
-                        continue;
-                    }
-                    supportsObj = buffer.readU8();
                 }
-                continue label0;
-            } while (j != 77);
-            varbit = buffer.readU16();
-            if (varbit == 65535) {
-                varbit = -1;
-            }
-            varp = buffer.readU16();
-            if (varp == 65535) {
-                varp = -1;
-            }
-            int j1 = buffer.readU8();
-            overrideTypeIDs = new int[j1 + 1];
-            for (int j2 = 0; j2 <= j1; j2++) {
-                overrideTypeIDs[j2] = buffer.readU16();
-                if (overrideTypeIDs[j2] == 65535) {
-                    overrideTypeIDs[j2] = -1;
+            } else if (code == 14) {
+                sizeX = buffer.readU8();
+            } else if (code == 15) {
+                sizeZ = buffer.readU8();
+            } else if (code == 17) {
+                solid = false;
+            } else if (code == 18) {
+                blocksProjectiles = false;
+            } else if (code == 19) {
+                interactable = buffer.readU8();
+
+                if (interactable == 1) {
+                    this.interactable = true;
                 }
-            }
-        } while (true);
-        if (i == -1) {
-            interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
-            if (options != null) {
-                interactable = true;
+            } else if (code == 21) {
+                adjustToTerrain = true;
+            } else if (code == 22) {
+                dynamic = true;
+            } else if (code == 23) {
+                occludes = true;
+            } else if (code == 24) {
+                seqID = buffer.readU16();
+                if (seqID == 65535) {
+                    seqID = -1;
+                }
+            } else if (code == 28) {
+                decorOffset = buffer.readU8();
+            } else if (code == 29) {
+                lightAmbient = buffer.read8();
+            } else if (code == 39) {
+                lightAttenuation = buffer.read8();
+            } else if ((code >= 30) && (code < 39)) {
+                if (options == null) {
+                    options = new String[5];
+                }
+                options[code - 30] = buffer.readString();
+                if (options[code - 30].equalsIgnoreCase("hidden")) {
+                    options[code - 30] = null;
+                }
+            } else if (code == 40) {
+                int recolorCount = buffer.readU8();
+                srcColor = new int[recolorCount];
+                dstColor = new int[recolorCount];
+                for (int i = 0; i < recolorCount; i++) {
+                    srcColor[i] = buffer.readU16();
+                    dstColor[i] = buffer.readU16();
+                }
+            } else if (code == 60) {
+                mapfunctionIcon = buffer.readU16();
+            } else if (code == 62) {
+                invert = true;
+            } else if (code == 64) {
+                castShadow = false;
+            } else if (code == 65) {
+                scaleX = buffer.readU16();
+            } else if (code == 66) {
+                scaleZ = buffer.readU16();
+            } else if (code == 67) {
+                scaleY = buffer.readU16();
+            } else if (code == 68) {
+                mapsceneIcon = buffer.readU16();
+            } else if (code == 69) {
+                interactionSideFlags = buffer.readU8();
+            } else if (code == 70) {
+                translateX = buffer.read16();
+            } else if (code == 71) {
+                translateY = buffer.read16();
+            } else if (code == 72) {
+                translateZ = buffer.read16();
+            } else if (code == 73) {
+                important = true;
+            } else if (code == 74) {
+                decorative = true;
+            } else if (code == 75) {
+                supportsObj = buffer.readU8();
+            } else if (code == 77) {
+                varbit = buffer.readU16();
+
+                if (varbit == 65535) {
+                    varbit = -1;
+                }
+
+                varp = buffer.readU16();
+
+                if (varp == 65535) {
+                    varp = -1;
+                }
+
+                int overrideCount = buffer.readU8();
+                overrideTypeIDs = new int[overrideCount + 1];
+
+                for (int i = 0; i <= overrideCount; i++) {
+                    overrideTypeIDs[i] = buffer.readU16();
+
+                    if (overrideTypeIDs[i] == 65535) {
+                        overrideTypeIDs[i] = -1;
+                    }
+                }
             }
         }
+
+        // no code 19
+        if (interactable == -1) {
+            this.interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
+
+            if (options != null) {
+                this.interactable = true;
+            }
+        }
+
         if (decorative) {
             solid = false;
             blocksProjectiles = false;
         }
+        
         if (supportsObj == -1) {
             supportsObj = solid ? 1 : 0;
         }

@@ -1772,7 +1772,7 @@ public class Game extends GameShell {
                 }
             }
 
-            method63();
+            clearTemporaryLocs();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -4447,7 +4447,7 @@ public class Game extends GameShell {
         }
     }
 
-    public void method63() {
+    public void clearTemporaryLocs() {
         SceneLocTemporary loc = (SceneLocTemporary) temporaryLocs.peekFront();
         for (; loc != null; loc = (SceneLocTemporary) temporaryLocs.prev()) {
             if (loc.duration == -1) {
