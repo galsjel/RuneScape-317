@@ -796,7 +796,7 @@ public class Game extends GameShell {
                 int done = total - ondemand.remaining();
 
                 if (done > 0) {
-                    drawProgress(65, "Loading animations - " + (done * 100) / total + "%");
+                    drawProgress(65, "Loading animations - " + done * 100 / total + "%");
                 }
 
                 handleOnDemandRequests();
@@ -828,7 +828,7 @@ public class Game extends GameShell {
                 int done = total - ondemand.remaining();
 
                 if (done > 0) {
-                    drawProgress(70, "Loading models - " + (done * 100) / total + "%");
+                    drawProgress(70, "Loading models - " + done * 100 / total + "%");
                 }
 
                 handleOnDemandRequests();
@@ -861,7 +861,7 @@ public class Game extends GameShell {
                     int done = total - ondemand.remaining();
 
                     if (done > 0) {
-                        drawProgress(75, "Loading maps - " + (done * 100) / total + "%");
+                        drawProgress(75, "Loading maps - " + done * 100 / total + "%");
                     }
 
                     handleOnDemandRequests();
@@ -1948,7 +1948,7 @@ public class Game extends GameShell {
         Arrays.fill(pixels, 0);
 
         for (int z = 1; z < 103; z++) {
-            int offset = (52 + (48 * 512)) + ((103 - z) * 512 * 4);
+            int offset = 52 + (48 * 512) + ((103 - z) * 512 * 4);
 
             for (int x = 1; x < 103; x++) {
                 if ((levelTileFlags[level][x][z] & 0x18) == 0) {
@@ -3445,7 +3445,7 @@ public class Game extends GameShell {
         int length = in.read8UC();
         int start = in.position;
 
-        if (player.name != null && player.visible) {
+        if ((player.name != null) && player.visible) {
             long name37 = StringUtil.toBase37(player.name);
             boolean ignore = false;
 
@@ -3944,6 +3944,7 @@ public class Game extends GameShell {
 
             if (request.store == 0) {
                 Model.unpack(request.data, request.file);
+
                 if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
                     redrawSidebar = true;
                     if (chatInterfaceID != -1) {
@@ -5969,7 +5970,8 @@ public class Game extends GameShell {
             redrawChatback = true;
         }
 
-        if (((key == 13 /*Carriage Return*/) || (key == KeyEvent.VK_ENTER)) && (chatTyped.length() > 0)) {
+        /*Carriage Return*/
+        if (((key == 13) || (key == KeyEvent.VK_ENTER)) && (chatTyped.length() > 0)) {
             if (rights == 2) {
                 if (chatTyped.equals("::clientdrop")) {
                     tryReconnect();
@@ -6873,7 +6875,7 @@ public class Game extends GameShell {
         while (!done) {
             done = true;
             for (int i = 0; i < (menuSize - 1); i++) {
-                if (menuAction[i] >= 1000 || menuAction[i + 1] <= 1000) {
+                if ((menuAction[i] >= 1000) || (menuAction[i + 1] <= 1000)) {
                     continue;
                 }
 
@@ -9254,7 +9256,7 @@ public class Game extends GameShell {
                 }
 
                 // one of our points failed to project
-                if (x0 == -1 || x1 == -1 || x2 == -1 || x3 == -1) {
+                if ((x0 == -1) || (x1 == -1) || (x2 == -1) || (x3 == -1)) {
                     continue;
                 }
 
@@ -10171,7 +10173,7 @@ public class Game extends GameShell {
             if (Signlink.mainapp != null) {
                 return Signlink.openurl(s);
             } else {
-                return new DataInputStream((new URL(getCodeBase(), s)).openStream());
+                return new DataInputStream(new URL(getCodeBase(), s).openStream());
             }
         }
         if (aSocket832 != null) {
@@ -10378,10 +10380,10 @@ public class Game extends GameShell {
             }
             y += 30;
 
-            fontBold12.drawStringTaggable("Username: " + username + ((titleLoginField == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), (w / 2) - 90, y, 0xffffff, true);
+            fontBold12.drawStringTaggable("Username: " + username + (titleLoginField == 0 & loopCycle % 40 < 20 ? "@yel@|" : ""), (w / 2) - 90, y, 0xffffff, true);
             y += 15;
 
-            fontBold12.drawStringTaggable("Password: " + StringUtil.toAsterisks(password) + ((titleLoginField == 1) & (loopCycle % 40 < 20) ? "@yel@|" : ""), (w / 2) - 88, y, 0xffffff, true);
+            fontBold12.drawStringTaggable("Password: " + StringUtil.toAsterisks(password) + (titleLoginField == 1 & loopCycle % 40 < 20 ? "@yel@|" : ""), (w / 2) - 88, y, 0xffffff, true);
 
             if (!hideButtons) {
                 int x = (w / 2) - 80;

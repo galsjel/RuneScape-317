@@ -1427,7 +1427,7 @@ public class Scene {
                     }
                 }
 
-                if (decor != null && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                if ((decor != null) && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
                     drawWallDecor(frontWallTypes, decor, true);
                 }
 
@@ -1481,7 +1481,7 @@ public class Scene {
             if (tile.checkLocSpans != 0) {
                 boolean draw = true;
                 for (int i = 0; i < tile.locCount; i++) {
-                    if (!tile.locs[i].drawn() && (tile.locSpan[i] & tile.checkLocSpans) == tile.blockLocSpans) {
+                    if (!tile.locs[i].drawn() && ((tile.locSpan[i] & tile.checkLocSpans) == tile.blockLocSpans)) {
                         draw = false;
                         break;
                     }
@@ -1661,14 +1661,14 @@ public class Scene {
 
             SceneObjStack stack = tile.objStack;
 
-            if (stack != null && stack.offset != 0) {
+            if ((stack != null) && (stack.offset != 0)) {
                 drawObjStack(stack, stack.offset);
             }
 
             if (tile.backWallTypes != 0) {
                 SceneWallDecoration decor = tile.wallDecoration;
 
-                if (decor != null && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
+                if ((decor != null) && !occluded(occludeLevel, tileX, tileZ, decor.entity.minY)) {
                     drawWallDecor(tile.backWallTypes, decor, false);
                 }
 
@@ -1761,9 +1761,9 @@ public class Scene {
             if ((decor.type & 0x100) != 0) {
                 boolean draw = false;
 
-                if (front && nearestZ < nearestX) {
+                if (front && (nearestZ < nearestX)) {
                     draw = true;
-                } else if (!front && nearestZ >= nearestX) {
+                } else if (!front && (nearestZ >= nearestX)) {
                     draw = true;
                 }
 
@@ -1777,9 +1777,9 @@ public class Scene {
             if ((decor.type & 0x200) != 0) {
                 boolean draw = false;
 
-                if (front && nearestZ > nearestX) {
+                if (front && (nearestZ > nearestX)) {
                     draw = true;
-                } else if (!front && nearestZ <= nearestX) {
+                } else if (!front && (nearestZ <= nearestX)) {
                     draw = true;
                 }
 

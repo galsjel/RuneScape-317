@@ -345,7 +345,7 @@ public class OnDemand implements Runnable {
 
 		synchronized (lock) {
 			for (OnDemandRequest request : requests) {
-				if (request.store == store && request.file == file) {
+				if ((request.store == store) && (request.file == file)) {
 					return;
 				}
 			}
@@ -661,7 +661,7 @@ public class OnDemand implements Runnable {
 						loadedPretechFiles++;
 					}
 
-					message = "Loading extra files - " + (loadedPretechFiles * 100) / totalPrefetchFiles + "%";
+					message = "Loading extra files - " + loadedPretechFiles * 100 / totalPrefetchFiles + "%";
 					requestCount++;
 
 					if (requestCount == 10) {
@@ -692,7 +692,7 @@ public class OnDemand implements Runnable {
 					if (loadedPretechFiles < totalPrefetchFiles) {
 						loadedPretechFiles++;
 					}
-					message = "Loading extra files - " + (loadedPretechFiles * 100) / totalPrefetchFiles + "%";
+					message = "Loading extra files - " + loadedPretechFiles * 100 / totalPrefetchFiles + "%";
 					requestCount++;
 					if (requestCount == 10) {
 						return;

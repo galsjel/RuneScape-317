@@ -73,11 +73,11 @@ public class Draw2D {
 		int err = dx - dy;
 
 		while (true) {
-			if (x1 >= left && x1 < right && y1 >= top && y1 < bottom) {
+			if ((x1 >= left) && (x1 < right) && (y1 >= top) && (y1 < bottom)) {
 				pixels[x1 + (y1 * width)] = rgb;
 			}
 
-			if (x1 == x2 && y1 == y2) {
+			if ((x1 == x2) && (y1 == y2)) {
 				break;
 			}
 

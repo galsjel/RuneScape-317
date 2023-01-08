@@ -71,7 +71,7 @@ public class Buffer extends DoublyLinkedList.Node {
 	}
 
 	public void write8C(int i) {
-		data[position++] = (byte) (-i);
+		data[position++] = (byte) -i;
 	}
 
 	public void write8S(int j) {
@@ -154,7 +154,7 @@ public class Buffer extends DoublyLinkedList.Node {
 	}
 
 	public byte read8C() {
-		return (byte) (-data[position++]);
+		return (byte) -data[position++];
 	}
 
 	public byte read8S() {

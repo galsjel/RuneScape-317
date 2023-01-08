@@ -118,7 +118,7 @@ public class Image24 extends DoublyLinkedList.Node {
 		int[] pixels = new int[cropW * cropH];
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				pixels[((y + cropY) * cropW) + (x + cropX)] = this.pixels[(y * width) + x];
+				pixels[((y + cropY) * cropW) + x + cropX] = this.pixels[(y * width) + x];
 			}
 		}
 		this.pixels = pixels;
@@ -332,8 +332,8 @@ public class Image24 extends DoublyLinkedList.Node {
 			int cos = (int) (Math.cos((double) angle / 326.11000000000001D) * 65536D);
 			sin = (sin * zoom) >> 8;
 			cos = (cos * zoom) >> 8;
-			int leftX = (anchorX << 16) + ((midY * sin) + (midX * cos));
-			int lefty = (anchorY << 16) + ((midY * cos) - (midX * sin));
+			int leftX = (anchorX << 16) + (midY * sin) + (midX * cos);
+			int lefty = ((anchorY << 16) + (midY * cos)) - (midX * sin);
 			int leftOff = x + (y * Draw2D.width);
 			for (y = 0; y < height; y++) {
 				int lineOffset = lineOffsets[y];
@@ -361,8 +361,8 @@ public class Image24 extends DoublyLinkedList.Node {
 			int cos = (int) (Math.cos(radians) * 65536D);
 			sin = (sin * zoom) >> 8;
 			cos = (cos * zoom) >> 8;
-			int leftX = (anchorX << 16) + ((centerY * sin) + (centerX * cos));
-			int leftY = (anchorY << 16) + ((centerY * cos) - (centerX * sin));
+			int leftX = (anchorX << 16) + (centerY * sin) + (centerX * cos);
+			int leftY = ((anchorY << 16) + (centerY * cos)) - (centerX * sin);
 			int leftOff = x + (y * Draw2D.width);
 
 			for (y = 0; y < height; y++) {

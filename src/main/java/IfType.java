@@ -249,7 +249,7 @@ public class IfType {
                 iface.spellFlags = in.read16U();
             }
 
-            if (iface.optionType == OPTION_TYPE_STANDARD || iface.optionType == OPTION_TYPE_TOGGLE || iface.optionType == OPTION_TYPE_SELECT || iface.optionType == OPTION_TYPE_CONTINUE) {
+            if ((iface.optionType == OPTION_TYPE_STANDARD) || (iface.optionType == OPTION_TYPE_TOGGLE) || (iface.optionType == OPTION_TYPE_SELECT) || (iface.optionType == OPTION_TYPE_CONTINUE)) {
                 iface.option = in.readString();
 
                 if (iface.option.length() == 0) {

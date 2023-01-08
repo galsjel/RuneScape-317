@@ -118,7 +118,7 @@ public class Censor {
 	public static String apply(String s) {
 		char[] ac = s.toCharArray();
 		method495(ac);
-		String s1 = (new String(ac)).trim();
+		String s1 = new String(ac).trim();
 		ac = s1.toLowerCase().toCharArray();
 		String s2 = s1.toLowerCase();
 		method505(ac);
@@ -135,7 +135,7 @@ public class Censor {
 		}
 		method498(s1.toCharArray(), 2, ac);
 		method499(0, ac);
-		return (new String(ac)).trim();
+		return new String(ac).trim();
 	}
 
 	public static void method498(char[] ac, int i, char[] ac1) {
@@ -923,11 +923,11 @@ public class Censor {
 		for (int l = 0; l < ac.length; l++) {
 			char c = ac[ac.length - l - 1];
 			if ((c >= 'a') && (c <= 'z')) {
-				k = (k * 38) + ((c - 97) + 1);
+				k = (((k * 38) + c) - 97) + 1;
 			} else if (c == '\'') {
 				k = (k * 38) + 27;
 			} else if ((c >= '0') && (c <= '9')) {
-				k = (k * 38) + ((c - 48) + 28);
+				k = (((k * 38) + c) - 48) + 28;
 			} else if (c != 0) {
 				return 0;
 			}
