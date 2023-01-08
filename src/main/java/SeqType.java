@@ -107,7 +107,6 @@ public class SeqType {
 	 */
 	public int replayStyle = 1;
 
-	public int unusedInt;
 
 	public SeqType() {
 	}
@@ -130,11 +129,12 @@ public class SeqType {
 	}
 
 	public void load(Buffer buffer) {
-		do {
-			int opcode = buffer.read8U();
-			if (opcode == 0) {
+		while (true) {
+			int code = buffer.read8U();
+
+			if (code == 0) {
 				break;
-			} else if (opcode == 1) {
+			} else if (code == 1) {
 				frameCount = buffer.read8U();
 				transformIDs = new int[frameCount];
 				auxiliaryTransformIDs = new int[frameCount];
@@ -147,37 +147,37 @@ public class SeqType {
 					}
 					frameDuration[f] = buffer.read16U();
 				}
-			} else if (opcode == 2) {
+			} else if (code == 2) {
 				loopFrameCount = buffer.read16U();
-			} else if (opcode == 3) {
+			} else if (code == 3) {
 				int count = buffer.read8U();
 				mask = new int[count + 1];
 				for (int l = 0; l < count; l++) {
 					mask[l] = buffer.read8U();
 				}
 				mask[count] = 9999999;
-			} else if (opcode == 4) {
+			} else if (code == 4) {
 				forwardRenderPadding = true;
-			} else if (opcode == 5) {
+			} else if (code == 5) {
 				priority = buffer.read8U();
-			} else if (opcode == 6) {
+			} else if (code == 6) {
 				rightHandOverride = buffer.read16U();
-			} else if (opcode == 7) {
+			} else if (code == 7) {
 				leftHandOverride = buffer.read16U();
-			} else if (opcode == 8) {
+			} else if (code == 8) {
 				loopCount = buffer.read8U();
-			} else if (opcode == 9) {
+			} else if (code == 9) {
 				moveStyle = buffer.read8U();
-			} else if (opcode == 10) {
+			} else if (code == 10) {
 				idleStyle = buffer.read8U();
-			} else if (opcode == 11) {
+			} else if (code == 11) {
 				replayStyle = buffer.read8U();
-			} else if (opcode == 12) {
-				unusedInt = buffer.read32();
+			} else if (code == 12) {
+				buffer.read32();
 			} else {
-				System.out.println("Error unrecognised seq config code: " + opcode);
+				System.out.println("Error unrecognised seq config code: " + code);
 			}
-		} while (true);
+		}
 
 		if (frameCount == 0) {
 			frameCount = 1;
@@ -200,9 +200,9 @@ public class SeqType {
 		if (idleStyle == -1) {
 			if (mask != null) {
 				idleStyle = 2;
-				return;
+			} else {
+				idleStyle = 0;
 			}
-			idleStyle = 0;
 		}
 	}
 

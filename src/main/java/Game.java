@@ -1024,7 +1024,7 @@ public class Game extends GameShell {
 
             if (!lowmem) {
                 drawProgress(90, "Unpacking sounds");
-                SoundTrack.method240(new Buffer(archiveSounds.read("sounds.dat")));
+                SoundTrack.unpack(new Buffer(archiveSounds.read("sounds.dat")));
             }
 
             drawProgress(95, "Unpacking interfaces");
@@ -9734,19 +9734,19 @@ public class Game extends GameShell {
             int arith = 0;
 
             do {
-                int opcode = script[pos++];
+                int code = script[pos++];
                 int register = 0;
                 byte nextArithmetic = 0;
 
-                if (opcode == 0) {
+                if (code == 0) {
                     return acc;
-                } else if (opcode == 1) { // load_skill_level {skill}
+                } else if (code == 1) { // load_skill_level {skill}
                     register = skillLevel[script[pos++]];
-                } else if (opcode == 2) { // load_skill_base_level {skill}
+                } else if (code == 2) { // load_skill_base_level {skill}
                     register = skillBaseLevel[script[pos++]];
-                } else if (opcode == 3) { // load_skill_exp {skill}
+                } else if (code == 3) { // load_skill_exp {skill}
                     register = skillExperience[script[pos++]];
-                } else if (opcode == 4) {// load_inv_count {interface id} {obj id}
+                } else if (code == 4) {// load_inv_count {interface id} {obj id}
                     IfType inventory = IfType.instances[script[pos++]];
                     int objID = script[pos++];
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
@@ -9756,21 +9756,21 @@ public class Game extends GameShell {
                             }
                         }
                     }
-                } else if (opcode == 5) { // load_var {id}
+                } else if (code == 5) { // load_var {id}
                     register = varps[script[pos++]];
-                } else if (opcode == 6) { // load_next_level_xp {skill}
+                } else if (code == 6) { // load_next_level_xp {skill}
                     register = levelExperience[skillBaseLevel[script[pos++]] - 1];
-                } else if (opcode == 7) {
+                } else if (code == 7) {
                     register = (varps[script[pos++]] * 100) / 46875;
-                } else if (opcode == 8) { // load_combat_level
+                } else if (code == 8) { // load_combat_level
                     register = localPlayer.combatLevel;
-                } else if (opcode == 9) { // load_total_level
+                } else if (code == 9) { // load_total_level
                     for (int skill = 0; skill < Skill.COUNT; skill++) {
                         if (Skill.ENABLED[skill]) {
                             register += skillBaseLevel[skill];
                         }
                     }
-                } else if (opcode == 10) {// load_inv_contains {interface id} {obj id}
+                } else if (code == 10) {// load_inv_contains {interface id} {obj id}
                     IfType c = IfType.instances[script[pos++]];
                     int objID = script[pos++] + 1;
                     if ((objID >= 0) && (objID < ObjType.count) && (!ObjType.get(objID).members || members)) {
@@ -9782,29 +9782,29 @@ public class Game extends GameShell {
                             break;
                         }
                     }
-                } else if (opcode == 11) { // load_energy
+                } else if (code == 11) { // load_energy
                     register = energy;
-                } else if (opcode == 12) { // load_weight
+                } else if (code == 12) { // load_weight
                     register = weightCarried;
-                } else if (opcode == 13) {// load_bool {varp} {bit: 0..31}
+                } else if (code == 13) {// load_bool {varp} {bit: 0..31}
                     int varp = varps[script[pos++]];
                     int bit = script[pos++];
                     register = ((varp & (1 << bit)) == 0) ? 0 : 1;
-                } else if (opcode == 14) {// load_varbit {varbit}
+                } else if (code == 14) {// load_varbit {varbit}
                     VarbitType varbit = VarbitType.instances[script[pos++]];
                     int lsb = varbit.lsb;
                     register = (varps[varbit.varp] >> lsb) & BITMASK[varbit.msb - lsb];
-                } else if (opcode == 15) { // sub
+                } else if (code == 15) { // sub
                     nextArithmetic = 1;
-                } else if (opcode == 16) { // div
+                } else if (code == 16) { // div
                     nextArithmetic = 2;
-                } else if (opcode == 17) { // mul
+                } else if (code == 17) { // mul
                     nextArithmetic = 3;
-                } else if (opcode == 18) { // load_world_x
+                } else if (code == 18) { // load_world_x
                     register = (localPlayer.x >> 7) + sceneBaseTileX;
-                } else if (opcode == 19) { // load_world_z
+                } else if (code == 19) { // load_world_z
                     register = (localPlayer.z >> 7) + sceneBaseTileZ;
-                } else if (opcode == 20) { // load {value}
+                } else if (code == 20) { // load {value}
                     register = script[pos++];
                 }
 
@@ -10452,8 +10452,8 @@ public class Game extends GameShell {
         flameThread = false;
     }
 
-    public void readZonePacket(int opcode) {
-        switch (opcode) {
+    public void readZonePacket(int code) {
+        switch (code) {
             case PacketIn.OBJ_ADD:
                 readObjAdd();
                 break;
@@ -11909,8 +11909,7 @@ public class Game extends GameShell {
         baseZ = in.read8U();
         baseX = in.read8UC();
         while (in.position < packetSize) {
-            int opcode = in.read8U();
-            readZonePacket(opcode);
+            readZonePacket(in.read8U());
         }
     }
 

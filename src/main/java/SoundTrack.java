@@ -2,23 +2,21 @@ public class SoundTrack {
 
 	public static final SoundTrack[] tracks = new SoundTrack[5000];
 	public static final int[] delays = new int[5000];
-	public static byte[] bbuf;
-	public static Buffer buffer;
+	public static byte[] waveBytes = new byte[441000];
+	public static Buffer waveBuffer = new Buffer(waveBytes);
 
-	public static void method240(Buffer src) {
-		bbuf = new byte[441000];
-
-		SoundTrack.buffer = new Buffer(bbuf);
+	public static void unpack(Buffer in) {
 		SoundTone.init();
 
 		do {
-			int id = src.read16U();
+			int id = in.read16U();
+
 			if (id == 65535) {
 				return;
 			}
 
 			tracks[id] = new SoundTrack();
-			tracks[id].read(src);
+			tracks[id].read(in);
 			delays[id] = tracks[id].trim();
 		} while (true);
 	}
@@ -26,7 +24,7 @@ public class SoundTrack {
 	public static Buffer generate(int loopCount, int id) {
 		if (tracks[id] != null) {
 			SoundTrack track = tracks[id];
-			return track.getWaveform(loopCount);
+			return track.getWave(loopCount);
 		} else {
 			return null;
 		}
@@ -85,24 +83,24 @@ public class SoundTrack {
 	 * @param loopCount the loop count.
 	 * @return the {@link Buffer} containing the waveform data.
 	 */
-	public Buffer getWaveform(int loopCount) {
+	public Buffer getWave(int loopCount) {
 		int length = generate(loopCount);
-		buffer.position = 0;
-		buffer.write32(0x52494646); // "RIFF" ChunkID
-		buffer.write32LE(36 + length); // ChunkSize
-		buffer.write32(0x57415645); // "WAVE" format
-		buffer.write32(0x666d7420); // "fmt " chunk id
-		buffer.write32LE(16); // chunk size
-		buffer.write16LE(1); // audio format
-		buffer.write16LE(1);  // num channels
-		buffer.write32LE(22050); // sample rate
-		buffer.write32LE(22050); // byte rate
-		buffer.write16LE(1); // block align
-		buffer.write16LE(8); // bits per sample
-		buffer.write32(0x64617461); // "data"
-		buffer.write32LE(length);
-		buffer.position += length;
-		return buffer;
+		waveBuffer.position = 0;
+		waveBuffer.write32(0x52494646); // "RIFF" ChunkID
+		waveBuffer.write32LE(36 + length); // ChunkSize
+		waveBuffer.write32(0x57415645); // "WAVE" format
+		waveBuffer.write32(0x666d7420); // "fmt " chunk id
+		waveBuffer.write32LE(16); // chunk size
+		waveBuffer.write16LE(1); // audio format
+		waveBuffer.write16LE(1);  // num channels
+		waveBuffer.write32LE(22050); // sample rate
+		waveBuffer.write32LE(22050); // byte rate
+		waveBuffer.write16LE(1); // block align
+		waveBuffer.write16LE(8); // bits per sample
+		waveBuffer.write32(0x64617461); // "data"
+		waveBuffer.write32LE(length);
+		waveBuffer.position += length;
+		return waveBuffer;
 	}
 
 	public int generate(int loopCount) {
@@ -129,7 +127,7 @@ public class SoundTrack {
 		int totalSampleCount = sampleCount + ((loopStop - loopStart) * (loopCount - 1));
 
 		for (int sample = 44; sample < (totalSampleCount + 44); sample++) {
-			bbuf[sample] = -128;
+			waveBytes[sample] = -128;
 		}
 
 		for (int tone = 0; tone < 10; tone++) {
@@ -142,7 +140,7 @@ public class SoundTrack {
 			int[] samples = tones[tone].generate(toneSampleCount, tones[tone].length);
 
 			for (int sample = 0; sample < toneSampleCount; sample++) {
-				bbuf[sample + start + 44] += (byte) (samples[sample] >> 8);
+				waveBytes[sample + start + 44] += (byte) (samples[sample] >> 8);
 			}
 		}
 
@@ -155,14 +153,14 @@ public class SoundTrack {
 			// Moves the end of the sound (after the loops) to the true end of the buffer.
 			int endOffset = (totalSampleCount += 44) - sampleCount;
 			for (int sample = sampleCount - 1; sample >= loopStop; sample--) {
-				bbuf[sample + endOffset] = bbuf[sample];
+				waveBytes[sample + endOffset] = waveBytes[sample];
 			}
 
 			// Duplicates loop area.
 			for (int loop = 1; loop < loopCount; loop++) {
 				int offset = (loopStop - loopStart) * loop;
 				for (int sample = loopStart; sample < loopStop; sample++) {
-					bbuf[sample + offset] = bbuf[sample];
+					waveBytes[sample + offset] = waveBytes[sample];
 				}
 			}
 
