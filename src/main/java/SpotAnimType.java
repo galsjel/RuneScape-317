@@ -44,32 +44,32 @@ public class SpotAnimType {
     public SpotAnimType() {
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         while (true) {
-            int code = buffer.read8U();
+            int code = in.read8U();
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                modelID = buffer.read16U();
+                modelID = in.read16U();
             } else if (code == 2) {
-                seqID = buffer.read16U();
+                seqID = in.read16U();
                 if (SeqType.instances != null) {
                     seq = SeqType.instances[seqID];
                 }
             } else if (code == 4) {
-                scaleXY = buffer.read16U();
+                scaleXY = in.read16U();
             } else if (code == 5) {
-                scaleZ = buffer.read16U();
+                scaleZ = in.read16U();
             } else if (code == 6) {
-                rotation = buffer.read16U();
+                rotation = in.read16U();
             } else if (code == 7) {
-                lightAmbient = buffer.read8U();
+                lightAmbient = in.read8U();
             } else if (code == 8) {
-                lightAttenuation = buffer.read8U();
+                lightAttenuation = in.read8U();
             } else if ((code >= 40) && (code < 50)) {
-                colorSrc[code - 40] = buffer.read16U();
+                colorSrc[code - 40] = in.read16U();
             } else if ((code >= 50) && (code < 60)) {
-                colorDst[code - 50] = buffer.read16U();
+                colorDst[code - 50] = in.read16U();
             } else {
                 System.out.println("Error unrecognised spotanim config code: " + code);
             }

@@ -30,27 +30,13 @@ public class Buffer extends DoublyLinkedList.Node {
 
     private static final int[] BITMASK = {0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1};
 
-    public static Buffer create(int sizeType) {
-        Buffer buffer = new Buffer();
-        buffer.position = 0;
-
-        if (sizeType == 0) {
-            buffer.data = new byte[100];
-        } else if (sizeType == 1) {
-            buffer.data = new byte[5000];
-        } else {
-            buffer.data = new byte[30000];
-        }
-
-        return buffer;
-    }
-
     public byte[] data;
     public int position;
     public int bitPosition;
     public ISAACRandom random;
 
-    public Buffer() {
+    public Buffer(int size) {
+        this(new byte[size]);
     }
 
     public Buffer(byte[] src) {
@@ -58,79 +44,79 @@ public class Buffer extends DoublyLinkedList.Node {
         position = 0;
     }
 
-    public void writeOp(int i) {
-        data[position++] = (byte) (i + random.nextInt());
+    public void writeOp(int op) {
+        data[position++] = (byte) (op + random.nextInt());
     }
 
-    public void writeSize(int i) {
-        data[position - i - 1] = (byte) i;
+    public void writeSize(int value) {
+        data[position - value - 1] = (byte) value;
     }
 
-    public void write8(int i) {
-        data[position++] = (byte) i;
+    public void write8(int value) {
+        data[position++] = (byte) value;
     }
 
-    public void write8C(int i) {
-        data[position++] = (byte) -i;
+    public void write8C(int value) {
+        data[position++] = (byte) -value;
     }
 
-    public void write8S(int j) {
-        data[position++] = (byte) (128 - j);
+    public void write8S(int value) {
+        data[position++] = (byte) (128 - value);
     }
 
-    public void write16(int i) {
-        data[position++] = (byte) (i >> 8);
-        data[position++] = (byte) i;
+    public void write16(int value) {
+        data[position++] = (byte) (value >> 8);
+        data[position++] = (byte) value;
     }
 
-    public void write16A(int j) {
-        data[position++] = (byte) (j >> 8);
-        data[position++] = (byte) (j + 128);
+    public void write16A(int value) {
+        data[position++] = (byte) (value >> 8);
+        data[position++] = (byte) (value + 128);
     }
 
-    public void write16LE(int i) {
-        data[position++] = (byte) i;
-        data[position++] = (byte) (i >> 8);
+    public void write16LE(int value) {
+        data[position++] = (byte) value;
+        data[position++] = (byte) (value >> 8);
     }
 
-    public void write16LEA(int j) {
-        data[position++] = (byte) (j + 128);
-        data[position++] = (byte) (j >> 8);
+    public void write16LEA(int value) {
+        data[position++] = (byte) (value + 128);
+        data[position++] = (byte) (value >> 8);
     }
 
-    public void write24(int i) {
-        data[position++] = (byte) (i >> 16);
-        data[position++] = (byte) (i >> 8);
-        data[position++] = (byte) i;
+    public void write24(int value) {
+        data[position++] = (byte) (value >> 16);
+        data[position++] = (byte) (value >> 8);
+        data[position++] = (byte) value;
     }
 
-    public void write32(int i) {
-        data[position++] = (byte) (i >> 24);
-        data[position++] = (byte) (i >> 16);
-        data[position++] = (byte) (i >> 8);
-        data[position++] = (byte) i;
+    public void write32(int value) {
+        data[position++] = (byte) (value >> 24);
+        data[position++] = (byte) (value >> 16);
+        data[position++] = (byte) (value >> 8);
+        data[position++] = (byte) value;
     }
 
-    public void write32LE(int j) {
-        data[position++] = (byte) j;
-        data[position++] = (byte) (j >> 8);
-        data[position++] = (byte) (j >> 16);
-        data[position++] = (byte) (j >> 24);
+    public void write32LE(int value) {
+        data[position++] = (byte) value;
+        data[position++] = (byte) (value >> 8);
+        data[position++] = (byte) (value >> 16);
+        data[position++] = (byte) (value >> 24);
     }
 
-    public void write64(long l) {
-        data[position++] = (byte) (int) (l >> 56);
-        data[position++] = (byte) (int) (l >> 48);
-        data[position++] = (byte) (int) (l >> 40);
-        data[position++] = (byte) (int) (l >> 32);
-        data[position++] = (byte) (int) (l >> 24);
-        data[position++] = (byte) (int) (l >> 16);
-        data[position++] = (byte) (int) (l >> 8);
-        data[position++] = (byte) (int) l;
+    public void write64(long value) {
+        data[position++] = (byte) (int) (value >> 56);
+        data[position++] = (byte) (int) (value >> 48);
+        data[position++] = (byte) (int) (value >> 40);
+        data[position++] = (byte) (int) (value >> 32);
+        data[position++] = (byte) (int) (value >> 24);
+        data[position++] = (byte) (int) (value >> 16);
+        data[position++] = (byte) (int) (value >> 8);
+        data[position++] = (byte) (int) value;
     }
 
-    public void writeString(String s) {
-        write(s.getBytes(StandardCharsets.ISO_8859_1));
+    public void writeString(String value) {
+        write(value.getBytes(StandardCharsets.ISO_8859_1));
         write8('\n');
     }
 
@@ -183,8 +169,7 @@ public class Buffer extends DoublyLinkedList.Node {
      * @return the value.
      */
     public int readSmart() {
-        int i = data[position] & 0xff;
-        if (i < 128) {
+        if ((data[position] & 0xff) < 128) {
             return read8U() - 64;
         } else {
             return read16U() - 49152;
@@ -197,8 +182,7 @@ public class Buffer extends DoublyLinkedList.Node {
      * @return the value.
      */
     public int readSmartU() {
-        int i = data[position] & 0xff;
-        if (i < 128) {
+        if ((data[position] & 0xff) < 128) {
             return read8U();
         } else {
             return read16U() - 32768;
@@ -227,29 +211,29 @@ public class Buffer extends DoublyLinkedList.Node {
 
     public int read16() {
         position += 2;
-        int i = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
-        if (i > 32767) {
-            i -= 0x10000;
+        int value = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
+        if (value > 32767) {
+            value -= 65536;
         }
-        return i;
+        return value;
     }
 
     public int read16LE() {
         position += 2;
-        int j = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
-        if (j > 0x7fff) {
-            j -= 0x10000;
+        int value = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
+        if (value > 32767) {
+            value -= 65536;
         }
-        return j;
+        return value;
     }
 
     public int read16LEA() {
         position += 2;
-        int j = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
-        if (j > 0x7fff) {
-            j -= 0x10000;
+        int value = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
+        if (value > 32767) {
+            value -= 65536;
         }
-        return j;
+        return value;
     }
 
     public int read24() {
@@ -273,27 +257,19 @@ public class Buffer extends DoublyLinkedList.Node {
     }
 
     public long read64() {
-        long l = (long) read32() & 0xffffffffL;
-        long l1 = (long) read32() & 0xffffffffL;
-        return (l << 32) + l1;
+        long msi = (long) read32() & 0xffffffffL;
+        long lsi = (long) read32() & 0xffffffffL;
+        return (msi << 32) + lsi;
     }
 
     public String readString() {
         int start = position;
-        while (data[position++] != '\n') {
+        while (true) {
+            if (data[position++] == '\n') {
+                break;
+            }
         }
         return new String(data, start, position - start - 1);
-    }
-
-    public byte[] readStringRaw() {
-        int start = position;
-        while (data[position++] != '\n') {
-        }
-        byte[] raw = new byte[position - start - 1];
-        for (int j = start; j < (position - 1); j++) {
-            raw[j - start] = data[j];
-        }
-        return raw;
     }
 
     public void read(byte[] dst, int off, int len) {

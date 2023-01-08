@@ -15,11 +15,11 @@ public class FloType {
         if (instances == null) {
             instances = new FloType[count];
         }
-        for (int j = 0; j < count; j++) {
-            if (instances[j] == null) {
-                instances[j] = new FloType();
+        for (int i = 0; i < count; i++) {
+            if (instances[i] == null) {
+                instances[i] = new FloType();
             }
-            instances[j].read(buffer);
+            instances[i].read(buffer);
         }
     }
 
@@ -36,27 +36,27 @@ public class FloType {
     public FloType() {
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         while (true) {
-            int code = buffer.read8U();
+            int code = in.read8U();
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                rgb = buffer.read24();
+                rgb = in.read24();
                 setColor(rgb);
             } else if (code == 2) {
-                textureID = buffer.read8U();
+                textureID = in.read8U();
             } else if (code == 3) {
             } else if (code == 5) {
                 occludes = false;
             } else if (code == 6) {
-                buffer.readString(); // name
+                in.readString(); // name
             } else if (code == 7) {
                 int hue = this.hue;
                 int saturation = this.saturation;
                 int lightness = this.lightness;
                 int chroma = this.chroma;
-                int rgb = buffer.read24();
+                int rgb = in.read24();
                 setColor(rgb);
                 this.hue = hue;
                 this.saturation = saturation;

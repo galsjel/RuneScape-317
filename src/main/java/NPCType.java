@@ -231,96 +231,96 @@ public class NPCType {
         return tmp;
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         while (true) {
-            int code = buffer.read8U();
+            int code = in.read8U();
 
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                int modelCount = buffer.read8U();
+                int modelCount = in.read8U();
                 modelIDs = new int[modelCount];
                 for (int i = 0; i < modelCount; i++) {
-                    modelIDs[i] = buffer.read16U();
+                    modelIDs[i] = in.read16U();
                 }
             } else if (code == 2) {
-                name = buffer.readString();
+                name = in.readString();
             } else if (code == 3) {
-                examine = buffer.readString();
+                examine = in.readString();
             } else if (code == 12) {
-                size = buffer.read();
+                size = in.read();
             } else if (code == 13) {
-                seqStandID = buffer.read16U();
+                seqStandID = in.read16U();
             } else if (code == 14) {
-                seqWalkID = buffer.read16U();
+                seqWalkID = in.read16U();
             } else if (code == 17) {
-                seqWalkID = buffer.read16U();
-                seqTurnAroundID = buffer.read16U();
-                seqTurnLeftID = buffer.read16U();
-                seqTurnRightID = buffer.read16U();
+                seqWalkID = in.read16U();
+                seqTurnAroundID = in.read16U();
+                seqTurnLeftID = in.read16U();
+                seqTurnRightID = in.read16U();
             } else if ((code >= 30) && (code < 40)) {
                 if (options == null) {
                     options = new String[5];
                 }
 
-                options[code - 30] = buffer.readString();
+                options[code - 30] = in.readString();
 
                 if (options[code - 30].equalsIgnoreCase("hidden")) {
                     options[code - 30] = null;
                 }
             } else if (code == 40) {
-                int count = buffer.read8U();
+                int count = in.read8U();
                 colorSrc = new int[count];
                 colorDst = new int[count];
 
                 for (int i = 0; i < count; i++) {
-                    colorSrc[i] = buffer.read16U();
-                    colorDst[i] = buffer.read16U();
+                    colorSrc[i] = in.read16U();
+                    colorDst[i] = in.read16U();
                 }
             } else if (code == 60) {
-                int count = buffer.read8U();
+                int count = in.read8U();
                 headModelIDs = new int[count];
                 for (int l1 = 0; l1 < count; l1++) {
-                    headModelIDs[l1] = buffer.read16U();
+                    headModelIDs[l1] = in.read16U();
                 }
             } else if ((code == 90) || (code == 91) || (code == 92)) {
-                buffer.read16U();
+                in.read16U();
             } else if (code == 93) {
                 showOnMinimap = false;
             } else if (code == 95) {
-                level = buffer.read16U();
+                level = in.read16U();
             } else if (code == 97) {
-                scaleXY = buffer.read16U();
+                scaleXY = in.read16U();
             } else if (code == 98) {
-                scaleZ = buffer.read16U();
+                scaleZ = in.read16U();
             } else if (code == 99) {
                 important = true;
             } else if (code == 100) {
-                lightAmbient = buffer.read();
+                lightAmbient = in.read();
             } else if (code == 101) {
-                lightAttenuation = buffer.read() * 5;
+                lightAttenuation = in.read() * 5;
             } else if (code == 102) {
-                headicon = buffer.read16U();
+                headicon = in.read16U();
             } else if (code == 103) {
-                turnSpeed = buffer.read16U();
+                turnSpeed = in.read16U();
             } else if (code == 106) {
-                varbitID = buffer.read16U();
+                varbitID = in.read16U();
 
                 if (varbitID == 65535) {
                     varbitID = -1;
                 }
 
-                varpID = buffer.read16U();
+                varpID = in.read16U();
 
                 if (varpID == 65535) {
                     varpID = -1;
                 }
 
-                int overrideCount = buffer.read8U();
+                int overrideCount = in.read8U();
                 overrides = new int[overrideCount + 1];
 
                 for (int i = 0; i <= overrideCount; i++) {
-                    overrides[i] = buffer.read16U();
+                    overrides[i] = in.read16U();
 
                     if (overrides[i] == 65535) {
                         overrides[i] = -1;

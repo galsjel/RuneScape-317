@@ -245,7 +245,7 @@ public class Game extends GameShell {
      */
     public String modalMessage;
     public int privateChatSetting;
-    public Buffer login = Buffer.create(1);
+    public Buffer login = new Buffer(1024);
     public boolean waveEnabled = true;
     public int[] flameGradient;
     public int[] flameGradient0;
@@ -437,7 +437,7 @@ public class Game extends GameShell {
      */
     public boolean awaitingSync = false;
     public String[] friendName = new String[200];
-    public Buffer in = Buffer.create(1);
+    public Buffer in = new Buffer(5000);
     /**
      * The interface id of the container that the obj being dragged belongs to.
      */
@@ -589,7 +589,7 @@ public class Game extends GameShell {
     public int sidebarInterfaceID = -1;
     public int[] flameBuffer0;
     public int[] flameBuffer1;
-    public Buffer out = Buffer.create(1);
+    public Buffer out = new Buffer(5000);
     public int lastAddress;
     public int splitPrivateChat;
     public Image8 imageInvback;

@@ -271,57 +271,57 @@ public class SoundTone {
         }
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         frequencyBase = new SoundEnvelope();
-        frequencyBase.read(buffer);
+        frequencyBase.read(in);
         amplitudeBase = new SoundEnvelope();
-        amplitudeBase.read(buffer);
+        amplitudeBase.read(in);
 
-        if (buffer.read8U() != 0) {
-            buffer.position--;
+        if (in.read8U() != 0) {
+            in.position--;
             frequencyModRate = new SoundEnvelope();
-            frequencyModRate.read(buffer);
+            frequencyModRate.read(in);
             frequencyModRange = new SoundEnvelope();
-            frequencyModRange.read(buffer);
+            frequencyModRange.read(in);
         }
 
-        if (buffer.read8U() != 0) {
-            buffer.position--;
+        if (in.read8U() != 0) {
+            in.position--;
             amplitudeModRate = new SoundEnvelope();
-            amplitudeModRate.read(buffer);
+            amplitudeModRate.read(in);
             amplitudeModRange = new SoundEnvelope();
-            amplitudeModRange.read(buffer);
+            amplitudeModRange.read(in);
         }
 
-        if (buffer.read8U() != 0) {
-            buffer.position--;
+        if (in.read8U() != 0) {
+            in.position--;
             release = new SoundEnvelope();
-            release.read(buffer);
+            release.read(in);
             attack = new SoundEnvelope();
-            attack.read(buffer);
+            attack.read(in);
         }
 
         for (int i = 0; i < 10; i++) {
-            int volume = buffer.readSmartU();
+            int volume = in.readSmartU();
 
             if (volume == 0) {
                 break;
             }
 
             harmonicVolume[i] = volume;
-            harmonicSemitone[i] = buffer.readSmart();
-            harmonicDelay[i] = buffer.readSmartU();
+            harmonicSemitone[i] = in.readSmart();
+            harmonicDelay[i] = in.readSmartU();
         }
 
-        reverbDelay = buffer.readSmartU();
-        reverbVolume = buffer.readSmartU();
+        reverbDelay = in.readSmartU();
+        reverbVolume = in.readSmartU();
 
-        length = buffer.read16U();
-        start = buffer.read16U();
+        length = in.read16U();
+        start = in.read16U();
 
         filter = new SoundFilter();
         filterRange = new SoundEnvelope();
-        filter.read(buffer, filterRange);
+        filter.read(in, filterRange);
     }
 
 }

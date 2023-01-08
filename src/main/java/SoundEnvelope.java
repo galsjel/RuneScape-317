@@ -21,11 +21,11 @@ public class SoundEnvelope {
     public SoundEnvelope() {
     }
 
-    public void read(Buffer buffer) {
-        form = buffer.read8U();
-        start = buffer.read32();
-        end = buffer.read32();
-        readShape(buffer);
+    public void read(Buffer in) {
+        form = in.read8U();
+        start = in.read32();
+        end = in.read32();
+        readShape(in);
     }
 
     public void readShape(Buffer buffer) {

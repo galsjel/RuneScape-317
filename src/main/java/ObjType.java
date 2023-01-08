@@ -10,8 +10,8 @@ public class ObjType {
 
     public static LRUMap<Integer, Image24> iconCache = new LRUMap<>(100);
     public static LRUMap<Integer, Model> modelCache = new LRUMap<>(50);
-    public static ObjType[] cached;
-    public static int cachePos;
+    public static ObjType[] recent;
+    public static int recentPos;
     public static Buffer dat;
     public static int[] typeOffset;
     public static int count;
@@ -20,7 +20,7 @@ public class ObjType {
         modelCache = null;
         iconCache = null;
         typeOffset = null;
-        cached = null;
+        recent = null;
         dat = null;
     }
 
@@ -34,27 +34,30 @@ public class ObjType {
             typeOffset[j] = offset;
             offset += idx.read16U();
         }
-        cached = new ObjType[10];
+        recent = new ObjType[10];
         for (int k = 0; k < 10; k++) {
-            cached[k] = new ObjType();
+            recent[k] = new ObjType();
         }
     }
 
     public static ObjType get(int id) {
-        for (int j = 0; j < 10; j++) {
-            if (cached[j].id == id) {
-                return cached[j];
+        for (int i = 0; i < 10; i++) {
+            if (recent[i].id == id) {
+                return recent[i];
             }
         }
-        cachePos = (cachePos + 1) % 10;
-        ObjType type = cached[cachePos];
+
+        recentPos = (recentPos + 1) % 10;
+        ObjType type = recent[recentPos];
         dat.position = typeOffset[id];
         type.id = id;
         type.reset();
         type.read(dat);
+
         if (type.certificateID != -1) {
             type.toCertificate();
         }
+
         if (!Game.members && type.members) {
             type.name = "Members Object";
             type.examine = "Login to a members' server to use this object.";
@@ -62,6 +65,7 @@ public class ObjType {
             type.inventoryOptions = null;
             type.team = 0;
         }
+
         return type;
     }
 
@@ -449,6 +453,7 @@ public class ObjType {
         iconOffsetY = cert.iconOffsetY;
         srcColor = cert.srcColor;
         dstColor = cert.dstColor;
+
         ObjType linked = get(linkedID);
         name = linked.name;
         members = linked.members;
@@ -549,57 +554,57 @@ public class ObjType {
         return model;
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         while (true) {
-            int code = buffer.read8U();
+            int code = in.read8U();
 
             if (code == 0) {
                 return;
             } else if (code == 1) {
-                modelID = buffer.read16U();
+                modelID = in.read16U();
             } else if (code == 2) {
-                name = buffer.readString();
+                name = in.readString();
             } else if (code == 3) {
-                examine = buffer.readString();
+                examine = in.readString();
             } else if (code == 4) {
-                iconZoom = buffer.read16U();
+                iconZoom = in.read16U();
             } else if (code == 5) {
-                iconPitch = buffer.read16U();
+                iconPitch = in.read16U();
             } else if (code == 6) {
-                iconYaw = buffer.read16U();
+                iconYaw = in.read16U();
             } else if (code == 7) {
-                iconOffsetX = buffer.read16U();
+                iconOffsetX = in.read16U();
                 if (iconOffsetX > 32767) {
                     iconOffsetX -= 0x10000;
                 }
             } else if (code == 8) {
-                iconOffsetY = buffer.read16U();
+                iconOffsetY = in.read16U();
                 if (iconOffsetY > 32767) {
                     iconOffsetY -= 0x10000;
                 }
             } else if (code == 10) {
-                buffer.read16U();
+                in.read16U();
             } else if (code == 11) {
                 stackable = true;
             } else if (code == 12) {
-                cost = buffer.read32();
+                cost = in.read32();
             } else if (code == 16) {
                 members = true;
             } else if (code == 23) {
-                maleModelID0 = buffer.read16U();
-                maleOffsetY = buffer.read();
+                maleModelID0 = in.read16U();
+                maleOffsetY = in.read();
             } else if (code == 24) {
-                maleModelID1 = buffer.read16U();
+                maleModelID1 = in.read16U();
             } else if (code == 25) {
-                femaleModelID0 = buffer.read16U();
-                femaleOffsetY = buffer.read();
+                femaleModelID0 = in.read16U();
+                femaleOffsetY = in.read();
             } else if (code == 26) {
-                femaleModelID1 = buffer.read16U();
+                femaleModelID1 = in.read16U();
             } else if ((code >= 30) && (code < 35)) {
                 if (options == null) {
                     options = new String[5];
                 }
-                options[code - 30] = buffer.readString();
+                options[code - 30] = in.readString();
                 if (options[code - 30].equalsIgnoreCase("hidden")) {
                     options[code - 30] = null;
                 }
@@ -607,52 +612,52 @@ public class ObjType {
                 if (inventoryOptions == null) {
                     inventoryOptions = new String[5];
                 }
-                inventoryOptions[code - 35] = buffer.readString();
+                inventoryOptions[code - 35] = in.readString();
             } else if (code == 40) {
-                int recolorCount = buffer.read8U();
+                int recolorCount = in.read8U();
                 srcColor = new int[recolorCount];
                 dstColor = new int[recolorCount];
                 for (int i = 0; i < recolorCount; i++) {
-                    srcColor[i] = buffer.read16U();
-                    dstColor[i] = buffer.read16U();
+                    srcColor[i] = in.read16U();
+                    dstColor[i] = in.read16U();
                 }
             } else if (code == 78) {
-                maleModelID2 = buffer.read16U();
+                maleModelID2 = in.read16U();
             } else if (code == 79) {
-                femaleModelID2 = buffer.read16U();
+                femaleModelID2 = in.read16U();
             } else if (code == 90) {
-                maleHeadModelID0 = buffer.read16U();
+                maleHeadModelID0 = in.read16U();
             } else if (code == 91) {
-                femaleHeadModelID0 = buffer.read16U();
+                femaleHeadModelID0 = in.read16U();
             } else if (code == 92) {
-                maleHeadModelID1 = buffer.read16U();
+                maleHeadModelID1 = in.read16U();
             } else if (code == 93) {
-                femaleHeadModelID1 = buffer.read16U();
+                femaleHeadModelID1 = in.read16U();
             } else if (code == 95) {
-                iconRoll = buffer.read16U();
+                iconRoll = in.read16U();
             } else if (code == 97) {
-                linkedID = buffer.read16U();
+                linkedID = in.read16U();
             } else if (code == 98) {
-                certificateID = buffer.read16U();
+                certificateID = in.read16U();
             } else if ((code >= 100) && (code < 110)) {
                 if (stackID == null) {
                     stackID = new int[10];
                     stackCount = new int[10];
                 }
-                stackID[code - 100] = buffer.read16U();
-                stackCount[code - 100] = buffer.read16U();
+                stackID[code - 100] = in.read16U();
+                stackCount[code - 100] = in.read16U();
             } else if (code == 110) {
-                scaleX = buffer.read16U();
+                scaleX = in.read16U();
             } else if (code == 111) {
-                scaleZ = buffer.read16U();
+                scaleZ = in.read16U();
             } else if (code == 112) {
-                scaleY = buffer.read16U();
+                scaleY = in.read16U();
             } else if (code == 113) {
-                lightAmbient = buffer.read();
+                lightAmbient = in.read();
             } else if (code == 114) {
-                lightAttenuation = buffer.read() * 5;
+                lightAttenuation = in.read() * 5;
             } else if (code == 115) {
-                team = buffer.read8U();
+                team = in.read8U();
             }
         }
     }

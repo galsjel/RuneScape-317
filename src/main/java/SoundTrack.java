@@ -37,16 +37,16 @@ public class SoundTrack {
     public SoundTrack() {
     }
 
-    public void read(Buffer buffer) {
+    public void read(Buffer in) {
         for (int tone = 0; tone < 10; tone++) {
-            if (buffer.read8U() != 0) {
-                buffer.position--;
+            if (in.read8U() != 0) {
+                in.position--;
                 tones[tone] = new SoundTone();
-                tones[tone].read(buffer);
+                tones[tone].read(in);
             }
         }
-        loopBegin = buffer.read16U();
-        loopEnd = buffer.read16U();
+        loopBegin = in.read16U();
+        loopEnd = in.read16U();
     }
 
     public int trim() {

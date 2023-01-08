@@ -114,26 +114,26 @@ public class PlayerEntity extends PathingEntity {
         return model;
     }
 
-    public void read(Buffer buffer) {
-        buffer.position = 0;
-        gender = buffer.read8U();
-        headicons = buffer.read8U();
+    public void read(Buffer in) {
+        in.position = 0;
+        gender = in.read8U();
+        headicons = in.read8U();
         transmogrify = null;
         team = 0;
 
         for (int part = 0; part < 12; part++) {
-            int msb = buffer.read8U();
+            int msb = in.read8U();
 
             if (msb == 0) {
                 appearances[part] = 0;
                 continue;
             }
 
-            int lsb = buffer.read8U();
+            int lsb = in.read8U();
             appearances[part] = (msb << 8) + lsb;
 
             if ((part == 0) && (appearances[0] == 65535)) {
-                transmogrify = NPCType.get(buffer.read16U());
+                transmogrify = NPCType.get(in.read16U());
                 break;
             }
 
@@ -147,7 +147,7 @@ public class PlayerEntity extends PathingEntity {
         }
 
         for (int part = 0; part < 5; part++) {
-            int color = buffer.read8U();
+            int color = in.read8U();
 
             if ((color < 0) || (color >= Game.designPartColor[part].length)) {
                 color = 0;
@@ -156,37 +156,37 @@ public class PlayerEntity extends PathingEntity {
             colors[part] = color;
         }
 
-        super.seqStandID = buffer.read16U();
+        super.seqStandID = in.read16U();
         if (super.seqStandID == 65535) {
             super.seqStandID = -1;
         }
-        super.seqTurnID = buffer.read16U();
+        super.seqTurnID = in.read16U();
         if (super.seqTurnID == 65535) {
             super.seqTurnID = -1;
         }
-        super.seqWalkID = buffer.read16U();
+        super.seqWalkID = in.read16U();
         if (super.seqWalkID == 65535) {
             super.seqWalkID = -1;
         }
-        super.seqTurnAroundID = buffer.read16U();
+        super.seqTurnAroundID = in.read16U();
         if (super.seqTurnAroundID == 65535) {
             super.seqTurnAroundID = -1;
         }
-        super.seqTurnLeftID = buffer.read16U();
+        super.seqTurnLeftID = in.read16U();
         if (super.seqTurnLeftID == 65535) {
             super.seqTurnLeftID = -1;
         }
-        super.seqTurnRightID = buffer.read16U();
+        super.seqTurnRightID = in.read16U();
         if (super.seqTurnRightID == 65535) {
             super.seqTurnRightID = -1;
         }
-        super.seqRunID = buffer.read16U();
+        super.seqRunID = in.read16U();
         if (super.seqRunID == 65535) {
             super.seqRunID = -1;
         }
-        name = StringUtil.formatName(StringUtil.fromBase37(buffer.read64()));
-        combatLevel = buffer.read8U();
-        skillLevel = buffer.read16U();
+        name = StringUtil.formatName(StringUtil.fromBase37(in.read64()));
+        combatLevel = in.read8U();
+        skillLevel = in.read16U();
         visible = true;
 
         appearanceHashcode = 0L;
