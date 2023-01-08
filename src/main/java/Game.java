@@ -41,11 +41,11 @@ public class Game extends GameShell {
     public static boolean showOccluders;
     public static int loopCycle;
     public static boolean flagged;
-    public static final int[] INV_OP_ACTION = {632,78,867,431,53};
-    public static final int[] OBJ_OP_ACTION = {652,567,234,244,214};
-    public static final int[] OBJ_IOP_ACTION = {74,454,539,493, 847};
-    public static final int[] LOC_OP_ACTION = {502,900,113,872,1062};
-    public static final int[] NPC_OP_ACTION = {20,412,225,965,478};
+    public static final int[] INV_OP_ACTION = {632, 78, 867, 431, 53};
+    public static final int[] OBJ_OP_ACTION = {652, 567, 234, 244, 214};
+    public static final int[] OBJ_IOP_ACTION = {74, 454, 539, 493, 847};
+    public static final int[] LOC_OP_ACTION = {502, 900, 113, 872, 1062};
+    public static final int[] NPC_OP_ACTION = {20, 412, 225, 965, 478};
 
     static {
         levelExperience = new int[99];
@@ -321,7 +321,7 @@ public class Game extends GameShell {
     public int delta;
     public Scene scene;
     public Image8[] imageSideicons = new Image8[13];
-    public int mouseArea;
+    public int menuArea;
     public int menuX;
     public int menuY;
     public int menuWidth;
@@ -698,7 +698,7 @@ public class Game extends GameShell {
 
     @Override
     public void load() throws IOException {
-        showProgress(20, "Starting up");
+        drawProgress(20, "Starting up");
 
         if (Signlink.sunjava) {
             super.mindel = 5;
@@ -748,7 +748,7 @@ public class Game extends GameShell {
 
             FileArchive archiveVersionlist = loadArchive(5, "update list", "versionlist", archiveChecksum[5], 60);
 
-            showProgress(60, "Connecting to update server");
+            drawProgress(60, "Connecting to update server");
 
             ondemand = new OnDemand();
             ondemand.load(archiveVersionlist, this);
@@ -782,7 +782,7 @@ public class Game extends GameShell {
                 }
             }
 
-            showProgress(65, "Requesting animations");
+            drawProgress(65, "Requesting animations");
 
             int total = ondemand.getFileCount(1);
 
@@ -796,7 +796,7 @@ public class Game extends GameShell {
                 int done = total - ondemand.remaining();
 
                 if (done > 0) {
-                    showProgress(65, "Loading animations - " + (done * 100) / total + "%");
+                    drawProgress(65, "Loading animations - " + (done * 100) / total + "%");
                 }
 
                 handleOnDemandRequests();
@@ -812,7 +812,7 @@ public class Game extends GameShell {
                 }
             }
 
-            showProgress(70, "Requesting models");
+            drawProgress(70, "Requesting models");
 
             total = ondemand.getFileCount(0);
 
@@ -828,7 +828,7 @@ public class Game extends GameShell {
                 int done = total - ondemand.remaining();
 
                 if (done > 0) {
-                    showProgress(70, "Loading models - " + (done * 100) / total + "%");
+                    drawProgress(70, "Loading models - " + (done * 100) / total + "%");
                 }
 
                 handleOnDemandRequests();
@@ -840,7 +840,7 @@ public class Game extends GameShell {
             }
 
             if (filestores[0] != null) {
-                showProgress(75, "Requesting maps");
+                drawProgress(75, "Requesting maps");
 
                 ondemand.request(3, ondemand.getMapFile(0, 47, 48));
                 ondemand.request(3, ondemand.getMapFile(1, 47, 48));
@@ -861,7 +861,7 @@ public class Game extends GameShell {
                     int done = total - ondemand.remaining();
 
                     if (done > 0) {
-                        showProgress(75, "Loading maps - " + (done * 100) / total + "%");
+                        drawProgress(75, "Loading maps - " + (done * 100) / total + "%");
                     }
 
                     handleOnDemandRequests();
@@ -911,7 +911,7 @@ public class Game extends GameShell {
                 }
             }
 
-            showProgress(80, "Unpacking media");
+            drawProgress(80, "Unpacking media");
             imageInvback = new Image8(archiveMedia, "invback", 0);
             imageChatback = new Image8(archiveMedia, "chatback", 0);
             imageMapback = new Image8(archiveMedia, "mapback", 0);
@@ -1006,12 +1006,12 @@ public class Game extends GameShell {
                 }
             }
 
-            showProgress(83, "Unpacking textures");
+            drawProgress(83, "Unpacking textures");
             Draw3D.unpackTextures(archiveTextures);
             Draw3D.setBrightness(0.80000000000000004D);
             Draw3D.initPool(20);
 
-            showProgress(86, "Unpacking config");
+            drawProgress(86, "Unpacking config");
             SeqType.unpack(archiveConfig);
             LocType.unpack(archiveConfig);
             FloType.unpack(archiveConfig);
@@ -1023,14 +1023,14 @@ public class Game extends GameShell {
             VarbitType.unpack(archiveConfig);
 
             if (!lowmem) {
-                showProgress(90, "Unpacking sounds");
+                drawProgress(90, "Unpacking sounds");
                 SoundTrack.method240(new Buffer(archiveSounds.read("sounds.dat")));
             }
 
-            showProgress(95, "Unpacking interfaces");
+            drawProgress(95, "Unpacking interfaces");
             IfType.unpack(archiveInterface, new BitmapFont[]{fontPlain11, fontPlain12, fontBold12, fontQuill8}, archiveMedia);
 
-            showProgress(100, "Preparing game engine");
+            drawProgress(100, "Preparing game engine");
 
             for (int y = 0; y < 33; y++) {
                 int left = 999;
@@ -1249,15 +1249,18 @@ public class Game extends GameShell {
     @Override
     public void draw() throws IOException {
         if (errorStarted || errorLoading || errorHost) {
-            method94();
+            drawError();
             return;
         }
+
         drawCycle++;
+
         if (!ingame) {
             drawTitleScreen(false);
         } else {
             drawGame();
         }
+
         dragCycles = 0;
     }
 
@@ -1279,32 +1282,42 @@ public class Game extends GameShell {
     }
 
     @Override
-    public void showProgress(int percent, String message) throws IOException {
+    public void drawProgress(int percent, String message) throws IOException {
         lastProgressPercent = percent;
         lastProgressMessage = message;
+
         loadTitle();
+
         if (archiveTitle == null) {
-            super.showProgress(percent, message);
+            super.drawProgress(percent, message);
             return;
         }
+
         imageTitle4.bind();
-        char c = '\u0168';
-        char c1 = '\310';
-        byte byte1 = 20;
-        fontBold12.drawStringCenter("RuneScape is loading - please wait...", c / 2, (c1 / 2) - 26 - byte1, 0xffffff);
-        int j = (c1 / 2) - 18 - byte1;
-        Draw2D.drawRect((c / 2) - 152, j, 304, 34, 0x8c1111);
-        Draw2D.drawRect((c / 2) - 151, j + 1, 302, 32, 0);
-        Draw2D.fillRect((c / 2) - 150, j + 2, percent * 3, 30, 0x8c1111);
-        Draw2D.fillRect(((c / 2) - 150) + (percent * 3), j + 2, 300 - (percent * 3), 30, 0);
-        fontBold12.drawStringCenter(message, c / 2, ((c1 / 2) + 5) - byte1, 0xffffff);
+
+        int x = 360;
+        int y = 200;
+
+        byte offsetY = 20;
+        fontBold12.drawStringCenter("RuneScape is loading - please wait...", x / 2, (y / 2) - 26 - offsetY, 0xffffff);
+        int midY = (y / 2) - 18 - offsetY;
+
+        Draw2D.drawRect((x / 2) - 152, midY, 304, 34, 0x8c1111);
+        Draw2D.drawRect((x / 2) - 151, midY + 1, 302, 32, 0);
+        Draw2D.fillRect((x / 2) - 150, midY + 2, percent * 3, 30, 0x8c1111);
+        Draw2D.fillRect(((x / 2) - 150) + (percent * 3), midY + 2, 300 - (percent * 3), 30, 0);
+
+        fontBold12.drawStringCenter(message, x / 2, ((y / 2) + 5) - offsetY, 0xffffff);
         imageTitle4.draw(super.graphics, 202, 171);
+
         if (redrawTitleBackground) {
             redrawTitleBackground = false;
+
             if (!flameActive) {
                 imageTitle0.draw(super.graphics, 0, 0);
                 imageTitle1.draw(super.graphics, 637, 0);
             }
+
             imageTitle2.draw(super.graphics, 128, 0);
             imageTitle3.draw(super.graphics, 202, 371);
             imageTitle5.draw(super.graphics, 0, 265);
@@ -1321,59 +1334,73 @@ public class Game extends GameShell {
 
     public void loadArchiveChecksums() throws IOException {
         int wait = 5;
-        archiveChecksum[8] = 0;
         int retries = 0;
+
+        archiveChecksum[8] = 0;
+
         while (archiveChecksum[8] == 0) {
             String s = "Unknown problem";
-            showProgress(20, "Connecting to web server");
+            drawProgress(20, "Connecting to web server");
+
             try {
                 DataInputStream in = openURL("crc" + (int) (Math.random() * 99999999D) + "-" + 317);
                 Buffer buffer = new Buffer(new byte[40]);
                 in.readFully(buffer.data, 0, 40);
                 in.close();
-                for (int i1 = 0; i1 < 9; i1++) {
-                    archiveChecksum[i1] = buffer.read32();
+
+                for (int i = 0; i < 9; i++) {
+                    archiveChecksum[i] = buffer.read32();
                 }
-                int j1 = buffer.read32();
-                int k1 = 1234;
-                for (int l1 = 0; l1 < 9; l1++) {
-                    k1 = (k1 << 1) + archiveChecksum[l1];
+
+                int expectedChecksum = buffer.read32();
+                int calculatedChecksum = 1234;
+
+                for (int i = 0; i < 9; i++) {
+                    calculatedChecksum = (calculatedChecksum << 1) + archiveChecksum[i];
                 }
-                if (j1 != k1) {
+
+                if (expectedChecksum != calculatedChecksum) {
                     s = "checksum problem";
                     archiveChecksum[8] = 0;
                 }
-            } catch (EOFException _ex) {
+            } catch (EOFException e) {
                 s = "EOF problem";
                 archiveChecksum[8] = 0;
-            } catch (IOException _ex) {
+            } catch (IOException e) {
                 s = "connection problem";
                 archiveChecksum[8] = 0;
-            } catch (Exception _ex) {
+            } catch (Exception e) {
                 s = "logic problem";
                 archiveChecksum[8] = 0;
+
                 if (!Signlink.reporterror) {
                     return;
                 }
             }
+
             if (archiveChecksum[8] == 0) {
                 retries++;
-                for (int l = wait; l > 0; l--) {
+
+                for (int remaining = wait; remaining > 0; remaining--) {
                     if (retries >= 10) {
-                        showProgress(10, "Game updated - please reload page");
-                        l = 10;
+                        drawProgress(10, "Game updated - please reload page");
+                        remaining = 10;
                     } else {
-                        showProgress(10, s + " - Will retry in " + l + " secs.");
+                        drawProgress(10, s + " - Will retry in " + remaining + " secs.");
                     }
+
                     try {
                         Thread.sleep(1000L);
                     } catch (Exception ignored) {
                     }
                 }
+
                 wait *= 2;
+
                 if (wait > 60) {
                     wait = 60;
                 }
+
                 jaggrabEnabled = !jaggrabEnabled;
             }
         }
@@ -1415,7 +1442,7 @@ public class Game extends GameShell {
             drawChat();
         }
 
-        if (menuVisible && (mouseArea == 2)) {
+        if (menuVisible && (menuArea == 2)) {
             drawMenu();
         }
 
@@ -1636,23 +1663,23 @@ public class Game extends GameShell {
             int mouseX = super.mouseX;
             int mouseY = super.mouseY;
 
-            if (mouseArea == 0) {
+            if (menuArea == 0) {
                 mouseX -= 4;
                 mouseY -= 4;
-            } else if (mouseArea == 1) {
+            } else if (menuArea == 1) {
                 mouseX -= 553;
                 mouseY -= 205;
-            } else if (mouseArea == 2) {
+            } else if (menuArea == 2) {
                 mouseX -= 17;
                 mouseY -= 357;
             }
 
             if ((mouseX < (menuX - 10)) || (mouseX > (menuX + menuWidth + 10)) || (mouseY < (menuY - 10)) || (mouseY > (menuY + menuHeight + 10))) {
                 menuVisible = false;
-                if (mouseArea == 1) {
+                if (menuArea == 1) {
                     redrawSidebar = true;
                 }
-                if (mouseArea == 2) {
+                if (menuArea == 2) {
                     redrawChatback = true;
                 }
             }
@@ -1665,13 +1692,13 @@ public class Game extends GameShell {
             int mouseX = super.mouseClickX;
             int mouseY = super.mouseClickY;
 
-            if (mouseArea == 0) {
+            if (menuArea == 0) {
                 mouseX -= 4;
                 mouseY -= 4;
-            } else if (mouseArea == 1) {
+            } else if (menuArea == 1) {
                 mouseX -= 553;
                 mouseY -= 205;
-            } else if (mouseArea == 2) {
+            } else if (menuArea == 2) {
                 mouseX -= 17;
                 mouseY -= 357;
             }
@@ -1691,9 +1718,9 @@ public class Game extends GameShell {
 
             menuVisible = false;
 
-            if (mouseArea == 1) {
+            if (menuArea == 1) {
                 redrawSidebar = true;
-            } else if (mouseArea == 2) {
+            } else if (menuArea == 2) {
                 redrawChatback = true;
             }
         }
@@ -2157,8 +2184,6 @@ public class Game extends GameShell {
             }
         }
     }
-
-
 
     private void handleInterfaceInventoryInput(int x, int y, IfType iface) {
         int slot = 0;
@@ -2743,7 +2768,7 @@ public class Game extends GameShell {
             drawParentInterface(IfType.instances[tabInterfaceID[selectedTab]], 0, 0, 0);
         }
 
-        if (menuVisible && (mouseArea == 1)) {
+        if (menuVisible && (menuArea == 1)) {
             drawMenu();
         }
 
@@ -2953,17 +2978,17 @@ public class Game extends GameShell {
         int mouseX = super.mouseX;
         int mouseY = super.mouseY;
 
-        if (mouseArea == 0) {
+        if (menuArea == 0) {
             mouseX -= 4;
             mouseY -= 4;
         }
 
-        if (mouseArea == 1) {
+        if (menuArea == 1) {
             mouseX -= 553;
             mouseY -= 205;
         }
 
-        if (mouseArea == 2) {
+        if (menuArea == 2) {
             mouseX -= 17;
             mouseY -= 357;
         }
@@ -3726,7 +3751,7 @@ public class Game extends GameShell {
         updateFlameBuffer(null);
         flameBuffer3 = new int[32768];
         flameBuffer2 = new int[32768];
-        showProgress(10, "Connecting to fileserver");
+        drawProgress(10, "Connecting to fileserver");
 
         if (!flameActive) {
             flamesThread = true;
@@ -4567,7 +4592,7 @@ public class Game extends GameShell {
         int j1 = 0;
         while (data == null) {
             String s2 = "Unknown error";
-            showProgress(progress, "Requesting " + caption);
+            drawProgress(progress, "Requesting " + caption);
             try {
                 int k1 = 0;
                 DataInputStream datainputstream = openURL(fileName + checksum);
@@ -4592,7 +4617,7 @@ public class Game extends GameShell {
                     j2 += j3;
                     int k3 = (j2 * 100) / i2;
                     if (k3 != k1) {
-                        showProgress(progress, "Loading " + caption + " - " + k3 + "%");
+                        drawProgress(progress, "Loading " + caption + " - " + k3 + "%");
                     }
                     k1 = k3;
                 }
@@ -4641,10 +4666,10 @@ public class Game extends GameShell {
             if (data == null) {
                 for (int l1 = wait; l1 > 0; l1--) {
                     if (j1 >= 3) {
-                        showProgress(progress, "Game updated - please reload page");
+                        drawProgress(progress, "Game updated - please reload page");
                         l1 = 10;
                     } else {
-                        showProgress(progress, s2 + " - Retrying in " + l1);
+                        drawProgress(progress, s2 + " - Retrying in " + l1);
                     }
                     try {
                         Thread.sleep(1000L);
@@ -5801,7 +5826,7 @@ public class Game extends GameShell {
             if (loc.options != null) {
                 for (int op = 4; op >= 0; op--) {
                     if (loc.options[op] != null) {
-                        addMenuOption(loc.options[op] + " @cya@" + loc.name, LOC_OP_ACTION[op], x,z,bitset);
+                        addMenuOption(loc.options[op] + " @cya@" + loc.name, LOC_OP_ACTION[op], x, z, bitset);
                     }
                 }
             }
@@ -5871,7 +5896,7 @@ public class Game extends GameShell {
             } else {
                 for (int op = 4; op >= 0; op--) {
                     if ((type.options != null) && (type.options[op] != null)) {
-                        addMenuOption(type.options[op] + " @lre@" + type.name, OBJ_OP_ACTION[op], x,z,obj.id);
+                        addMenuOption(type.options[op] + " @lre@" + type.name, OBJ_OP_ACTION[op], x, z, obj.id);
                     } else if (op == 2) {
                         addMenuOption("Take @lre@" + type.name, 234, x, z, obj.id);
                     }
@@ -7599,7 +7624,7 @@ public class Game extends GameShell {
             if (type.options != null) {
                 for (int option = 4; option >= 0; option--) {
                     if ((type.options[option] != null) && !type.options[option].equalsIgnoreCase("attack")) {
-                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option],tileX,tileZ,npcID);
+                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option], tileX, tileZ, npcID);
                     }
                 }
             }
@@ -7722,20 +7747,25 @@ public class Game extends GameShell {
     }
 
     public void updateAudio() {
-        for (int i = 0; i < waveCount; i++) {
-            if (waveDelay[i] > 0) {
-                waveDelay[i]--;
-            } else {
-                boolean failed = false;
+        for (int wave = 0; wave < waveCount; wave++) {
+            if (waveDelay[wave] > 0) {
+                waveDelay[wave]--;
+                continue;
+            }
 
-                try {
-                    if ((waveIDs[i] == lastWaveID) && (waveLoops[i] == lastWaveLoops)) {
-                        if (!wavereplay()) {
-                            failed = true;
-                        }
+            boolean failed = false;
+
+            try {
+                if ((waveIDs[wave] == lastWaveID) && (waveLoops[wave] == lastWaveLoops)) {
+                    if (!wavereplay()) {
+                        failed = true;
+                    }
+                } else {
+                    Buffer buffer = SoundTrack.generate(waveLoops[wave], waveIDs[wave]);
+
+                    if (buffer == null) {
+                        failed = true;
                     } else {
-                        Buffer buffer = SoundTrack.generate(waveLoops[i], waveIDs[i]);
-
                         // the sample rate is 22050Hz and sample size is 1 byte which means dividing the bytes by 22 is
                         // roughly converting the bytes to time in milliseconds
                         if ((System.currentTimeMillis() + (long) (buffer.position / 22)) > (lastWaveStartTime + (long) (lastWaveLength / 22))) {
@@ -7743,35 +7773,39 @@ public class Game extends GameShell {
                             lastWaveStartTime = System.currentTimeMillis();
 
                             if (wavesave(buffer.data, buffer.position)) {
-                                lastWaveID = waveIDs[i];
-                                lastWaveLoops = waveLoops[i];
+                                lastWaveID = waveIDs[wave];
+                                lastWaveLoops = waveLoops[wave];
                             } else {
                                 failed = true;
                             }
                         }
                     }
-                } catch (Exception ignored) {
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-                if (!failed || (waveDelay[i] == -5)) {
-                    waveCount--;
-                    for (int j = i; j < waveCount; j++) {
-                        waveIDs[j] = waveIDs[j + 1];
-                        waveLoops[j] = waveLoops[j + 1];
-                        waveDelay[j] = waveDelay[j + 1];
-                    }
-                    i--;
-                } else {
-                    waveDelay[i] = -5;
+            if (!failed || (waveDelay[wave] == -5)) {
+                waveCount--;
+
+                for (int i = wave; i < waveCount; i++) {
+                    waveIDs[i] = waveIDs[i + 1];
+                    waveLoops[i] = waveLoops[i + 1];
+                    waveDelay[i] = waveDelay[i + 1];
                 }
+                wave--;
+            } else {
+                waveDelay[wave] = -5;
             }
         }
 
         if (nextSongDelay > 0) {
             nextSongDelay -= 20;
+
             if (nextSongDelay < 0) {
                 nextSongDelay = 0;
             }
+
             if ((nextSongDelay == 0) && midiEnabled && !lowmem) {
                 song = nextSong;
                 songFading = true;
@@ -7824,96 +7858,110 @@ public class Game extends GameShell {
         if (minimapState != 0) {
             return;
         }
-        if (super.mouseClickButton == 1) {
-            int x = super.mouseClickX - 25 - 550;
-            int y = super.mouseClickY - 5 - 4;
-            if ((x >= 0) && (y >= 0) && (x < 146) && (y < 151)) {
-                x -= 73;
-                y -= 75;
-                int yaw = (orbitCameraYaw + minimapAnticheatAngle) & 0x7ff;
-                int i1 = Draw3D.sin[yaw];
-                int j1 = Draw3D.cos[yaw];
-                i1 = (i1 * (minimapZoom + 256)) >> 8;
-                j1 = (j1 * (minimapZoom + 256)) >> 8;
-                int k1 = ((y * i1) + (x * j1)) >> 11;
-                int l1 = ((y * j1) - (x * i1)) >> 11;
-                int i2 = (localPlayer.x + k1) >> 7;
-                int j2 = (localPlayer.z - l1) >> 7;
-                boolean ok = tryMove(1, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], i2, j2, 0, 0, 0, 0, 0, true);
-                if (ok) {
-                    out.write8(x);
-                    out.write8(y);
-                    out.write16(orbitCameraYaw);
-                    out.write8(57);
-                    out.write8(minimapAnticheatAngle);
-                    out.write8(minimapZoom);
-                    out.write8(89);
-                    out.write16(localPlayer.x);
-                    out.write16(localPlayer.z);
-                    out.write8(tryMoveNearest);
-                    out.write8(63);
-                }
-            }
+
+        if (super.mouseClickButton != 1) {
+            return;
+        }
+
+        int x = super.mouseClickX - 25 - 550;
+        int y = super.mouseClickY - 5 - 4;
+
+        if ((x < 0) || (y < 0) || (x >= 146) || (y >= 151)) {
+            return;
+        }
+
+        x -= 73;
+        y -= 75;
+
+        int yaw = (orbitCameraYaw + minimapAnticheatAngle) & 0x7ff;
+        int sinYaw = Draw3D.sin[yaw];
+        int cosYaw = Draw3D.cos[yaw];
+
+        sinYaw = (sinYaw * (minimapZoom + 256)) >> 8;
+        cosYaw = (cosYaw * (minimapZoom + 256)) >> 8;
+
+        int relativeX = ((y * sinYaw) + (x * cosYaw)) >> 11;
+        int relativeZ = ((y * cosYaw) - (x * sinYaw)) >> 11;
+
+        int tileX = (localPlayer.x + relativeX) >> 7;
+        int tileZ = (localPlayer.z - relativeZ) >> 7;
+
+        boolean ok = tryMove(1, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, true);
+
+        if (ok) {
+            out.write8(x);
+            out.write8(y);
+            out.write16(orbitCameraYaw);
+            out.write8(57);
+            out.write8(minimapAnticheatAngle);
+            out.write8(minimapZoom);
+            out.write8(89);
+            out.write16(localPlayer.x);
+            out.write16(localPlayer.z);
+            out.write8(tryMoveNearest);
+            out.write8(63);
         }
     }
 
     public String getIntString(int i) {
         if (i < 999999999) {
             return String.valueOf(i);
-        } else {
-            return "*";
         }
+        return "*";
     }
 
-    public void method94() {
+    public void drawError() {
         Graphics g = this.getGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, 765, 503);
-        setFrameRate(1);
+
+        setFramerate(1);
+
+        flameActive = false; // tell flame threads to end
+
+        int y = 35;
+
         if (errorLoading) {
-            flameActive = false;
             g.setFont(new java.awt.Font("Helvetica", java.awt.Font.BOLD, 16));
             g.setColor(Color.yellow);
-            int k = 35;
-            g.drawString("Sorry, an error has occured whilst loading RuneScape", 30, k);
-            k += 50;
+            g.drawString("Sorry, an error has occured whilst loading RuneScape", 30, y);
+            y += 50;
             g.setColor(Color.white);
-            g.drawString("To fix this try the following (in order):", 30, k);
-            k += 50;
+            g.drawString("To fix this try the following (in order):", 30, y);
+            y += 50;
             g.setColor(Color.white);
             g.setFont(new java.awt.Font("Helvetica", java.awt.Font.BOLD, 12));
-            g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, k);
-            k += 30;
-            g.drawString("2: Try clearing your web-browsers cache from tools->internet options", 30, k);
-            k += 30;
-            g.drawString("3: Try using a different game-world", 30, k);
-            k += 30;
-            g.drawString("4: Try rebooting your computer", 30, k);
-            k += 30;
-            g.drawString("5: Try selecting a different version of Java from the play-game menu", 30, k);
+            g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, y);
+            y += 30;
+            g.drawString("2: Try clearing your web-browsers cache from tools->internet options", 30, y);
+            y += 30;
+            g.drawString("3: Try using a different game-world", 30, y);
+            y += 30;
+            g.drawString("4: Try rebooting your computer", 30, y);
+            y += 30;
+            g.drawString("5: Try selecting a different version of Java from the play-game menu", 30, y);
         }
+
         if (errorHost) {
-            flameActive = false;
             g.setFont(new java.awt.Font("Helvetica", java.awt.Font.BOLD, 20));
             g.setColor(Color.white);
             g.drawString("Error - unable to load game!", 50, 50);
             g.drawString("To play RuneScape make sure you play from", 50, 100);
             g.drawString("http://www.runescape.com", 50, 150);
         }
+
         if (errorStarted) {
-            flameActive = false;
             g.setColor(Color.yellow);
-            int l = 35;
-            g.drawString("Error a copy of RuneScape already appears to be loaded", 30, l);
-            l += 50;
+            g.drawString("Error a copy of RuneScape already appears to be loaded", 30, y);
+            y += 50;
             g.setColor(Color.white);
-            g.drawString("To fix this try the following (in order):", 30, l);
-            l += 50;
+            g.drawString("To fix this try the following (in order):", 30, y);
+            y += 50;
             g.setColor(Color.white);
             g.setFont(new java.awt.Font("Helvetica", java.awt.Font.BOLD, 12));
-            g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, l);
-            l += 30;
-            g.drawString("2: Try rebooting your computer, and reloading", 30, l);
+            g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, y);
+            y += 30;
+            g.drawString("2: Try rebooting your computer, and reloading", 30, y);
         }
     }
 
@@ -8325,7 +8373,7 @@ public class Game extends GameShell {
             drawScene();
         }
 
-        if (menuVisible && (mouseArea == 1)) {
+        if (menuVisible && (menuArea == 1)) {
             redrawSidebar = true;
         }
 
@@ -8388,7 +8436,7 @@ public class Game extends GameShell {
             redrawChatback = true;
         }
 
-        if (menuVisible && (mouseArea == 2)) {
+        if (menuVisible && (menuArea == 2)) {
             redrawChatback = true;
         }
 
@@ -8649,8 +8697,6 @@ public class Game extends GameShell {
                 if (child.scrollableHeight > child.height) {
                     drawScrollbar(x + child.width, y, child.height, child.scrollableHeight, child.scrollPosition);
                 }
-            } else if (child.type == IfType.TYPE_UNUSED) {
-                // unused
             } else if (child.type == IfType.TYPE_INVENTORY) {
                 drawInterfaceInventory(parent, x, y, child);
             } else if (child.type == IfType.TYPE_RECT) {
@@ -9259,7 +9305,6 @@ public class Game extends GameShell {
 
         if (showOccluders) {
             fontPlain11.drawStringRight(String.format("%d/%d occluders", Scene.activeOccluderCount, Scene.levelOccluderCount[Scene.topLevel]), x, y, 0xFFFF00);
-            y += 13;
         }
     }
 
@@ -9373,7 +9418,7 @@ public class Game extends GameShell {
                 l1 = 0;
             }
             menuVisible = true;
-            mouseArea = 0;
+            menuArea = 0;
             menuX = i1;
             menuY = l1;
             menuWidth = i;
@@ -9393,7 +9438,7 @@ public class Game extends GameShell {
                 i2 = 261 - l;
             }
             menuVisible = true;
-            mouseArea = 1;
+            menuArea = 1;
             menuX = j1;
             menuY = i2;
             menuWidth = i;
@@ -9413,7 +9458,7 @@ public class Game extends GameShell {
                 j2 = 96 - l;
             }
             menuVisible = true;
-            mouseArea = 2;
+            menuArea = 2;
             menuX = k1;
             menuY = j2;
             menuWidth = i;
@@ -9946,8 +9991,8 @@ public class Game extends GameShell {
     }
 
     /**
-     * @param entity
-     * @param height
+     * @param entity the entity.
+     * @param height the height off the ground.
      * @see #projectX
      * @see #projectY
      */
@@ -10296,6 +10341,7 @@ public class Game extends GameShell {
         loadTitle();
         imageTitle4.bind();
         imageTitlebox.blit(0, 0);
+
         int w = 360;
         int h = 200;
 
@@ -12467,7 +12513,7 @@ public class Game extends GameShell {
         if (!menuVisible) {
             handleInput();
             drawTooltip();
-        } else if (mouseArea == 0) {
+        } else if (menuArea == 0) {
             drawMenu();
         }
 

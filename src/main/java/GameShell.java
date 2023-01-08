@@ -69,7 +69,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 				frame.addWindowListener(this);
 			}
 
-			showProgress(0, "Loading...");
+			drawProgress(0, "Loading...");
 			load();
 
 			int opos = 0;
@@ -203,7 +203,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 		}
 	}
 
-	public void setFrameRate(int fps) {
+	public void setFramerate(int fps) {
 		deltime = 1000 / fps;
 	}
 
@@ -476,7 +476,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 		thread.setPriority(priority);
 	}
 
-	public void showProgress(int percent, String message) throws IOException {
+	public void drawProgress(int percent, String message) throws IOException {
 		while (graphics == null) {
 			graphics = this.getGraphics();
 			try {
