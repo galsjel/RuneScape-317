@@ -405,7 +405,7 @@ public class Draw3D {
     /**
      * Returns the <code>rgb</code> with each component raised to the power of <code>gamma</code>
      *
-     * @param rgb        the input rgb.
+     * @param rgb   the input rgb.
      * @param gamma the gamma.
      * @return the result.
      */

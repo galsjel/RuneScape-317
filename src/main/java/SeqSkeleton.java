@@ -26,7 +26,8 @@ public class SeqSkeleton {
     public final int[] baseTypes;
     /**
      * The labels belonging to the base.
-     * @see Model#createLabelReferences() 
+     *
+     * @see Model#createLabelReferences()
      */
     public final int[][] baseLabels;
 

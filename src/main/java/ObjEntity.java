@@ -4,16 +4,16 @@
 
 public class ObjEntity extends Entity {
 
-	public int id;
-	public int count;
+    public int id;
+    public int count;
 
-	public ObjEntity() {
-	}
+    public ObjEntity() {
+    }
 
-	@Override
-	public Model getModel() {
-		ObjType type = ObjType.get(id);
-		return type.getModel(count);
-	}
+    @Override
+    public Model getModel() {
+        ObjType type = ObjType.get(id);
+        return type.getModel(count);
+    }
 
 }

@@ -4,17 +4,17 @@
 
 public class SceneWall {
 
-	public int y;
-	public int x;
-	public int z;
-	public int typeA;
-	public int typeB;
-	public Entity entityA;
-	public Entity entityB;
-	public int bitset;
-	public byte info;
+    public int y;
+    public int x;
+    public int z;
+    public int typeA;
+    public int typeB;
+    public Entity entityA;
+    public Entity entityB;
+    public int bitset;
+    public byte info;
 
-	public SceneWall() {
-	}
+    public SceneWall() {
+    }
 
 }

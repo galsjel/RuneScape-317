@@ -4,14 +4,14 @@
 
 public class SceneGroundDecoration {
 
-	public int y;
-	public int x;
-	public int z;
-	public Entity entity;
-	public int bitset;
-	public byte info;
+    public int y;
+    public int x;
+    public int z;
+    public Entity entity;
+    public int bitset;
+    public byte info;
 
-	public SceneGroundDecoration() {
-	}
+    public SceneGroundDecoration() {
+    }
 
 }

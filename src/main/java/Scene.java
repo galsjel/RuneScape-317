@@ -1599,8 +1599,8 @@ public class Scene {
                         SceneLoc farthest = locBuffer[farthestIndex];
                         farthest.cycle = cycle;
 
-                            if (!occluded(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
-                                farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
+                        if (!occluded(occludeLevel, farthest.minSceneTileX, farthest.maxSceneTileX, farthest.minSceneTileZ, farthest.maxSceneTileZ, farthest.entity.minY)) {
+                            farthest.entity.draw(farthest.yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, farthest.x - eyeX, farthest.y - eyeY, farthest.z - eyeZ, farthest.bitset);
                         }
 
                         for (int x = farthest.minSceneTileX; x <= farthest.maxSceneTileX; x++) {

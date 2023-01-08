@@ -4,26 +4,26 @@
 
 public class SceneLoc {
 
-	public int level;
-	public int y;
-	public int x;
-	public int z;
-	public Entity entity;
-	public int yaw;
-	public int minSceneTileX;
-	public int maxSceneTileX;
-	public int minSceneTileZ;
-	public int maxSceneTileZ;
-	public int distance;
-	public int cycle;
-	public int bitset;
-	public byte info;
+    public int level;
+    public int y;
+    public int x;
+    public int z;
+    public Entity entity;
+    public int yaw;
+    public int minSceneTileX;
+    public int maxSceneTileX;
+    public int minSceneTileZ;
+    public int maxSceneTileZ;
+    public int distance;
+    public int cycle;
+    public int bitset;
+    public byte info;
 
-	public boolean drawn() {
-		return cycle == Scene.cycle;
-	}
+    public boolean drawn() {
+        return cycle == Scene.cycle;
+    }
 
-	public SceneLoc() {
-	}
+    public SceneLoc() {
+    }
 
 }

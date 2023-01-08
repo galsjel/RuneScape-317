@@ -72,7 +72,7 @@ public class SceneBuilder {
      * Used to determine if a LocType's models have been loaded.
      *
      * @param locID the loc type id.
-     * @param kind   the loc kind.
+     * @param kind  the loc kind.
      * @return <code>true</code> if the loc models are ready.
      */
     public static boolean isLocReady(int locID, int kind) {
@@ -341,7 +341,8 @@ public class SceneBuilder {
      * Reads the Locs from the provided data and determines if their models are available. The origin coordinate is used
      * to determine if a loc would be excluded from the scene, therefor not required to be validated. The chain of calls
      * eventually invokes {@link Model#validate(int)} which causes the {@link OnDemand} to do its job.
-     * @param data the data
+     *
+     * @param data    the data
      * @param originX the region origin x in the scene.
      * @param originZ the region origin z in the scene.
      * @return <code>true</code> if all locs are valid.
@@ -890,8 +891,9 @@ public class SceneBuilder {
 
     /**
      * Flattens the perimeter of the provided area.
-     * @param tileX the area x.
-     * @param tileZ the area z.
+     *
+     * @param tileX     the area x.
+     * @param tileZ     the area z.
      * @param tileSizeX the area size x.
      * @param tileSizeZ the area size z.
      */

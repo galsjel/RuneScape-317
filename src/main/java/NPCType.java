@@ -321,7 +321,7 @@ public class NPCType {
 
                 for (int i = 0; i <= overrideCount; i++) {
                     overrides[i] = buffer.read16U();
-                    
+
                     if (overrides[i] == 65535) {
                         overrides[i] = -1;
                     }

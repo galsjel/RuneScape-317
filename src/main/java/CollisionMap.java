@@ -79,19 +79,19 @@ public class CollisionMap {
             }
         } else if (type == 2) {
             if (rotation == 0) {
-                add(x, z, FLAG_BLOCK_ENTITY_W|FLAG_BLOCK_ENTITY_N);
+                add(x, z, FLAG_BLOCK_ENTITY_W | FLAG_BLOCK_ENTITY_N);
                 add(x - 1, z, FLAG_BLOCK_ENTITY_E);
                 add(x, z + 1, FLAG_BLOCK_ENTITY_S);
             } else if (rotation == 1) {
-                add(x, z, FLAG_BLOCK_ENTITY_E|FLAG_BLOCK_ENTITY_N);
+                add(x, z, FLAG_BLOCK_ENTITY_E | FLAG_BLOCK_ENTITY_N);
                 add(x, z + 1, FLAG_BLOCK_ENTITY_S);
                 add(x + 1, z, FLAG_BLOCK_ENTITY_W);
             } else if (rotation == 2) {
-                add(x, z, FLAG_BLOCK_ENTITY_E|FLAG_BLOCK_ENTITY_S);
+                add(x, z, FLAG_BLOCK_ENTITY_E | FLAG_BLOCK_ENTITY_S);
                 add(x + 1, z, FLAG_BLOCK_ENTITY_W);
                 add(x, z - 1, FLAG_BLOCK_ENTITY_N);
             } else if (rotation == 3) {
-                add(x, z, FLAG_BLOCK_ENTITY_W|FLAG_BLOCK_ENTITY_S);
+                add(x, z, FLAG_BLOCK_ENTITY_W | FLAG_BLOCK_ENTITY_S);
                 add(x, z - 1, FLAG_BLOCK_ENTITY_N);
                 add(x - 1, z, FLAG_BLOCK_ENTITY_E);
             }
@@ -128,19 +128,19 @@ public class CollisionMap {
                 }
             } else if (type == 2) {
                 if (rotation == 0) {
-                    add(x, z, FLAG_BLOCK_PROJECTILE_W|FLAG_BLOCK_PROJECTILE_N);
+                    add(x, z, FLAG_BLOCK_PROJECTILE_W | FLAG_BLOCK_PROJECTILE_N);
                     add(x - 1, z, FLAG_BLOCK_PROJECTILE_E);
                     add(x, z + 1, FLAG_BLOCK_PROJECTILE_S);
                 } else if (rotation == 1) {
-                    add(x, z, FLAG_BLOCK_PROJECTILE_E|FLAG_BLOCK_PROJECTILE_N);
+                    add(x, z, FLAG_BLOCK_PROJECTILE_E | FLAG_BLOCK_PROJECTILE_N);
                     add(x, z + 1, FLAG_BLOCK_PROJECTILE_S);
                     add(x + 1, z, FLAG_BLOCK_PROJECTILE_W);
                 } else if (rotation == 2) {
-                    add(x, z, FLAG_BLOCK_PROJECTILE_E|FLAG_BLOCK_PROJECTILE_S);
+                    add(x, z, FLAG_BLOCK_PROJECTILE_E | FLAG_BLOCK_PROJECTILE_S);
                     add(x + 1, z, FLAG_BLOCK_PROJECTILE_W);
                     add(x, z - 1, FLAG_BLOCK_PROJECTILE_N);
                 } else if (rotation == 3) {
-                    add(x, z, FLAG_BLOCK_PROJECTILE_W|FLAG_BLOCK_PROJECTILE_S);
+                    add(x, z, FLAG_BLOCK_PROJECTILE_W | FLAG_BLOCK_PROJECTILE_S);
                     add(x, z - 1, FLAG_BLOCK_PROJECTILE_N);
                     add(x - 1, z, FLAG_BLOCK_PROJECTILE_E);
                 }
@@ -211,19 +211,19 @@ public class CollisionMap {
             }
         } else if (type == 2) {
             if (rotation == 0) {
-                remove(x, z, FLAG_BLOCK_ENTITY_W|FLAG_BLOCK_ENTITY_N);
+                remove(x, z, FLAG_BLOCK_ENTITY_W | FLAG_BLOCK_ENTITY_N);
                 remove(x - 1, z, FLAG_BLOCK_ENTITY_E);
                 remove(x, z + 1, FLAG_BLOCK_ENTITY_S);
             } else if (rotation == 1) {
-                remove(x, z, FLAG_BLOCK_ENTITY_E|FLAG_BLOCK_ENTITY_N);
+                remove(x, z, FLAG_BLOCK_ENTITY_E | FLAG_BLOCK_ENTITY_N);
                 remove(x, z + 1, FLAG_BLOCK_ENTITY_S);
                 remove(x + 1, z, FLAG_BLOCK_ENTITY_W);
             } else if (rotation == 2) {
-                remove(x, z, FLAG_BLOCK_ENTITY_E|FLAG_BLOCK_ENTITY_S);
+                remove(x, z, FLAG_BLOCK_ENTITY_E | FLAG_BLOCK_ENTITY_S);
                 remove(x + 1, z, FLAG_BLOCK_ENTITY_W);
                 remove(x, z - 1, FLAG_BLOCK_ENTITY_N);
             } else if (rotation == 3) {
-                remove(x, z, FLAG_BLOCK_ENTITY_W|FLAG_BLOCK_ENTITY_S);
+                remove(x, z, FLAG_BLOCK_ENTITY_W | FLAG_BLOCK_ENTITY_S);
                 remove(x, z - 1, FLAG_BLOCK_ENTITY_N);
                 remove(x - 1, z, FLAG_BLOCK_ENTITY_E);
             }
@@ -259,19 +259,19 @@ public class CollisionMap {
                 }
             } else if (type == 2) {
                 if (rotation == 0) {
-                    remove(x, z, FLAG_BLOCK_PROJECTILE_W|FLAG_BLOCK_PROJECTILE_N);
+                    remove(x, z, FLAG_BLOCK_PROJECTILE_W | FLAG_BLOCK_PROJECTILE_N);
                     remove(x - 1, z, FLAG_BLOCK_PROJECTILE_E);
                     remove(x, z + 1, FLAG_BLOCK_PROJECTILE_S);
                 } else if (rotation == 1) {
-                    remove(x, z, FLAG_BLOCK_PROJECTILE_E|FLAG_BLOCK_PROJECTILE_N);
+                    remove(x, z, FLAG_BLOCK_PROJECTILE_E | FLAG_BLOCK_PROJECTILE_N);
                     remove(x, z + 1, FLAG_BLOCK_PROJECTILE_S);
                     remove(x + 1, z, FLAG_BLOCK_PROJECTILE_W);
                 } else if (rotation == 2) {
-                    remove(x, z, FLAG_BLOCK_PROJECTILE_E|FLAG_BLOCK_PROJECTILE_S);
+                    remove(x, z, FLAG_BLOCK_PROJECTILE_E | FLAG_BLOCK_PROJECTILE_S);
                     remove(x + 1, z, FLAG_BLOCK_PROJECTILE_W);
                     remove(x, z - 1, FLAG_BLOCK_PROJECTILE_N);
                 } else if (rotation == 3) {
-                    remove(x, z, FLAG_BLOCK_PROJECTILE_W|FLAG_BLOCK_PROJECTILE_S);
+                    remove(x, z, FLAG_BLOCK_PROJECTILE_W | FLAG_BLOCK_PROJECTILE_S);
                     remove(x, z - 1, FLAG_BLOCK_PROJECTILE_N);
                     remove(x - 1, z, FLAG_BLOCK_PROJECTILE_E);
                 }
