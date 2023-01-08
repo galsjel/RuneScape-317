@@ -3772,6 +3772,7 @@ public class Game extends GameShell {
 
         if (sceneState == 1) {
             int state = checkScene();
+
             if ((state != 0) && ((System.currentTimeMillis() - sceneLoadStartTime) > 360000L)) {
                 Signlink.reporterror(username + " glcfb " + serverSeed + "," + state + "," + lowmem + "," + filestores[0] + "," + ondemand.remaining() + "," + currentLevel + "," + sceneCenterZoneX + "," + sceneCenterZoneZ);
                 sceneLoadStartTime = System.currentTimeMillis();
@@ -3814,17 +3815,19 @@ public class Game extends GameShell {
         for (int i = 0; i < sceneMapLocData.length; i++) {
             byte[] data = sceneMapLocData[i];
 
-            if (data != null) {
-                int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
-                int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
-
-                if (sceneInstanced) {
-                    originX = 10;
-                    originZ = 10;
-                }
-
-                ok &= SceneBuilder.validateLocs(data, originX, originZ);
+            if (data == null) {
+                continue;
             }
+
+            int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
+            int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
+
+            if (sceneInstanced) {
+                originX = 10;
+                originZ = 10;
+            }
+
+            ok &= SceneBuilder.validateLocs(data, originX, originZ);
         }
         return ok;
     }
@@ -3933,36 +3936,34 @@ public class Game extends GameShell {
 
     public void handleOnDemandRequests() throws IOException {
         do {
-            OnDemandRequest request;
-            do {
-                request = ondemand.poll();
+            OnDemandRequest request = ondemand.poll();
 
-                if (request == null) {
-                    return;
-                }
+            if (request == null) {
+                return;
+            }
 
-                if (request.store == 0) {
-                    Model.unpack(request.data, request.file);
-                    if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
-                        redrawSidebar = true;
-                        if (chatInterfaceID != -1) {
-                            redrawChatback = true;
-                        }
+            if (request.store == 0) {
+                Model.unpack(request.data, request.file);
+                if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
+                    redrawSidebar = true;
+                    if (chatInterfaceID != -1) {
+                        redrawChatback = true;
                     }
                 }
-
-                if ((request.store == 1) && (request.data != null)) {
+            } else if (request.store == 1) {
+                if (request.data != null) {
                     SeqTransform.unpack(request.data);
                 }
-
-                if ((request.store == 2) && (request.file == song) && (request.data != null)) {
+            } else if (request.store == 2) {
+                if ((request.file == song) && (request.data != null)) {
                     midisave(songFading, request.data);
                 }
-
-                if ((request.store == 3) && sceneState == 1) {
+            } else if (request.store == 3) {
+                if (sceneState == 1) {
                     for (int i = 0; i < sceneMapLandData.length; i++) {
                         if (sceneMapLandFile[i] == request.file) {
                             sceneMapLandData[i] = request.data;
+
                             if (request.data == null) {
                                 sceneMapLandFile[i] = -1;
                             }
@@ -3971,6 +3972,7 @@ public class Game extends GameShell {
 
                         if (sceneMapLocFile[i] == request.file) {
                             sceneMapLocData[i] = request.data;
+
                             if (request.data == null) {
                                 sceneMapLocFile[i] = -1;
                             }
@@ -3978,8 +3980,11 @@ public class Game extends GameShell {
                         }
                     }
                 }
-            } while ((request.store != 93) || !ondemand.method564(request.file));
-            SceneBuilder.prefetchLocs(new Buffer(request.data), ondemand);
+            } else if (request.store == 93) {
+                if (ondemand.hasMapLocFile(request.file)) {
+                    SceneBuilder.prefetchLocs(new Buffer(request.data), ondemand);
+                }
+            }
         } while (true);
     }
 

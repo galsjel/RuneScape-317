@@ -560,9 +560,9 @@ public class OnDemand implements Runnable {
 		totalPrefetchFiles++;
 	}
 
-	public boolean method564(int i) {
-		for (int k = 0; k < mapIndex.length; k++) {
-			if (mapLocFile[k] == i) {
+	public boolean hasMapLocFile(int fileID) {
+		for (int i = 0; i < mapIndex.length; i++) {
+			if (mapLocFile[i] == fileID) {
 				return true;
 			}
 		}
