@@ -56,31 +56,13 @@ public class Buffer extends DoublyLinkedList.Node {
         data[position++] = (byte) value;
     }
 
-    public void write8C(int value) {
-        data[position++] = (byte) -value;
-    }
-
-    public void write8S(int value) {
-        data[position++] = (byte) (128 - value);
-    }
-
     public void write16(int value) {
         data[position++] = (byte) (value >> 8);
         data[position++] = (byte) value;
     }
 
-    public void write16A(int value) {
-        data[position++] = (byte) (value >> 8);
-        data[position++] = (byte) (value + 128);
-    }
-
     public void write16LE(int value) {
         data[position++] = (byte) value;
-        data[position++] = (byte) (value >> 8);
-    }
-
-    public void write16LEA(int value) {
-        data[position++] = (byte) (value + 128);
         data[position++] = (byte) (value >> 8);
     }
 
@@ -129,38 +111,12 @@ public class Buffer extends DoublyLinkedList.Node {
         write(src, 0, src.length);
     }
 
-    public void writeA(byte[] src, int off, int len) {
-        for (int i = (off + len) - 1; i >= off; i--) {
-            data[position++] = (byte) (src[i] + 128);
-        }
-    }
-
     public byte read8() {
         return data[position++];
     }
 
-    public byte read8C() {
-        return (byte) -data[position++];
-    }
-
-    public byte read8S() {
-        return (byte) (128 - data[position++]);
-    }
-
     public int readU8() {
         return data[position++] & 0xff;
-    }
-
-    public int readU8A() {
-        return (data[position++] - 128) & 0xff;
-    }
-
-    public int readU8C() {
-        return -data[position++] & 0xff;
-    }
-
-    public int readU8S() {
-        return (128 - data[position++]) & 0xff;
     }
 
     /**
@@ -194,42 +150,9 @@ public class Buffer extends DoublyLinkedList.Node {
         return ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
     }
 
-    public int readU16A() {
-        position += 2;
-        return ((data[position - 2] & 0xff) << 8) + ((data[position - 1] - 128) & 0xff);
-    }
-
-    public int readU16LE() {
-        position += 2;
-        return ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
-    }
-
-    public int readU16LEA() {
-        position += 2;
-        return ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
-    }
-
     public int read16() {
         position += 2;
         int value = ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
-        if (value > 32767) {
-            value -= 65536;
-        }
-        return value;
-    }
-
-    public int read16LE() {
-        position += 2;
-        int value = ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
-        if (value > 32767) {
-            value -= 65536;
-        }
-        return value;
-    }
-
-    public int read16LEA() {
-        position += 2;
-        int value = ((data[position - 1] & 0xff) << 8) + ((data[position - 2] - 128) & 0xff);
         if (value > 32767) {
             value -= 65536;
         }
@@ -244,16 +167,6 @@ public class Buffer extends DoublyLinkedList.Node {
     public int read32() {
         position += 4;
         return ((data[position - 4] & 0xff) << 24) + ((data[position - 3] & 0xff) << 16) + ((data[position - 2] & 0xff) << 8) + (data[position - 1] & 0xff);
-    }
-
-    public int read32ME() {
-        position += 4;
-        return ((data[position - 3] & 0xff) << 24) + ((data[position - 4] & 0xff) << 16) + ((data[position - 1] & 0xff) << 8) + (data[position - 2] & 0xff);
-    }
-
-    public int read32RME() {
-        position += 4;
-        return ((data[position - 2] & 0xff) << 24) + ((data[position - 1] & 0xff) << 16) + ((data[position - 4] & 0xff) << 8) + (data[position - 3] & 0xff);
     }
 
     public long read64() {
@@ -279,12 +192,6 @@ public class Buffer extends DoublyLinkedList.Node {
 
     public void read(byte[] dst) {
         read(dst, 0, dst.length);
-    }
-
-    public void readReversed(byte[] dst, int off, int len) {
-        for (int i = (off + len) - 1; i >= off; i--) {
-            dst[i] = data[position++];
-        }
     }
 
     public void accessBits() {

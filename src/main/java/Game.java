@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.zip.CRC32;
 
 public class Game extends GameShell {
-
+    public static String server = "0.0.0.0";
     public static final int[][] designPartColor = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
     public static final int[] designHairColor = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-    public static final BigInteger RSA_MODULUS = new BigInteger("150437374157649496260907284144944613391868328356428312785170855566836496148649769873303054925785940753587048471819630374797613652942136320599534564023031743563833250113572385619350489566973866283982326500382760586083379242813677444239924493338426453599564333273724064297982529208425077775100347146662074078333");
+    public static final BigInteger RSA_MODULUS = new BigInteger("9121735623269675114354006955390054582342218475341096954835495062695867873978295077377853279449312154367299646080924492129675813880588889402856759224494087");
     public static final int[] levelExperience;
     public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
     public static final String VALID_CHAT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
@@ -1578,7 +1578,6 @@ public class Game extends GameShell {
         Draw2D.drawLineX(0, 77, 479, 0);
     }
 
-    static String server = "0.0.0.0";
 
     public Socket openSocket(int port) throws IOException {
         return new Socket(InetAddress.getByName(server), port);
@@ -3360,18 +3359,18 @@ public class Game extends GameShell {
     }
 
     private void readPlayerForceMovement(PlayerEntity player) {
-        player.forceMoveStartSceneTileX = in.readU8S();
-        player.forceMoveStartSceneTileZ = in.readU8S();
-        player.forceMoveEndSceneTileX = in.readU8S();
-        player.forceMoveEndSceneTileZ = in.readU8S();
-        player.forceMoveEndCycle = in.readU16LEA() + loopCycle;
-        player.forceMoveStartCycle = in.readU16A() + loopCycle;
-        player.forceMoveFaceDirection = in.readU8S();
+        player.forceMoveStartSceneTileX = in.readU8();
+        player.forceMoveStartSceneTileZ = in.readU8();
+        player.forceMoveEndSceneTileX = in.readU8();
+        player.forceMoveEndSceneTileZ = in.readU8();
+        player.forceMoveEndCycle = in.readU16() + loopCycle;
+        player.forceMoveStartCycle = in.readU16() + loopCycle;
+        player.forceMoveFaceDirection = in.readU8();
         player.resetPath();
     }
 
     private void readPlayerGraphic(PlayerEntity player) {
-        player.spotanimID = in.readU16LE();
+        player.spotanimID = in.readU16();
         player.spotanimOffset = in.readU16();
         player.spotanimLastCycle = loopCycle + in.readU16();
         player.spotanimFrame = 0;
@@ -3387,13 +3386,13 @@ public class Game extends GameShell {
     }
 
     private void readPlayerAnimation(PlayerEntity player) {
-        int seqID = in.readU16LE();
+        int seqID = in.readU16();
 
         if (seqID == 65535) {
             seqID = -1;
         }
 
-        int delay = in.readU8C();
+        int delay = in.readU8();
 
         if ((seqID == player.primarySeqID) && (seqID != -1)) {
             int style = SeqType.instances[seqID].replayStyle;
@@ -3434,9 +3433,9 @@ public class Game extends GameShell {
     }
 
     private void readPlayerChat(PlayerEntity player) {
-        int colorStyle = in.readU16LE();
+        int colorStyle = in.readU16();
         int role = in.readU8();
-        int length = in.readU8C();
+        int length = in.readU8();
         int start = in.position;
 
         if ((player.name != null) && player.visible) {
@@ -3456,7 +3455,7 @@ public class Game extends GameShell {
             if (!ignore && (overrideChat == 0)) {
                 try {
                     chatBuffer.position = 0;
-                    in.readReversed(chatBuffer.data, 0, length);
+                    in.read(chatBuffer.data, 0, length);
                     chatBuffer.position = 0;
 
                     String chat = ChatCompression.unpack(length, chatBuffer);
@@ -3484,7 +3483,7 @@ public class Game extends GameShell {
     }
 
     private void readPlayerTargetEntity(PlayerEntity player) {
-        player.targetID = in.readU16LE();
+        player.targetID = in.readU16();
 
         if (player.targetID == 65535) {
             player.targetID = -1;
@@ -3492,33 +3491,33 @@ public class Game extends GameShell {
     }
 
     private void readPlayerAppearance(int playerID, PlayerEntity player) {
-        Buffer buffer = new Buffer(new byte[in.readU8C()]);
+        Buffer buffer = new Buffer(new byte[in.readU8()]);
         in.read(buffer.data);
         playerAppearanceBuffer[playerID] = buffer;
         player.read(buffer);
     }
 
     private void readPlayerTargetTile(PlayerEntity player) {
-        player.targetTileX = in.readU16LEA();
-        player.targetTileZ = in.readU16LE();
+        player.targetTileX = in.readU16();
+        player.targetTileZ = in.readU16();
     }
 
     private void readPlayerDamage0(PlayerEntity player) {
         int damage = in.readU8();
-        int type = in.readU8A();
+        int type = in.readU8();
         player.hit(type, damage);
         player.combatCycle = loopCycle + 300;
-        player.health = in.readU8C();
+        player.health = in.readU8();
         player.totalHealth = in.readU8();
     }
 
     private void readPlayerDamage1(PlayerEntity player) {
         int damage = in.readU8();
-        int type = in.readU8S();
+        int type = in.readU8();
         player.hit(type, damage);
         player.combatCycle = loopCycle + 300;
         player.health = in.readU8();
-        player.totalHealth = in.readU8C();
+        player.totalHealth = in.readU8();
     }
 
     public void drawMinimapLoc(int tileZ, int wallRGB, int tileX, int doorRGB, int level) {
@@ -4287,10 +4286,10 @@ public class Game extends GameShell {
                     iface.inventorySwap(objDragSlot, hoveredSlot);
                 }
                 out.writeOp(214);
-                out.write16LEA(objDragInterfaceID);
-                out.write8C(mode);
-                out.write16LEA(objDragSlot);
-                out.write16LE(hoveredSlot);
+                out.write16(objDragInterfaceID);
+                out.write8(mode);
+                out.write16(objDragSlot);
+                out.write16(hoveredSlot);
             }
         } else if (((mouseButtonsOption == 1) || isAddFriendOption(menuSize - 1)) && (menuSize > 2)) {
             showContextMenu();
@@ -4321,7 +4320,7 @@ public class Game extends GameShell {
             sendCamera = false;
             out.writeOp(86);
             out.write16(orbitCameraPitch);
-            out.write16A(orbitCameraYaw);
+            out.write16(orbitCameraYaw);
         }
 
         if (super.focused && !_focused) {
@@ -4985,18 +4984,18 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(236);
-        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(tileZ + sceneBaseTileZ);
         out.write16(objID);
-        out.write16LE(tileX + sceneBaseTileX);
+        out.write16(tileX + sceneBaseTileX);
     }
 
     private void useObjOnLoc(int tileX, int tileZ, int locBitset) {
         out.writeOp(192);
         out.write16(selectedObjInterfaceID);
-        out.write16LE((locBitset >> 14) & 0x7fff);
-        out.write16LEA(tileZ + sceneBaseTileZ);
-        out.write16LE(selectedObjSlot);
-        out.write16LEA(tileX + sceneBaseTileX);
+        out.write16((locBitset >> 14) & 0x7fff);
+        out.write16(tileZ + sceneBaseTileZ);
+        out.write16(selectedObjSlot);
+        out.write16(tileX + sceneBaseTileX);
         out.write16(selectedObjID);
     }
 
@@ -5010,19 +5009,19 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(25);
-        out.write16LE(selectedObjInterfaceID);
-        out.write16A(selectedObjID);
+        out.write16(selectedObjInterfaceID);
+        out.write16(selectedObjID);
         out.write16(groundObjID);
-        out.write16A(tileZ + sceneBaseTileZ);
-        out.write16LEA(selectedObjSlot);
+        out.write16(tileZ + sceneBaseTileZ);
+        out.write16(selectedObjSlot);
         out.write16(tileX + sceneBaseTileX);
     }
 
     private void useObjOption0(int slot, int interfaceID, int objID) {
         out.writeOp(122);
-        out.write16LEA(interfaceID);
-        out.write16A(slot);
-        out.write16LE(objID);
+        out.write16(interfaceID);
+        out.write16(slot);
+        out.write16(objID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5072,7 +5071,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(155);
-        out.write16LE(npcID);
+        out.write16(npcID);
     }
 
     private void usePlayerOption1(int playerID) {
@@ -5086,7 +5085,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(153);
-        out.write16LE(playerID);
+        out.write16(playerID);
     }
 
     private void useWalkHereOption(int mouseX, int mouseY) {
@@ -5100,16 +5099,16 @@ public class Game extends GameShell {
     private void useLocOption4(int tileX, int tileZ, int locBitset) {
         interactWithLoc(locBitset, tileX, tileZ);
         out.writeOp(228);
-        out.write16A((locBitset >> 14) & 0x7fff);
-        out.write16A(tileZ + sceneBaseTileZ);
+        out.write16((locBitset >> 14) & 0x7fff);
+        out.write16(tileZ + sceneBaseTileZ);
         out.write16(tileX + sceneBaseTileX);
     }
 
     private void useInventoryOption3(int slot, int interfaceID, int objID) {
         out.writeOp(129);
-        out.write16A(slot);
+        out.write16(slot);
         out.write16(interfaceID);
-        out.write16A(objID);
+        out.write16(objID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5124,9 +5123,9 @@ public class Game extends GameShell {
 
     private void useInventoryOption4(int a, int interfaceID, int c) {
         out.writeOp(135);
-        out.write16LE(a);
-        out.write16A(interfaceID);
-        out.write16LE(c);
+        out.write16(a);
+        out.write16(interfaceID);
+        out.write16(c);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = a;
@@ -5141,9 +5140,9 @@ public class Game extends GameShell {
 
     private void useObjOption2(int slot, int interfaceID, int c) {
         out.writeOp(16);
-        out.write16A(c);
-        out.write16LEA(slot);
-        out.write16LEA(interfaceID);
+        out.write16(c);
+        out.write16(slot);
+        out.write16(interfaceID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5170,7 +5169,7 @@ public class Game extends GameShell {
             // trade
             if (action == 484) {
                 out.writeOp(139);
-                out.write16LE(playerIDs[i]);
+                out.write16(playerIDs[i]);
             }
 
             // challenge
@@ -5191,10 +5190,10 @@ public class Game extends GameShell {
     private void useObjOnObj(int slot, int interfaceID, int objID) {
         out.writeOp(53);
         out.write16(slot);
-        out.write16A(selectedObjSlot);
-        out.write16LEA(objID);
+        out.write16(selectedObjSlot);
+        out.write16(objID);
         out.write16(selectedObjInterfaceID);
-        out.write16LE(selectedObjID);
+        out.write16(selectedObjID);
         out.write16(interfaceID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
@@ -5210,9 +5209,9 @@ public class Game extends GameShell {
 
     private void useObjOption4(int slot, int interfaceID, int objID) {
         out.writeOp(87);
-        out.write16A(objID);
+        out.write16(objID);
         out.write16(interfaceID);
-        out.write16A(slot);
+        out.write16(slot);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5256,9 +5255,9 @@ public class Game extends GameShell {
 
     private void useInventoryOption1(int slot, int interfaceID, int objID) {
         out.writeOp(117);
-        out.write16LEA(interfaceID);
-        out.write16LEA(objID);
-        out.write16LE(slot);
+        out.write16(interfaceID);
+        out.write16(objID);
+        out.write16(slot);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5282,7 +5281,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(73);
-        out.write16LE(c);
+        out.write16(c);
     }
 
     private void useGroundObjOption4(int tileX, int tileZ, int objID) {
@@ -5295,16 +5294,16 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(79);
-        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(tileZ + sceneBaseTileZ);
         out.write16(objID);
-        out.write16A(tileX + sceneBaseTileX);
+        out.write16(tileX + sceneBaseTileX);
     }
 
     private void useInventoryOption0(int slot, int interfaceID, int objID) {
         out.writeOp(145);
-        out.write16A(interfaceID);
-        out.write16A(slot);
-        out.write16A(objID);
+        out.write16(interfaceID);
+        out.write16(slot);
+        out.write16(objID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5319,9 +5318,9 @@ public class Game extends GameShell {
 
     private void useObjOption3(int slot, int interfaceID, int objID) {
         out.writeOp(75);
-        out.write16LEA(interfaceID);
-        out.write16LE(slot);
-        out.write16A(objID);
+        out.write16(interfaceID);
+        out.write16(slot);
+        out.write16(objID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5344,9 +5343,9 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(156);
-        out.write16A(tileX + sceneBaseTileX);
-        out.write16LE(tileZ + sceneBaseTileZ);
-        out.write16LEA(objID);
+        out.write16(tileX + sceneBaseTileX);
+        out.write16(tileZ + sceneBaseTileZ);
+        out.write16(objID);
     }
 
     private void castSpellOnGroundObj(int tileX, int tileZ, int objID) {
@@ -5359,10 +5358,10 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(181);
-        out.write16LE(tileZ + sceneBaseTileZ);
+        out.write16(tileZ + sceneBaseTileZ);
         out.write16(objID);
-        out.write16LE(tileX + sceneBaseTileX);
-        out.write16A(activeSpellID);
+        out.write16(tileX + sceneBaseTileX);
+        out.write16(activeSpellID);
     }
 
     private void useSelectOption(int interfaceID) {
@@ -5390,7 +5389,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(17);
-        out.write16LEA(npcID);
+        out.write16(npcID);
     }
 
     private void useNPCOption3(int npcID) {
@@ -5418,8 +5417,8 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(131);
-        out.write16LEA(npcID);
-        out.write16A(activeSpellID);
+        out.write16(npcID);
+        out.write16(activeSpellID);
     }
 
     private void examineNPC(int npcID) {
@@ -5451,9 +5450,9 @@ public class Game extends GameShell {
     private void useLocOption1(int a, int b, int c) {
         interactWithLoc(c, a, b);
         out.writeOp(252);
-        out.write16LEA((c >> 14) & 0x7fff);
-        out.write16LE(b + sceneBaseTileZ);
-        out.write16A(a + sceneBaseTileX);
+        out.write16((c >> 14) & 0x7fff);
+        out.write16(b + sceneBaseTileZ);
+        out.write16(a + sceneBaseTileX);
     }
 
     private void useNPCOption1(int c) {
@@ -5467,7 +5466,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(72);
-        out.write16A(c);
+        out.write16(c);
     }
 
     private void castSpellOnPlayer(int playerID) {
@@ -5481,8 +5480,8 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(249);
-        out.write16A(playerID);
-        out.write16LE(activeSpellID);
+        out.write16(playerID);
+        out.write16(activeSpellID);
     }
 
     private void usePlayerOption4(int playerID) {
@@ -5496,7 +5495,7 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(39);
-        out.write16LE(playerID);
+        out.write16(playerID);
     }
 
     private void usePlayerOption3(int playerID) {
@@ -5510,15 +5509,15 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(139);
-        out.write16LE(playerID);
+        out.write16(playerID);
     }
 
     private void castSpellOnLoc(int tileX, int tileZ, int locBitset) {
         out.writeOp(35);
-        out.write16LE(tileX + sceneBaseTileX);
-        out.write16A(activeSpellID);
-        out.write16A(tileZ + sceneBaseTileZ);
-        out.write16LE((locBitset >> 14) & 0x7fff);
+        out.write16(tileX + sceneBaseTileX);
+        out.write16(activeSpellID);
+        out.write16(tileZ + sceneBaseTileZ);
+        out.write16((locBitset >> 14) & 0x7fff);
     }
 
     private void useGroundObjOption1(int tileX, int tileZ, int objID) {
@@ -5531,16 +5530,16 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(23);
-        out.write16LE(tileZ + sceneBaseTileZ);
-        out.write16LE(objID);
-        out.write16LE(tileX + sceneBaseTileX);
+        out.write16(tileZ + sceneBaseTileZ);
+        out.write16(objID);
+        out.write16(tileX + sceneBaseTileX);
     }
 
     private void useInventoryOption2(int slot, int interfaceID, int objID) {
         out.writeOp(43);
-        out.write16LE(interfaceID);
-        out.write16A(objID);
-        out.write16A(slot);
+        out.write16(interfaceID);
+        out.write16(objID);
+        out.write16(slot);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5556,9 +5555,9 @@ public class Game extends GameShell {
     private void castSpellOnObj(int slot, int interfaceID, int objID) {
         out.writeOp(237);
         out.write16(slot);
-        out.write16A(objID);
+        out.write16(objID);
         out.write16(interfaceID);
-        out.write16A(activeSpellID);
+        out.write16(activeSpellID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5599,10 +5598,10 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(14);
-        out.write16A(selectedObjInterfaceID);
+        out.write16(selectedObjInterfaceID);
         out.write16(playerID);
         out.write16(selectedObjID);
-        out.write16LE(selectedObjSlot);
+        out.write16(selectedObjSlot);
     }
 
     private void promptMessageFriend(long name37) {
@@ -5629,8 +5628,8 @@ public class Game extends GameShell {
     private void useObjOption1(int slot, int interfaceID, int objID) {
         out.writeOp(41);
         out.write16(objID);
-        out.write16A(slot);
-        out.write16A(interfaceID);
+        out.write16(slot);
+        out.write16(interfaceID);
         actionCycles = 0;
         actionInterfaceID = interfaceID;
         actionSlot = slot;
@@ -5654,31 +5653,31 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(18);
-        out.write16LE(npcID);
+        out.write16(npcID);
     }
 
     private void useLocOption2(int a, int b, int c) {
         interactWithLoc(c, a, b);
         out.writeOp(70);
-        out.write16LE(a + sceneBaseTileX);
+        out.write16(a + sceneBaseTileX);
         out.write16(b + sceneBaseTileZ);
-        out.write16LEA((c >> 14) & 0x7fff);
+        out.write16((c >> 14) & 0x7fff);
     }
 
     private void useLocOption3(int a, int b, int c) {
         interactWithLoc(c, a, b);
         out.writeOp(234);
-        out.write16LEA(a + sceneBaseTileX);
-        out.write16A((c >> 14) & 0x7fff);
-        out.write16LEA(b + sceneBaseTileZ);
+        out.write16(a + sceneBaseTileX);
+        out.write16((c >> 14) & 0x7fff);
+        out.write16(b + sceneBaseTileZ);
     }
 
     private void useLocOption0(int a, int b, int c) {
         interactWithLoc(c, a, b);
         out.writeOp(132);
-        out.write16LEA(a + sceneBaseTileX);
+        out.write16(a + sceneBaseTileX);
         out.write16((c >> 14) & 0x7fff);
-        out.write16A(b + sceneBaseTileZ);
+        out.write16(b + sceneBaseTileZ);
     }
 
     private void examineInventoryObj(int slot, int interfaceID, int objID) {
@@ -5740,9 +5739,9 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(253);
-        out.write16LE(localTileX + sceneBaseTileX);
-        out.write16LEA(localTileZ + sceneBaseTileZ);
-        out.write16A(objID);
+        out.write16(localTileX + sceneBaseTileX);
+        out.write16(localTileZ + sceneBaseTileZ);
+        out.write16(objID);
     }
 
     private void examineObj(int objID) {
@@ -5767,10 +5766,10 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(57);
-        out.write16A(selectedObjID);
-        out.write16A(npcID);
-        out.write16LE(selectedObjSlot);
-        out.write16A(selectedObjInterfaceID);
+        out.write16(selectedObjID);
+        out.write16(npcID);
+        out.write16(selectedObjSlot);
+        out.write16(selectedObjInterfaceID);
     }
 
     public void updateChatOverride() {
@@ -6088,11 +6087,11 @@ public class Game extends GameShell {
                 out.writeOp(4);
                 out.write8(0);
                 int startPosition = out.position;
-                out.write8S(style);
-                out.write8S(color);
+                out.write8(style);
+                out.write8(color);
                 chatBuffer.position = 0;
                 ChatCompression.pack(chatTyped, chatBuffer);
-                out.writeA(chatBuffer.data, 0, chatBuffer.position);
+                out.write(chatBuffer.data, 0, chatBuffer.position);
                 out.writeSize(out.position - startPosition);
                 chatTyped = ChatCompression.format(chatTyped);
                 chatTyped = Censor.filter(chatTyped);
@@ -7459,7 +7458,7 @@ public class Game extends GameShell {
                 out.write8(count + count + 3);
             }
 
-            out.write16LEA(startX + sceneBaseTileX);
+            out.write16(startX + sceneBaseTileX);
 
             flagSceneTileX = bfsStepX[0];
             flagSceneTileZ = bfsStepZ[0];
@@ -7470,8 +7469,9 @@ public class Game extends GameShell {
                 out.write8(bfsStepZ[length] - startZ);
             }
 
-            out.write16LE(startZ + sceneBaseTileZ);
-            out.write8C((super.actionKey[5] != 1) ? 0 : 1);
+            out.write16(startZ + sceneBaseTileZ);
+            int value = (super.actionKey[5] != 1) ? 0 : 1;
+            out.write8(value);
             return true;
         }
 
@@ -7541,8 +7541,8 @@ public class Game extends GameShell {
     }
 
     private void readNPCTargetTile(NPCEntity npc) {
-        npc.targetTileX = in.readU16LE();
-        npc.targetTileZ = in.readU16LE();
+        npc.targetTileX = in.readU16();
+        npc.targetTileZ = in.readU16();
     }
 
     private void readNPCChat(NPCEntity npc) {
@@ -7551,16 +7551,16 @@ public class Game extends GameShell {
     }
 
     private void readNPCDamage1(NPCEntity npc) {
-        int damage = in.readU8C();
-        int type = in.readU8S();
+        int damage = in.readU8();
+        int type = in.readU8();
         npc.hit(type, damage);
         npc.combatCycle = loopCycle + 300;
-        npc.health = in.readU8S();
-        npc.totalHealth = in.readU8C();
+        npc.health = in.readU8();
+        npc.totalHealth = in.readU8();
     }
 
     private void readNPCTransform(NPCEntity npc) {
-        npc.type = NPCType.get(in.readU16LEA());
+        npc.type = NPCType.get(in.readU16());
         npc.size = npc.type.size;
         npc.turnSpeed = npc.type.turnSpeed;
         npc.seqWalkID = npc.type.seqWalkID;
@@ -7571,7 +7571,7 @@ public class Game extends GameShell {
     }
 
     private void readNPCAnimation(NPCEntity npc) {
-        int seqID = in.readU16LE();
+        int seqID = in.readU16();
 
         if (seqID == 65535) {
             seqID = -1;
@@ -7602,11 +7602,11 @@ public class Game extends GameShell {
     }
 
     private void readNPCDamage0(NPCEntity npc) {
-        int damage = in.readU8A();
-        int type = in.readU8C();
+        int damage = in.readU8();
+        int type = in.readU8();
         npc.hit(type, damage);
         npc.combatCycle = loopCycle + 300;
-        npc.health = in.readU8A();
+        npc.health = in.readU8();
         npc.totalHealth = in.readU8();
     }
 
@@ -10502,7 +10502,7 @@ public class Game extends GameShell {
     }
 
     private void readObjAdd() {
-        int objID = in.readU16LEA();
+        int objID = in.readU16();
         int objCount = in.readU16();
         int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
@@ -10520,11 +10520,11 @@ public class Game extends GameShell {
     }
 
     private void readObjReveal() {
-        int objID = in.readU16A();
-        int pos = in.readU8S();
+        int objID = in.readU16();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int ownerPID = in.readU16A();
+        int ownerPID = in.readU16();
         int objCount = in.readU16();
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104) && (ownerPID != localPID)) {
             ObjEntity obj = new ObjEntity();
@@ -10562,7 +10562,7 @@ public class Game extends GameShell {
     }
 
     private void readObjDelete() {
-        int pos = in.readU8A();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
         int objID = in.readU16();
@@ -10585,11 +10585,11 @@ public class Game extends GameShell {
     }
 
     private void readLocAdd() {
-        int pos = in.readU8A();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int id = in.readU16LE();
-        int info = in.readU8S();
+        int id = in.readU16();
+        int info = in.readU8();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
@@ -10599,14 +10599,14 @@ public class Game extends GameShell {
     }
 
     private void readLocChange() {
-        int pos = in.readU8S();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int info = in.readU8S();
+        int info = in.readU8();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
-        int seqID = in.readU16A();
+        int seqID = in.readU16();
 
         if ((x < 0) || (z < 0) || (x >= 103) || (z >= 103)) {
             return;
@@ -10662,7 +10662,7 @@ public class Game extends GameShell {
     }
 
     private void readLocDelete() {
-        int info = in.readU8C();
+        int info = in.readU8();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
@@ -10675,21 +10675,21 @@ public class Game extends GameShell {
     }
 
     private void readLocPlayer() {
-        int pos = in.readU8S();
+        int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
         int pid = in.readU16();
-        byte maxX = in.read8S();
-        int delay = in.readU16LE();
-        byte maxZ = in.read8C();
+        byte maxX = in.read8();
+        int delay = in.readU16();
+        byte maxZ = in.read8();
         int duration = in.readU16();
-        int info = in.readU8S();
+        int info = in.readU8();
         int kind = info >> 2;
         int rotation = info & 3;
         int classID = LOC_KIND_TO_CLASS_ID[kind];
         byte minX = in.read8();
         int locID = in.readU16();
-        byte minZ = in.read8C();
+        byte minZ = in.read8();
         PlayerEntity player;
 
         if (pid == localPID) {
@@ -11267,7 +11267,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.UPDATE_REBOOT_TIMER:
-                    systemUpdateTimer = in.readU16LE() * 30;
+                    systemUpdateTimer = in.readU16() * 30;
                     break;
 
                 case PacketIn.ZONE_UPDATE:
@@ -11327,8 +11327,8 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.ZONE_BASE:
-                    baseZ = in.readU8C();
-                    baseX = in.readU8C();
+                    baseZ = in.readU8();
+                    baseX = in.readU8();
                     break;
 
                 case PacketIn.TAB_HINT:
@@ -11381,8 +11381,8 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.LOCAL_PLAYER:
-                    isMember = in.readU8A();
-                    localPID = in.readU16LEA();
+                    isMember = in.readU8();
+                    localPID = in.readU16();
                     break;
 
                 case PacketIn.SYNC_NPCS:
@@ -11402,7 +11402,7 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.IF_CHAT_STICKY:
-                    stickyChatInterfaceID = in.read16LEA();
+                    stickyChatInterfaceID = in.read16();
                     redrawChatback = true;
                     break;
 
@@ -11475,10 +11475,10 @@ public class Game extends GameShell {
     }
 
     private void readLastLoginInfo() {
-        daysSinceRecoveriesChanged = in.readU8C();
-        unreadMessages = in.readU16A();
+        daysSinceRecoveriesChanged = in.readU8();
+        unreadMessages = in.readU16();
         warnMembersInNonMembers = in.readU8();
-        lastAddress = in.read32ME();
+        lastAddress = in.read32();
         daysSinceLastLogin = in.readU16();
 
         if ((lastAddress != 0) && (viewportInterfaceID == -1)) {
@@ -11505,8 +11505,8 @@ public class Game extends GameShell {
     }
 
     private void readZoneClear() {
-        baseX = in.readU8C();
-        baseZ = in.readU8S();
+        baseX = in.readU8();
+        baseZ = in.readU8();
         for (int x = baseX; x < (baseX + 8); x++) {
             for (int z = baseZ; z < (baseZ + 8); z++) {
                 if (levelObjStacks[currentLevel][x][z] != null) {
@@ -11523,7 +11523,7 @@ public class Game extends GameShell {
     }
 
     private void readIfSetPlayerHead() {
-        int interfaceID = in.readU16LEA();
+        int interfaceID = in.readU16();
         IfType iface = IfType.instances[interfaceID];
         iface.modelType = IfType.MODEL_TYPE_PLAYER;
 
@@ -11542,7 +11542,7 @@ public class Game extends GameShell {
     }
 
     private void readInventoryClear() {
-        int interfaceID = in.readU16LE();
+        int interfaceID = in.readU16();
         IfType iface = IfType.instances[interfaceID];
         for (int slot = 0; slot < iface.inventorySlotObjID.length; slot++) {
             iface.inventorySlotObjID[slot] = -1;
@@ -11602,7 +11602,7 @@ public class Game extends GameShell {
     private void readUpdateStat() {
         redrawSidebar = true;
         int skill = in.readU8();
-        int experience = in.read32RME();
+        int experience = in.read32();
         int level = in.readU8();
         skillExperience[skill] = experience;
         skillLevel[skill] = level;
@@ -11616,7 +11616,7 @@ public class Game extends GameShell {
 
     private void readIfTab() {
         int interfaceID = in.readU16();
-        int tab = in.readU8A();
+        int tab = in.readU8();
         if (interfaceID == 65535) {
             interfaceID = -1;
         }
@@ -11626,7 +11626,7 @@ public class Game extends GameShell {
     }
 
     private void readMidiSong() {
-        int next = in.readU16LE();
+        int next = in.readU16();
         if (next == 65535) {
             next = -1;
         }
@@ -11639,8 +11639,8 @@ public class Game extends GameShell {
     }
 
     private void readMidiJingle() {
-        int next = in.readU16LEA();
-        int delay = in.readU16A();
+        int next = in.readU16();
+        int delay = in.readU16();
         if (midiEnabled && !lowmem) {
             song = next;
             songFading = false;
@@ -11651,8 +11651,8 @@ public class Game extends GameShell {
 
     private void readIfSetPosition() {
         int x = in.read16();
-        int y = in.read16LE();
-        int interfaceID = in.readU16LE();
+        int y = in.read16();
+        int interfaceID = in.readU16();
         IfType iface = IfType.instances[interfaceID];
         iface.x = x;
         iface.y = y;
@@ -11663,13 +11663,13 @@ public class Game extends GameShell {
         int zoneZ = sceneCenterZoneZ;
 
         if (packetType == PacketIn.REBUILD_REGION) {
-            zoneX = in.readU16A();
+            zoneX = in.readU16();
             zoneZ = in.readU16();
             sceneInstanced = false;
         }
 
         if (packetType == PacketIn.REBUILD_REGION_INSTANCE) {
-            zoneZ = in.readU16A();
+            zoneZ = in.readU16();
             in.accessBits();
 
             for (int level = 0; level < 4; level++) {
@@ -11906,7 +11906,7 @@ public class Game extends GameShell {
     }
 
     private void readIfViewportOverlay() {
-        int interfaceID = in.read16LE();
+        int interfaceID = in.read16();
         if (interfaceID >= 0) {
             resetInterfaceAnimation(interfaceID);
         }
@@ -11914,15 +11914,15 @@ public class Game extends GameShell {
     }
 
     private void readIfSetNPCHead() {
-        int npcID = in.readU16LEA();
-        int interfaceID = in.readU16LEA();
+        int npcID = in.readU16();
+        int interfaceID = in.readU16();
         IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NPC;
         IfType.instances[interfaceID].modelID = npcID;
     }
 
     private void readZoneUpdate() {
         baseZ = in.readU8();
-        baseX = in.readU8C();
+        baseX = in.readU8();
         while (in.position < packetSize) {
             readZonePacket(in.readU8());
         }
@@ -11953,8 +11953,8 @@ public class Game extends GameShell {
     }
 
     private void readSetPlayerOp() {
-        int option = in.readU8C();
-        int priority = in.readU8A();
+        int option = in.readU8();
+        int priority = in.readU8();
         String text = in.readString();
         if ((option >= 1) && (option <= 5)) {
             if (text.equalsIgnoreCase("null")) {
@@ -12133,7 +12133,7 @@ public class Game extends GameShell {
     }
 
     private void readIfViewportAndSidebar() {
-        int viewportInterfaceID = in.readU16A();
+        int viewportInterfaceID = in.readU16();
         int sidebarInterfaceID = in.readU16();
 
         if (chatInterfaceID != -1) {
@@ -12154,8 +12154,8 @@ public class Game extends GameShell {
     }
 
     private void readIfSetScrollPos() {
-        int interfaceID = in.readU16LE();
-        int scrollPos = in.readU16A();
+        int interfaceID = in.readU16();
+        int scrollPos = in.readU16();
         IfType iface = IfType.instances[interfaceID];
         if ((iface != null) && (iface.type == IfType.TYPE_PARENT)) {
             if (scrollPos < 0) {
@@ -12223,7 +12223,7 @@ public class Game extends GameShell {
     }
 
     private void readTabHint() {
-        flashingTab = in.readU8S();
+        flashingTab = in.readU8();
         if (flashingTab == selectedTab) {
             if (flashingTab == 3) {
                 selectedTab = 1;
@@ -12235,7 +12235,7 @@ public class Game extends GameShell {
     }
 
     private void readIfSetObject() {
-        int interfaceID = in.readU16LE();
+        int interfaceID = in.readU16();
         int zoom = in.readU16();
         int objID = in.readU16();
 
@@ -12259,7 +12259,7 @@ public class Game extends GameShell {
     }
 
     private void readIfStopAnim() {
-        int interfaceID = in.readU16LE();
+        int interfaceID = in.readU16();
         resetInterfaceAnimation(interfaceID);
         if (chatInterfaceID != -1) {
             chatInterfaceID = -1;
@@ -12278,7 +12278,7 @@ public class Game extends GameShell {
 
     private void readIfSetText() {
         String text = in.readString();
-        int interfaceID = in.readU16A();
+        int interfaceID = in.readU16();
         if ((interfaceID >= 0) && (interfaceID < IfType.instances.length)) {
             IfType iface = IfType.instances[interfaceID];
             if (iface != null) {
@@ -12306,15 +12306,15 @@ public class Game extends GameShell {
     }
 
     private void readIfSetModel() {
-        int interfaceID = in.readU16LEA();
+        int interfaceID = in.readU16();
         int modelID = in.readU16();
         IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NORMAL;
         IfType.instances[interfaceID].modelID = modelID;
     }
 
     private void readIfSetColor() {
-        int interfaceID = in.readU16LEA();
-        int rgb555 = in.readU16LEA();
+        int interfaceID = in.readU16();
+        int rgb555 = in.readU16();
         int r = (rgb555 >> 10) & 0x1f;
         int g = (rgb555 >> 5) & 0x1f;
         int b = rgb555 & 0x1f;
@@ -12331,13 +12331,13 @@ public class Game extends GameShell {
             int objCount = in.readU8();
 
             if (objCount == 255) {
-                objCount = in.read32ME();
+                objCount = in.read32();
             }
 
             if (slot >= iface.inventorySlotObjID.length) {
-                in.readU16LEA();
+                in.readU16();
             } else {
-                iface.inventorySlotObjID[slot] = in.readU16LEA();
+                iface.inventorySlotObjID[slot] = in.readU16();
                 iface.inventorySlotObjCount[slot] = objCount;
             }
         }
@@ -12350,10 +12350,10 @@ public class Game extends GameShell {
     }
 
     private void readIfSetAngle() {
-        int zoom = in.readU16A();
+        int zoom = in.readU16();
         int interfaceID = in.readU16();
         int pitch = in.readU16();
-        int yaw = in.readU16LEA();
+        int yaw = in.readU16();
         IfType.instances[interfaceID].modelPitch = pitch;
         IfType.instances[interfaceID].modelYaw = yaw;
         IfType.instances[interfaceID].modelZoom = zoom;
@@ -12391,8 +12391,8 @@ public class Game extends GameShell {
     }
 
     private void readVarpLarge() {
-        int varpID = in.readU16LE();
-        int value = in.read32RME();
+        int varpID = in.readU16();
+        int value = in.read32();
         varCache[varpID] = value;
 
         if (varps[varpID] != value) {
@@ -12406,7 +12406,7 @@ public class Game extends GameShell {
     }
 
     private void readVarpSmall() {
-        int varpID = in.readU16LE();
+        int varpID = in.readU16();
         byte value = in.read8();
         varCache[varpID] = value;
 
@@ -12451,13 +12451,13 @@ public class Game extends GameShell {
     }
 
     private void readTabSelected() {
-        selectedTab = in.readU8C();
+        selectedTab = in.readU8();
         redrawSidebar = true;
         redrawSideicons = true;
     }
 
     private void readIfChat() {
-        int interfaceID = in.readU16LE();
+        int interfaceID = in.readU16();
         resetInterfaceAnimation(interfaceID);
         if (sidebarInterfaceID != -1) {
             sidebarInterfaceID = -1;
