@@ -9,12 +9,8 @@ import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
@@ -22,7 +18,7 @@ public class Game extends GameShell {
 
     public static final int[][] designPartColor = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
     public static final int[] designHairColor = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-    public static final BigInteger RSA_MODULUS = new BigInteger("150437374157649496260907284144944613391868328356428312785170855566836496148649769873303054925785940753587048471819630374797613652942136320599534564023031743563833250113572385619350489566973866283982326500382760586083379242813677444239924493338426453599564333273724064297982529208425077775100347146662074078333");
+    public static final BigInteger RSA_MODULUS = new BigInteger("93242968160874178961141117696454914926166521358383643939595601370942521521455093876700186936128124949901378336375511410217991934828200240269085956210638221495526997837548491830752932530323575801712019043394543804370633230061376050751046581208165580348020342842759208678350940524484990087619945235963501586831");
     public static final int[] levelExperience;
     public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
     public static final String VALID_CHAT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
@@ -573,8 +569,8 @@ public class Game extends GameShell {
     public int messageCounter;
     public int minimapZoom;
     public long lastWaveStartTime;
-    public String username = "";
-    public String password = "";
+    public String username = "dane";
+    public String password = "qweasdzxc";
     public boolean errorHost = false;
     public int reportAbuseInterfaceID = -1;
     public DoublyLinkedList temporaryLocs = new DoublyLinkedList();
@@ -714,7 +710,7 @@ public class Game extends GameShell {
         }
 
         try {
-            loadArchiveChecksums();
+            //loadArchiveChecksums();
 
             archiveTitle = loadArchive(1, "title screen", "title", archiveChecksum[1], 25);
             fontPlain11 = new BitmapFont(archiveTitle, "p11_full", false);
@@ -728,9 +724,9 @@ public class Game extends GameShell {
             FileArchive archiveConfig = loadArchive(2, "config", "config", archiveChecksum[2], 30);
             FileArchive archiveInterface = loadArchive(3, "interface", "interface", archiveChecksum[3], 35);
             FileArchive archiveMedia = loadArchive(4, "2d graphics", "media", archiveChecksum[4], 40);
-            FileArchive archiveTextures = loadArchive(6, "textures", "textures", archiveChecksum[6], 45);
+            FileArchive archiveTextures = loadArchive(6, "textures", "texture", archiveChecksum[6], 45);
             FileArchive archiveWordenc = loadArchive(7, "chat system", "wordenc", archiveChecksum[7], 50);
-            FileArchive archiveSounds = loadArchive(8, "sound effects", "sounds", archiveChecksum[8], 55);
+            FileArchive archiveSounds = loadArchive(8, "sound effects", "sound", archiveChecksum[8], 55);
 
             levelTileFlags = new byte[4][104][104];
             levelHeightmap = new int[4][105][105];
@@ -753,7 +749,7 @@ public class Game extends GameShell {
             Model.init(ondemand.getFileCount(0), ondemand);
 
             if (!lowmem) {
-                song = 7;
+                song = 0;
 
                 try {
                     song = Integer.parseInt(getParameter("music"));
@@ -1578,7 +1574,7 @@ public class Game extends GameShell {
         Draw2D.drawLineX(0, 77, 479, 0);
     }
 
-    static String server = "0.0.0.0";
+    static String server = "world53.scape05.com";
 
     public Socket openSocket(int port) throws IOException {
         return new Socket(InetAddress.getByName(server), port);
@@ -2352,6 +2348,10 @@ public class Game extends GameShell {
     }
 
     public void updateVarp(int varpID) {
+        if (varpID >= VarpType.instances.length) {
+            return;
+        }
+
         int type = VarpType.instances[varpID].type;
 
         if (type == 0) {
@@ -2802,7 +2802,7 @@ public class Game extends GameShell {
         textureBuffer = buffer0;
 
         // causes the texture to rebuild
-        Draw3D.pushTexture(textureID);
+        Draw3D.releaseTexture(textureID);
     }
 
     public void updateEntityChats() {
@@ -3322,7 +3322,7 @@ public class Game extends GameShell {
             }
 
             if ((updates & 0x100) != 0) {
-                readPlayerGraphic(player);
+                readPlayerSpotAnim(player);
             }
 
             if ((updates & 8) != 0) {
@@ -3330,7 +3330,7 @@ public class Game extends GameShell {
             }
 
             if ((updates & 4) != 0) {
-                readPlayerChatForced(player);
+                readPlayerBlurb(player);
             }
 
             if ((updates & 0x80) != 0) {
@@ -3370,10 +3370,11 @@ public class Game extends GameShell {
         player.resetPath();
     }
 
-    private void readPlayerGraphic(PlayerEntity player) {
+    private void readPlayerSpotAnim(PlayerEntity player) {
         player.spotanimID = in.readU16LE();
         player.spotanimOffset = in.readU16();
         player.spotanimLastCycle = loopCycle + in.readU16();
+        in.readU16(); // additional offset
         player.spotanimFrame = 0;
         player.spotanimCycle = 0;
 
@@ -3392,7 +3393,9 @@ public class Game extends GameShell {
         if (seqID == 65535) {
             seqID = -1;
         }
-
+        if (seqID >= SeqType.instances.length) {
+            seqID = -1;
+        }
         int delay = in.readU8C();
 
         if ((seqID == player.primarySeqID) && (seqID != -1)) {
@@ -3418,7 +3421,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void readPlayerChatForced(PlayerEntity player) {
+    private void readPlayerBlurb(PlayerEntity player) {
         player.chat = in.readString();
 
         if (player.chat.charAt(0) == '~') {
@@ -3436,7 +3439,7 @@ public class Game extends GameShell {
     private void readPlayerChat(PlayerEntity player) {
         int colorStyle = in.readU16LE();
         int role = in.readU8();
-        int length = in.readU8C();
+        int length = in.readU8();
         int start = in.position;
 
         if ((player.name != null) && player.visible) {
@@ -3455,12 +3458,7 @@ public class Game extends GameShell {
 
             if (!ignore && (overrideChat == 0)) {
                 try {
-                    chatBuffer.position = 0;
-                    in.readReversed(chatBuffer.data, 0, length);
-                    chatBuffer.position = 0;
-
-                    String chat = ChatCompression.unpack(length, chatBuffer);
-                    chat = Censor.filter(chat);
+                    String chat = in.readString();
 
                     player.chat = chat;
                     player.chatColor = colorStyle >> 8;
@@ -4577,14 +4575,15 @@ public class Game extends GameShell {
             if (filestores[0] != null) {
                 data = filestores[0].read(fileId);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (data != null) {
             crc32.reset();
             crc32.update(data);
             if ((int) crc32.getValue() != expectedChecksum) {
-                data = null;
+                //data = null;
             }
         }
 
@@ -4600,7 +4599,7 @@ public class Game extends GameShell {
             try {
                 int lastPercent = 0;
 
-                DataInputStream in = openURL(fileName + expectedChecksum);
+                DataInputStream in = openURL("archive/"+fileName);
                 Buffer buffer = new Buffer(new byte[6]);
                 in.readFully(buffer.data, 0, 6);
                 buffer.position = 3;
@@ -4653,12 +4652,13 @@ public class Game extends GameShell {
                     int calculatedChecksum = (int) crc32.getValue();
 
                     if (calculatedChecksum != expectedChecksum) {
-                        data = null;
+                        //data = null;
                         checksumErrors++;
                         error = "Checksum error: " + calculatedChecksum;
                     }
                 }
             } catch (IOException ioexception) {
+                ioexception.printStackTrace();
                 if (error.equals("Unknown error")) {
                     error = "Connection error";
                 }
@@ -6087,26 +6087,11 @@ public class Game extends GameShell {
 
                 out.writeOp(4);
                 out.write8(0);
-                int startPosition = out.position;
+                int start = out.position;
                 out.write8S(style);
                 out.write8S(color);
-                chatBuffer.position = 0;
-                ChatCompression.pack(chatTyped, chatBuffer);
-                out.writeA(chatBuffer.data, 0, chatBuffer.position);
-                out.writeSize(out.position - startPosition);
-                chatTyped = ChatCompression.format(chatTyped);
-                chatTyped = Censor.filter(chatTyped);
-                localPlayer.chat = chatTyped;
-                localPlayer.chatColor = color;
-                localPlayer.chatStyle = style;
-                localPlayer.chatTimer = 150;
-                if (rights == 2) {
-                    addMessage(2, "@cr2@" + localPlayer.name, localPlayer.chat);
-                } else if (rights == 1) {
-                    addMessage(2, "@cr1@" + localPlayer.name, localPlayer.chat);
-                } else {
-                    addMessage(2, localPlayer.name, localPlayer.chat);
-                }
+                out.writeString(chatTyped);
+                out.writeSize(out.position - start);
                 if (publicChatSetting == 2) {
                     publicChatSetting = 3;
                     redrawPrivacySettings = true;
@@ -6195,10 +6180,8 @@ public class Game extends GameShell {
                 out.write8(0);
                 int start = out.position;
                 out.write64(inputFriendName37);
-                ChatCompression.pack(socialInput, out);
+                out.writeString(socialInput);
                 out.writeSize(out.position - start);
-                socialInput = ChatCompression.format(socialInput);
-                socialInput = Censor.filter(socialInput);
                 addMessage(6, StringUtil.formatName(StringUtil.fromBase37(inputFriendName37)), socialInput);
                 if (privateChatSetting == 2) {
                     privateChatSetting = 1;
@@ -6963,7 +6946,7 @@ public class Game extends GameShell {
                 drawTitleScreen(true);
             }
 
-            connection = new Connection(this, openSocket(43594 + portOffset));
+            connection = new Connection(this, openSocket(43590 + portOffset));
 
             long name37 = StringUtil.toBase37(username);
             int namePart = (int) ((name37 >> 16) & 31L);
@@ -6984,6 +6967,7 @@ public class Game extends GameShell {
             if (response == 0) {
                 connection.read(in.data, 0, 8);
                 in.position = 0;
+
                 serverSeed = in.read64();
 
                 // apache math tries to fill the remaining 1008 bytes up with random junk if we don't give it 256 ints.
@@ -7003,18 +6987,15 @@ public class Game extends GameShell {
                 out.write32(Signlink.uid);
                 out.writeString(username);
                 out.writeString(password);
+                out.writeString("boobies peepee");
                 out.encrypt(RSA_EXPONENT, RSA_MODULUS);
 
                 login.position = 0;
                 login.write8(reconnect ? 18 : 16);
-                login.write8(out.position + 36 + 1 + 1 + 2);
-                login.write8(255);
-                login.write16(317);
+                login.write8(out.position + 4);
+                login.write8(111);
+                login.write16(39);
                 login.write8(lowmem ? 1 : 0);
-
-                for (int archive = 0; archive < 9; archive++) {
-                    login.write32(archiveChecksum[archive]);
-                }
 
                 login.write(out.data, 0, out.position);
 
@@ -7453,7 +7434,7 @@ public class Game extends GameShell {
                 out.write8(count + count + 3);
             } else if (type == 1) {
                 out.writeOp(248);
-                out.write8(count + count + 3 + 14);
+                out.write8(count + count + 3);
             } else if (type == 2) {
                 out.writeOp(98);
                 out.write8(count + count + 3);
@@ -7494,7 +7475,7 @@ public class Game extends GameShell {
             }
 
             if ((updates & 0x80) != 0) {
-                readNPCGraphic(npc);
+                readNPCSpotAnim(npc);
             }
 
             if ((updates & 0x20) != 0) {
@@ -7519,10 +7500,11 @@ public class Game extends GameShell {
         }
     }
 
-    private void readNPCGraphic(NPCEntity npc) {
+    private void readNPCSpotAnim(NPCEntity npc) {
         npc.spotanimID = in.readU16();
         npc.spotanimOffset = in.readU16();
         npc.spotanimLastCycle = loopCycle + in.readU16();
+        in.readU16();
         npc.spotanimFrame = 0;
         npc.spotanimCycle = 0;
         if (npc.spotanimLastCycle > loopCycle) {
@@ -7574,6 +7556,10 @@ public class Game extends GameShell {
         int seqID = in.readU16LE();
 
         if (seqID == 65535) {
+            seqID = -1;
+        }
+
+        if (seqID >= SeqType.instances.length) {
             seqID = -1;
         }
 
@@ -7860,6 +7846,7 @@ public class Game extends GameShell {
             }
 
             int teleport = in.readN(1);
+            in.readN(7); // angle
             int z = in.readN(5);
             int x = in.readN(5);
 
@@ -7909,20 +7896,6 @@ public class Game extends GameShell {
         int tileZ = (localPlayer.z - relativeZ) >> 7;
 
         boolean ok = tryMove(1, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], tileX, tileZ, 0, 0, 0, 0, 0, true);
-
-        if (ok) {
-            out.write8(x);
-            out.write8(y);
-            out.write16(orbitCameraYaw);
-            out.write8(57);
-            out.write8(minimapAnticheatAngle);
-            out.write8(minimapZoom);
-            out.write8(89);
-            out.write16(localPlayer.x);
-            out.write16(localPlayer.z);
-            out.write8(tryMoveNearest);
-            out.write8(63);
-        }
     }
 
     public String getIntString(int i) {
@@ -10183,23 +10156,7 @@ public class Game extends GameShell {
     }
 
     public DataInputStream openURL(String s) throws IOException {
-        if (!jaggrabEnabled) {
-            return new DataInputStream(new URL(getCodeBase(), s).openStream());
-        }
-
-        if (jaggrabSocket != null) {
-            try {
-                jaggrabSocket.close();
-            } catch (Exception ignored) {
-            }
-            jaggrabSocket = null;
-        }
-        jaggrabSocket = openSocket(43595);
-        jaggrabSocket.setSoTimeout(10000);
-        java.io.InputStream in = jaggrabSocket.getInputStream();
-        OutputStream out = jaggrabSocket.getOutputStream();
-        out.write(("JAGGRAB /" + s + "\n\n").getBytes());
-        return new DataInputStream(in);
+        return new DataInputStream(URI.create("https://cdn.scape05.com/" + s).toURL().openStream());
     }
 
     public void drawFlames() {
@@ -10502,7 +10459,7 @@ public class Game extends GameShell {
     }
 
     private void readObjAdd() {
-        int objID = in.readU16LEA();
+        int objID = in.readU16();
         int objCount = in.readU16();
         int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
@@ -10662,13 +10619,13 @@ public class Game extends GameShell {
     }
 
     private void readLocDelete() {
-        int info = in.readU8C();
-        int kind = info >> 2;
-        int rotation = info & 3;
-        int classID = LOC_KIND_TO_CLASS_ID[kind];
         int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
+        int info = in.readU8();
+        int kind = info >> 2;
+        int rotation = info & 3;
+        int classID = LOC_KIND_TO_CLASS_ID[kind];
         if ((x >= 0) && (z >= 0) && (x < 104) && (z < 104)) {
             appendLoc(-1, -1, rotation, classID, z, kind, currentLevel, x, 0);
         }
@@ -10765,14 +10722,17 @@ public class Game extends GameShell {
         int pos = in.readU8();
         int x = baseX + ((pos >> 4) & 7);
         int z = baseZ + (pos & 7);
-        int waveID = in.readU16();
+        int track = in.readU16();
+        int delay = in.readU16();
         int info = in.readU8();
         int maxDist = (info >> 4) & 0xf;
         int loopCount = info & 0b111;
+        in.read8();
+        in.read8();
         if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && waveEnabled && !lowmem && (waveCount < 50)) {
-            waveIDs[waveCount] = waveID;
+            waveIDs[waveCount] = track;
             waveLoops[waveCount] = loopCount;
-            waveDelay[waveCount] = SoundTrack.delays[waveID];
+            waveDelay[waveCount] = SoundTrack.delays[track];
             waveCount++;
         }
     }
@@ -11381,8 +11341,8 @@ public class Game extends GameShell {
                     break;
 
                 case PacketIn.LOCAL_PLAYER:
-                    isMember = in.readU8A();
-                    localPID = in.readU16LEA();
+                    isMember = in.readU8();
+                    localPID = in.readU16();
                     break;
 
                 case PacketIn.SYNC_NPCS:
@@ -11475,10 +11435,10 @@ public class Game extends GameShell {
     }
 
     private void readLastLoginInfo() {
-        daysSinceRecoveriesChanged = in.readU8C();
-        unreadMessages = in.readU16A();
+        daysSinceRecoveriesChanged = in.readU8();
+        unreadMessages = in.readU16();
         warnMembersInNonMembers = in.readU8();
-        lastAddress = in.read32ME();
+        in.readString(); // lastAddress
         daysSinceLastLogin = in.readU16();
 
         if ((lastAddress != 0) && (viewportInterfaceID == -1)) {
@@ -11602,8 +11562,9 @@ public class Game extends GameShell {
     private void readUpdateStat() {
         redrawSidebar = true;
         int skill = in.readU8();
-        int experience = in.read32RME();
+        int experience = in.read32();
         int level = in.readU8();
+        in.read8();
         skillExperience[skill] = experience;
         skillLevel[skill] = level;
         skillBaseLevel[skill] = 1;
@@ -11627,6 +11588,7 @@ public class Game extends GameShell {
 
     private void readMidiSong() {
         int next = in.readU16LE();
+        in.read8();
         if (next == 65535) {
             next = -1;
         }
@@ -11914,8 +11876,9 @@ public class Game extends GameShell {
     }
 
     private void readIfSetNPCHead() {
-        int npcID = in.readU16LEA();
-        int interfaceID = in.readU16LEA();
+        int npcID = in.readU16();
+        int interfaceID = in.readU16();
+        System.out.println("extra data: " + in.readU16());
         IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NPC;
         IfType.instances[interfaceID].modelID = npcID;
     }
@@ -12278,7 +12241,7 @@ public class Game extends GameShell {
 
     private void readIfSetText() {
         String text = in.readString();
-        int interfaceID = in.readU16A();
+        int interfaceID = in.readU16();
         if ((interfaceID >= 0) && (interfaceID < IfType.instances.length)) {
             IfType iface = IfType.instances[interfaceID];
             if (iface != null) {
@@ -12391,8 +12354,8 @@ public class Game extends GameShell {
     }
 
     private void readVarpLarge() {
-        int varpID = in.readU16LE();
-        int value = in.read32RME();
+        int varpID = in.readU16();
+        int value = in.read32();
         varCache[varpID] = value;
 
         if (varps[varpID] != value) {
@@ -12406,7 +12369,7 @@ public class Game extends GameShell {
     }
 
     private void readVarpSmall() {
-        int varpID = in.readU16LE();
+        int varpID = in.readU16();
         byte value = in.read8();
         varCache[varpID] = value;
 

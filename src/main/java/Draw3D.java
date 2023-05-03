@@ -78,29 +78,29 @@ public class Draw3D {
 
     static {
         for (int i = 1; i < 512; i++) {
-            reciprocal15[i] = (1 << 15) / i;
+            Draw3D.reciprocal15[i] = (1 << 15) / i;
         }
         for (int j = 1; j < 2048; j++) {
-            reciprocal16[j] = (1 << 16) / j;
+            Draw3D.reciprocal16[j] = (1 << 16) / j;
         }
         for (int k = 0; k < 2048; k++) {
-            sin[k] = (int) (65536D * Math.sin((double) k * 0.0030679614999999999D));
-            cos[k] = (int) (65536D * Math.cos((double) k * 0.0030679614999999999D));
+            Draw3D.sin[k] = (int) (65536D * Math.sin((double) k * 0.0030679614999999999D));
+            Draw3D.cos[k] = (int) (65536D * Math.cos((double) k * 0.0030679614999999999D));
         }
     }
 
     public static void unload() {
-        sin = null;
-        cos = null;
-        lineOffset = null;
-        textures = null;
-        textureTranslucent = null;
-        averageTextureRGB = null;
-        texelPool = null;
-        activeTexels = null;
-        textureCycle = null;
-        palette = null;
-        texturePalette = null;
+        Draw3D.sin = null;
+        Draw3D.cos = null;
+        Draw3D.lineOffset = null;
+        Draw3D.textures = null;
+        Draw3D.textureTranslucent = null;
+        Draw3D.averageTextureRGB = null;
+        Draw3D.texelPool = null;
+        Draw3D.activeTexels = null;
+        Draw3D.textureCycle = null;
+        Draw3D.palette = null;
+        Draw3D.texturePalette = null;
     }
 
     /**
@@ -108,12 +108,12 @@ public class Draw3D {
      * stored in {@link Draw2D}.
      */
     public static void init2D() {
-        lineOffset = new int[Draw2D.height];
+        Draw3D.lineOffset = new int[Draw2D.height];
         for (int y = 0; y < Draw2D.height; y++) {
-            lineOffset[y] = Draw2D.width * y;
+            Draw3D.lineOffset[y] = Draw2D.width * y;
         }
-        centerX = Draw2D.width / 2;
-        centerY = Draw2D.height / 2;
+        Draw3D.centerX = Draw2D.width / 2;
+        Draw3D.centerY = Draw2D.height / 2;
     }
 
     /**
@@ -124,21 +124,21 @@ public class Draw3D {
      * @param height the height.
      */
     public static void init3D(int width, int height) {
-        lineOffset = new int[height];
+        Draw3D.lineOffset = new int[height];
         for (int y = 0; y < height; y++) {
-            lineOffset[y] = width * y;
+            Draw3D.lineOffset[y] = width * y;
         }
-        centerX = width / 2;
-        centerY = height / 2;
+        Draw3D.centerX = width / 2;
+        Draw3D.centerY = height / 2;
     }
 
     /**
      * Nullifies the texel pool. {@link #initPool(int)} must be called again if textured triangles are drawn.
      */
     public static void clearTexels() {
-        texelPool = null;
+        Draw3D.texelPool = null;
         for (int j = 0; j < 50; j++) {
-            activeTexels[j] = null;
+            Draw3D.activeTexels[j] = null;
         }
     }
 
@@ -148,56 +148,56 @@ public class Draw3D {
      * @param poolSize the initial pool size.
      */
     public static void initPool(int poolSize) {
-        if (texelPool == null) {
+        if (Draw3D.texelPool == null) {
             Draw3D.poolSize = poolSize;
-            if (lowmem) {
-                texelPool = new int[Draw3D.poolSize][64 * 64 * 4];
+            if (Draw3D.lowmem) {
+                Draw3D.texelPool = new int[Draw3D.poolSize][64 * 64 * 4];
             } else {
-                texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
+                Draw3D.texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
             }
             for (int k = 0; k < 50; k++) {
-                activeTexels[k] = null;
+                Draw3D.activeTexels[k] = null;
             }
         }
     }
 
     public static void unpackTextures(FileArchive archive) {
-        textureCount = 0;
+        Draw3D.textureCount = 0;
 
         for (int textureID = 0; textureID < 50; textureID++) {
             try {
-                textures[textureID] = new Image8(archive, String.valueOf(textureID), 0);
+                Draw3D.textures[textureID] = new Image8(archive, String.valueOf(textureID), 0);
 
-                if (lowmem && (textures[textureID].cropW == 128)) {
-                    textures[textureID].shrink();
+                if (Draw3D.lowmem && (Draw3D.textures[textureID].cropW == 128)) {
+                    Draw3D.textures[textureID].shrink();
                 } else {
-                    textures[textureID].crop();
+                    Draw3D.textures[textureID].crop();
                 }
-                textureCount++;
+                Draw3D.textureCount++;
             } catch (Exception ignored) {
             }
         }
     }
 
     public static int getAverageTextureRGB(int textureID) {
-        if (averageTextureRGB[textureID] != 0) {
-            return averageTextureRGB[textureID];
+        if (Draw3D.averageTextureRGB[textureID] != 0) {
+            return Draw3D.averageTextureRGB[textureID];
         }
         int r = 0;
         int g = 0;
         int b = 0;
-        int length = texturePalette[textureID].length;
+        int length = Draw3D.texturePalette[textureID].length;
         for (int i = 0; i < length; i++) {
-            r += (texturePalette[textureID][i] >> 16) & 0xff;
-            g += (texturePalette[textureID][i] >> 8) & 0xff;
-            b += texturePalette[textureID][i] & 0xff;
+            r += (Draw3D.texturePalette[textureID][i] >> 16) & 0xff;
+            g += (Draw3D.texturePalette[textureID][i] >> 8) & 0xff;
+            b += Draw3D.texturePalette[textureID][i] & 0xff;
         }
         int rgb = ((r / length) << 16) + ((g / length) << 8) + (b / length);
-        rgb = setGamma(rgb, 1.3999999999999999D);
+        rgb = Draw3D.setGamma(rgb, 1.3999999999999999D);
         if (rgb == 0) {
             rgb = 1;
         }
-        averageTextureRGB[textureID] = rgb;
+        Draw3D.averageTextureRGB[textureID] = rgb;
         return rgb;
     }
 
@@ -208,52 +208,52 @@ public class Draw3D {
      *
      * @param textureID the texture id.
      */
-    public static void pushTexture(int textureID) {
-        if (activeTexels[textureID] != null) {
-            texelPool[poolSize++] = activeTexels[textureID];
-            activeTexels[textureID] = null;
+    public static void releaseTexture(int textureID) {
+        if (Draw3D.activeTexels[textureID] != null) {
+            Draw3D.texelPool[Draw3D.poolSize++] = Draw3D.activeTexels[textureID];
+            Draw3D.activeTexels[textureID] = null;
         }
     }
 
     public static int[] getTexels(int textureID) {
-        textureCycle[textureID] = cycle++;
+        Draw3D.textureCycle[textureID] = Draw3D.cycle++;
 
-        if (activeTexels[textureID] != null) {
-            return activeTexels[textureID];
+        if (Draw3D.activeTexels[textureID] != null) {
+            return Draw3D.activeTexels[textureID];
         }
 
         int[] texels;
 
-        if (poolSize > 0) {
-            texels = texelPool[--poolSize];
-            texelPool[poolSize] = null;
+        if (Draw3D.poolSize > 0) {
+            texels = Draw3D.texelPool[--Draw3D.poolSize];
+            Draw3D.texelPool[Draw3D.poolSize] = null;
         } else {
             int cycle = 0;
             int selected = -1;
 
-            for (int t = 0; t < textureCount; t++) {
-                if ((activeTexels[t] != null) && ((textureCycle[t] < cycle) || (selected == -1))) {
-                    cycle = textureCycle[t];
+            for (int t = 0; t < Draw3D.textureCount; t++) {
+                if ((Draw3D.activeTexels[t] != null) && ((Draw3D.textureCycle[t] < cycle) || (selected == -1))) {
+                    cycle = Draw3D.textureCycle[t];
                     selected = t;
                 }
             }
 
-            texels = activeTexels[selected];
-            activeTexels[selected] = null;
+            texels = Draw3D.activeTexels[selected];
+            Draw3D.activeTexels[selected] = null;
         }
 
-        activeTexels[textureID] = texels;
-        Image8 texture = textures[textureID];
-        int[] palette = texturePalette[textureID];
+        Draw3D.activeTexels[textureID] = texels;
+        Image8 texture = Draw3D.textures[textureID];
+        int[] palette = Draw3D.texturePalette[textureID];
 
-        if (lowmem) {
-            textureTranslucent[textureID] = false;
+        if (Draw3D.lowmem) {
+            Draw3D.textureTranslucent[textureID] = false;
 
             for (int i = 0; i < 4096; i++) {
                 int rgb = texels[i] = palette[texture.pixels[i]] & 0xf8f8ff;
 
                 if (rgb == 0) {
-                    textureTranslucent[textureID] = true;
+                    Draw3D.textureTranslucent[textureID] = true;
                 }
 
                 texels[4096 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
@@ -274,7 +274,7 @@ public class Draw3D {
                 }
             }
 
-            textureTranslucent[textureID] = false;
+            Draw3D.textureTranslucent[textureID] = false;
 
             for (int i = 0; i < 16384; i++) {
                 texels[i] &= 0xf8f8ff;
@@ -282,7 +282,7 @@ public class Draw3D {
                 int rgb = texels[i];
 
                 if (rgb == 0) {
-                    textureTranslucent[textureID] = true;
+                    Draw3D.textureTranslucent[textureID] = true;
                 }
 
                 texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
@@ -370,35 +370,35 @@ public class Draw3D {
                 int intB = (int) (b * 256D);
                 int rgb = (intR << 16) + (intG << 8) + intB;
 
-                rgb = setGamma(rgb, brightness);
+                rgb = Draw3D.setGamma(rgb, brightness);
 
                 if (rgb == 0) {
                     rgb = 1;
                 }
 
-                palette[offset++] = rgb;
+                Draw3D.palette[offset++] = rgb;
             }
         }
 
         for (int textureID = 0; textureID < 50; textureID++) {
-            if (textures[textureID] == null) {
+            if (Draw3D.textures[textureID] == null) {
                 continue;
             }
 
-            int[] palette = textures[textureID].palette;
-            texturePalette[textureID] = new int[palette.length];
+            int[] palette = Draw3D.textures[textureID].palette;
+            Draw3D.texturePalette[textureID] = new int[palette.length];
 
             for (int i = 0; i < palette.length; i++) {
-                texturePalette[textureID][i] = setGamma(palette[i], brightness);
+                Draw3D.texturePalette[textureID][i] = Draw3D.setGamma(palette[i], brightness);
 
-                if (((texturePalette[textureID][i] & 0xf8f8ff) == 0) && (i != 0)) {
-                    texturePalette[textureID][i] = 1;
+                if (((Draw3D.texturePalette[textureID][i] & 0xf8f8ff) == 0) && (i != 0)) {
+                    Draw3D.texturePalette[textureID][i] = 1;
                 }
             }
         }
 
         for (int textureID = 0; textureID < 50; textureID++) {
-            pushTexture(textureID);
+            Draw3D.releaseTexture(textureID);
         }
     }
 
@@ -489,15 +489,15 @@ public class Draw3D {
                 if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
                     yC -= yB;
                     yB -= yA;
-                    for (yA = lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
-                        drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
+                    for (yA = Draw3D.lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
+                        Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
                         xC += xStepAC;
                         xA += xStepAB;
                         colorC += colorStepAC;
                         colorA += colorStepAB;
                     }
                     while (--yC >= 0) {
-                        drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+                        Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
                         xC += xStepAC;
                         xB += xStepBC;
                         colorC += colorStepAC;
@@ -508,15 +508,15 @@ public class Draw3D {
                 }
                 yC -= yB;
                 yB -= yA;
-                for (yA = lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
-                    drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
+                for (yA = Draw3D.lineOffset[yA]; --yB >= 0; yA += Draw2D.width) {
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
                     xC += xStepAC;
                     xA += xStepAB;
                     colorC += colorStepAC;
                     colorA += colorStepAB;
                 }
                 while (--yC >= 0) {
-                    drawGouraudScanline(Draw2D.pixels, yA, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
                     xC += xStepAC;
                     xB += xStepBC;
                     colorC += colorStepAC;
@@ -544,15 +544,15 @@ public class Draw3D {
             if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
                 yB -= yC;
                 yC -= yA;
-                for (yA = lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
-                    drawGouraudScanline(Draw2D.pixels, yA, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
+                for (yA = Draw3D.lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
                     xB += xStepAC;
                     xA += xStepAB;
                     colorB += colorStepAC;
                     colorA += colorStepAB;
                 }
                 while (--yB >= 0) {
-                    drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
                     xC += xStepBC;
                     xA += xStepAB;
                     colorC += colorStepBC;
@@ -563,15 +563,15 @@ public class Draw3D {
             }
             yB -= yC;
             yC -= yA;
-            for (yA = lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
-                drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
+            for (yA = Draw3D.lineOffset[yA]; --yC >= 0; yA += Draw2D.width) {
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
                 xB += xStepAC;
                 xA += xStepAB;
                 colorB += colorStepAC;
                 colorA += colorStepAB;
             }
             while (--yB >= 0) {
-                drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yA, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
                 xC += xStepBC;
                 xA += xStepAB;
                 colorC += colorStepBC;
@@ -610,15 +610,15 @@ public class Draw3D {
                 if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
                     yA -= yC;
                     yC -= yB;
-                    for (yB = lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
-                        drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
+                    for (yB = Draw3D.lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
+                        Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
                         xA += xStepAB;
                         xB += xStepBC;
                         colorA += colorStepAB;
                         colorB += colorStepBC;
                     }
                     while (--yA >= 0) {
-                        drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
+                        Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
                         xA += xStepAB;
                         xC += xStepAC;
                         colorA += colorStepAB;
@@ -629,15 +629,15 @@ public class Draw3D {
                 }
                 yA -= yC;
                 yC -= yB;
-                for (yB = lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
-                    drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
+                for (yB = Draw3D.lineOffset[yB]; --yC >= 0; yB += Draw2D.width) {
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
                     xA += xStepAB;
                     xB += xStepBC;
                     colorA += colorStepAB;
                     colorB += colorStepBC;
                 }
                 while (--yA >= 0) {
-                    drawGouraudScanline(Draw2D.pixels, yB, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
                     xA += xStepAB;
                     xC += xStepAC;
                     colorA += colorStepAB;
@@ -665,15 +665,15 @@ public class Draw3D {
             if (xStepAB < xStepBC) {
                 yC -= yA;
                 yA -= yB;
-                for (yB = lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
-                    drawGouraudScanline(Draw2D.pixels, yB, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+                for (yB = Draw3D.lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
                     xC += xStepAB;
                     xB += xStepBC;
                     colorC += colorStepAB;
                     colorB += colorStepBC;
                 }
                 while (--yC >= 0) {
-                    drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
                     xA += xStepAC;
                     xB += xStepBC;
                     colorA += colorStepAC;
@@ -684,15 +684,15 @@ public class Draw3D {
             }
             yC -= yA;
             yA -= yB;
-            for (yB = lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
-                drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
+            for (yB = Draw3D.lineOffset[yB]; --yA >= 0; yB += Draw2D.width) {
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
                 xC += xStepAB;
                 xB += xStepBC;
                 colorC += colorStepAB;
                 colorB += colorStepBC;
             }
             while (--yC >= 0) {
-                drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yB, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
                 xA += xStepAC;
                 xB += xStepBC;
                 colorA += colorStepAC;
@@ -730,15 +730,15 @@ public class Draw3D {
             if (xStepBC < xStepAC) {
                 yB -= yA;
                 yA -= yC;
-                for (yC = lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
-                    drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
+                for (yC = Draw3D.lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
                     xB += xStepBC;
                     xC += xStepAC;
                     colorB += colorStepBC;
                     colorC += colorStepAC;
                 }
                 while (--yB >= 0) {
-                    drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
+                    Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xA >> 16, colorB >> 7, colorA >> 7);
                     xB += xStepBC;
                     xA += xStepAB;
                     colorB += colorStepBC;
@@ -749,15 +749,15 @@ public class Draw3D {
             }
             yB -= yA;
             yA -= yC;
-            for (yC = lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
-                drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+            for (yC = Draw3D.lineOffset[yC]; --yA >= 0; yC += Draw2D.width) {
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
                 xB += xStepBC;
                 xC += xStepAC;
                 colorB += colorStepBC;
                 colorC += colorStepAC;
             }
             while (--yB >= 0) {
-                drawGouraudScanline(Draw2D.pixels, yC, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xA >> 16, xB >> 16, colorA >> 7, colorB >> 7);
                 xB += xStepBC;
                 xA += xStepAB;
                 colorB += colorStepBC;
@@ -785,15 +785,15 @@ public class Draw3D {
         if (xStepBC < xStepAC) {
             yA -= yB;
             yB -= yC;
-            for (yC = lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
-                drawGouraudScanline(Draw2D.pixels, yC, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
+            for (yC = Draw3D.lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xA >> 16, xC >> 16, colorA >> 7, colorC >> 7);
                 xA += xStepBC;
                 xC += xStepAC;
                 colorA += colorStepBC;
                 colorC += colorStepAC;
             }
             while (--yA >= 0) {
-                drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
+                Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xB >> 16, xC >> 16, colorB >> 7, colorC >> 7);
                 xB += xStepAB;
                 xC += xStepAC;
                 colorB += colorStepAB;
@@ -804,15 +804,15 @@ public class Draw3D {
         }
         yA -= yB;
         yB -= yC;
-        for (yC = lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
-            drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
+        for (yC = Draw3D.lineOffset[yC]; --yB >= 0; yC += Draw2D.width) {
+            Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xA >> 16, colorC >> 7, colorA >> 7);
             xA += xStepBC;
             xC += xStepAC;
             colorA += colorStepBC;
             colorC += colorStepAC;
         }
         while (--yA >= 0) {
-            drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+            Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
             xB += xStepAB;
             xC += xStepAC;
             colorB += colorStepAB;
@@ -836,10 +836,10 @@ public class Draw3D {
         int rgb;
         int length;
 
-        if (jagged) {
+        if (Draw3D.jagged) {
             int colorStep;
 
-            if (clipX) {
+            if (Draw3D.clipX) {
                 if ((x1 - x0) > 3) {
                     colorStep = (color1 - color0) / (x1 - x0);
                 } else {
@@ -871,7 +871,7 @@ public class Draw3D {
                 length = (x1 - x0) >> 2;
 
                 if (length > 0) {
-                    colorStep = ((color1 - color0) * reciprocal15[length]) >> 15;
+                    colorStep = ((color1 - color0) * Draw3D.reciprocal15[length]) >> 15;
                 } else {
                     colorStep = 0;
                 }
@@ -879,7 +879,7 @@ public class Draw3D {
 
             if (Draw3D.alpha == 0) {
                 while (--length >= 0) {
-                    rgb = palette[color0 >> 8];
+                    rgb = Draw3D.palette[color0 >> 8];
                     color0 += colorStep;
                     dst[offset++] = rgb;
                     dst[offset++] = rgb;
@@ -890,7 +890,7 @@ public class Draw3D {
                 length = (x1 - x0) & 3;
 
                 if (length > 0) {
-                    rgb = palette[color0 >> 8];
+                    rgb = Draw3D.palette[color0 >> 8];
                     do {
                         dst[offset++] = rgb;
                     } while (--length > 0);
@@ -901,7 +901,7 @@ public class Draw3D {
                 int invAlpha = 256 - Draw3D.alpha;
 
                 while (--length >= 0) {
-                    rgb = palette[color0 >> 8];
+                    rgb = Draw3D.palette[color0 >> 8];
                     color0 += colorStep;
                     rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
                     dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
@@ -913,7 +913,7 @@ public class Draw3D {
                 length = (x1 - x0) & 3;
 
                 if (length > 0) {
-                    rgb = palette[color0 >> 8];
+                    rgb = Draw3D.palette[color0 >> 8];
                     rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
                     do {
                         dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
@@ -929,7 +929,7 @@ public class Draw3D {
 
         int colorStep = (color1 - color0) / (x1 - x0);
 
-        if (clipX) {
+        if (Draw3D.clipX) {
             if (x1 > Draw2D.boundX) {
                 x1 = Draw2D.boundX;
             }
@@ -947,7 +947,7 @@ public class Draw3D {
 
         if (Draw3D.alpha == 0) {
             do {
-                dst[offset++] = palette[color0 >> 8];
+                dst[offset++] = Draw3D.palette[color0 >> 8];
                 color0 += colorStep;
             } while (--length > 0);
             return;
@@ -957,7 +957,7 @@ public class Draw3D {
         int invAlpha = 256 - Draw3D.alpha;
 
         do {
-            rgb = palette[color0 >> 8];
+            rgb = Draw3D.palette[color0 >> 8];
             color0 += colorStep;
             rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
             // If you want to fix the lines in transparent models like ghostly or bank booths, change dst[offset++] to
@@ -1004,13 +1004,13 @@ public class Draw3D {
                 if (((y0 != y1) && (xStepAC < xStepAB)) || ((y0 == y1) && (xStepAC > xStepBC))) {
                     y2 -= y1;
                     y1 -= y0;
-                    for (y0 = lineOffset[y0]; --y1 >= 0; y0 += Draw2D.width) {
-                        drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x0 >> 16);
+                    for (y0 = Draw3D.lineOffset[y0]; --y1 >= 0; y0 += Draw2D.width) {
+                        Draw3D.drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x0 >> 16);
                         x2 += xStepAC;
                         x0 += xStepAB;
                     }
                     while (--y2 >= 0) {
-                        drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x1 >> 16);
+                        Draw3D.drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x1 >> 16);
                         x2 += xStepAC;
                         x1 += xStepBC;
                         y0 += Draw2D.width;
@@ -1019,13 +1019,13 @@ public class Draw3D {
                 }
                 y2 -= y1;
                 y1 -= y0;
-                for (y0 = lineOffset[y0]; --y1 >= 0; y0 += Draw2D.width) {
-                    drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x2 >> 16);
+                for (y0 = Draw3D.lineOffset[y0]; --y1 >= 0; y0 += Draw2D.width) {
+                    Draw3D.drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x2 >> 16);
                     x2 += xStepAC;
                     x0 += xStepAB;
                 }
                 while (--y2 >= 0) {
-                    drawScanline(Draw2D.pixels, y0, color, x1 >> 16, x2 >> 16);
+                    Draw3D.drawScanline(Draw2D.pixels, y0, color, x1 >> 16, x2 >> 16);
                     x2 += xStepAC;
                     x1 += xStepBC;
                     y0 += Draw2D.width;
@@ -1046,13 +1046,13 @@ public class Draw3D {
             if (((y0 != y2) && (xStepAC < xStepAB)) || ((y0 == y2) && (xStepBC > xStepAB))) {
                 y1 -= y2;
                 y2 -= y0;
-                for (y0 = lineOffset[y0]; --y2 >= 0; y0 += Draw2D.width) {
-                    drawScanline(Draw2D.pixels, y0, color, x1 >> 16, x0 >> 16);
+                for (y0 = Draw3D.lineOffset[y0]; --y2 >= 0; y0 += Draw2D.width) {
+                    Draw3D.drawScanline(Draw2D.pixels, y0, color, x1 >> 16, x0 >> 16);
                     x1 += xStepAC;
                     x0 += xStepAB;
                 }
                 while (--y1 >= 0) {
-                    drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x0 >> 16);
+                    Draw3D.drawScanline(Draw2D.pixels, y0, color, x2 >> 16, x0 >> 16);
                     x2 += xStepBC;
                     x0 += xStepAB;
                     y0 += Draw2D.width;
@@ -1061,13 +1061,13 @@ public class Draw3D {
             }
             y1 -= y2;
             y2 -= y0;
-            for (y0 = lineOffset[y0]; --y2 >= 0; y0 += Draw2D.width) {
-                drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x1 >> 16);
+            for (y0 = Draw3D.lineOffset[y0]; --y2 >= 0; y0 += Draw2D.width) {
+                Draw3D.drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x1 >> 16);
                 x1 += xStepAC;
                 x0 += xStepAB;
             }
             while (--y1 >= 0) {
-                drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x2 >> 16);
+                Draw3D.drawScanline(Draw2D.pixels, y0, color, x0 >> 16, x2 >> 16);
                 x2 += xStepBC;
                 x0 += xStepAB;
                 y0 += Draw2D.width;
@@ -1099,13 +1099,13 @@ public class Draw3D {
                 if (((y1 != y2) && (xStepAB < xStepBC)) || ((y1 == y2) && (xStepAB > xStepAC))) {
                     y0 -= y2;
                     y2 -= y1;
-                    for (y1 = lineOffset[y1]; --y2 >= 0; y1 += Draw2D.width) {
-                        drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x1 >> 16);
+                    for (y1 = Draw3D.lineOffset[y1]; --y2 >= 0; y1 += Draw2D.width) {
+                        Draw3D.drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x1 >> 16);
                         x0 += xStepAB;
                         x1 += xStepBC;
                     }
                     while (--y0 >= 0) {
-                        drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x2 >> 16);
+                        Draw3D.drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x2 >> 16);
                         x0 += xStepAB;
                         x2 += xStepAC;
                         y1 += Draw2D.width;
@@ -1114,13 +1114,13 @@ public class Draw3D {
                 }
                 y0 -= y2;
                 y2 -= y1;
-                for (y1 = lineOffset[y1]; --y2 >= 0; y1 += Draw2D.width) {
-                    drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x0 >> 16);
+                for (y1 = Draw3D.lineOffset[y1]; --y2 >= 0; y1 += Draw2D.width) {
+                    Draw3D.drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x0 >> 16);
                     x0 += xStepAB;
                     x1 += xStepBC;
                 }
                 while (--y0 >= 0) {
-                    drawScanline(Draw2D.pixels, y1, color, x2 >> 16, x0 >> 16);
+                    Draw3D.drawScanline(Draw2D.pixels, y1, color, x2 >> 16, x0 >> 16);
                     x0 += xStepAB;
                     x2 += xStepAC;
                     y1 += Draw2D.width;
@@ -1141,13 +1141,13 @@ public class Draw3D {
             if (xStepAB < xStepBC) {
                 y2 -= y0;
                 y0 -= y1;
-                for (y1 = lineOffset[y1]; --y0 >= 0; y1 += Draw2D.width) {
-                    drawScanline(Draw2D.pixels, y1, color, x2 >> 16, x1 >> 16);
+                for (y1 = Draw3D.lineOffset[y1]; --y0 >= 0; y1 += Draw2D.width) {
+                    Draw3D.drawScanline(Draw2D.pixels, y1, color, x2 >> 16, x1 >> 16);
                     x2 += xStepAB;
                     x1 += xStepBC;
                 }
                 while (--y2 >= 0) {
-                    drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x1 >> 16);
+                    Draw3D.drawScanline(Draw2D.pixels, y1, color, x0 >> 16, x1 >> 16);
                     x0 += xStepAC;
                     x1 += xStepBC;
                     y1 += Draw2D.width;
@@ -1156,13 +1156,13 @@ public class Draw3D {
             }
             y2 -= y0;
             y0 -= y1;
-            for (y1 = lineOffset[y1]; --y0 >= 0; y1 += Draw2D.width) {
-                drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x2 >> 16);
+            for (y1 = Draw3D.lineOffset[y1]; --y0 >= 0; y1 += Draw2D.width) {
+                Draw3D.drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x2 >> 16);
                 x2 += xStepAB;
                 x1 += xStepBC;
             }
             while (--y2 >= 0) {
-                drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x0 >> 16);
+                Draw3D.drawScanline(Draw2D.pixels, y1, color, x1 >> 16, x0 >> 16);
                 x0 += xStepAC;
                 x1 += xStepBC;
                 y1 += Draw2D.width;
@@ -1193,13 +1193,13 @@ public class Draw3D {
             if (xStepBC < xStepAC) {
                 y1 -= y0;
                 y0 -= y2;
-                for (y2 = lineOffset[y2]; --y0 >= 0; y2 += Draw2D.width) {
-                    drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x2 >> 16);
+                for (y2 = Draw3D.lineOffset[y2]; --y0 >= 0; y2 += Draw2D.width) {
+                    Draw3D.drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x2 >> 16);
                     x1 += xStepBC;
                     x2 += xStepAC;
                 }
                 while (--y1 >= 0) {
-                    drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x0 >> 16);
+                    Draw3D.drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x0 >> 16);
                     x1 += xStepBC;
                     x0 += xStepAB;
                     y2 += Draw2D.width;
@@ -1208,13 +1208,13 @@ public class Draw3D {
             }
             y1 -= y0;
             y0 -= y2;
-            for (y2 = lineOffset[y2]; --y0 >= 0; y2 += Draw2D.width) {
-                drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x1 >> 16);
+            for (y2 = Draw3D.lineOffset[y2]; --y0 >= 0; y2 += Draw2D.width) {
+                Draw3D.drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x1 >> 16);
                 x1 += xStepBC;
                 x2 += xStepAC;
             }
             while (--y1 >= 0) {
-                drawScanline(Draw2D.pixels, y2, color, x0 >> 16, x1 >> 16);
+                Draw3D.drawScanline(Draw2D.pixels, y2, color, x0 >> 16, x1 >> 16);
                 x1 += xStepBC;
                 x0 += xStepAB;
                 y2 += Draw2D.width;
@@ -1235,13 +1235,13 @@ public class Draw3D {
         if (xStepBC < xStepAC) {
             y0 -= y1;
             y1 -= y2;
-            for (y2 = lineOffset[y2]; --y1 >= 0; y2 += Draw2D.width) {
-                drawScanline(Draw2D.pixels, y2, color, x0 >> 16, x2 >> 16);
+            for (y2 = Draw3D.lineOffset[y2]; --y1 >= 0; y2 += Draw2D.width) {
+                Draw3D.drawScanline(Draw2D.pixels, y2, color, x0 >> 16, x2 >> 16);
                 x0 += xStepBC;
                 x2 += xStepAC;
             }
             while (--y0 >= 0) {
-                drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x2 >> 16);
+                Draw3D.drawScanline(Draw2D.pixels, y2, color, x1 >> 16, x2 >> 16);
                 x1 += xStepAB;
                 x2 += xStepAC;
                 y2 += Draw2D.width;
@@ -1250,13 +1250,13 @@ public class Draw3D {
         }
         y0 -= y1;
         y1 -= y2;
-        for (y2 = lineOffset[y2]; --y1 >= 0; y2 += Draw2D.width) {
-            drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x0 >> 16);
+        for (y2 = Draw3D.lineOffset[y2]; --y1 >= 0; y2 += Draw2D.width) {
+            Draw3D.drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x0 >> 16);
             x0 += xStepBC;
             x2 += xStepAC;
         }
         while (--y0 >= 0) {
-            drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x1 >> 16);
+            Draw3D.drawScanline(Draw2D.pixels, y2, color, x2 >> 16, x1 >> 16);
             x1 += xStepAB;
             x2 += xStepAC;
             y2 += Draw2D.width;
@@ -1264,7 +1264,7 @@ public class Draw3D {
     }
 
     public static void drawScanline(int[] dst, int offset, int rgb, int x0, int x1) {
-        if (clipX) {
+        if (Draw3D.clipX) {
             if (x1 > Draw2D.boundX) {
                 x1 = Draw2D.boundX;
             }
@@ -1316,8 +1316,8 @@ public class Draw3D {
      * this algorithm: <a href="https://www.gamers.org/dEngine/rsc/pcgpe-1.0/texture.txt">texture.txt</a>
      */
     public static void fillTexturedTriangle(int yA, int yB, int yC, int xA, int xB, int xC, int shadeA, int shadeB, int shadeC, int txA, int txB, int txC, int tyA, int tyB, int tyC, int tzA, int tzB, int tzC, int texture) {
-        int[] texels = getTexels(texture);
-        opaque = !textureTranslucent[texture];
+        int[] texels = Draw3D.getTexels(texture);
+        Draw3D.opaque = !Draw3D.textureTranslucent[texture];
 
         int originX = txA;
         int originY = tyA;
@@ -1414,16 +1414,16 @@ public class Draw3D {
                     shadeB -= shadeStepBC * yB;
                     yB = 0;
                 }
-                int dy = yA - centerY;
+                int dy = yA - Draw3D.centerY;
                 u += uStepVertical * dy;
                 v += vStepVertical * dy;
                 w += wStepVertical * dy;
                 if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
                     yC -= yB;
                     yB -= yA;
-                    yA = lineOffset[yA];
+                    yA = Draw3D.lineOffset[yA];
                     while (--yB >= 0) {
-                        drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                         xC += xStepAC;
                         xA += xStepAB;
                         shadeC += shadeStepAC;
@@ -1434,7 +1434,7 @@ public class Draw3D {
                         w += wStepVertical;
                     }
                     while (--yC >= 0) {
-                        drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                         xC += xStepAC;
                         xB += xStepBC;
                         shadeC += shadeStepAC;
@@ -1448,9 +1448,9 @@ public class Draw3D {
                 }
                 yC -= yB;
                 yB -= yA;
-                yA = lineOffset[yA];
+                yA = Draw3D.lineOffset[yA];
                 while (--yB >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xC += xStepAC;
                     xA += xStepAB;
                     shadeC += shadeStepAC;
@@ -1461,7 +1461,7 @@ public class Draw3D {
                     w += wStepVertical;
                 }
                 while (--yC >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xC += xStepAC;
                     xB += xStepBC;
                     shadeC += shadeStepAC;
@@ -1489,16 +1489,16 @@ public class Draw3D {
                 shadeC -= shadeStepBC * yC;
                 yC = 0;
             }
-            int dy = yA - centerY;
+            int dy = yA - Draw3D.centerY;
             u += uStepVertical * dy;
             v += vStepVertical * dy;
             w += wStepVertical * dy;
             if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
                 yB -= yC;
                 yC -= yA;
-                yA = lineOffset[yA];
+                yA = Draw3D.lineOffset[yA];
                 while (--yC >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xB += xStepAC;
                     xA += xStepAB;
                     shadeB += shadeStepAC;
@@ -1509,7 +1509,7 @@ public class Draw3D {
                     w += wStepVertical;
                 }
                 while (--yB >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xC += xStepBC;
                     xA += xStepAB;
                     shadeC += shadeStepBC;
@@ -1523,9 +1523,9 @@ public class Draw3D {
             }
             yB -= yC;
             yC -= yA;
-            yA = lineOffset[yA];
+            yA = Draw3D.lineOffset[yA];
             while (--yC >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xB += xStepAC;
                 xA += xStepAB;
                 shadeB += shadeStepAC;
@@ -1536,7 +1536,7 @@ public class Draw3D {
                 w += wStepVertical;
             }
             while (--yB >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xC += xStepBC;
                 xA += xStepAB;
                 shadeC += shadeStepBC;
@@ -1575,16 +1575,16 @@ public class Draw3D {
                     shadeC -= shadeStepAC * yC;
                     yC = 0;
                 }
-                int dy = yB - centerY;
+                int dy = yB - Draw3D.centerY;
                 u += uStepVertical * dy;
                 v += vStepVertical * dy;
                 w += wStepVertical * dy;
                 if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
                     yA -= yC;
                     yC -= yB;
-                    yB = lineOffset[yB];
+                    yB = Draw3D.lineOffset[yB];
                     while (--yC >= 0) {
-                        drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                         xA += xStepAB;
                         xB += xStepBC;
                         shadeA += shadeStepAB;
@@ -1595,7 +1595,7 @@ public class Draw3D {
                         w += wStepVertical;
                     }
                     while (--yA >= 0) {
-                        drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                         xA += xStepAB;
                         xC += xStepAC;
                         shadeA += shadeStepAB;
@@ -1609,9 +1609,9 @@ public class Draw3D {
                 }
                 yA -= yC;
                 yC -= yB;
-                yB = lineOffset[yB];
+                yB = Draw3D.lineOffset[yB];
                 while (--yC >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xA += xStepAB;
                     xB += xStepBC;
                     shadeA += shadeStepAB;
@@ -1622,7 +1622,7 @@ public class Draw3D {
                     w += wStepVertical;
                 }
                 while (--yA >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xA += xStepAB;
                     xC += xStepAC;
                     shadeA += shadeStepAB;
@@ -1650,16 +1650,16 @@ public class Draw3D {
                 shadeA -= shadeStepAC * yA;
                 yA = 0;
             }
-            int dy = yB - centerY;
+            int dy = yB - Draw3D.centerY;
             u += uStepVertical * dy;
             v += vStepVertical * dy;
             w += wStepVertical * dy;
             if (xStepAB < xStepBC) {
                 yC -= yA;
                 yA -= yB;
-                yB = lineOffset[yB];
+                yB = Draw3D.lineOffset[yB];
                 while (--yA >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xC += xStepAB;
                     xB += xStepBC;
                     shadeC += shadeStepAB;
@@ -1670,7 +1670,7 @@ public class Draw3D {
                     w += wStepVertical;
                 }
                 while (--yC >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xA += xStepAC;
                     xB += xStepBC;
                     shadeA += shadeStepAC;
@@ -1684,9 +1684,9 @@ public class Draw3D {
             }
             yC -= yA;
             yA -= yB;
-            yB = lineOffset[yB];
+            yB = Draw3D.lineOffset[yB];
             while (--yA >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xC += xStepAB;
                 xB += xStepBC;
                 shadeC += shadeStepAB;
@@ -1697,7 +1697,7 @@ public class Draw3D {
                 w += wStepVertical;
             }
             while (--yC >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xA += xStepAC;
                 xB += xStepBC;
                 shadeA += shadeStepAC;
@@ -1735,16 +1735,16 @@ public class Draw3D {
                 shadeA -= shadeStepAB * yA;
                 yA = 0;
             }
-            int dy = yC - centerY;
+            int dy = yC - Draw3D.centerY;
             u += uStepVertical * dy;
             v += vStepVertical * dy;
             w += wStepVertical * dy;
             if (xStepBC < xStepAC) {
                 yB -= yA;
                 yA -= yC;
-                yC = lineOffset[yC];
+                yC = Draw3D.lineOffset[yC];
                 while (--yA >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xB += xStepBC;
                     xC += xStepAC;
                     shadeB += shadeStepBC;
@@ -1755,7 +1755,7 @@ public class Draw3D {
                     w += wStepVertical;
                 }
                 while (--yB >= 0) {
-                    drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                     xB += xStepBC;
                     xA += xStepAB;
                     shadeB += shadeStepBC;
@@ -1769,9 +1769,9 @@ public class Draw3D {
             }
             yB -= yA;
             yA -= yC;
-            yC = lineOffset[yC];
+            yC = Draw3D.lineOffset[yC];
             while (--yA >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xB += xStepBC;
                 xC += xStepAC;
                 shadeB += shadeStepBC;
@@ -1782,7 +1782,7 @@ public class Draw3D {
                 w += wStepVertical;
             }
             while (--yB >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xB += xStepBC;
                 xA += xStepAB;
                 shadeB += shadeStepBC;
@@ -1810,16 +1810,16 @@ public class Draw3D {
             shadeB -= shadeStepAB * yB;
             yB = 0;
         }
-        int l9 = yC - centerY;
+        int l9 = yC - Draw3D.centerY;
         u += uStepVertical * l9;
         v += vStepVertical * l9;
         w += wStepVertical * l9;
         if (xStepBC < xStepAC) {
             yA -= yB;
             yB -= yC;
-            yC = lineOffset[yC];
+            yC = Draw3D.lineOffset[yC];
             while (--yB >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xA += xStepBC;
                 xC += xStepAC;
                 shadeA += shadeStepBC;
@@ -1830,7 +1830,7 @@ public class Draw3D {
                 w += wStepVertical;
             }
             while (--yA >= 0) {
-                drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
                 xB += xStepAB;
                 xC += xStepAC;
                 shadeB += shadeStepAB;
@@ -1844,9 +1844,9 @@ public class Draw3D {
         }
         yA -= yB;
         yB -= yC;
-        yC = lineOffset[yC];
+        yC = Draw3D.lineOffset[yC];
         while (--yB >= 0) {
-            drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+            Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
             xA += xStepBC;
             xC += xStepAC;
             shadeA += shadeStepBC;
@@ -1857,7 +1857,7 @@ public class Draw3D {
             w += wStepVertical;
         }
         while (--yA >= 0) {
-            drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
+            Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
             xB += xStepAB;
             xC += xStepAC;
             shadeB += shadeStepAB;
@@ -1877,7 +1877,7 @@ public class Draw3D {
         int shadeStride;
         int strides;
 
-        if (clipX) {
+        if (Draw3D.clipX) {
             shadeStride = (shadeB - shadeA) / (xB - xA); // in this form, it's a 'shadeStep'
 
             if (xB > Draw2D.boundX) {
@@ -1898,7 +1898,7 @@ public class Draw3D {
         } else {
             if ((xB - xA) > 7) {
                 strides = (xB - xA) >> 3;
-                shadeStride = ((shadeB - shadeA) * reciprocal15[strides]) >> 6;
+                shadeStride = ((shadeB - shadeA) * Draw3D.reciprocal15[strides]) >> 6;
             } else {
                 strides = 0;
                 shadeStride = 0;
@@ -1908,11 +1908,11 @@ public class Draw3D {
         shadeA <<= 9;
         offset += xA;
 
-        if (lowmem) {
+        if (Draw3D.lowmem) {
             int nextU = 0;
             int nextV = 0;
 
-            int dx = xA - centerX;
+            int dx = xA - Draw3D.centerX;
             u += (uStride >> 3) * dx;
             v += (vStride >> 3) * dx;
             w += (wStride >> 3) * dx;
@@ -1956,7 +1956,7 @@ public class Draw3D {
             // (or right shift 1) to achieve half values. It's a cheep hax to further darken the color value with 1 op.
             // technically the atlas is 1x4 textures but this trick allows 16 total different shades for each texture.
 
-            if (opaque) {
+            if (Draw3D.opaque) {
                 while (strides-- > 0) {
                     dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
                     curU += stepU;
@@ -2117,7 +2117,7 @@ public class Draw3D {
 
         int nextU = 0;
         int nextV = 0;
-        int dx = xA - centerX;
+        int dx = xA - Draw3D.centerX;
         u += (uStride >> 3) * dx;
         v += (vStride >> 3) * dx;
         w += (wStride >> 3) * dx;
@@ -2148,7 +2148,7 @@ public class Draw3D {
         int vStep = (nextV - curV) >> 3;
         curU += shadeA & 0x600000;
         int shadeShift = shadeA >> 23;
-        if (opaque) {
+        if (Draw3D.opaque) {
             while (strides-- > 0) {
                 dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
                 curU += uStep;

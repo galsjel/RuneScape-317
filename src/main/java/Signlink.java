@@ -59,27 +59,7 @@ public class Signlink implements Runnable {
     }
 
     public static String findcachedir() {
-        String[] as = {"c:/windows/", "c:/winnt/", "d:/windows/", "d:/winnt/", "e:/windows/", "e:/winnt/", "f:/windows/", "f:/winnt/", "c:/", "~/", "/tmp/", "", "c:/rscache", "/rscache"};
-        if ((storeid < 32) || (storeid > 34)) {
-            storeid = 32;
-        }
-        String s = ".file_store_" + storeid;
-        for (String a : as) {
-            try {
-                if (a.length() > 0) {
-                    File file = new File(a);
-                    if (!file.exists()) {
-                        continue;
-                    }
-                }
-                File file1 = new File(a + s);
-                if (file1.exists() || file1.mkdir()) {
-                    return a + s + "/";
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return null;
+        return Paths.get(System.getProperty("user.home"), ".scape1/") + "/";
     }
 
     public static int getuid(String s) {

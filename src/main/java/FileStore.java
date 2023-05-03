@@ -14,7 +14,6 @@ public class FileStore {
     public int maxFileSize;
 
     public FileStore(int maxFileSize, RandomAccessFile dat, RandomAccessFile idx, int store) {
-        this.maxFileSize = 65000;
         this.store = store;
         this.dat = dat;
         this.idx = idx;

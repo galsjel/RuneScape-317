@@ -11,7 +11,6 @@ import java.util.zip.CRC32;
 public class OnDemand implements Runnable {
 
     public final DoublyLinkedList pending = new DoublyLinkedList();
-    public final CRC32 crc32 = new CRC32();
     public final byte[] buffer = new byte[500];
     public final byte[][] storeFilePriorities = new byte[4][];
     public final DoublyLinkedList prefetches = new DoublyLinkedList();
@@ -54,22 +53,7 @@ public class OnDemand implements Runnable {
     }
 
     public boolean validate(int expectedVersion, int crc, byte[] src) {
-        if (src != null) {
-            return true;
-        }
-
-        if ((src == null) || (src.length < 2)) {
-            return false;
-        }
-
-        int fileEndPos = src.length - 2;
-        int fileVersion = ((src[fileEndPos] & 0xff) << 8) + (src[fileEndPos + 1] & 0xff);
-
-        crc32.reset();
-        crc32.update(src, 0, fileEndPos);
-
-        return fileVersion == expectedVersion && (int) crc32.getValue() == crc;
-
+        return true;
     }
 
     public void read() {
@@ -336,6 +320,10 @@ public class OnDemand implements Runnable {
     }
 
     public void request(int store, int file) {
+        // block music
+        if (store == 2) {
+            return;
+        }
         if ((store < 0) || (store > storeFileVersions.length) || (file < 0) || (file > storeFileVersions[store].length)) {
             return;
         }
@@ -618,10 +606,6 @@ public class OnDemand implements Runnable {
 
             if (game.filestores[0] != null) {
                 data = game.filestores[request.store + 1].read(request.file);
-            }
-
-            if (!validate(storeFileVersions[request.store][request.file], storeFileChecksums[request.store][request.file], data)) {
-                data = null;
             }
 
             synchronized (queue) {
