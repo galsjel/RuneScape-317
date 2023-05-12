@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ObjEntity extends Entity {
+public class ObjEntity extends Drawable {
 
     public int id;
     public int count;

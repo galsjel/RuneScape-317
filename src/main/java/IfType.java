@@ -426,7 +426,7 @@ public class IfType {
             model.applyTransform(secondaryTransformID);
         }
 
-        model.calculateNormals(64, 768, -50, -10, -50, true);
+        model.build(64, 768, -50, -10, -50, true);
         return model;
     }
 

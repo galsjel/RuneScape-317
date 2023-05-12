@@ -66,9 +66,9 @@ public class PlayerEntity extends PathingEntity {
                 spotModel2.labelFaces = null;
                 spotModel2.labelVertices = null;
                 if ((spot.scaleXY != 128) || (spot.scaleZ != 128)) {
-                    spotModel2.scale(spot.scaleXY, spot.scaleXY, spot.scaleZ);
+                    spotModel2.scale(spot.scaleXY, spot.scaleZ, spot.scaleXY);
                 }
-                spotModel2.calculateNormals(64 + spot.lightAmbient, 850 + spot.lightAttenuation, -30, -50, -30, true);
+                spotModel2.build(64 + spot.lightAmbient, 850 + spot.lightAttenuation, -30, -50, -30, true);
                 model = new Model(2, -819, new Model[]{model, spotModel2});
             }
         }
@@ -329,7 +329,7 @@ public class PlayerEntity extends PathingEntity {
                 }
             }
             model.createLabelReferences();
-            model.calculateNormals(64, 850, -30, -50, -30, true);
+            model.build(64, 850, -30, -50, -30, true);
             modelCache.put(hashCode, model);
             modelUID = hashCode;
         }

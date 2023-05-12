@@ -8,7 +8,7 @@ public class SceneLoc {
     public int y;
     public int x;
     public int z;
-    public Entity entity;
+    public Drawable entity;
     public int yaw;
     public int minSceneTileX;
     public int maxSceneTileX;

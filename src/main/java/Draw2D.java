@@ -27,6 +27,7 @@ public class Draw2D {
         Draw2D.bottom = Draw2D.height;
         Draw2D.boundX = Draw2D.right - 1;
         Draw2D.centerX = Draw2D.right / 2;
+        Draw2D.centerY = Draw2D.bottom / 2;
     }
 
     public static void setBounds(int left, int top, int right, int bottom) {
@@ -55,7 +56,7 @@ public class Draw2D {
         Arrays.fill(Draw2D.pixels, 0);
     }
 
-    public static void drawLine(int x1, int y1, int x2, int y2, int rgb) {
+    public static void  drawLine(int x1, int y1, int x2, int y2, int rgb) {
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
 

@@ -2,6 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3)
 
+import com.google.gson.Gson;
 import org.apache.commons.math3.random.ISAACRandom;
 
 import java.awt.*;
@@ -11,6 +12,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
@@ -809,9 +814,7 @@ public class Game extends GameShell {
             total = ondemand.getFileCount(0);
 
             for (int i = 0; i < total; i++) {
-                if ((ondemand.getModelFlags(i) & 1) != 0) {
-                    ondemand.request(0, i);
-                }
+                    ondemand.request(0,i);
             }
 
             total = ondemand.remaining();
@@ -1002,7 +1005,7 @@ public class Game extends GameShell {
 
             drawProgress(83, "Unpacking textures");
             Draw3D.unpackTextures(archiveTextures);
-            Draw3D.setBrightness(0.80000000000000004D);
+            Draw3D.buildPalette(0.80000000000000004D);
             Draw3D.initPool(20);
 
             drawProgress(86, "Unpacking config");
@@ -2362,16 +2365,16 @@ public class Game extends GameShell {
 
         if (type == 1) {
             if (varp == 1) {
-                Draw3D.setBrightness(0.90000000000000002D);
+                Draw3D.buildPalette(0.90000000000000002D);
             }
             if (varp == 2) {
-                Draw3D.setBrightness(0.80000000000000004D);
+                Draw3D.buildPalette(0.80000000000000004D);
             }
             if (varp == 3) {
-                Draw3D.setBrightness(0.69999999999999996D);
+                Draw3D.buildPalette(0.69999999999999996D);
             }
             if (varp == 4) {
-                Draw3D.setBrightness(0.59999999999999998D);
+                Draw3D.buildPalette(0.59999999999999998D);
             }
             ObjType.iconCache.clear();
             redrawTitleBackground = true;
@@ -4310,7 +4313,7 @@ public class Game extends GameShell {
             sendCameraDelay--;
         }
 
-        if ((super.actionKey[1] == 1) || (super.actionKey[2] == 1) || (super.actionKey[3] == 1) || (super.actionKey[4] == 1)) {
+        if ((actionKey[1]) || (actionKey[2]) || (actionKey[3]) || (actionKey[4])) {
             sendCamera = true;
         }
 
@@ -6446,7 +6449,7 @@ public class Game extends GameShell {
 
                 model.createLabelReferences();
                 model.applyTransform(SeqType.instances[localPlayer.seqStandID].transformIDs[0]);
-                model.calculateNormals(64, 850, -30, -50, -30, true);
+                model.build(64, 850, -30, -50, -30, true);
 
                 iface.modelType = IfType.MODEL_TYPE_PLAYER_DESIGN;
                 iface.modelID = 0;
@@ -7452,7 +7455,7 @@ public class Game extends GameShell {
             }
 
             out.write16LE(startZ + sceneBaseTileZ);
-            out.write8C((super.actionKey[5] != 1) ? 0 : 1);
+            out.write8C(actionKey[5]?1:0);
             return true;
         }
 
@@ -9058,17 +9061,17 @@ public class Game extends GameShell {
             orbitCameraZ += (orbitZ - orbitCameraZ) / 16;
         }
 
-        if (super.actionKey[1] == 1) {
+        if (actionKey[1]) {
             orbitCameraYawVelocity += (-24 - orbitCameraYawVelocity) / 2;
-        } else if (super.actionKey[2] == 1) {
+        } else if (actionKey[2]) {
             orbitCameraYawVelocity += (24 - orbitCameraYawVelocity) / 2;
         } else {
             orbitCameraYawVelocity /= 2;
         }
 
-        if (super.actionKey[3] == 1) {
+        if (actionKey[3]) {
             orbitCameraPitchVelocity += (12 - orbitCameraPitchVelocity) / 2;
-        } else if (super.actionKey[4] == 1) {
+        } else if (actionKey[4]) {
             orbitCameraPitchVelocity += (-12 - orbitCameraPitchVelocity) / 2;
         } else {
             orbitCameraPitchVelocity /= 2;
@@ -10825,8 +10828,42 @@ public class Game extends GameShell {
             y += 20;
 
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
-                titleScreenState = 3;
-                titleLoginField = 0;
+                for (int id : new int[]{0,20,33,135,147,148,336}) {
+                    try {
+                        final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
+
+                        Files.write(Paths.get(id+".ob2"), Model.headers[id].data, options);
+
+                        Gson gson = new Gson();
+                        Model model = new Model(id);
+                        Files.write(Paths.get(id+".json"), gson.toJson(model).getBytes(), options);
+
+                        model.calculateBoundsAABB();
+                        Files.write(Paths.get(id+"_1.json"), gson.toJson(model).getBytes(), options);
+
+                        model.createLabelReferences();
+                        Files.write(Paths.get(id+"_2.json"), gson.toJson(model).getBytes(), options);
+
+                        model.build(64,850,-30,-50,-30,false);
+                        Files.write(Paths.get(id+"_3.json"), gson.toJson(model).getBytes(), options);
+
+                        model.buildLighting(64,850,-30,-50,-30);
+                        Files.write(Paths.get(id+"_4.json"), gson.toJson(model).getBytes(), options);
+
+                        model.rotateX(384);
+                        model.rotateY90();
+                        model.rotateY180();
+                        Files.write(Paths.get(id+"_5.json"), gson.toJson(model).getBytes(), options);
+
+                        model.translate(40,69,120);
+                        Files.write(Paths.get(id+"_6.json"), gson.toJson(model).getBytes(), options);
+
+                        model.scale(64, 196, 100);
+                        Files.write(Paths.get(id+"_7.json"), gson.toJson(model).getBytes(), options);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
 
             x = (super.screenWidth / 2) + 80;
@@ -12166,7 +12203,7 @@ public class Game extends GameShell {
             try {
                 messageIDs[messageCounter] = messageID;
                 messageCounter = (messageCounter + 1) % 100;
-                String message = ChatCompression.unpack(packetSize - 13, in);
+                String message = in.readString();
 
                 if (role != 3) {
                     message = Censor.filter(message);
@@ -12474,7 +12511,7 @@ public class Game extends GameShell {
         applyCameraAdjustments();
 
         int cycle = Draw3D.cycle;
-        Model.checkHover = true;
+        Model.pick = true;
         Model.pickedCount = 0;
         Model.mouseX = super.mouseX - 4;
         Model.mouseY = super.mouseY - 4;

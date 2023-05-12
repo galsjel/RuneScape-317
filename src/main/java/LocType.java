@@ -196,13 +196,13 @@ public class LocType {
             }
             boolean valid = true;
             for (int modelID : modelIDs) {
-                valid &= Model.validate(modelID & 0xffff);
+                valid &= Model.loaded(modelID & 0xffff);
             }
             return valid;
         }
         for (int i = 0; i < modelKinds.length; i++) {
             if (modelKinds[i] == kind) {
-                return Model.validate(modelIDs[i] & 0xffff);
+                return Model.loaded(modelIDs[i] & 0xffff);
             }
         }
         return true;
@@ -240,7 +240,7 @@ public class LocType {
         }
         boolean ok = true;
         for (int modelID : modelIDs) {
-            ok &= Model.validate(modelID & 0xffff);
+            ok &= Model.loaded(modelID & 0xffff);
         }
         return ok;
     }
@@ -386,14 +386,14 @@ public class LocType {
         }
 
         if (scaled) {
-            modified.scale(scaleX, scaleY, scaleZ);
+            modified.scale(scaleX, scaleZ, scaleY);
         }
 
         if (translated) {
             modified.translate(translateX, translateY, translateZ);
         }
 
-        modified.calculateNormals(64 + lightAmbient, 768 + (lightAttenuation * 5), -50, -10, -50, !dynamic);
+        modified.build(64 + lightAmbient, 768 + (lightAttenuation * 5), -50, -10, -50, !dynamic);
 
         if (supportsObj == 1) {
             modified.objRaise = modified.minY;

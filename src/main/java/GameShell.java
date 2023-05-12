@@ -11,7 +11,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
 
     public final long[] otim = new long[10];
     public final double[] frameTime = new double[100];
-    public final int[] actionKey = new int[128];
+    public static final boolean[] actionKey = new boolean[128];
     public final int[] keyQueue = new int[128];
     public int state;
     public int deltime = 20;
@@ -337,7 +337,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
         }
 
         if ((value > 0) && (value < 128)) {
-            actionKey[value] = 1;
+            actionKey[value] = true;
         }
 
         if (value > 4) {
@@ -378,7 +378,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
         }
 
         if ((action > 0) && (action < 128)) {
-            actionKey[action] = 0;
+            actionKey[action] = false;
         }
     }
 
@@ -406,7 +406,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
     public void focusLost(FocusEvent e) {
         focused = false;
         for (int i = 0; i < 128; i++) {
-            actionKey[i] = 0;
+            actionKey[i] = false;
         }
     }
 

@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SpotAnimEntity extends Entity {
+public class SpotAnimEntity extends Drawable {
 
     public final int level;
     public final int x;
@@ -43,7 +43,7 @@ public class SpotAnimEntity extends Entity {
         }
 
         if ((type.scaleXY != 128) || (type.scaleZ != 128)) {
-            model.scale(type.scaleXY, type.scaleXY, type.scaleZ);
+            model.scale(type.scaleXY, type.scaleZ, type.scaleXY);
         }
 
         if (type.rotation != 0) {
@@ -60,7 +60,7 @@ public class SpotAnimEntity extends Entity {
                 model.rotateY90();
             }
         }
-        model.calculateNormals(64 + type.lightAmbient, 850 + type.lightAttenuation, -30, -50, -30, true);
+        model.build(64 + type.lightAmbient, 850 + type.lightAttenuation, -30, -50, -30, true);
         return model;
     }
 

@@ -61,7 +61,7 @@ public class SeqType {
     /**
      * Adds additional space to the render bounds.
      *
-     * @see Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)
+     * @see Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)
      */
     public boolean forwardRenderPadding = false;
 

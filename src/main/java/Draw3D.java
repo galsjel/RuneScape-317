@@ -2,6 +2,12 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
+
 public class Draw3D {
 
     /**
@@ -294,13 +300,11 @@ public class Draw3D {
     }
 
     /**
-     * Sets the brightness.
+     * Sets the gamma.
      *
-     * @param brightness the brightness.
+     * @param gamma the gamma.
      */
-    public static void setBrightness(double brightness) {
-        brightness += (Math.random() * 0.03) - 0.015;
-
+    public static void buildPalette(double gamma) {
         int offset = 0;
         for (int y = 0; y < 512; y++) {
             double hue = ((double) (y / 8) / 64D) + 0.0078125D;
@@ -370,7 +374,7 @@ public class Draw3D {
                 int intB = (int) (b * 256D);
                 int rgb = (intR << 16) + (intG << 8) + intB;
 
-                rgb = Draw3D.setGamma(rgb, brightness);
+                rgb = Draw3D.setGamma(rgb, gamma);
 
                 if (rgb == 0) {
                     rgb = 1;
@@ -389,7 +393,7 @@ public class Draw3D {
             Draw3D.texturePalette[textureID] = new int[palette.length];
 
             for (int i = 0; i < palette.length; i++) {
-                Draw3D.texturePalette[textureID][i] = Draw3D.setGamma(palette[i], brightness);
+                Draw3D.texturePalette[textureID][i] = Draw3D.setGamma(palette[i], gamma);
 
                 if (((Draw3D.texturePalette[textureID][i] & 0xf8f8ff) == 0) && (i != 0)) {
                     Draw3D.texturePalette[textureID][i] = 1;
@@ -420,6 +424,88 @@ public class Draw3D {
         int intG = (int) (g * 256D);
         int intB = (int) (b * 256D);
         return (intR << 16) + (intG << 8) + intB;
+    }
+
+    public static void main(String[] args) throws IOException {
+        // build palette first since it flushes texels
+        buildPalette(1.0);
+
+        BufferedImage tex = ImageIO.read(new File("texture.png"));
+        int[] texels = new int[128 * 128 * 4];
+        int offset = 0;
+        for (int y = 0; y < 128; y++) {
+            for (int x = 0; x < 128; x++) {
+                texels[offset++] = tex.getRGB(x, y);
+            }
+        }
+
+        activeTexels[0] = texels;
+
+        for (int i = 0; i < 16384; i++) {
+            int rgb = texels[i] & 0xF8F8FF;
+            texels[i] = rgb;
+            texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
+            texels[32768 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
+            texels[49152 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
+        }
+
+        final int imageSize = 512;
+        BufferedImage img0 = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB);
+        int[] pix0 = ((DataBufferInt) img0.getRaster().getDataBuffer()).getData();
+
+        BufferedImage img1 = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB);
+        int[] pix1 = ((DataBufferInt) img1.getRaster().getDataBuffer()).getData();
+
+        BufferedImage img2 = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB);
+        int[] pix2 = ((DataBufferInt) img2.getRaster().getDataBuffer()).getData();
+
+        Draw3D.init3D(imageSize, imageSize);
+        Draw3D.lowmem = false;
+
+        int splits = 3;
+        int segmentSize = imageSize / splits;
+        int radius = segmentSize / 2;
+        double radsPerSegment = (2 * Math.PI) / (splits * splits);
+        double turn = (2 * Math.PI) / 3;
+
+        for (int row = 0; row < splits; row++) {
+            for (int col = 0; col < splits; col++) {
+                int x = (row * segmentSize) + radius;
+                int y = (col * segmentSize) + radius;
+                int index = row + (col * splits);
+                double angle = index * radsPerSegment;
+
+                int x0 = x + (int) (Math.cos(angle) * radius);
+                int y0 = y + (int) (Math.sin(angle) * radius);
+
+                int x1 = x + (int) (Math.cos(angle + turn) * radius);
+                int y1 = y + (int) (Math.sin(angle + turn) * radius);
+
+                int x2 = x + (int) (Math.cos(angle + turn * 2) * radius);
+                int y2 = y + (int) (Math.sin(angle + turn * 2) * radius);
+
+                Draw2D.bind(pix0, imageSize, imageSize);
+                fillGouraudTriangle(y0, y1, y2, x0, x1, x2, 1, 64, 127);
+
+                Draw2D.bind(pix1, imageSize, imageSize);
+                fillTriangle(y0, y1, y2, x0, x1, x2, 0xFFFFFF);
+
+                Draw2D.bind(pix2, imageSize, imageSize);
+
+                fillTexturedTriangle(y0, y1, y2, x0, x1, x2, 127, 64, 0,
+                        x0-256,x1-256,x2-256,
+                        y0-256,y1-256,y2-256,
+                        512,512,512, 0);
+            }
+        }
+
+        ImageIO.write(img0, "png", new File("d3d_0.png"));
+        ImageIO.write(img1, "png", new File("d3d_1.png"));
+        ImageIO.write(img2, "png", new File("d3d_2.png"));
+
+        tex = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
+        System.arraycopy(texels, 0, ((DataBufferInt) tex.getRaster().getDataBuffer()).getData(), 0, 128 * 128 * 4);
+        ImageIO.write(tex, "png", new File("texels.png"));
     }
 
     /**
@@ -1315,6 +1401,7 @@ public class Draw3D {
      * Long story short, this defines a plane in view space and traverses it to determine uv values. It's an impl of
      * this algorithm: <a href="https://www.gamers.org/dEngine/rsc/pcgpe-1.0/texture.txt">texture.txt</a>
      */
+    public static int printCycle = 0;
     public static void fillTexturedTriangle(int yA, int yB, int yC, int xA, int xB, int xC, int shadeA, int shadeB, int shadeC, int txA, int txB, int txC, int tyA, int tyB, int tyC, int tzA, int tzB, int tzC, int texture) {
         int[] texels = Draw3D.getTexels(texture);
         Draw3D.opaque = !Draw3D.textureTranslucent[texture];

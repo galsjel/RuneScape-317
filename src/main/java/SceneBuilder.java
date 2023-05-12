@@ -182,7 +182,7 @@ public class SceneBuilder {
     }
 
     private static void addGroundDecoration(Scene scene, int rotation, int z, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(22, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -198,7 +198,7 @@ public class SceneBuilder {
     }
 
     private static void addLoc(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(10, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -232,7 +232,7 @@ public class SceneBuilder {
     }
 
     private static void addWallStraight(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(0, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -248,7 +248,7 @@ public class SceneBuilder {
     }
 
     private static void addWallCornerDiagonal(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(1, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -265,8 +265,8 @@ public class SceneBuilder {
 
     private static void addWallL(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
         int nextRotation = (rotation + 1) & 0x3;
-        Entity locA;
-        Entity locB;
+        Drawable locA;
+        Drawable locB;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             locA = loc.getModel(2, 4 + rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -284,7 +284,7 @@ public class SceneBuilder {
     }
 
     private static void addWallSquareCorner(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(3, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -300,7 +300,7 @@ public class SceneBuilder {
     }
 
     private static void addRoofOrDiagonalWall(Scene scene, int rotation, int z, int kind, CollisionMap collision, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, LocType loc, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(kind, rotation, heightSW, heightSE, heightNE, heightNW, -1);
@@ -323,7 +323,7 @@ public class SceneBuilder {
             offset = LocType.get((wallBitset >> 14) & 0x7fff).decorOffset;
         }
 
-        Entity entity;
+        Drawable entity;
 
         if ((loc.seqID == -1) && (loc.overrideTypeIDs == null)) {
             entity = loc.getModel(4, 0, heightSW, heightSE, heightNE, heightNW, -1);
@@ -337,7 +337,7 @@ public class SceneBuilder {
     /**
      * Reads the Locs from the provided data and determines if their models are available. The origin coordinate is used
      * to determine if a loc would be excluded from the scene, therefor not required to be validated. The chain of calls
-     * eventually invokes {@link Model#validate(int)} which causes the {@link OnDemand} to do its job.
+     * eventually invokes {@link Model#loaded(int)} which causes the {@link OnDemand} to do its job.
      *
      * @param data    the data
      * @param originX the region origin x in the scene.
@@ -998,7 +998,7 @@ public class SceneBuilder {
 
     private static void addGroundDecoration(Scene scene, CollisionMap collision, int locID, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         if (!lowmem || type.interactable || type.important) {
-            Entity entity;
+            Drawable entity;
 
             if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
                 entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1015,7 +1015,7 @@ public class SceneBuilder {
     }
 
     private void addLoc(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(10, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1074,7 +1074,7 @@ public class SceneBuilder {
     }
 
     private void addRoof(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1094,7 +1094,7 @@ public class SceneBuilder {
     }
 
     private void addWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(0, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1148,7 +1148,7 @@ public class SceneBuilder {
     }
 
     private void addWallCornerDiagonal(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(1, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1177,8 +1177,8 @@ public class SceneBuilder {
 
     private void addFullWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
         int nextRotation = (rotation + 1) & 0x3;
-        Entity entityA;
-        Entity entityB;
+        Drawable entityA;
+        Drawable entityB;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entityA = type.getModel(2, 4 + rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1216,7 +1216,7 @@ public class SceneBuilder {
     }
 
     private void addWallSquareCorner(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(3, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1244,7 +1244,7 @@ public class SceneBuilder {
     }
 
     private static void addRoofOrDiagonalWall(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        Entity entity;
+        Drawable entity;
 
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
@@ -1259,7 +1259,7 @@ public class SceneBuilder {
     }
 
     private static void addWallDecor(Scene scene, int decorType, LocType type, int locID, int locBitset, byte locInfo, int level, int x, int z, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage) {
-        Entity entity;
+        Drawable entity;
         if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
             entity = type.getModel(4, 0, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
         } else {

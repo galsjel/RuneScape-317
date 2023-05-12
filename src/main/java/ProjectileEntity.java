@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ProjectileEntity extends Entity {
+public class ProjectileEntity extends Drawable {
 
     public final int startCycle;
     public final int lastCycle;
@@ -82,10 +82,10 @@ public class ProjectileEntity extends Entity {
             model.labelVertices = null;
         }
         if ((spotanim.scaleXY != 128) || (spotanim.scaleZ != 128)) {
-            model.scale(spotanim.scaleXY, spotanim.scaleXY, spotanim.scaleZ);
+            model.scale(spotanim.scaleXY, spotanim.scaleZ, spotanim.scaleXY);
         }
         model.rotateX(pitch);
-        model.calculateNormals(64 + spotanim.lightAmbient, 850 + spotanim.lightAttenuation, -30, -50, -30, true);
+        model.build(64 + spotanim.lightAmbient, 850 + spotanim.lightAttenuation, -30, -50, -30, true);
         return model;
     }
 

@@ -288,9 +288,9 @@ public class ObjType {
             return true;
         }
 
-        boolean valid = Model.validate(modelID0);
+        boolean valid = Model.loaded(modelID0);
 
-        if ((modelID1 != -1) && !Model.validate(modelID1)) {
+        if ((modelID1 != -1) && !Model.loaded(modelID1)) {
             valid = false;
         }
         return valid;
@@ -342,13 +342,13 @@ public class ObjType {
             return true;
         }
 
-        boolean valid = Model.validate(modelID0);
+        boolean valid = Model.loaded(modelID0);
 
-        if ((modelID1 != -1) && !Model.validate(modelID1)) {
+        if ((modelID1 != -1) && !Model.loaded(modelID1)) {
             valid = false;
         }
 
-        if ((modelID2 != -1) && !Model.validate(modelID2)) {
+        if ((modelID2 != -1) && !Model.loaded(modelID2)) {
             valid = false;
         }
 
@@ -504,7 +504,7 @@ public class ObjType {
         }
 
         if ((scaleX != 128) || (scaleZ != 128) || (scaleY != 128)) {
-            model.scale(scaleX, scaleY, scaleZ);
+            model.scale(scaleX, scaleZ, scaleY);
         }
 
         if (srcColor != null) {
@@ -513,7 +513,7 @@ public class ObjType {
             }
         }
 
-        model.calculateNormals(64 + lightAmbient, 768 + lightAttenuation, -50, -10, -50, true);
+        model.build(64 + lightAmbient, 768 + lightAttenuation, -50, -10, -50, true);
         model.pickable = true;
         modelCache.put(id, model);
         return model;

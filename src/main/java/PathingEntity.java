@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class PathingEntity extends Entity {
+public class PathingEntity extends Drawable {
 
     public final int[] pathTileX = new int[10];
     public final int[] pathTileZ = new int[10];
@@ -44,7 +44,7 @@ public class PathingEntity extends Entity {
     public int targetTileZ;
     public int size = 1;
     /**
-     * Passed to {@link Scene#addTemporary(Entity, int, int, int, int, int, int, boolean, int)} to provide an additional
+     * Passed to {@link Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)} to provide an additional
      * tile worth of draw padding ahead of this entity for things like animations that extend past the normal boundary.
      */
     public boolean needsForwardDrawPadding = false;

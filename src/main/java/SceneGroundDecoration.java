@@ -7,7 +7,7 @@ public class SceneGroundDecoration {
     public int y;
     public int x;
     public int z;
-    public Entity entity;
+    public Drawable entity;
     public int bitset;
     public byte info;
 

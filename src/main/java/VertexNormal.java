@@ -12,4 +12,8 @@ public class VertexNormal {
     public VertexNormal() {
     }
 
+    @Override
+    public String toString() {
+        return "VertexNormal{" + "x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + '}';
+    }
 }

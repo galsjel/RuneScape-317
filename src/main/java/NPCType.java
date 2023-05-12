@@ -107,7 +107,7 @@ public class NPCType {
         boolean loaded = false;
 
         for (int value : headModelIDs) {
-            if (!Model.validate(value)) {
+            if (!Model.loaded(value)) {
                 loaded = true;
             }
         }
@@ -175,7 +175,7 @@ public class NPCType {
             boolean invalid = false;
 
             for (int value : modelIDs) {
-                if (!Model.validate(value)) {
+                if (!Model.loaded(value)) {
                     invalid = true;
                 }
             }
@@ -203,7 +203,7 @@ public class NPCType {
             }
 
             model.createLabelReferences();
-            model.calculateNormals(64 + lightAmbient, 850 + lightAttenuation, -30, -50, -30, true);
+            model.build(64 + lightAmbient, 850 + lightAttenuation, -30, -50, -30, true);
             modelCache.put(uid, model);
         }
 
@@ -217,7 +217,7 @@ public class NPCType {
         }
 
         if ((scaleXY != 128) || (scaleZ != 128)) {
-            tmp.scale(scaleXY, scaleXY, scaleZ);
+            tmp.scale(scaleXY, scaleZ, scaleXY);
         }
 
         tmp.calculateBoundsCylinder();

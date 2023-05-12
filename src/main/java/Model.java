@@ -2,7 +2,9 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class Model extends Entity {
+import com.google.gson.annotations.SerializedName;
+
+public class Model extends Drawable {
 
     public static final Model EMPTY = new Model();
 
@@ -21,9 +23,9 @@ public class Model extends Entity {
     public static OnDemand ondemand;
     public static boolean[] faceClippedX = new boolean[4096];
     public static boolean[] faceNearClipped = new boolean[4096];
-    public static int[] vertexScreenX = new int[4096];
-    public static int[] vertexScreenY = new int[4096];
-    public static int[] vertexScreenZ = new int[4096];
+    public static int[] projectedX = new int[4096];
+    public static int[] projectedY = new int[4096];
+    public static int[] projectedZ = new int[4096];
     public static int[] vertexViewSpaceX = new int[4096];
     public static int[] vertexViewSpaceY = new int[4096];
     public static int[] vertexViewSpaceZ = new int[4096];
@@ -38,7 +40,7 @@ public class Model extends Entity {
     public static int baseX;
     public static int baseY;
     public static int baseZ;
-    public static boolean checkHover;
+    public static boolean pick;
     public static int mouseX;
     public static int mouseY;
     public static int pickedCount;
@@ -62,9 +64,10 @@ public class Model extends Entity {
         public int faceColorsOffset;
         public int faceInfosOffset;
         public int facePrioritiesOffset;
-        public int faceAlphasOffset;
+        public int faceTransDataPos;
         public int faceLabelsOffset;
         public int faceTextureAxisOffset;
+        public int features;
 
     }
 
@@ -72,9 +75,9 @@ public class Model extends Entity {
         headers = null;
         faceClippedX = null;
         faceNearClipped = null;
-        vertexScreenX = null;
-        vertexScreenY = null;
-        vertexScreenZ = null;
+        projectedX = null;
+        projectedY = null;
+        projectedZ = null;
         vertexViewSpaceX = null;
         vertexViewSpaceY = null;
         vertexViewSpaceZ = null;
@@ -112,6 +115,10 @@ public class Model extends Entity {
         header.faceCount = buffer.readU16();
         header.texturedFaceCount = buffer.readU8();
 
+        if (header.texturedFaceCount > 0) {
+            header.features++;
+        }
+
         int hasInfo = buffer.readU8();
         int priority = buffer.readU8();
         int hasAlpha = buffer.readU8();
@@ -121,7 +128,7 @@ public class Model extends Entity {
         int dataLengthX = buffer.readU16();
         int dataLengthY = buffer.readU16();
         int dataLengthZ = buffer.readU16();
-        int dataLengthFaceOrientations = buffer.readU16();
+        int faceVertexDataLength = buffer.readU16();
 
         int offset = 0;
         header.vertexFlagsOffset = offset;
@@ -133,6 +140,7 @@ public class Model extends Entity {
         header.facePrioritiesOffset = offset;
         if (priority == 255) {
             offset += header.faceCount;
+            header.features++;
         } else {
             header.facePrioritiesOffset = -priority - 1;
         }
@@ -140,6 +148,7 @@ public class Model extends Entity {
         header.faceLabelsOffset = offset;
         if (hasFaceLabels == 1) {
             offset += header.faceCount;
+            header.features++;
         } else {
             header.faceLabelsOffset = -1;
         }
@@ -147,6 +156,7 @@ public class Model extends Entity {
         header.faceInfosOffset = offset;
         if (hasInfo == 1) {
             offset += header.faceCount;
+            header.features++;
         } else {
             header.faceInfosOffset = -1;
         }
@@ -154,19 +164,21 @@ public class Model extends Entity {
         header.vertexLabelsOffset = offset;
         if (hasVertexLabels == 1) {
             offset += header.vertexCount;
+            header.features++;
         } else {
             header.vertexLabelsOffset = -1;
         }
 
-        header.faceAlphasOffset = offset;
+        header.faceTransDataPos = offset;
         if (hasAlpha == 1) {
             offset += header.faceCount;
+            header.features++;
         } else {
-            header.faceAlphasOffset = -1;
+            header.faceTransDataPos = -1;
         }
 
         header.faceVerticesOffset = offset;
-        offset += dataLengthFaceOrientations;
+        offset += faceVertexDataLength;
 
         header.faceColorsOffset = offset;
         offset += header.faceCount * 2;
@@ -183,6 +195,8 @@ public class Model extends Entity {
     }
 
     public static void unload(int id) {
+
+
         headers[id] = null;
     }
 
@@ -213,7 +227,7 @@ public class Model extends Entity {
      * @param id the model id.
      * @return <code>true</code> if the model is loaded.
      */
-    public static boolean validate(int id) {
+    public static boolean loaded(int id) {
         if (headers == null) {
             return false;
         }
@@ -257,70 +271,104 @@ public class Model extends Entity {
         return (hsl & 0xff80) + scalar;
     }
 
+    @SerializedName("vcount")
     public int vertexCount;
+    @SerializedName("vx")
     public int[] vertexX;
+    @SerializedName("vy")
     public int[] vertexY;
+    @SerializedName("vz")
     public int[] vertexZ;
+    @SerializedName("fcount")
     public int faceCount;
+    @SerializedName("fa")
     public int[] faceVertexA;
+    @SerializedName("fb")
     public int[] faceVertexB;
+    @SerializedName("fc")
     public int[] faceVertexC;
+    @SerializedName("fcolor_a")
     public int[] faceColorA;
+    @SerializedName("fcolor_b")
     public int[] faceColorB;
+    @SerializedName("fcolor_c")
     public int[] faceColorC;
-    public int[] faceInfo;
+    @SerializedName("ftype")
+    public int[] faceType;
+    @SerializedName("fpriority")
     public int[] facePriority;
+    @SerializedName("ftrans")
     public int[] faceAlpha;
+    @SerializedName("fcolor")
     public int[] faceColor;
+    @SerializedName("priority")
     public int priority;
+    @SerializedName("tfcount")
     public int texturedFaceCount;
+    @SerializedName("tfa")
     public int[] texturedVertexA;
+    @SerializedName("tfb")
     public int[] texturedVertexB;
+    @SerializedName("tfc")
     public int[] texturedVertexC;
+    @SerializedName("min_x")
+
     public int minX;
+    @SerializedName("max_x")
     public int maxX;
+    @SerializedName("max_y")
     public int maxY;
+    @SerializedName("min_z")
     public int minZ;
+    @SerializedName("max_z")
     public int maxZ;
     /**
      * The radius of this model on the XZ plane.
      *
      * @see #calculateBoundsAABB()
      */
+    @SerializedName("radius_xz")
     public int radius;
+    @SerializedName("min_depth")
     public int minDepth;
+    @SerializedName("max_depth")
     public int maxDepth;
     /**
      * minDepth = (int) Math.sqrt((radius * radius) + (super.minY * super.minY));
      * maxDepth = minDepth + (int) Math.sqrt((radius * radius) + (maxY * maxY));
      */
-    public int objRaise;
+    public transient int objRaise;
     /**
      * The label the vertex belongs to.
      */
+    @SerializedName("vlabel")
     public int[] vertexLabel;
     /**
      * The label the face belongs to.
      */
+    @SerializedName("flabel")
     public int[] faceLabel;
     /**
      * A lookup table for label->vertex.
      */
+    @SerializedName("lvertex")
     public int[][] labelVertices;
     /**
      * A lookup table for label->face.
      */
+    @SerializedName("lface")
     public int[][] labelFaces;
     /**
      * When set to <code>true</code>, this model will be picked based on its projected screen bounds.
      *
      * @see #draw(int, int, int, int, int, int, int, int, int)
      */
-    public boolean pickable = false;
+    public transient boolean pickable = false;
     /**
      * A storage for the original vertex normals to give {@link Scene#mergeNormals(Model, Model, int, int, int, boolean)}
      * a reference.
      */
+    @SerializedName("normals2")
     public VertexNormal[] vertexNormalOriginal;
 
     /**
@@ -359,7 +407,7 @@ public class Model extends Entity {
         }
 
         if (header.faceInfosOffset >= 0) {
-            faceInfo = new int[faceCount];
+            faceType = new int[faceCount];
         }
 
         if (header.facePrioritiesOffset >= 0) {
@@ -368,7 +416,7 @@ public class Model extends Entity {
             priority = -header.facePrioritiesOffset - 1;
         }
 
-        if (header.faceAlphasOffset >= 0) {
+        if (header.faceTransDataPos >= 0) {
             faceAlpha = new int[faceCount];
         }
 
@@ -432,14 +480,14 @@ public class Model extends Entity {
         buf0.position = header.faceColorsOffset;
         buf1.position = header.faceInfosOffset;
         buf2.position = header.facePrioritiesOffset;
-        buf3.position = header.faceAlphasOffset;
+        buf3.position = header.faceTransDataPos;
         buf4.position = header.faceLabelsOffset;
 
         for (int face = 0; face < faceCount; face++) {
             faceColor[face] = buf0.readU16();
 
-            if (faceInfo != null) {
-                faceInfo[face] = buf1.readU8();
+            if (faceType != null) {
+                faceType[face] = buf1.readU8();
             }
 
             if (facePriority != null) {
@@ -557,7 +605,7 @@ public class Model extends Entity {
             faceCount += model.faceCount;
             texturedFaceCount += model.texturedFaceCount;
 
-            copyInfo |= model.faceInfo != null;
+            copyInfo |= model.faceType != null;
 
             if (model.facePriority != null) {
                 copyPriority = true;
@@ -586,7 +634,7 @@ public class Model extends Entity {
         texturedVertexC = new int[texturedFaceCount];
 
         if (copyInfo) {
-            faceInfo = new int[faceCount];
+            faceType = new int[faceCount];
         }
 
         if (copyPriority) {
@@ -617,16 +665,16 @@ public class Model extends Entity {
 
             for (int face = 0; face < model.faceCount; face++) {
                 if (copyInfo) {
-                    if (model.faceInfo == null) {
-                        faceInfo[faceCount] = 0;
+                    if (model.faceType == null) {
+                        faceType[faceCount] = 0;
                     } else {
-                        int info = model.faceInfo[face];
+                        int info = model.faceType[face];
 
                         if ((info & 2) == 2) {
                             info += tfaceCount << 2;
                         }
 
-                        faceInfo[faceCount] = info;
+                        faceType[faceCount] = info;
                     }
                 }
 
@@ -699,7 +747,7 @@ public class Model extends Entity {
             vertexCount += model.vertexCount;
             faceCount += model.faceCount;
             texturedFaceCount += model.texturedFaceCount;
-            copyInfo |= model.faceInfo != null;
+            copyInfo |= model.faceType != null;
 
             if (model.facePriority != null) {
                 copyPriority = true;
@@ -730,7 +778,7 @@ public class Model extends Entity {
         texturedVertexC = new int[texturedFaceCount];
 
         if (copyInfo) {
-            faceInfo = new int[faceCount];
+            faceType = new int[faceCount];
         }
 
         if (copyPriority) {
@@ -776,16 +824,16 @@ public class Model extends Entity {
                 faceColorC[faceCount] = model.faceColorC[f];
 
                 if (copyInfo) {
-                    if (model.faceInfo == null) {
-                        faceInfo[faceCount] = 0;
+                    if (model.faceType == null) {
+                        faceType[faceCount] = 0;
                     } else {
-                        int info = model.faceInfo[f];
+                        int info = model.faceType[f];
 
                         if ((info & 2) == 2) {
                             info += tfaceCount << 2;
                         }
 
-                        faceInfo[faceCount] = info;
+                        faceType[faceCount] = info;
                     }
                 }
 
@@ -881,7 +929,7 @@ public class Model extends Entity {
 
         vertexLabel = model.vertexLabel;
         faceLabel = model.faceLabel;
-        faceInfo = model.faceInfo;
+        faceType = model.faceType;
         faceVertexA = model.faceVertexA;
         faceVertexB = model.faceVertexB;
         faceVertexC = model.faceVertexC;
@@ -928,15 +976,15 @@ public class Model extends Entity {
                 faceColorC[k] = model.faceColorC[k];
             }
 
-            faceInfo = new int[faceCount];
+            faceType = new int[faceCount];
 
-            if (model.faceInfo == null) {
+            if (model.faceType == null) {
                 for (int l = 0; l < faceCount; l++) {
-                    faceInfo[l] = 0;
+                    faceType[l] = 0;
                 }
             } else {
                 for (int face = 0; face < faceCount; face++) {
-                    faceInfo[face] = model.faceInfo[face];
+                    faceType[face] = model.faceType[face];
                 }
             }
 
@@ -954,7 +1002,7 @@ public class Model extends Entity {
             faceColorA = model.faceColorA;
             faceColorB = model.faceColorB;
             faceColorC = model.faceColorC;
-            faceInfo = model.faceInfo;
+            faceType = model.faceType;
         }
 
         vertexX = model.vertexX;
@@ -1027,7 +1075,7 @@ public class Model extends Entity {
             }
         }
 
-        faceInfo = model.faceInfo;
+        faceType = model.faceType;
         faceColor = model.faceColor;
         facePriority = model.facePriority;
         priority = model.priority;
@@ -1553,8 +1601,8 @@ public class Model extends Entity {
     public void scale(int x, int y, int z) {
         for (int v = 0; v < vertexCount; v++) {
             vertexX[v] = (vertexX[v] * x) / 128;
-            vertexY[v] = (vertexY[v] * z) / 128;
-            vertexZ[v] = (vertexZ[v] * y) / 128;
+            vertexY[v] = (vertexY[v] * y) / 128;
+            vertexZ[v] = (vertexZ[v] * z) / 128;
         }
     }
 
@@ -1567,13 +1615,15 @@ public class Model extends Entity {
      * @param lightSrcX        the light source x.
      * @param lightSrcY        the light source y.
      * @param lightSrcZ        the light source z.
-     * @param applyLighting    <code>true</code> to invoke {@link #applyLighting(int, int, int, int, int)} after normals are
+     * @param applyLighting    <code>true</code> to invoke {@link #buildLighting(int, int, int, int, int)} after normals are
      *                         calculated.
-     * @see #applyLighting(int, int, int, int, int)
+     * @see #buildLighting(int, int, int, int, int)
      */
-    public void calculateNormals(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ, boolean applyLighting) {
+    public void build(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ, boolean applyLighting) {
         int lightMagnitude = (int) Math.sqrt((lightSrcX * lightSrcX) + (lightSrcY * lightSrcY) + (lightSrcZ * lightSrcZ));
         int attenuation = (lightAttenuation * lightMagnitude) >> 8;
+
+        System.out.println("attenuation = " + attenuation);
 
         if (faceColorA == null) {
             faceColorA = new int[faceCount];
@@ -1622,7 +1672,7 @@ public class Model extends Entity {
             ny = (ny * 256) / length;
             nz = (nz * 256) / length;
 
-            if ((faceInfo == null) || ((faceInfo[f] & 1) == 0)) {
+            if ((faceType == null) || ((faceType[f] & 1) == 0)) {
                 VertexNormal n = super.vertexNormal[a];
                 n.x += nx;
                 n.y += ny;
@@ -1640,12 +1690,12 @@ public class Model extends Entity {
                 n.w++;
             } else {
                 int lightness = lightAmbient + (((lightSrcX * nx) + (lightSrcY * ny) + (lightSrcZ * nz)) / (attenuation + (attenuation / 2)));
-                faceColorA[f] = mulColorLightness(faceColor[f], lightness, faceInfo[f]);
+                faceColorA[f] = mulColorLightness(faceColor[f], lightness, faceType[f]);
             }
         }
 
         if (applyLighting) {
-            applyLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
+            buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
         } else {
             vertexNormalOriginal = new VertexNormal[vertexCount];
 
@@ -1676,13 +1726,13 @@ public class Model extends Entity {
      * @param lightSrcY        the light source y.
      * @param lightSrcZ        the light source z.
      */
-    public void applyLighting(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ) {
+    public void buildLighting(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ) {
         for (int f = 0; f < faceCount; f++) {
             int a = faceVertexA[f];
             int b = faceVertexB[f];
             int c = faceVertexC[f];
 
-            if (faceInfo == null) {
+            if (faceType == null) {
                 int color = faceColor[f];
 
                 VertexNormal n = super.vertexNormal[a];
@@ -1696,9 +1746,9 @@ public class Model extends Entity {
                 n = super.vertexNormal[c];
                 lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
                 faceColorC[f] = mulColorLightness(color, lightness, 0);
-            } else if ((faceInfo[f] & 1) == 0) {
+            } else if ((faceType[f] & 1) == 0) {
                 int color = faceColor[f];
-                int info = faceInfo[f];
+                int info = faceType[f];
 
                 VertexNormal n = super.vertexNormal[a];
                 int lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
@@ -1719,9 +1769,9 @@ public class Model extends Entity {
         vertexLabel = null;
         faceLabel = null;
 
-        if (faceInfo != null) {
+        if (faceType != null) {
             for (int f = 0; f < faceCount; f++) {
-                if ((faceInfo[f] & 2) == 2) {
+                if ((faceType[f] & 2) == 2) {
                     return;
                 }
             }
@@ -1791,9 +1841,9 @@ public class Model extends Entity {
 
             // View Space -> Screen Space
 
-            vertexScreenX[v] = centerX + ((x << 9) / z);
-            vertexScreenY[v] = centerY + ((y << 9) / z);
-            vertexScreenZ[v] = z - midZ;
+            projectedX[v] = centerX + ((x << 9) / z);
+            projectedY[v] = centerY + ((y << 9) / z);
+            projectedZ[v] = z - midZ;
 
             // Store viewspace coordinates to be transformed into screen space later (textured or clipped triangles)
 
@@ -1896,7 +1946,7 @@ public class Model extends Entity {
         boolean clipped = (midZ - radiusZ) <= 50;
         boolean picking = false;
 
-        if ((bitset > 0) && Model.checkHover) {
+        if ((bitset > 0) && Model.pick) {
             int z = midZ - radiusCosEyePitch;
 
             if (z <= 50) {
@@ -1971,14 +2021,14 @@ public class Model extends Entity {
             y = tmp;
 
             if (z >= 50) {
-                vertexScreenX[v] = centerX + ((x << 9) / z);
-                vertexScreenY[v] = centerY + ((y << 9) / z);
+                projectedX[v] = centerX + ((x << 9) / z);
+                projectedY[v] = centerY + ((y << 9) / z);
             } else {
-                vertexScreenX[v] = -5000; // used in drawTriangle to denote a near-clipped triangle.
+                projectedX[v] = -5000; // used in drawTriangle to denote a near-clipped triangle.
                 clipped = true;
             }
 
-            vertexScreenZ[v] = z - midZ;
+            projectedZ[v] = z - midZ;
 
             if (clipped || (texturedFaceCount > 0)) {
                 vertexViewSpaceX[v] = x;
@@ -2005,32 +2055,32 @@ public class Model extends Entity {
         }
 
         for (int f = 0; f < faceCount; f++) {
-            if ((faceInfo != null) && (faceInfo[f] == -1)) {
+            if ((faceType != null) && (faceType[f] == -1)) {
                 continue;
             }
 
             int a = faceVertexA[f];
             int b = faceVertexB[f];
             int c = faceVertexC[f];
-            int xA = vertexScreenX[a];
-            int xB = vertexScreenX[b];
-            int xC = vertexScreenX[c];
+            int xA = projectedX[a];
+            int xB = projectedX[b];
+            int xC = projectedX[c];
 
             if (clipped && ((xA == -5000) || (xB == -5000) || (xC == -5000))) {
                 faceNearClipped[f] = true;
-                int depthAverage = ((vertexScreenZ[a] + vertexScreenZ[b] + vertexScreenZ[c]) / 3) + minDepth;
+                int depthAverage = ((projectedZ[a] + projectedZ[b] + projectedZ[c]) / 3) + minDepth;
                 tmpDepthFaces[depthAverage][tmpDepthFaceCount[depthAverage]++] = f;
             } else {
-                if (picking && pointWithinTriangle(mouseX, mouseY, vertexScreenY[a], vertexScreenY[b], vertexScreenY[c], xA, xB, xC)) {
+                if (picking && pointWithinTriangle(mouseX, mouseY, projectedY[a], projectedY[b], projectedY[c], xA, xB, xC)) {
                     pickedBitsets[pickedCount++] = bitset;
                     picking = false;
                 }
 
                 // Back-face culling
                 int dxAB = xA - xB;
-                int dyAB = vertexScreenY[a] - vertexScreenY[b];
+                int dyAB = projectedY[a] - projectedY[b];
                 int dxCB = xC - xB;
-                int dyCB = vertexScreenY[c] - vertexScreenY[b];
+                int dyCB = projectedY[c] - projectedY[b];
 
                 if (((dxAB * dyCB) - (dyAB * dxCB)) <= 0) {
                     continue;
@@ -2039,7 +2089,7 @@ public class Model extends Entity {
                 faceNearClipped[f] = false;
                 faceClippedX[f] = (xA < 0) || (xB < 0) || (xC < 0) || (xA > Draw2D.boundX) || (xB > Draw2D.boundX) || (xC > Draw2D.boundX);
 
-                int depthAverage = ((vertexScreenZ[a] + vertexScreenZ[b] + vertexScreenZ[c]) / 3) + minDepth;
+                int depthAverage = ((projectedZ[a] + projectedZ[b] + projectedZ[c]) / 3) + minDepth;
                 tmpDepthFaces[depthAverage][tmpDepthFaceCount[depthAverage]++] = f;
             }
         }
@@ -2235,28 +2285,28 @@ public class Model extends Entity {
 
         int type;
 
-        if (faceInfo == null) {
+        if (faceType == null) {
             type = 0;
         } else {
-            type = faceInfo[face] & 0b11;
+            type = faceType[face] & 0b11;
         }
 
         if (type == 0) {
-            Draw3D.fillGouraudTriangle(vertexScreenY[a], vertexScreenY[b], vertexScreenY[c], vertexScreenX[a], vertexScreenX[b], vertexScreenX[c], faceColorA[face], faceColorB[face], faceColorC[face]);
+            Draw3D.fillGouraudTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorB[face], faceColorC[face]);
         } else if (type == 1) {
-            Draw3D.fillTriangle(vertexScreenY[a], vertexScreenY[b], vertexScreenY[c], vertexScreenX[a], vertexScreenX[b], vertexScreenX[c], palette[faceColorA[face]]);
+            Draw3D.fillTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], palette[faceColorA[face]]);
         } else if (type == 2) {
-            int texturedFace = faceInfo[face] >> 2;
+            int texturedFace = faceType[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
-            Draw3D.fillTexturedTriangle(vertexScreenY[a], vertexScreenY[b], vertexScreenY[c], vertexScreenX[a], vertexScreenX[b], vertexScreenX[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
+            Draw3D.fillTexturedTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
         } else if (type == 3) {
-            int texturedFace = faceInfo[face] >> 2;
+            int texturedFace = faceType[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
-            Draw3D.fillTexturedTriangle(vertexScreenY[a], vertexScreenY[b], vertexScreenY[c], vertexScreenX[a], vertexScreenX[b], vertexScreenX[c], faceColorA[face], faceColorA[face], faceColorA[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
+            Draw3D.fillTexturedTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorA[face], faceColorA[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
         }
     }
 
@@ -2279,8 +2329,8 @@ public class Model extends Entity {
         int zC = vertexViewSpaceZ[c];
 
         if (zA >= 50) {
-            clippedX[elements] = vertexScreenX[a];
-            clippedY[elements] = vertexScreenY[a];
+            clippedX[elements] = projectedX[a];
+            clippedY[elements] = projectedY[a];
             clippedColor[elements++] = faceColorA[face];
         } else {
             int xA = vertexViewSpaceX[a];
@@ -2303,8 +2353,8 @@ public class Model extends Entity {
         }
 
         if (zB >= 50) {
-            clippedX[elements] = vertexScreenX[b];
-            clippedY[elements] = vertexScreenY[b];
+            clippedX[elements] = projectedX[b];
+            clippedY[elements] = projectedY[b];
             clippedColor[elements++] = faceColorB[face];
         } else {
             int xB = vertexViewSpaceX[b];
@@ -2327,8 +2377,8 @@ public class Model extends Entity {
         }
 
         if (zC >= 50) {
-            clippedX[elements] = vertexScreenX[c];
-            clippedY[elements] = vertexScreenY[c];
+            clippedX[elements] = projectedX[c];
+            clippedY[elements] = projectedY[c];
             clippedColor[elements++] = faceColorC[face];
         } else {
             int xC = vertexViewSpaceX[c];
@@ -2373,10 +2423,10 @@ public class Model extends Entity {
 
             int type;
 
-            if (faceInfo == null) {
+            if (faceType == null) {
                 type = 0;
             } else {
-                type = faceInfo[face] & 3;
+                type = faceType[face] & 3;
             }
 
             if (type == 0) {
@@ -2384,13 +2434,13 @@ public class Model extends Entity {
             } else if (type == 1) {
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, palette[faceColorA[face]]);
             } else if (type == 2) {
-                int texturedFace = faceInfo[face] >> 2;
+                int texturedFace = faceType[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
                 Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
             } else if (type == 3) {
-                int texturedFace = faceInfo[face] >> 2;
+                int texturedFace = faceType[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
@@ -2403,10 +2453,10 @@ public class Model extends Entity {
 
             int type;
 
-            if (faceInfo == null) {
+            if (faceType == null) {
                 type = 0;
             } else {
-                type = faceInfo[face] & 3;
+                type = faceType[face] & 3;
             }
 
             if (type == 0) {
@@ -2417,14 +2467,14 @@ public class Model extends Entity {
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, colorA);
                 Draw3D.fillTriangle(y0, y2, clippedY[3], x0, x2, clippedX[3], colorA);
             } else if (type == 2) {
-                int texturedFace = faceInfo[face] >> 2;
+                int texturedFace = faceType[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
                 Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
                 Draw3D.fillTexturedTriangle(y0, y2, clippedY[3], x0, x2, clippedX[3], clippedColor[0], clippedColor[2], clippedColor[3], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
             } else if (type == 3) {
-                int texturedFace = faceInfo[face] >> 2;
+                int texturedFace = faceType[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
@@ -2447,7 +2497,7 @@ public class Model extends Entity {
      * @param xC x of corner c.
      * @return <code>true</code> if <code>(x, y)</code> is within the triangle.
      */
-    public boolean pointWithinTriangle(int x, int y, int yA, int yB, int yC, int xA, int xB, int xC) {
+    public static boolean pointWithinTriangle(int x, int y, int yA, int yB, int yC, int xA, int xB, int xC) {
         if ((y < yA) && (y < yB) && (y < yC)) {
             return false;
         }

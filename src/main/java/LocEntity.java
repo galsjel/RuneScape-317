@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class LocEntity extends Entity {
+public class LocEntity extends Drawable {
 
     public static Game game;
     public final int[] overrideTypeIDs;

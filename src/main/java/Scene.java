@@ -395,7 +395,7 @@ public class Scene {
         }
     }
 
-    public void addGroundDecoration(Entity entity, int tileLevel, int tileX, int tileZ, int y, int bitset, byte info) {
+    public void addGroundDecoration(Drawable entity, int tileLevel, int tileX, int tileZ, int y, int bitset, byte info) {
         if (entity == null) {
             return;
         }
@@ -412,7 +412,7 @@ public class Scene {
         levelTiles[tileLevel][tileX][tileZ].groundDecoration = decor;
     }
 
-    public void addObjStack(Entity topObj, Entity bottomObj, Entity middleObj, int level, int stx, int stz, int y, int bitset) {
+    public void addObjStack(Drawable topObj, Drawable bottomObj, Drawable middleObj, int level, int stx, int stz, int y, int bitset) {
         SceneObjStack stack = new SceneObjStack();
         stack.x = (stx * 128) + 64;
         stack.z = (stz * 128) + 64;
@@ -446,7 +446,7 @@ public class Scene {
         levelTiles[level][stx][stz].objStack = stack;
     }
 
-    public void setWall(int typeA, Entity entityA, int typeB, Entity entityB, int level, int tileX, int tileZ, int y, int bitset, byte info) {
+    public void setWall(int typeA, Drawable entityA, int typeB, Drawable entityB, int level, int tileX, int tileZ, int y, int bitset, byte info) {
         if ((entityA == null) && (entityB == null)) {
             return;
         }
@@ -468,7 +468,7 @@ public class Scene {
         levelTiles[level][tileX][tileZ].wall = wall;
     }
 
-    public void setWallDecoration(int type, Entity entity, int level, int tileX, int tileZ, int y, int rotation, int offsetX, int offsetZ, int bitset, byte info) {
+    public void setWallDecoration(int type, Drawable entity, int level, int tileX, int tileZ, int y, int rotation, int offsetX, int offsetZ, int bitset, byte info) {
         if (entity == null) {
             return;
         }
@@ -489,7 +489,7 @@ public class Scene {
         levelTiles[level][tileX][tileZ].wallDecoration = decor;
     }
 
-    public boolean add(Entity entity, int level, int tileX, int tileZ, int y, int width, int length, int yaw, int bitset, byte info) {
+    public boolean add(Drawable entity, int level, int tileX, int tileZ, int y, int width, int length, int yaw, int bitset, byte info) {
         if (entity == null) {
             return true;
         } else {
@@ -499,7 +499,7 @@ public class Scene {
         }
     }
 
-    public boolean addTemporary(Entity entity, int level, int x, int z, int y, int yaw, int bitset, boolean forwardPadding, int padding) {
+    public boolean addTemporary(Drawable entity, int level, int x, int z, int y, int yaw, int bitset, boolean forwardPadding, int padding) {
         if (entity == null) {
             return true;
         }
@@ -531,7 +531,7 @@ public class Scene {
         return add(entity, level, x0, z0, (x1 - x0) + 1, (z1 - z0) + 1, x, z, y, yaw, bitset, (byte) 0, true);
     }
 
-    public boolean addTemporary(Entity entity, int level, int minTileX, int minTileZ, int maxTileX, int maxTileZ, int x, int z, int y, int yaw, int bitset) {
+    public boolean addTemporary(Drawable entity, int level, int minTileX, int minTileZ, int maxTileX, int maxTileZ, int x, int z, int y, int yaw, int bitset) {
         if (entity == null) {
             return true;
         } else {
@@ -539,7 +539,7 @@ public class Scene {
         }
     }
 
-    public boolean add(Entity entity, int level, int tileX, int tileZ, int tileSizeX, int tileSizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
+    public boolean add(Drawable entity, int level, int tileX, int tileZ, int tileSizeX, int tileSizeZ, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
         for (int tx = tileX; tx < (tileX + tileSizeX); tx++) {
             for (int tz = tileZ; tz < (tileZ + tileSizeZ); tz++) {
                 if ((tx < 0) || (tz < 0) || (tx >= maxTileX) || (tz >= maxTileZ)) {
@@ -836,10 +836,10 @@ public class Scene {
                         if ((wall.entityB != null) && (wall.entityB.vertexNormal != null)) {
                             mergeLocNormals(level, 1, 1, tileX, tileZ, (Model) wall.entityB);
                             mergeNormals((Model) wall.entityA, (Model) wall.entityB, 0, 0, 0, false);
-                            ((Model) wall.entityB).applyLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
+                            ((Model) wall.entityB).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                         }
 
-                        ((Model) wall.entityA).applyLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
+                        ((Model) wall.entityA).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                     }
 
                     for (int i = 0; i < tile.locCount; i++) {
@@ -847,14 +847,14 @@ public class Scene {
 
                         if ((loc != null) && (loc.entity != null) && (loc.entity.vertexNormal != null)) {
                             mergeLocNormals(level, (loc.maxSceneTileX - loc.minSceneTileX) + 1, (loc.maxSceneTileZ - loc.minSceneTileZ) + 1, tileX, tileZ, (Model) loc.entity);
-                            ((Model) loc.entity).applyLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
+                            ((Model) loc.entity).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                         }
                     }
 
                     SceneGroundDecoration decoration = tile.groundDecoration;
                     if ((decoration != null) && (decoration.entity.vertexNormal != null)) {
                         mergeGroundDecorationNormals(tileX, level, (Model) decoration.entity, tileZ);
-                        ((Model) decoration.entity).applyLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
+                        ((Model) decoration.entity).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                     }
                 }
             }
@@ -1009,14 +1009,14 @@ public class Scene {
         // if every vertex of a given face had their normals merged, clear the face info causing that face not to draw.
         for (int i = 0; i < modelA.faceCount; i++) {
             if ((mergeIndexA[modelA.faceVertexA[i]] == tmpMergeIndex) && (mergeIndexA[modelA.faceVertexB[i]] == tmpMergeIndex) && (mergeIndexA[modelA.faceVertexC[i]] == tmpMergeIndex)) {
-                modelA.faceInfo[i] = -1;
+                modelA.faceType[i] = -1;
             }
         }
 
         // same as above but for model B
         for (int i = 0; i < modelB.faceCount; i++) {
             if ((mergeIndexB[modelB.faceVertexA[i]] == tmpMergeIndex) && (mergeIndexB[modelB.faceVertexB[i]] == tmpMergeIndex) && (mergeIndexB[modelB.faceVertexC[i]] == tmpMergeIndex)) {
-                modelB.faceInfo[i] = -1;
+                modelB.faceType[i] = -1;
             }
         }
     }

@@ -66,7 +66,7 @@ public class IdkType {
         }
         boolean loaded = true;
         for (int modelID : modelIDs) {
-            if (!Model.validate(modelID)) {
+            if (!Model.loaded(modelID)) {
                 loaded = false;
             }
         }
@@ -103,7 +103,7 @@ public class IdkType {
     public boolean validateHeadModel() {
         boolean loaded = true;
         for (int i = 0; i < 5; i++) {
-            if ((headModelIDs[i] != -1) && !Model.validate(headModelIDs[i])) {
+            if ((headModelIDs[i] != -1) && !Model.loaded(headModelIDs[i])) {
                 loaded = false;
             }
         }

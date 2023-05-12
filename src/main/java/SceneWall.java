@@ -9,8 +9,8 @@ public class SceneWall {
     public int z;
     public int typeA;
     public int typeB;
-    public Entity entityA;
-    public Entity entityB;
+    public Drawable entityA;
+    public Drawable entityB;
     public int bitset;
     public byte info;
 

@@ -1,9 +1,13 @@
-public class Entity extends DoublyLinkedList.Node {
+import com.google.gson.annotations.SerializedName;
 
+public class Drawable extends DoublyLinkedList.Node {
+
+    @SerializedName("normals1")
     public VertexNormal[] vertexNormal;
+    @SerializedName("min_y")
     public int minY = 1000;
 
-    public Entity() {
+    public Drawable() {
     }
 
     public void draw(int yaw, int sinEyePitch, int cosEyePitch, int sinEyeYaw, int cosEyeYaw, int relativeX, int relativeY, int relativeZ, int bitset) {
