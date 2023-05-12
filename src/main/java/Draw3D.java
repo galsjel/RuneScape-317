@@ -461,6 +461,7 @@ public class Draw3D {
 
         Draw3D.init3D(imageSize, imageSize);
         Draw3D.lowmem = false;
+        Draw3D.jagged =true;
 
         int splits = 3;
         int segmentSize = imageSize / splits;
@@ -470,9 +471,9 @@ public class Draw3D {
 
         for (int row = 0; row < splits; row++) {
             for (int col = 0; col < splits; col++) {
-                int x = (row * segmentSize) + radius;
-                int y = (col * segmentSize) + radius;
-                int index = row + (col * splits);
+                int x = (col * segmentSize) + radius;
+                int y = (row * segmentSize) + radius;
+                int index = col + (row * splits);
                 double angle = index * radsPerSegment;
 
                 int x0 = x + (int) (Math.cos(angle) * radius);
@@ -499,9 +500,41 @@ public class Draw3D {
             }
         }
 
-        ImageIO.write(img0, "png", new File("d3d_0.png"));
-        ImageIO.write(img1, "png", new File("d3d_1.png"));
-        ImageIO.write(img2, "png", new File("d3d_2.png"));
+        ImageIO.write(img0, "png", new File("d3d_1j.png"));
+        ImageIO.write(img1, "png", new File("d3d_2.png"));
+        ImageIO.write(img2, "png", new File("d3d_3j.png"));
+
+        Draw3D.jagged = false;
+
+        for (int row = 0; row < splits; row++) {
+            for (int col = 0; col < splits; col++) {
+                int x = (col * segmentSize) + radius;
+                int y = (row * segmentSize) + radius;
+                int index = col + (row * splits);
+                double angle = index * radsPerSegment;
+
+                int x0 = x + (int) (Math.cos(angle) * radius);
+                int y0 = y + (int) (Math.sin(angle) * radius);
+
+                int x1 = x + (int) (Math.cos(angle + turn) * radius);
+                int y1 = y + (int) (Math.sin(angle + turn) * radius);
+
+                int x2 = x + (int) (Math.cos(angle + turn * 2) * radius);
+                int y2 = y + (int) (Math.sin(angle + turn * 2) * radius);
+
+                Draw2D.bind(pix0, imageSize, imageSize);
+                fillGouraudTriangle(y0, y1, y2, x0, x1, x2, 1, 64, 127);
+
+                Draw2D.bind(pix2, imageSize, imageSize);
+                fillTexturedTriangle(y0, y1, y2, x0, x1, x2, 127, 64, 0,
+                        x0-256,x1-256,x2-256,
+                        y0-256,y1-256,y2-256,
+                        512,512,512, 0);
+            }
+        }
+
+        ImageIO.write(img0, "png", new File("d3d_1s.png"));
+        ImageIO.write(img2, "png", new File("d3d_3s.png"));
 
         tex = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
         System.arraycopy(texels, 0, ((DataBufferInt) tex.getRaster().getDataBuffer()).getData(), 0, 128 * 128 * 4);
