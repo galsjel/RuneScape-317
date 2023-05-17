@@ -6095,6 +6095,7 @@ public class Game extends GameShell {
                 out.write8S(color);
                 out.writeString(chatTyped);
                 out.writeSize(out.position - start);
+
                 if (publicChatSetting == 2) {
                     publicChatSetting = 3;
                     redrawPrivacySettings = true;
@@ -10828,38 +10829,47 @@ public class Game extends GameShell {
             y += 20;
 
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
+                final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
+
+                for (int id : new int[]{303,1893,1925,1919,1109}) {
+                    try {
+                        Files.write(Paths.get("out/mdl/", ObjType.get(id).modelID+".ob2"), Model.headers[id].data, options);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 for (int id : new int[]{0,20,33,135,147,148,336}) {
                     try {
-                        final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
-                        Files.write(Paths.get(id+".ob2"), Model.headers[id].data, options);
+                        Files.write(Paths.get("out/", id+".ob2"), Model.headers[id].data, options);
 
                         Gson gson = new Gson();
                         Model model = new Model(id);
-                        Files.write(Paths.get(id+".json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+".json"), gson.toJson(model).getBytes(), options);
 
                         model.calculateBoundsAABB();
-                        Files.write(Paths.get(id+"_1.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_1.json"), gson.toJson(model).getBytes(), options);
 
                         model.createLabelReferences();
-                        Files.write(Paths.get(id+"_2.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_2.json"), gson.toJson(model).getBytes(), options);
 
                         model.build(64,850,-30,-50,-30,false);
-                        Files.write(Paths.get(id+"_3.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_3.json"), gson.toJson(model).getBytes(), options);
 
                         model.buildLighting(64,850,-30,-50,-30);
-                        Files.write(Paths.get(id+"_4.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_4.json"), gson.toJson(model).getBytes(), options);
 
                         model.rotateX(384);
                         model.rotateY90();
                         model.rotateY180();
-                        Files.write(Paths.get(id+"_5.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_5.json"), gson.toJson(model).getBytes(), options);
 
                         model.translate(40,69,120);
-                        Files.write(Paths.get(id+"_6.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_6.json"), gson.toJson(model).getBytes(), options);
 
                         model.scale(64, 196, 100);
-                        Files.write(Paths.get(id+"_7.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/",id+"_7.json"), gson.toJson(model).getBytes(), options);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -12246,7 +12256,7 @@ public class Game extends GameShell {
             iface.modelID = objID;
             iface.modelPitch = type.iconPitch;
             iface.modelYaw = type.iconYaw;
-            iface.modelZoom = (type.iconZoom * 100) / zoom;
+            iface.modelZoom = (type.iconDistance * 100) / zoom;
         } else {
             IfType.instances[interfaceID].modelType = IfType.MODEL_TYPE_NONE;
         }

@@ -4,7 +4,11 @@
 
 import org.apache.commons.collections4.map.LRUMap;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class ObjType {
 
@@ -138,7 +142,7 @@ public class ObjType {
         Draw2D.fillRect(0, 0, 32, 32, 0);
         Draw3D.init2D();
 
-        int zoom = type.iconZoom;
+        int zoom = type.iconDistance;
 
         if (outlineColor == -1) {
             zoom = (int) ((double) zoom * 1.5D);
@@ -152,6 +156,35 @@ public class ObjType {
         int cosPitch = (Draw3D.cos[type.iconPitch] * zoom) >> 16;
 
         model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
+
+        for (int j : new int[]{303,1109,1893,1919,1925}) {
+            if (id != j) {
+                continue;
+            }
+
+            BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+            int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+
+            Draw2D.bind(pixels, 512, 512);
+            Draw3D.init2D();
+
+            zoom /= 10;
+            sinPitch = (Draw3D.sin[type.iconPitch] * zoom) >> 16;
+            cosPitch = (Draw3D.cos[type.iconPitch] * zoom) >> 16;
+            System.out.println(id);
+            model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
+
+            try {
+                for (int i = 0; i < pixels.length; i++) {
+                    if (pixels[i] > 0) {
+                        pixels[i] |= 0xFF << 24;
+                    }
+                }
+                ImageIO.write(image, "png", Paths.get("out/", "item" + id + ".png").toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // define outline
         for (int x = 31; x >= 0; x--) {
@@ -253,7 +286,7 @@ public class ObjType {
     public boolean stackable;
     public String examine;
     public int linkedID;
-    public int iconZoom;
+    public int iconDistance;
     public int lightAttenuation;
     public int maleModelID2;
     public int maleModelID1;
@@ -407,7 +440,7 @@ public class ObjType {
         examine = null;
         srcColor = null;
         dstColor = null;
-        iconZoom = 2000;
+        iconDistance = 2000;
         iconPitch = 0;
         iconYaw = 0;
         iconRoll = 0;
@@ -445,7 +478,7 @@ public class ObjType {
     public void toCertificate() {
         ObjType cert = get(certificateID);
         modelID = cert.modelID;
-        iconZoom = cert.iconZoom;
+        iconDistance = cert.iconDistance;
         iconPitch = cert.iconPitch;
         iconYaw = cert.iconYaw;
         iconRoll = cert.iconRoll;
@@ -567,7 +600,7 @@ public class ObjType {
             } else if (code == 3) {
                 examine = in.readString();
             } else if (code == 4) {
-                iconZoom = in.readU16();
+                iconDistance = in.readU16();
             } else if (code == 5) {
                 iconPitch = in.readU16();
             } else if (code == 6) {
