@@ -11,7 +11,6 @@ public class PlayerEntity extends PathingEntity {
     public final int[] appearances = new int[12];
     public long modelUID = -1L;
     public NPCType transmogrify;
-    public boolean lowmem = false;
     public int team;
     public int gender;
     public String name;
@@ -49,10 +48,6 @@ public class PlayerEntity extends PathingEntity {
 
         super.height = model.minY;
         model.pickable = true;
-
-        if (lowmem) {
-            return model;
-        }
 
         if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
             SpotAnimType spot = SpotAnimType.instances[super.spotanimID];
@@ -332,10 +327,6 @@ public class PlayerEntity extends PathingEntity {
             model.build(64, 850, -30, -50, -30, true);
             modelCache.put(hashCode, model);
             modelUID = hashCode;
-        }
-
-        if (lowmem) {
-            return model;
         }
 
         Model tmp = Model.EMPTY;

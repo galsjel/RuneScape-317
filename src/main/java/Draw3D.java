@@ -23,7 +23,6 @@ public class Draw3D {
      * @see #drawTexturedScanline(int[], int[], int, int, int, int, int, int, int, int, int, int, int, int, int)
      */
     public static final int[] reciprocal15 = new int[512];
-    public static boolean lowmem = true;
     /**
      * Setting this to <code>true</code> enables horizontal clipping for scanlines.
      */
@@ -40,7 +39,7 @@ public class Draw3D {
      * @see #drawGouraudScanline(int[], int, int, int, int, int)
      */
     public static boolean jagged = true;
-    public static int alpha;
+    public static int transparency;
     public static int centerX;
     public static int centerY;
     /**
@@ -156,11 +155,7 @@ public class Draw3D {
     public static void initPool(int poolSize) {
         if (Draw3D.texelPool == null) {
             Draw3D.poolSize = poolSize;
-            if (Draw3D.lowmem) {
-                Draw3D.texelPool = new int[Draw3D.poolSize][64 * 64 * 4];
-            } else {
                 Draw3D.texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
-            }
             for (int k = 0; k < 50; k++) {
                 Draw3D.activeTexels[k] = null;
             }
@@ -173,12 +168,7 @@ public class Draw3D {
         for (int textureID = 0; textureID < 50; textureID++) {
             try {
                 Draw3D.textures[textureID] = new Image8(archive, String.valueOf(textureID), 0);
-
-                if (Draw3D.lowmem && (Draw3D.textures[textureID].cropW == 128)) {
-                    Draw3D.textures[textureID].shrink();
-                } else {
-                    Draw3D.textures[textureID].crop();
-                }
+                Draw3D.textures[textureID].crop();
                 Draw3D.textureCount++;
             } catch (Exception ignored) {
             }
@@ -252,21 +242,6 @@ public class Draw3D {
         Image8 texture = Draw3D.textures[textureID];
         int[] palette = Draw3D.texturePalette[textureID];
 
-        if (Draw3D.lowmem) {
-            Draw3D.textureTranslucent[textureID] = false;
-
-            for (int i = 0; i < 4096; i++) {
-                int rgb = texels[i] = palette[texture.pixels[i]] & 0xf8f8ff;
-
-                if (rgb == 0) {
-                    Draw3D.textureTranslucent[textureID] = true;
-                }
-
-                texels[4096 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
-                texels[8192 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
-                texels[12288 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
-            }
-        } else {
             // scale 64x64 textures up to 128x128
             if (texture.width == 64) {
                 for (int y = 0; y < 128; y++) {
@@ -295,7 +270,6 @@ public class Draw3D {
                 texels[32768 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
                 texels[49152 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
             }
-        }
         return texels;
     }
 
@@ -304,7 +278,9 @@ public class Draw3D {
      *
      * @param gamma the gamma.
      */
-    public static void buildPalette(double gamma) {
+    public static void buildPalette(double gamma) throws RuntimeException {
+        System.out.println("gamma = " + gamma);
+
         int offset = 0;
         for (int y = 0; y < 512; y++) {
             double hue = ((double) (y / 8) / 64D) + 0.0078125D;
@@ -374,14 +350,36 @@ public class Draw3D {
                 int intB = (int) (b * 256D);
                 int rgb = (intR << 16) + (intG << 8) + intB;
 
-                rgb = Draw3D.setGamma(rgb, gamma);
-
-                if (rgb == 0) {
-                    rgb = 1;
-                }
-
                 Draw3D.palette[offset++] = rgb;
             }
+        }
+
+
+        BufferedImage img = new BufferedImage(128,512, BufferedImage.TYPE_INT_RGB);
+        System.arraycopy(Draw3D.palette,0,((DataBufferInt)img.getRaster().getDataBuffer()).getData(),0,128*512);
+
+        try {
+            ImageIO.write(img, "png", new File("palette_raw.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < 128*512; i++) {
+            int rgb = Draw3D.palette[i];
+            rgb = Draw3D.setGamma(rgb, gamma);
+
+            if (rgb == 0) {
+                rgb = 1;
+            }
+            Draw3D.palette[i] = rgb;
+        }
+
+        System.arraycopy(Draw3D.palette,0,((DataBufferInt)img.getRaster().getDataBuffer()).getData(),0,128*512);
+
+        try {
+            ImageIO.write(img, "png", new File("palette_gamma.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         for (int textureID = 0; textureID < 50; textureID++) {
@@ -460,7 +458,6 @@ public class Draw3D {
         int[] pix2 = ((DataBufferInt) img2.getRaster().getDataBuffer()).getData();
 
         Draw3D.init3D(imageSize, imageSize);
-        Draw3D.lowmem = false;
         Draw3D.jagged =true;
 
         int splits = 3;
@@ -493,10 +490,14 @@ public class Draw3D {
 
                 Draw2D.bind(pix2, imageSize, imageSize);
 
-                fillTexturedTriangle(y0, y1, y2, x0, x1, x2, 127, 64, 0,
-                        x0-256,x1-256,x2-256,
-                        y0-256,y1-256,y2-256,
-                        512,512,512, 0);
+                fillTexturedTriangle(
+                        x0, y0, 127,
+                        x1, y1, 64,
+                        x2, y2, 0,
+                        x0 - 256, y0 - 256, 512,
+                        x1 - 256, y1 - 256, 512,
+                        x2 - 256, y2 - 256, 512,
+                        0);
             }
         }
 
@@ -525,16 +526,10 @@ public class Draw3D {
                 Draw2D.bind(pix0, imageSize, imageSize);
                 fillGouraudTriangle(y0, y1, y2, x0, x1, x2, 1, 64, 127);
 
-                Draw2D.bind(pix2, imageSize, imageSize);
-                fillTexturedTriangle(y0, y1, y2, x0, x1, x2, 127, 64, 0,
-                        x0-256,x1-256,x2-256,
-                        y0-256,y1-256,y2-256,
-                        512,512,512, 0);
             }
         }
 
         ImageIO.write(img0, "png", new File("d3d_1s.png"));
-        ImageIO.write(img2, "png", new File("d3d_3s.png"));
 
         tex = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
         System.arraycopy(texels, 0, ((DataBufferInt) tex.getRaster().getDataBuffer()).getData(), 0, 128 * 128 * 4);
@@ -996,7 +991,7 @@ public class Draw3D {
                 }
             }
 
-            if (Draw3D.alpha == 0) {
+            if (Draw3D.transparency == 0) {
                 while (--length >= 0) {
                     rgb = Draw3D.palette[color0 >> 8];
                     color0 += colorStep;
@@ -1016,26 +1011,31 @@ public class Draw3D {
                     return;
                 }
             } else {
-                int alpha = Draw3D.alpha;
-                int invAlpha = 256 - Draw3D.alpha;
+                int trans = Draw3D.transparency;
+                int inv_trans = 256 - Draw3D.transparency;
 
                 while (--length >= 0) {
                     rgb = Draw3D.palette[color0 >> 8];
                     color0 += colorStep;
-                    rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
-                    dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-                    dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-                    dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-                    dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+                    rgb = ((((rgb & 0xff00ff) * inv_trans) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * inv_trans) >> 8) & 0xff00);
+                    dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * trans) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * trans) >> 8) & 0xff00);
+                    offset++;
+                    dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * trans) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * trans) >> 8) & 0xff00);
+                    offset++;
+                    dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * trans) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * trans) >> 8) & 0xff00);
+                    offset++;
+                    dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * trans) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * trans) >> 8) & 0xff00);
+                    offset++;
                 }
 
                 length = (x1 - x0) & 3;
 
                 if (length > 0) {
                     rgb = Draw3D.palette[color0 >> 8];
-                    rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
+                    rgb = ((((rgb & 0xff00ff) * inv_trans) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * inv_trans) >> 8) & 0xff00);
                     do {
-                        dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+                        dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * trans) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * trans) >> 8) & 0xff00);
+                        offset++;
                     } while (--length > 0);
                 }
             }
@@ -1064,7 +1064,7 @@ public class Draw3D {
         offset += x0;
         length = x1 - x0;
 
-        if (Draw3D.alpha == 0) {
+        if (Draw3D.transparency == 0) {
             do {
                 dst[offset++] = Draw3D.palette[color0 >> 8];
                 color0 += colorStep;
@@ -1072,8 +1072,8 @@ public class Draw3D {
             return;
         }
 
-        int alpha = Draw3D.alpha;
-        int invAlpha = 256 - Draw3D.alpha;
+        int alpha = Draw3D.transparency;
+        int invAlpha = 256 - Draw3D.transparency;
 
         do {
             rgb = Draw3D.palette[color0 >> 8];
@@ -1081,7 +1081,8 @@ public class Draw3D {
             rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
             // If you want to fix the lines in transparent models like ghostly or bank booths, change dst[offset++] to
             // dst[offset] and on the next line below put offset++
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
         } while (--length > 0);
     }
 
@@ -1399,7 +1400,7 @@ public class Draw3D {
         offset += x0;
         int length = (x1 - x0) >> 2;
 
-        if (Draw3D.alpha == 0) {
+        if (Draw3D.transparency == 0) {
             while (--length >= 0) {
                 dst[offset++] = rgb;
                 dst[offset++] = rgb;
@@ -1412,21 +1413,26 @@ public class Draw3D {
             return;
         }
 
-        int alpha = Draw3D.alpha;
-        int invAlpha = 256 - Draw3D.alpha;
+        int alpha = Draw3D.transparency;
+        int invAlpha = 256 - Draw3D.transparency;
 
         rgb = ((((rgb & 0xff00ff) * invAlpha) >> 8) & 0xff00ff) + ((((rgb & 0xff00) * invAlpha) >> 8) & 0xff00);
 
         while (--length >= 0) {
             // to fix lines in transparent things: change index operand to 'offset' and add 'offset++' below each line
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
         }
 
         for (length = (x1 - x0) & 3; --length >= 0; ) {
-            dst[offset++] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            dst[offset] = rgb + ((((dst[offset] & 0xff00ff) * alpha) >> 8) & 0xff00ff) + ((((dst[offset] & 0xff00) * alpha) >> 8) & 0xff00);
+            offset++;
         }
     }
 
@@ -1435,51 +1441,80 @@ public class Draw3D {
      * this algorithm: <a href="https://www.gamers.org/dEngine/rsc/pcgpe-1.0/texture.txt">texture.txt</a>
      */
     public static int printCycle = 0;
-    public static void fillTexturedTriangle(int yA, int yB, int yC, int xA, int xB, int xC, int shadeA, int shadeB, int shadeC, int txA, int txB, int txC, int tyA, int tyB, int tyC, int tzA, int tzB, int tzC, int texture) {
-        int[] texels = Draw3D.getTexels(texture);
-        Draw3D.opaque = !Draw3D.textureTranslucent[texture];
 
-        int originX = txA;
-        int originY = tyA;
-        int originZ = tzA;
+    public static void fillTexturedTriangle(int y0, int y1, int y2, int x0, int x1, int x2, int shade0, int shade1, int shade2, int tx0, int tx1, int tx2, int ty0, int ty1, int ty2, int tz0, int tz1, int tz2, int texture) {
+        int[] texels = getTexels(texture);
+        opaque = !textureTranslucent[texture];
 
-        int verticalX = originX - txB;
-        int verticalY = originY - tyB;
-        int verticalZ = originZ - tzB;
+        // t1 becomes a normal
+        tx1 = tx0 - tx1;
+        ty1 = ty0 - ty1;
+        tz1 = tz0 - tz1;
 
-        int horizontalX = txC - originX;
-        int horizontalY = tyC - originY;
-        int horizontalZ = tzC - originZ;
+        // t2 becomes a normal
+        tx2 -= tx0;
+        ty2 -= ty0;
+        tz2 -= tz0;
 
-        // ! It's important to know the document referenced above assumes the following coordinate system:
-        // +X = Right
-        // +Y = Forward
-        // +Z = Up
+        // https://www.gamers.org/dEngine/rsc/pcgpe-1.0/texture.txt
 
-        // RS2 coordinate system is as follows:
-        // +X = Right
-        // +Y = Down
-        // +Z = Forward
+        // hStep/vStep = horizontal & vertical steps
 
-        // Which means we must swap Y and Z for our code to coincide.
+        int u = ((tx2 * ty0) - (ty2 * tx0)) << 14; // 18.14 fixed int
+        int u_step_x = ((ty2 * tz0) - (tz2 * ty0)) << 5; // 27.5 fixed int
+        int u_step_y = ((tz2 * tx0) - (tx2 * tz0)) << 5; // 27.5 fixed int
 
-        // The reason I called horizontals 'stride' and vertical 'step' is because the drawTexturedScanline is unrolled
-        // and does 8 pixels per 'stride' as an optimization. If you were to roll the loops in drawTexturedScanline then
-        // you can name these StepHorizontal and change the bitshift to << 5 like its vertical sibling.
+        int v = ((tx1 * ty0) - (ty1 * tx0)) << 14;
+        int v_step_x = ((ty1 * tz0) - (tz1 * ty0)) << 5;
+        int v_step_y = ((tz1 * tx0) - (tx1 * tz0)) << 5;
 
-        // (a << 3) is the same as (a * 8)
+        int w = ((ty1 * tx2) - (tx1 * ty2)) << 14;
+        int w_step_x = ((tz1 * ty2) - (ty1 * tz2)) << 5;
+        int w_step_y = ((tx1 * tz2) - (tz1 * tx2)) << 5;
 
-        int u = ((horizontalX * originY) - (horizontalY * originX)) << 14;
-        int uStrideHorizontal = ((horizontalY * originZ) - (horizontalZ * originY)) << 8;
-        int uStepVertical = ((horizontalZ * originX) - (horizontalX * originZ)) << 5;
+        if (y0 > y2) {
+            int tmp = x0;
+            x0 = x2;
+            x2 = tmp;
 
-        int v = ((verticalX * originY) - (verticalY * originX)) << 14;
-        int vStrideHorizontal = ((verticalY * originZ) - (verticalZ * originY)) << 8;
-        int vStepVertical = ((verticalZ * originX) - (verticalX * originZ)) << 5;
+            tmp = y0;
+            y0 = y2;
+            y2 = tmp;
 
-        int w = ((verticalY * horizontalX) - (verticalX * horizontalY)) << 14;
-        int wStrideHorizontal = ((verticalZ * horizontalY) - (verticalY * horizontalZ)) << 8;
-        int wStepVertical = ((verticalX * horizontalZ) - (verticalZ * horizontalX)) << 5;
+            tmp = shade0;
+            shade0 = shade2;
+            shade2 = tmp;
+        }
+
+        // A below B
+        if (y0 > y1) {
+            int tmp = x0;
+            x0 = x1;
+            x1 = tmp;
+
+            tmp = y0;
+            y0 = y1;
+            y1 = tmp;
+
+            tmp = shade0;
+            shade0 = shade1;
+            shade1 = tmp;
+        }
+
+        // B below C
+        if (y1 > y2) {
+            int tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+
+            tmp = y1;
+            y1 = y2;
+            y2 = tmp;
+
+            tmp = shade1;
+            shade1 = shade2;
+            shade2 = tmp;
+        }
 
         int xStepAB = 0;
         int xStepBC = 0;
@@ -1489,914 +1524,215 @@ public class Draw3D {
         int shadeStepBC = 0;
         int shadeStepAC = 0;
 
-        // Simplified/rolled methods here:
-        // https://gist.githubusercontent.com/thedaneeffect/557750c7d4b6138c539b5e3e9d934946/raw/c5c119bf3b3a330066f9264668ba706c6f837728/triangular.java
-
-        if (yB != yA) {
-            xStepAB = ((xB - xA) << 16) / (yB - yA);
-            shadeStepAB = ((shadeB - shadeA) << 16) / (yB - yA);
+        if (y1 != y0) {
+            xStepAB = ((x1 - x0) << 16) / (y1 - y0);
+            shadeStepAB = ((shade1 - shade0) << 16) / (y1 - y0);
         }
 
-        if (yC != yB) {
-            xStepBC = ((xC - xB) << 16) / (yC - yB);
-            shadeStepBC = ((shadeC - shadeB) << 16) / (yC - yB);
+        if (y2 != y1) {
+            xStepBC = ((x2 - x1) << 16) / (y2 - y1);
+            shadeStepBC = ((shade2 - shade1) << 16) / (y2 - y1);
         }
 
-        if (yC != yA) {
-            xStepAC = ((xA - xC) << 16) / (yA - yC);
-            shadeStepAC = ((shadeA - shadeC) << 16) / (yA - yC);
+        if (y2 != y0) {
+            xStepAC = ((x0 - x2) << 16) / (y0 - y2);
+            shadeStepAC = ((shade0 - shade2) << 16) / (y0 - y2);
         }
 
-        if ((yA <= yB) && (yA <= yC)) {
-            if (yA >= Draw2D.bottom) {
-                return;
-            }
-            if (yB > Draw2D.bottom) {
-                yB = Draw2D.bottom;
-            }
-            if (yC > Draw2D.bottom) {
-                yC = Draw2D.bottom;
-            }
-            if (yB < yC) {
-                xC = (xA <<= 16);
-                shadeC = (shadeA <<= 16);
-                if (yA < 0) {
-                    xC -= xStepAC * yA;
-                    xA -= xStepAB * yA;
-                    shadeC -= shadeStepAC * yA;
-                    shadeA -= shadeStepAB * yA;
-                    yA = 0;
-                }
-                xB <<= 16;
-                shadeB <<= 16;
-                if (yB < 0) {
-                    xB -= xStepBC * yB;
-                    shadeB -= shadeStepBC * yB;
-                    yB = 0;
-                }
-                int dy = yA - Draw3D.centerY;
-                u += uStepVertical * dy;
-                v += vStepVertical * dy;
-                w += wStepVertical * dy;
-                if (((yA != yB) && (xStepAC < xStepAB)) || ((yA == yB) && (xStepAC > xStepBC))) {
-                    yC -= yB;
-                    yB -= yA;
-                    yA = Draw3D.lineOffset[yA];
-                    while (--yB >= 0) {
-                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                        xC += xStepAC;
-                        xA += xStepAB;
-                        shadeC += shadeStepAC;
-                        shadeA += shadeStepAB;
-                        yA += Draw2D.width;
-                        u += uStepVertical;
-                        v += vStepVertical;
-                        w += wStepVertical;
-                    }
-                    while (--yC >= 0) {
-                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                        xC += xStepAC;
-                        xB += xStepBC;
-                        shadeC += shadeStepAC;
-                        shadeB += shadeStepBC;
-                        yA += Draw2D.width;
-                        u += uStepVertical;
-                        v += vStepVertical;
-                        w += wStepVertical;
-                    }
-                    return;
-                }
-                yC -= yB;
-                yB -= yA;
-                yA = Draw3D.lineOffset[yA];
-                while (--yB >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xC += xStepAC;
-                    xA += xStepAB;
-                    shadeC += shadeStepAC;
-                    shadeA += shadeStepAB;
-                    yA += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                while (--yC >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xC += xStepAC;
-                    xB += xStepBC;
-                    shadeC += shadeStepAC;
-                    shadeB += shadeStepBC;
-                    yA += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                return;
-            }
-            xB = (xA <<= 16);
-            shadeB = (shadeA <<= 16);
-            if (yA < 0) {
-                xB -= xStepAC * yA;
-                xA -= xStepAB * yA;
-                shadeB -= shadeStepAC * yA;
-                shadeA -= shadeStepAB * yA;
-                yA = 0;
-            }
-            xC <<= 16;
-            shadeC <<= 16;
-            if (yC < 0) {
-                xC -= xStepBC * yC;
-                shadeC -= shadeStepBC * yC;
-                yC = 0;
-            }
-            int dy = yA - Draw3D.centerY;
-            u += uStepVertical * dy;
-            v += vStepVertical * dy;
-            w += wStepVertical * dy;
-            if (((yA != yC) && (xStepAC < xStepAB)) || ((yA == yC) && (xStepBC > xStepAB))) {
-                yB -= yC;
-                yC -= yA;
-                yA = Draw3D.lineOffset[yA];
-                while (--yC >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xB += xStepAC;
-                    xA += xStepAB;
-                    shadeB += shadeStepAC;
-                    shadeA += shadeStepAB;
-                    yA += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                while (--yB >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xC += xStepBC;
-                    xA += xStepAB;
-                    shadeC += shadeStepBC;
-                    shadeA += shadeStepAB;
-                    yA += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                return;
-            }
-            yB -= yC;
-            yC -= yA;
-            yA = Draw3D.lineOffset[yA];
-            while (--yC >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xB += xStepAC;
-                xA += xStepAB;
-                shadeB += shadeStepAC;
-                shadeA += shadeStepAB;
-                yA += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            while (--yB >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yA, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xC += xStepBC;
-                xA += xStepAB;
-                shadeC += shadeStepBC;
-                shadeA += shadeStepAB;
-                yA += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
+        if (y0 >= Draw2D.bottom) {
             return;
         }
-        if (yB <= yC) {
-            if (yB >= Draw2D.bottom) {
-                return;
-            }
-            if (yC > Draw2D.bottom) {
-                yC = Draw2D.bottom;
-            }
-            if (yA > Draw2D.bottom) {
-                yA = Draw2D.bottom;
-            }
-            if (yC < yA) {
-                xA = (xB <<= 16);
-                shadeA = (shadeB <<= 16);
-                if (yB < 0) {
-                    xA -= xStepAB * yB;
-                    xB -= xStepBC * yB;
-                    shadeA -= shadeStepAB * yB;
-                    shadeB -= shadeStepBC * yB;
-                    yB = 0;
-                }
-                xC <<= 16;
-                shadeC <<= 16;
-                if (yC < 0) {
-                    xC -= xStepAC * yC;
-                    shadeC -= shadeStepAC * yC;
-                    yC = 0;
-                }
-                int dy = yB - Draw3D.centerY;
-                u += uStepVertical * dy;
-                v += vStepVertical * dy;
-                w += wStepVertical * dy;
-                if (((yB != yC) && (xStepAB < xStepBC)) || ((yB == yC) && (xStepAB > xStepAC))) {
-                    yA -= yC;
-                    yC -= yB;
-                    yB = Draw3D.lineOffset[yB];
-                    while (--yC >= 0) {
-                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                        xA += xStepAB;
-                        xB += xStepBC;
-                        shadeA += shadeStepAB;
-                        shadeB += shadeStepBC;
-                        yB += Draw2D.width;
-                        u += uStepVertical;
-                        v += vStepVertical;
-                        w += wStepVertical;
-                    }
-                    while (--yA >= 0) {
-                        Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                        xA += xStepAB;
-                        xC += xStepAC;
-                        shadeA += shadeStepAB;
-                        shadeC += shadeStepAC;
-                        yB += Draw2D.width;
-                        u += uStepVertical;
-                        v += vStepVertical;
-                        w += wStepVertical;
-                    }
-                    return;
-                }
-                yA -= yC;
-                yC -= yB;
-                yB = Draw3D.lineOffset[yB];
-                while (--yC >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xA += xStepAB;
-                    xB += xStepBC;
-                    shadeA += shadeStepAB;
-                    shadeB += shadeStepBC;
-                    yB += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                while (--yA >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xA += xStepAB;
-                    xC += xStepAC;
-                    shadeA += shadeStepAB;
-                    shadeC += shadeStepAC;
-                    yB += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                return;
-            }
-            xC = (xB <<= 16);
-            shadeC = (shadeB <<= 16);
-            if (yB < 0) {
-                xC -= xStepAB * yB;
-                xB -= xStepBC * yB;
-                shadeC -= shadeStepAB * yB;
-                shadeB -= shadeStepBC * yB;
-                yB = 0;
-            }
-            xA <<= 16;
-            shadeA <<= 16;
-            if (yA < 0) {
-                xA -= xStepAC * yA;
-                shadeA -= shadeStepAC * yA;
-                yA = 0;
-            }
-            int dy = yB - Draw3D.centerY;
-            u += uStepVertical * dy;
-            v += vStepVertical * dy;
-            w += wStepVertical * dy;
-            if (xStepAB < xStepBC) {
-                yC -= yA;
-                yA -= yB;
-                yB = Draw3D.lineOffset[yB];
-                while (--yA >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xC += xStepAB;
-                    xB += xStepBC;
-                    shadeC += shadeStepAB;
-                    shadeB += shadeStepBC;
-                    yB += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                while (--yC >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xA += xStepAC;
-                    xB += xStepBC;
-                    shadeA += shadeStepAC;
-                    shadeB += shadeStepBC;
-                    yB += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                return;
-            }
-            yC -= yA;
-            yA -= yB;
-            yB = Draw3D.lineOffset[yB];
-            while (--yA >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xC += xStepAB;
-                xB += xStepBC;
-                shadeC += shadeStepAB;
-                shadeB += shadeStepBC;
-                yB += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            while (--yC >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yB, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xA += xStepAC;
-                xB += xStepBC;
-                shadeA += shadeStepAC;
-                shadeB += shadeStepBC;
-                yB += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            return;
+
+        if (y1 > Draw2D.bottom) {
+            y1 = Draw2D.bottom;
         }
-        if (yC >= Draw2D.bottom) {
-            return;
+
+        if (y2 > Draw2D.bottom) {
+            y2 = Draw2D.bottom;
         }
-        if (yA > Draw2D.bottom) {
-            yA = Draw2D.bottom;
+
+        x0 <<= 16;
+        x2 = x0;
+        x1 <<= 16;
+
+        shade0 <<= 16;
+        shade2 = shade0;
+        shade1 <<= 16;
+
+        // trim upper
+        if (y0 < 0) {
+            x2 -= xStepAC * y0;
+            x0 -= xStepAB * y0;
+            shade2 -= shadeStepAC * y0;
+            shade0 -= shadeStepAB * y0;
+            y0 = 0;
         }
-        if (yB > Draw2D.bottom) {
-            yB = Draw2D.bottom;
+
+        // trim lower
+        if (y1 < 0) {
+            x1 -= xStepBC * y1;
+            shade1 -= shadeStepBC * y1;
+            y1 = 0;
         }
-        if (yA < yB) {
-            xB = (xC <<= 16);
-            shadeB = (shadeC <<= 16);
-            if (yC < 0) {
-                xB -= xStepBC * yC;
-                xC -= xStepAC * yC;
-                shadeB -= shadeStepBC * yC;
-                shadeC -= shadeStepAC * yC;
-                yC = 0;
-            }
-            xA <<= 16;
-            shadeA <<= 16;
-            if (yA < 0) {
-                xA -= xStepAB * yA;
-                shadeA -= shadeStepAB * yA;
-                yA = 0;
-            }
-            int dy = yC - Draw3D.centerY;
-            u += uStepVertical * dy;
-            v += vStepVertical * dy;
-            w += wStepVertical * dy;
-            if (xStepBC < xStepAC) {
-                yB -= yA;
-                yA -= yC;
-                yC = Draw3D.lineOffset[yC];
-                while (--yA >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xB += xStepBC;
-                    xC += xStepAC;
-                    shadeB += shadeStepBC;
-                    shadeC += shadeStepAC;
-                    yC += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                while (--yB >= 0) {
-                    Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xA >> 16, shadeB >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                    xB += xStepBC;
-                    xA += xStepAB;
-                    shadeB += shadeStepBC;
-                    shadeA += shadeStepAB;
-                    yC += Draw2D.width;
-                    u += uStepVertical;
-                    v += vStepVertical;
-                    w += wStepVertical;
-                }
-                return;
-            }
-            yB -= yA;
-            yA -= yC;
-            yC = Draw3D.lineOffset[yC];
-            while (--yA >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xB += xStepBC;
-                xC += xStepAC;
-                shadeB += shadeStepBC;
-                shadeC += shadeStepAC;
-                yC += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            while (--yB >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xB >> 16, shadeA >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xB += xStepBC;
-                xA += xStepAB;
-                shadeB += shadeStepBC;
-                shadeA += shadeStepAB;
-                yC += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            return;
+
+        int dy = y0 - centerY;
+
+        u += u_step_y * dy;
+        v += v_step_y * dy;
+        w += w_step_y * dy;
+
+        int remaining0 = y1 - y0;
+        int remaining1 = y2 - y1;
+        int offset = lineOffset[y0];
+
+        while (--remaining0 >= 0) {
+            drawTexturedScanline(Draw2D.pixels, texels, offset, y0, x2 >> 16, x0 >> 16, shade2 >> 8, shade0 >> 8, u, v, w, u_step_x, v_step_x, w_step_x);
+            x2 += xStepAC;
+            x0 += xStepAB;
+            shade2 += shadeStepAC;
+            shade0 += shadeStepAB;
+            offset += Draw2D.width;
+            u += u_step_y;
+            v += v_step_y;
+            w += w_step_y;
+            y0++;
         }
-        xA = (xC <<= 16);
-        shadeA = (shadeC <<= 16);
-        if (yC < 0) {
-            xA -= xStepBC * yC;
-            xC -= xStepAC * yC;
-            shadeA -= shadeStepBC * yC;
-            shadeC -= shadeStepAC * yC;
-            yC = 0;
-        }
-        xB <<= 16;
-        shadeB <<= 16;
-        if (yB < 0) {
-            xB -= xStepAB * yB;
-            shadeB -= shadeStepAB * yB;
-            yB = 0;
-        }
-        int l9 = yC - Draw3D.centerY;
-        u += uStepVertical * l9;
-        v += vStepVertical * l9;
-        w += wStepVertical * l9;
-        if (xStepBC < xStepAC) {
-            yA -= yB;
-            yB -= yC;
-            yC = Draw3D.lineOffset[yC];
-            while (--yB >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xA >> 16, xC >> 16, shadeA >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xA += xStepBC;
-                xC += xStepAC;
-                shadeA += shadeStepBC;
-                shadeC += shadeStepAC;
-                yC += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            while (--yA >= 0) {
-                Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xB >> 16, xC >> 16, shadeB >> 8, shadeC >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-                xB += xStepAB;
-                xC += xStepAC;
-                shadeB += shadeStepAB;
-                shadeC += shadeStepAC;
-                yC += Draw2D.width;
-                u += uStepVertical;
-                v += vStepVertical;
-                w += wStepVertical;
-            }
-            return;
-        }
-        yA -= yB;
-        yB -= yC;
-        yC = Draw3D.lineOffset[yC];
-        while (--yB >= 0) {
-            Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xA >> 16, shadeC >> 8, shadeA >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-            xA += xStepBC;
-            xC += xStepAC;
-            shadeA += shadeStepBC;
-            shadeC += shadeStepAC;
-            yC += Draw2D.width;
-            u += uStepVertical;
-            v += vStepVertical;
-            w += wStepVertical;
-        }
-        while (--yA >= 0) {
-            Draw3D.drawTexturedScanline(Draw2D.pixels, texels, 0, 0, yC, xC >> 16, xB >> 16, shadeC >> 8, shadeB >> 8, u, v, w, uStrideHorizontal, vStrideHorizontal, wStrideHorizontal);
-            xB += xStepAB;
-            xC += xStepAC;
-            shadeB += shadeStepAB;
-            shadeC += shadeStepAC;
-            yC += Draw2D.width;
-            u += uStepVertical;
-            v += vStepVertical;
-            w += wStepVertical;
+
+        while (--remaining1 >= 0) {
+            drawTexturedScanline(Draw2D.pixels, texels, offset, y1, x2 >> 16, x1 >> 16, shade2 >> 8, shade1 >> 8, u, v, w, u_step_x, v_step_x, w_step_x);
+            x2 += xStepAC;
+            x1 += xStepBC;
+            shade2 += shadeStepAC;
+            shade1 += shadeStepBC;
+            offset += Draw2D.width;
+            u += u_step_y;
+            v += v_step_y;
+            w += w_step_y;
+            y1++;
         }
     }
 
-    public static void drawTexturedScanline(int[] dst, int[] texels, int curU, int curV, int offset, int xA, int xB, int shadeA, int shadeB, int u, int v, int w, int uStride, int vStride, int wStride) {
-        if (xA >= xB) {
+    /**
+     * @param dst    the destination pixels
+     * @param texels the source texels
+     * @param offset the destination offset
+     * @param x0     left x boundary as whole numbers
+     * @param x1     right x boundary as whole numbers
+     * @param shade0 left darkness value as a 24.8 fixed int
+     * @param shade1 right darkness value as a 24.8 fixed int
+     * @param u      the u coordinate on the texture plane (x) as a 18.14 fixed int
+     * @param v      the v coordinate on the texture plane (y) as a 18.14 fixed int
+     * @param w      the w coordinate on the texture plane (z) as a 18.14 fixed int
+     * @param uStep  the horizontal stride for the u texture plane coordinate as a 24.8 fixed int
+     * @param vStep  the horizontal stride for the v texture plane coordinate as a 24.8 fixed int
+     * @param wStep  the horizontal stride for the w texture plane coordinate as a 24.8 fixed int
+     */
+    private static void drawTexturedScanline(int[] dst, int[] texels, int offset, int y, int x0, int x1, int shade0, int shade1, int u, int v, int w, int uStep, int vStep, int wStep) {
+        // Ensure the scanline is in A->B order
+        if (x0 == x1) {
             return;
+        } else if (x0 > x1) {
+            int tmp = x0;
+            x0 = x1;
+            x1 = tmp;
+
+            tmp = shade0;
+            shade0 = shade1;
+            shade1 = tmp;
         }
 
-        int shadeStride;
-        int strides;
+        int shadeStep = (shade1 - shade0) / (x1 - x0);
 
-        if (Draw3D.clipX) {
-            shadeStride = (shadeB - shadeA) / (xB - xA); // in this form, it's a 'shadeStep'
+        if (x1 > Draw2D.boundX) {
+            x1 = Draw2D.boundX;
+        }
 
-            if (xB > Draw2D.boundX) {
-                xB = Draw2D.boundX;
-            }
+        if (x0 < 0) {
+            shade0 -= x0 * shadeStep;
+            x0 = 0;
+        }
 
-            if (xA < 0) {
-                shadeA -= xA * shadeStride;
-                xA = 0;
-            }
+        int length = x1 - x0;
 
-            if (xA >= xB) {
-                return;
-            }
+        // convert shade0 and shadeStep to 15.17 fixed ints
+        shadeStep <<= 9;
+        shade0 <<= 9;
 
-            strides = (xB - xA) >> 3;
-            shadeStride <<= 12; // this is what transforms it to a stride. it's a (<<9) + (<<3)
+        offset += x0;
+
+        int dx = x0 - centerX;
+
+        u += uStep * dx;
+        v += vStep * dx;
+        w += wStep * dx;
+
+        if (opaque) {
+            drawOpaqueTexturedScanlineHighmem(dst, texels, offset, x0, y, shade0, u, v, w, uStep, vStep, wStep, shadeStep, length);
         } else {
-            if ((xB - xA) > 7) {
-                strides = (xB - xA) >> 3;
-                shadeStride = ((shadeB - shadeA) * Draw3D.reciprocal15[strides]) >> 6;
-            } else {
-                strides = 0;
-                shadeStride = 0;
-            }
+            drawTransparentTexturedScanlineHighmem(dst, texels, offset, x0, y, shade0, u, v, w, uStep, vStep, wStep, shadeStep, length);
         }
+    }
+    private static void drawOpaqueTexturedScanlineHighmem(int[] dst, int[] texels, int offset, int x, int y, int shade, int u, int v, int w, int uStep, int vStep, int wStep, int shadeStep, int length) {
+        while (length-- > 0) {
+            int w1 = w >> 14;
+            int u1 = 0;
+            int v1 = 0;
 
-        shadeA <<= 9;
-        offset += xA;
+            if (w1 != 0) {
+                u1 = u / w1; // recalculate destination uv for next iteration
+                v1 = v / w1;
 
-        if (Draw3D.lowmem) {
-            int nextU = 0;
-            int nextV = 0;
-
-            int dx = xA - Draw3D.centerX;
-            u += (uStride >> 3) * dx;
-            v += (vStride >> 3) * dx;
-            w += (wStride >> 3) * dx;
-
-            int curW = w >> 12;
-
-            if (curW != 0) {
-                curU = u / curW;
-                curV = v / curW;
-                if (curU < 0) {
-                    curU = 0;
-                } else if (curU > 4032) {
-                    curU = 4032;
+                if (u1 < 7) {
+                    u1 = 7;
+                } else if (u1 > 16256) {
+                    u1 = 16256;
                 }
             }
 
-            u += uStride;
-            v += vStride;
-            w += wStride;
-            curW = w >> 12;
+            // shift texture to the given shade
+            u1 += (shade & 0x600000);
 
-            if (curW != 0) {
-                nextU = u / curW;
-                nextV = v / curW;
-                if (nextU < 7) {
-                    nextU = 7;
-                } else if (nextU > 4032) {
-                    nextU = 4032;
-                }
-            }
+            dst[offset++] = texels[(v1 & 0x3f80) + (u1 >> 7)] >>> (shade >>> 23);
 
-            int stepU = (nextU - curU) >> 3;
-            int stepV = (nextV - curV) >> 3;
-
-            curU += (shadeA & 0x600000) >> 3; // treat curU like the offset and move to the correct tile in our atlas
-
-            int shadeShift = shadeA >> 23; // always a value 0..3 inclusive
-
-            // If you look @ getTexels() you'll notice that the texels are slightly decimated by performing & 0xF8F8FF
-            // on them, this was to clear the lower 3 bits of R,G channels so that u can divide the whole number by 2
-            // (or right shift 1) to achieve half values. It's a cheep hax to further darken the color value with 1 op.
-            // technically the atlas is 1x4 textures but this trick allows 16 total different shades for each texture.
-
-            if (Draw3D.opaque) {
-                while (strides-- > 0) {
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU = nextU; // last op just sets to the u/v we expected to end with to avoid accuracy loss
-                    curV = nextV;
-
-                    u += uStride;
-                    v += vStride;
-                    w += wStride;
-
-                    int nextW = w >> 12;
-
-                    if (nextW != 0) { // calculate u/v values for the end of our next stride
-                        nextU = u / nextW;
-                        nextV = v / nextW;
-
-                        if (nextU < 7) {
-                            nextU = 7;
-                        } else if (nextU > 4032) {
-                            nextU = 4032;
-                        }
-                    }
-
-                    stepU = (nextU - curU) >> 3; // update our step size
-                    stepV = (nextV - curV) >> 3;
-                    shadeA += shadeStride;
-                    curU += (shadeA & 0x600000) >> 3; // update tile in atlas
-                    shadeShift = shadeA >> 23; // update shade
-                }
-
-                // handles the remaining pixels if the scanline wasn't divisible by 8
-                for (strides = (xB - xA) & 7; strides-- > 0; ) {
-                    dst[offset++] = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift;
-                    curU += stepU;
-                    curV += stepV;
-                }
-                return;
-            }
-
-            while (strides-- > 0) {
-                int rgb;
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-
-                if ((rgb = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = rgb;
-                }
-                offset++;
-                curU = nextU;
-                curV = nextV;
-
-                u += uStride;
-                v += vStride;
-                w += wStride;
-
-                int nextW = w >> 12;
-
-                if (nextW != 0) {
-                    nextU = u / nextW;
-                    nextV = v / nextW;
-                    if (nextU < 7) {
-                        nextU = 7;
-                    } else if (nextU > 4032) {
-                        nextU = 4032;
-                    }
-                }
-
-                stepU = (nextU - curU) >> 3;
-                stepV = (nextV - curV) >> 3;
-                shadeA += shadeStride;
-                curU += (shadeA & 0x600000) >> 3;
-                shadeShift = shadeA >> 23;
-            }
-            for (strides = (xB - xA) & 7; strides-- > 0; ) {
-                int l8;
-                if ((l8 = texels[(curV & 0xfc0) + (curU >> 6)] >>> shadeShift) != 0) {
-                    dst[offset] = l8;
-                }
-                offset++;
-                curU += stepU;
-                curV += stepV;
-            }
-            return;
+            x++;
+            u += uStep;
+            v += vStep;
+            w += wStep;
+            shade += shadeStep;
         }
+    }
 
-        int nextU = 0;
-        int nextV = 0;
-        int dx = xA - Draw3D.centerX;
-        u += (uStride >> 3) * dx;
-        v += (vStride >> 3) * dx;
-        w += (wStride >> 3) * dx;
-        int curW = w >> 14;
-        if (curW != 0) {
-            curU = u / curW;
-            curV = v / curW;
-            if (curU < 0) {
-                curU = 0;
-            } else if (curU > 16256) {
-                curU = 16256;
-            }
-        }
-        u += uStride;
-        v += vStride;
-        w += wStride;
-        curW = w >> 14;
-        if (curW != 0) {
-            nextU = u / curW;
-            nextV = v / curW;
-            if (nextU < 7) {
-                nextU = 7;
-            } else if (nextU > 16256) {
-                nextU = 16256;
-            }
-        }
-        int uStep = (nextU - curU) >> 3;
-        int vStep = (nextV - curV) >> 3;
-        curU += shadeA & 0x600000;
-        int shadeShift = shadeA >> 23;
-        if (Draw3D.opaque) {
-            while (strides-- > 0) {
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU = nextU;
-                curV = nextV;
-                u += uStride;
-                v += vStride;
-                w += wStride;
-                int i6 = w >> 14;
-                if (i6 != 0) {
-                    nextU = u / i6;
-                    nextV = v / i6;
-                    if (nextU < 7) {
-                        nextU = 7;
-                    } else if (nextU > 16256) {
-                        nextU = 16256;
-                    }
-                }
-                uStep = (nextU - curU) >> 3;
-                vStep = (nextV - curV) >> 3;
-                shadeA += shadeStride;
-                curU += shadeA & 0x600000;
-                shadeShift = shadeA >> 23;
-            }
-            for (strides = (xB - xA) & 7; strides-- > 0; ) {
-                dst[offset++] = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift;
-                curU += uStep;
-                curV += vStep;
-            }
-            return;
-        }
-        while (strides-- > 0) {
-            int rgb;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU += uStep;
-            curV += vStep;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
-            }
-            offset++;
-            curU = nextU;
-            curV = nextV;
-            u += uStride;
-            v += vStride;
-            w += wStride;
-            int nextW = w >> 14;
-            if (nextW != 0) {
-                nextU = u / nextW;
-                nextV = v / nextW;
-                if (nextU < 7) {
-                    nextU = 7;
-                } else if (nextU > 16256) {
-                    nextU = 16256;
+    private static void drawTransparentTexturedScanlineHighmem(int[] dst, int[] texels, int offset, int x, int y, int shade, int u, int v, int w, int uStep, int vStep, int wStep, int shadeStep, int length) {
+        while (length-- > 0) {
+            int w1 = w >> 14;
+            int u1 = 0;
+            int v1 = 0;
+
+            if (w1 != 0) {
+                u1 = u / w1; // recalculate destination uv for next iteration
+                v1 = v / w1;
+
+                if (u1 < 7) {
+                    u1 = 7;
+                } else if (u1 > 16256) {
+                    u1 = 16256;
                 }
             }
-            uStep = (nextU - curU) >> 3;
-            vStep = (nextV - curV) >> 3;
-            shadeA += shadeStride;
-            curU += shadeA & 0x600000;
-            shadeShift = shadeA >> 23;
-        }
-        for (int len = (xB - xA) & 7; len-- > 0; ) {
-            int rgb;
-            if ((rgb = texels[(curV & 0x3f80) + (curU >> 7)] >>> shadeShift) != 0) {
-                dst[offset] = rgb;
+
+            // shift texture to the given shade
+            u1 += (shade & 0x600000);
+
+            int texel;
+            if ((texel = texels[(v1 & 0x3f80) + (u1 >> 7)] >>> (shade >>> 23)) != 0) {
+                dst[offset] = texel;
             }
+
             offset++;
-            curU += uStep;
-            curV += vStep;
+            x++;
+            u += uStep;
+            v += vStep;
+            w += wStep;
+            shade += shadeStep;
         }
     }
 

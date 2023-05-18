@@ -10,7 +10,6 @@ public class SceneBuilder {
     public static int level;
     public static int randomLightnessOffset = (int) (Math.random() * 33.0) - 16;
     public static int minLevel = 99;
-    public static boolean lowmem = true;
 
     public static int noise(int x, int y) {
         int n = x + (y * 57);
@@ -386,7 +385,7 @@ public class SceneBuilder {
                     if ((localX > 0) && (localZ > 0) && (localX < 103) && (localZ < 103)) {
                         LocType type = LocType.get(locID);
 
-                        if ((kind != 22) || !lowmem || type.interactable || type.important) {
+                        if ((kind != 22) || type.interactable || type.important) {
                             ok &= type.validate();
                             skip = true; // Skip the remaining locs of this ID because we only need to validate the model of one.
                         }
@@ -572,7 +571,7 @@ public class SceneBuilder {
                         magnitudeAccumulator -= blendMagnitude[dz2];
                     }
 
-                    if ((z0 < 1) || (z0 >= (maxTileZ - 1)) || (lowmem && ((levelTileFlags[0][x0][z0] & 0x2) == 0) && (((levelTileFlags[level][x0][z0] & 0x10) != 0) || (getDrawLevel(level, x0, z0) != SceneBuilder.level)))) {
+                    if ((z0 < 1) || (z0 >= (maxTileZ - 1))) {
                         continue;
                     }
 
@@ -919,10 +918,6 @@ public class SceneBuilder {
     }
 
     public void addLoc(Scene scene, CollisionMap collision, int locID, int kind, int rotation, int level, int x, int z) {
-        if (lowmem && ((levelTileFlags[0][x][z] & 0x2) == 0) && (((levelTileFlags[level][x][z] & 0x10) != 0) || (getDrawLevel(level, x, z) != SceneBuilder.level))) {
-            return;
-        }
-
         if (level < minLevel) {
             minLevel = level;
         }
@@ -997,20 +992,18 @@ public class SceneBuilder {
     }
 
     private static void addGroundDecoration(Scene scene, CollisionMap collision, int locID, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, LocType type, int bitset, byte info) {
-        if (!lowmem || type.interactable || type.important) {
-            Drawable entity;
+        Drawable entity;
 
-            if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
-                entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
-            } else {
-                entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
-            }
+        if ((type.seqID == -1) && (type.overrideTypeIDs == null)) {
+            entity = type.getModel(22, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+        } else {
+            entity = new LocEntity(locID, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, type.seqID, true);
+        }
 
-            scene.addGroundDecoration(entity, level, x, z, heightmapAverage, bitset, info);
+        scene.addGroundDecoration(entity, level, x, z, heightmapAverage, bitset, info);
 
-            if (type.solid && type.interactable && (collision != null)) {
-                collision.addSolid(x, z);
-            }
+        if (type.solid && type.interactable && (collision != null)) {
+            collision.addSolid(x, z);
         }
     }
 

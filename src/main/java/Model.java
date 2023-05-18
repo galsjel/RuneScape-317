@@ -1623,8 +1623,6 @@ public class Model extends Drawable {
         int lightMagnitude = (int) Math.sqrt((lightSrcX * lightSrcX) + (lightSrcY * lightSrcY) + (lightSrcZ * lightSrcZ));
         int attenuation = (lightAttenuation * lightMagnitude) >> 8;
 
-        System.out.println("attenuation = " + attenuation);
-
         if (faceColorA == null) {
             faceColorA = new int[faceCount];
             faceColorB = new int[faceCount];
@@ -2162,7 +2160,6 @@ public class Model extends Drawable {
         int[] priorityFaceDepths = tmpPriority10FaceDepth;
 
         if (priorityFace == priorityFaceCount) {
-            priorityFace = 0;
             priorityFaceCount = Model.tmpPriorityFaceCount[11];
             priorityFaces = Model.tmpPriorityFaces[11];
             priorityFaceDepths = tmpPriority11FaceDepth;
@@ -2278,9 +2275,9 @@ public class Model extends Drawable {
         Draw3D.clipX = faceClippedX[face];
 
         if (faceAlpha == null) {
-            Draw3D.alpha = 0;
+            Draw3D.transparency = 0;
         } else {
-            Draw3D.alpha = faceAlpha[face];
+            Draw3D.transparency = faceAlpha[face];
         }
 
         int type;
@@ -2301,7 +2298,7 @@ public class Model extends Drawable {
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
             Draw3D.fillTexturedTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
-        } else if (type == 3) {
+        } else {
             int texturedFace = faceType[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];

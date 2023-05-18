@@ -108,7 +108,6 @@ public class Scene {
     public static final int[] TEXTURE_HSL = {41, 39248, 41, 4643, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 43086, 41, 41, 41, 41, 41, 41, 41, 8602, 41, 28992, 41, 41, 41, 41, 41, 5056, 41, 41, 41, 7079, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 3131, 41, 41, 41};
     public static final int LEVEL_COUNT = 4;
     public static final SceneOccluder[] activeOccluders = new SceneOccluder[500];
-    public static boolean lowmem = true;
     public static int tilesRemaining;
     public static int topLevel;
     public static int cycle;
@@ -1886,7 +1885,7 @@ public class Scene {
         int px3 = Draw3D.centerX + ((x3 << 9) / z3);
         int py3 = Draw3D.centerY + ((y3 << 9) / z3);
 
-        Draw3D.alpha = 0;
+        Draw3D.transparency = 0;
 
         if ((((px2 - px3) * (py1 - py3)) - ((py2 - py3) * (px1 - px3))) > 0) {
             Draw3D.clipX = (px2 < 0) || (px3 < 0) || (px1 < 0) || (px2 > Draw2D.boundX) || (px3 > Draw2D.boundX) || (px1 > Draw2D.boundX);
@@ -1900,15 +1899,10 @@ public class Scene {
                 if (underlay.northeastColor != 12345678) {
                     Draw3D.fillGouraudTriangle(py2, py3, py1, px2, px3, px1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor);
                 }
-            } else if (!lowmem) {
-                if (underlay.flat) {
-                    Draw3D.fillTexturedTriangle(px2, py2, underlay.northeastColor, px3, py3, underlay.northwestColor, px1, py1, underlay.southeastColor, x0, y0, z0, x1, y1, z1, x3, y3, z3, underlay.textureID);
-                } else {
-                    Draw3D.fillTexturedTriangle(px2, py2, underlay.northeastColor, px3, py3, underlay.northwestColor, px1, py1, underlay.southeastColor, x2, y2, z2, x3, y3, z3, x1, y1, z1, underlay.textureID);
-                }
+            } else                 if (underlay.flat) {
+                Draw3D.fillTexturedTriangle(py2, py3, py1, px2, px3, px1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor, x0,x1,x3,y0,y1,y3,z0,z1,z3, underlay.textureID);
             } else {
-                int color = TEXTURE_HSL[underlay.textureID];
-                Draw3D.fillGouraudTriangle(py2, py3, py1, px2, px3, px1, mulLightness(color, underlay.northeastColor), mulLightness(color, underlay.northwestColor), mulLightness(color, underlay.southeastColor));
+                Draw3D.fillTexturedTriangle(py2, py3, py1, px2, px3, px1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor, x2,x3,x1,y2,y3,y1,z2,z3,z1, underlay.textureID);
             }
         }
 
@@ -1925,19 +1919,14 @@ public class Scene {
                     Draw3D.fillGouraudTriangle(py0, py1, py3, px0, px1, px3, underlay.southwestColor, underlay.southeastColor, underlay.northwestColor);
                 }
             } else {
-                if (!lowmem) {
-                    Draw3D.fillTexturedTriangle(px0, py0, underlay.southwestColor, px1, py1, underlay.southeastColor, px3, py3, underlay.northwestColor, x0, y0, z0, x1, y1, z1, x3, y3, z3, underlay.textureID);
-                    return;
-                }
-                int color = TEXTURE_HSL[underlay.textureID];
-                Draw3D.fillGouraudTriangle(py0, py1, py3, px0, px1, px3, mulLightness(color, underlay.southwestColor), mulLightness(color, underlay.southeastColor), mulLightness(color, underlay.northwestColor));
+                Draw3D.fillTexturedTriangle(py0, py1, py3, px0, px1, px3, underlay.southwestColor, underlay.southeastColor, underlay.northwestColor, x0,x1,x3,y0,y1,y3,z0,z1,z3, underlay.textureID);
             }
         }
     }
 
     public void drawTileOverlay(int tileX, int sinEyePitch, int sinEyeYaw, SceneTileOverlay overlay, int cosEyePitch, int tileZ, int cosEyeYaw) {
-        int vertexCount = overlay.vertexX.length;
-        for (int v = 0; v < vertexCount; v++) {
+        int counter = overlay.vertexX.length;
+        for (int v = 0; v < counter; v++) {
             int x = overlay.vertexX[v] - eyeX;
             int y = overlay.vertexY[v] - eyeY;
             int z = overlay.vertexZ[v] - eyeZ;
@@ -1964,12 +1953,12 @@ public class Scene {
             SceneTileOverlay.tmpScreenY[v] = Draw3D.centerY + ((y << 9) / z);
         }
 
-        Draw3D.alpha = 0;
-        vertexCount = overlay.triangleVertexA.length;
-        for (int v = 0; v < vertexCount; v++) {
-            int a = overlay.triangleVertexA[v];
-            int b = overlay.triangleVertexB[v];
-            int c = overlay.triangleVertexC[v];
+        Draw3D.transparency = 0;
+        counter = overlay.triangleVertexA.length;
+        for (int f = 0; f < counter; f++) {
+            int a = overlay.triangleVertexA[f];
+            int b = overlay.triangleVertexB[f];
+            int c = overlay.triangleVertexC[f];
 
             int x0 = SceneTileOverlay.tmpScreenX[a];
             int x1 = SceneTileOverlay.tmpScreenX[b];
@@ -1987,19 +1976,14 @@ public class Scene {
                     clickTileZ = tileZ;
                 }
 
-                if ((overlay.triangleTextureIDs == null) || (overlay.triangleTextureIDs[v] == -1)) {
-                    if (overlay.triangleColorA[v] != 12345678) {
-                        Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[v], overlay.triangleColorB[v], overlay.triangleColorC[v]);
+                if ((overlay.triangleTextureIDs == null) || (overlay.triangleTextureIDs[f] == -1)) {
+                    if (overlay.triangleColorA[f] != 12345678) {
+                        Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f]);
                     }
-                } else if (!lowmem) {
-                    if (overlay.flat) {
-                        Draw3D.fillTexturedTriangle(x0, y0, overlay.triangleColorA[v], x1, y1, overlay.triangleColorB[v], x2, y2, overlay.triangleColorC[v], SceneTileOverlay.tmpViewspaceX[0], SceneTileOverlay.tmpViewspaceY[0], SceneTileOverlay.tmpViewspaceZ[0], SceneTileOverlay.tmpViewspaceX[1], SceneTileOverlay.tmpViewspaceY[1], SceneTileOverlay.tmpViewspaceZ[1], SceneTileOverlay.tmpViewspaceX[3], SceneTileOverlay.tmpViewspaceY[3], SceneTileOverlay.tmpViewspaceZ[3], overlay.triangleTextureIDs[v]);
-                    } else {
-                        Draw3D.fillTexturedTriangle(x0, y0, overlay.triangleColorA[v], x1, y1, overlay.triangleColorB[v], x2, y2, overlay.triangleColorC[v], SceneTileOverlay.tmpViewspaceX[a], SceneTileOverlay.tmpViewspaceY[a], SceneTileOverlay.tmpViewspaceZ[a], SceneTileOverlay.tmpViewspaceX[b], SceneTileOverlay.tmpViewspaceY[b], SceneTileOverlay.tmpViewspaceZ[b], SceneTileOverlay.tmpViewspaceX[c], SceneTileOverlay.tmpViewspaceY[c], SceneTileOverlay.tmpViewspaceZ[c], overlay.triangleTextureIDs[v]);
-                    }
+                } else if (overlay.flat) {
+                    Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f], SceneTileOverlay.tmpViewspaceX[0],SceneTileOverlay.tmpViewspaceX[1],SceneTileOverlay.tmpViewspaceX[3],SceneTileOverlay.tmpViewspaceY[0],SceneTileOverlay.tmpViewspaceY[1],SceneTileOverlay.tmpViewspaceY[3],SceneTileOverlay.tmpViewspaceZ[0],SceneTileOverlay.tmpViewspaceZ[1],SceneTileOverlay.tmpViewspaceZ[3],overlay.triangleTextureIDs[f]);
                 } else {
-                    int k5 = TEXTURE_HSL[overlay.triangleTextureIDs[v]];
-                    Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, mulLightness(k5, overlay.triangleColorA[v]), mulLightness(k5, overlay.triangleColorB[v]), mulLightness(k5, overlay.triangleColorC[v]));
+                    Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f], SceneTileOverlay.tmpViewspaceX[a],SceneTileOverlay.tmpViewspaceX[b],SceneTileOverlay.tmpViewspaceX[c],SceneTileOverlay.tmpViewspaceY[a],SceneTileOverlay.tmpViewspaceY[b],SceneTileOverlay.tmpViewspaceY[c],SceneTileOverlay.tmpViewspaceZ[a],SceneTileOverlay.tmpViewspaceZ[b],SceneTileOverlay.tmpViewspaceZ[c],overlay.triangleTextureIDs[f]);
                 }
             }
         }

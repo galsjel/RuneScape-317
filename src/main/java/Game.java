@@ -33,7 +33,6 @@ public class Game extends GameShell {
     public static int nodeID = 10;
     public static int portOffset;
     public static boolean members = true;
-    public static boolean lowmem;
     public static boolean started;
     public static int drawCycle;
     public static PlayerEntity localPlayer;
@@ -90,14 +89,6 @@ public class Game extends GameShell {
         }
     }
 
-    public static void setHighmem() {
-        Scene.lowmem = false;
-        Draw3D.lowmem = false;
-        lowmem = false;
-        SceneBuilder.lowmem = false;
-        LocType.lowmem = false;
-    }
-
     public static void main(String[] args) throws UnknownHostException {
         System.out.println("RS2 user client - release #" + 317);
 
@@ -109,14 +100,6 @@ public class Game extends GameShell {
         nodeID = Integer.parseInt(args[0]);
         portOffset = Integer.parseInt(args[1]);
 
-        if (args[2].equals("lowmem")) {
-            setLowmem();
-        } else if (args[2].equals("highmem")) {
-            setHighmem();
-        } else {
-            System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
-            return;
-        }
 
         if (args[3].equals("free")) {
             members = false;
@@ -157,13 +140,6 @@ public class Game extends GameShell {
         }
     }
 
-    public static void setLowmem() {
-        Scene.lowmem = true;
-        Draw3D.lowmem = true;
-        lowmem = true;
-        SceneBuilder.lowmem = true;
-        LocType.lowmem = true;
-    }
 
     public final int[] LOC_KIND_TO_CLASS_ID = {0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
     /**
@@ -753,29 +729,27 @@ public class Game extends GameShell {
             SeqTransform.init(ondemand.getSeqFrameCount());
             Model.init(ondemand.getFileCount(0), ondemand);
 
-            if (!lowmem) {
-                song = 0;
+            song = 0;
+
+            try {
+                song = Integer.parseInt(getParameter("music"));
+            } catch (Exception ignored) {
+            }
+
+            songFading = true;
+            ondemand.request(2, song);
+
+            while (ondemand.remaining() > 0) {
+                handleOnDemandRequests();
 
                 try {
-                    song = Integer.parseInt(getParameter("music"));
+                    Thread.sleep(100L);
                 } catch (Exception ignored) {
                 }
 
-                songFading = true;
-                ondemand.request(2, song);
-
-                while (ondemand.remaining() > 0) {
-                    handleOnDemandRequests();
-
-                    try {
-                        Thread.sleep(100L);
-                    } catch (Exception ignored) {
-                    }
-
-                    if (ondemand.failCount > 3) {
-                        System.out.println("ondemand");
-                        return;
-                    }
+                if (ondemand.failCount > 3) {
+                    System.out.println("ondemand");
+                    return;
                 }
             }
 
@@ -814,7 +788,7 @@ public class Game extends GameShell {
             total = ondemand.getFileCount(0);
 
             for (int i = 0; i < total; i++) {
-                    ondemand.request(0,i);
+                ondemand.request(0, i);
             }
 
             total = ondemand.remaining();
@@ -899,12 +873,10 @@ public class Game extends GameShell {
             }
             ondemand.prefetchMaps(members);
 
-            if (!lowmem) {
-                int midiCount = ondemand.getFileCount(2);
-                for (int midi = 1; midi < midiCount; midi++) {
-                    if (ondemand.hasMidi(midi)) {
-                        ondemand.prefetch((byte) 1, 2, midi);
-                    }
+            int midiCount = ondemand.getFileCount(2);
+            for (int midi = 1; midi < midiCount; midi++) {
+                if (ondemand.hasMidi(midi)) {
+                    ondemand.prefetch((byte) 1, 2, midi);
                 }
             }
 
@@ -1005,7 +977,7 @@ public class Game extends GameShell {
 
             drawProgress(83, "Unpacking textures");
             Draw3D.unpackTextures(archiveTextures);
-            Draw3D.buildPalette(0.80000000000000004D);
+            Draw3D.buildPalette(0.8);
             Draw3D.initPool(20);
 
             drawProgress(86, "Unpacking config");
@@ -1019,10 +991,8 @@ public class Game extends GameShell {
             VarpType.unpack(archiveConfig);
             VarbitType.unpack(archiveConfig);
 
-            if (!lowmem) {
-                drawProgress(90, "Unpacking sounds");
-                SoundTrack.unpack(new Buffer(archiveSounds.read("sounds.dat")));
-            }
+            drawProgress(90, "Unpacking sounds");
+            SoundTrack.unpack(new Buffer(archiveSounds.read("sounds.dat")));
 
             drawProgress(95, "Unpacking interfaces");
             IfType.unpack(archiveInterface, new BitmapFont[]{fontPlain11, fontPlain12, fontBold12, fontQuill8}, archiveMedia);
@@ -1759,11 +1729,8 @@ public class Game extends GameShell {
 
             out.writeOp(0);
 
-            if (lowmem) {
-                scene.setMinLevel(SceneBuilder.minLevel);
-            } else {
-                scene.setMinLevel(0);
-            }
+            scene.setMinLevel(0);
+
 
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
@@ -1779,15 +1746,6 @@ public class Game extends GameShell {
         if (super.frame != null) {
             out.writeOp(210);
             out.write32(0x3F008EDD);
-        }
-
-        if (lowmem && (Signlink.cache_dat != null)) {
-            int count = ondemand.getFileCount(0);
-            for (int i = 0; i < count; i++) {
-                if ((ondemand.getModelFlags(i) & 0x79) == 0) {
-                    Model.unload(i);
-                }
-            }
         }
 
         System.gc();
@@ -2407,7 +2365,7 @@ public class Game extends GameShell {
                 midiEnabled = false;
             }
 
-            if ((midiEnabled != active) && !lowmem) {
+            if ((midiEnabled != active)) {
                 if (midiEnabled) {
                     song = nextSong;
                     songFading = true;
@@ -2775,10 +2733,6 @@ public class Game extends GameShell {
     }
 
     public void updateTextures(int cycle) {
-        if (lowmem) {
-            return;
-        }
-
         updateTexture(17, cycle);
         updateTexture(24, cycle);
         updateTexture(34, cycle);
@@ -3169,8 +3123,6 @@ public class Game extends GameShell {
                 continue;
             }
 
-            player.lowmem = ((lowmem && (this.playerCount > 50)) || (this.playerCount > 200)) && !local && (player.secondarySeqID == player.seqStandID);
-
             int stx = player.x >> 7;
             int stz = player.z >> 7;
 
@@ -3179,7 +3131,6 @@ public class Game extends GameShell {
             }
 
             if ((player.locModel != null) && (loopCycle >= player.locStartCycle) && (loopCycle < player.locStopCycle)) {
-                player.lowmem = false;
                 player.y = getHeightmapY(currentLevel, player.x, player.z);
                 scene.addTemporary(player, currentLevel, player.minSceneTileX, player.minSceneTileZ, player.maxSceneTileX, player.maxSceneTileZ, player.x, player.z, player.y, player.yaw, index);
                 continue;
@@ -3756,20 +3707,11 @@ public class Game extends GameShell {
     }
 
     public void updateSceneState() {
-        if (lowmem && (sceneState == 2) && (SceneBuilder.level != currentLevel)) {
-            areaViewport.bind();
-            fontPlain12.drawStringCenter("Loading - please wait.", 257, 151, 0);
-            fontPlain12.drawStringCenter("Loading - please wait.", 256, 150, 0xffffff);
-            areaViewport.draw(super.graphics, 4, 4);
-            sceneState = 1;
-            sceneLoadStartTime = System.currentTimeMillis();
-        }
-
         if (sceneState == 1) {
             int state = checkScene();
 
             if ((state != 0) && ((System.currentTimeMillis() - sceneLoadStartTime) > 360000L)) {
-                Signlink.reporterror(username + " glcfb " + serverSeed + "," + state + "," + lowmem + "," + filestores[0] + "," + ondemand.remaining() + "," + currentLevel + "," + sceneCenterZoneX + "," + sceneCenterZoneZ);
+                Signlink.reporterror(username + " glcfb " + serverSeed + "," + state + "," + filestores[0] + "," + ondemand.remaining() + "," + currentLevel + "," + sceneCenterZoneX + "," + sceneCenterZoneZ);
                 sceneLoadStartTime = System.currentTimeMillis();
             }
         }
@@ -4602,7 +4544,7 @@ public class Game extends GameShell {
             try {
                 int lastPercent = 0;
 
-                DataInputStream in = openURL("archive/"+fileName);
+                DataInputStream in = openURL("archive/" + fileName);
                 Buffer buffer = new Buffer(new byte[6]);
                 in.readFully(buffer.data, 0, 6);
                 buffer.position = 3;
@@ -6999,7 +6941,7 @@ public class Game extends GameShell {
                 login.write8(out.position + 4);
                 login.write8(111);
                 login.write16(39);
-                login.write8(lowmem ? 1 : 0);
+                login.write8(1);
 
                 login.write(out.data, 0, out.position);
 
@@ -7456,7 +7398,7 @@ public class Game extends GameShell {
             }
 
             out.write16LE(startZ + sceneBaseTileZ);
-            out.write8C(actionKey[5]?1:0);
+            out.write8C(actionKey[5] ? 1 : 0);
             return true;
         }
 
@@ -7758,6 +7700,8 @@ public class Game extends GameShell {
         loc.previousRotation = rotation;
     }
 
+    public static final boolean lowmem = false;
+
     public void updateAudio() {
         for (int wave = 0; wave < waveCount; wave++) {
             if (waveDelay[wave] > 0) {
@@ -7818,7 +7762,7 @@ public class Game extends GameShell {
                 nextSongDelay = 0;
             }
 
-            if ((nextSongDelay == 0) && midiEnabled && !lowmem) {
+            if ((nextSongDelay == 0) && midiEnabled) {
                 song = nextSong;
                 songFading = true;
                 ondemand.request(2, song);
@@ -10733,7 +10677,7 @@ public class Game extends GameShell {
         int loopCount = info & 0b111;
         in.read8();
         in.read8();
-        if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && waveEnabled && !lowmem && (waveCount < 50)) {
+        if ((localPlayer.pathTileX[0] >= (x - maxDist)) && (localPlayer.pathTileX[0] <= (x + maxDist)) && (localPlayer.pathTileZ[0] >= (z - maxDist)) && (localPlayer.pathTileZ[0] <= (z + maxDist)) && waveEnabled && (waveCount < 50)) {
             waveIDs[waveCount] = track;
             waveLoops[waveCount] = loopCount;
             waveDelay[waveCount] = SoundTrack.delays[track];
@@ -10831,45 +10775,55 @@ public class Game extends GameShell {
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
                 final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
-                for (int id : new int[]{303,1893,1925,1919,1109}) {
+                for (int id : new int[]{303, 1893, 1925, 1919, 1109}) {
                     try {
-                        Files.write(Paths.get("out/mdl/", ObjType.get(id).modelID+".ob2"), Model.headers[id].data, options);
+                        Files.write(Paths.get("out/mdl/", ObjType.get(id).modelID + ".ob2"), Model.headers[id].data, options);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
 
-                for (int id : new int[]{0,20,33,135,147,148,336}) {
+                for (int id : new int[]{2535}) {
+                    Gson gson = new Gson();
+                    Model model = new Model(id);
+                    try {
+                        Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                for (int id : new int[]{0, 20, 33, 135, 147, 148, 336}) {
                     try {
 
-                        Files.write(Paths.get("out/", id+".ob2"), Model.headers[id].data, options);
+                        Files.write(Paths.get("out/", id + ".ob2"), Model.headers[id].data, options);
 
                         Gson gson = new Gson();
                         Model model = new Model(id);
-                        Files.write(Paths.get("out/",id+".json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
 
                         model.calculateBoundsAABB();
-                        Files.write(Paths.get("out/",id+"_1.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/", id + "_1.json"), gson.toJson(model).getBytes(), options);
 
                         model.createLabelReferences();
-                        Files.write(Paths.get("out/",id+"_2.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/", id + "_2.json"), gson.toJson(model).getBytes(), options);
 
-                        model.build(64,850,-30,-50,-30,false);
-                        Files.write(Paths.get("out/",id+"_3.json"), gson.toJson(model).getBytes(), options);
+                        model.build(64, 850, -30, -50, -30, false);
+                        Files.write(Paths.get("out/", id + "_3.json"), gson.toJson(model).getBytes(), options);
 
-                        model.buildLighting(64,850,-30,-50,-30);
-                        Files.write(Paths.get("out/",id+"_4.json"), gson.toJson(model).getBytes(), options);
+                        model.buildLighting(64, 850, -30, -50, -30);
+                        Files.write(Paths.get("out/", id + "_4.json"), gson.toJson(model).getBytes(), options);
 
                         model.rotateX(384);
                         model.rotateY90();
                         model.rotateY180();
-                        Files.write(Paths.get("out/",id+"_5.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/", id + "_5.json"), gson.toJson(model).getBytes(), options);
 
-                        model.translate(40,69,120);
-                        Files.write(Paths.get("out/",id+"_6.json"), gson.toJson(model).getBytes(), options);
+                        model.translate(40, 69, 120);
+                        Files.write(Paths.get("out/", id + "_6.json"), gson.toJson(model).getBytes(), options);
 
                         model.scale(64, 196, 100);
-                        Files.write(Paths.get("out/",id+"_7.json"), gson.toJson(model).getBytes(), options);
+                        Files.write(Paths.get("out/", id + "_7.json"), gson.toJson(model).getBytes(), options);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -11002,10 +10956,6 @@ public class Game extends GameShell {
 
     public void addLoc(int z, int level, int angle, int kind, int x, int classID, int id) {
         if ((x < 1) || (z < 1) || (x > 102) || (z > 102)) {
-            return;
-        }
-
-        if (lowmem && (level != currentLevel)) {
             return;
         }
 
@@ -11639,7 +11589,7 @@ public class Game extends GameShell {
         if (next == 65535) {
             next = -1;
         }
-        if ((next != nextSong) && midiEnabled && !lowmem && (nextSongDelay == 0)) {
+        if ((next != nextSong) && midiEnabled && (nextSongDelay == 0)) {
             song = next;
             songFading = true;
             ondemand.request(2, song);
@@ -11650,7 +11600,7 @@ public class Game extends GameShell {
     private void readMidiJingle() {
         int next = in.readU16LEA();
         int delay = in.readU16A();
-        if (midiEnabled && !lowmem) {
+        if (midiEnabled) {
             song = next;
             songFading = false;
             ondemand.request(2, song);
@@ -11954,7 +11904,7 @@ public class Game extends GameShell {
         int waveID = in.readU16();
         int loopCount = in.readU8();
         int delay = in.readU16();
-        if (waveEnabled && !lowmem && (waveCount < 50)) {
+        if (waveEnabled && (waveCount < 50)) {
             waveIDs[waveCount] = waveID;
             waveLoops[waveCount] = loopCount;
             waveDelay[waveCount] = delay + SoundTrack.delays[waveID];

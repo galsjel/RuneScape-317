@@ -33,7 +33,6 @@ public class LocType {
     public static final int TYPE_GROUND_DECOR = 22;
 
     public static final Model[] TMP_MODELS = new Model[4];
-    public static boolean lowmem;
     public static Buffer dat;
     public static int[] offsets;
     public static int count;
@@ -414,7 +413,7 @@ public class LocType {
             } else if (code == 1) {
                 int k = buffer.readU8();
                 if (k > 0) {
-                    if ((modelIDs == null) || lowmem) {
+                    if ((modelIDs == null)) {
                         modelKinds = new int[k];
                         modelIDs = new int[k];
                         for (int k1 = 0; k1 < k; k1++) {
@@ -432,7 +431,7 @@ public class LocType {
             } else if (code == 5) {
                 int modelCount = buffer.readU8();
                 if (modelCount > 0) {
-                    if ((modelIDs == null) || lowmem) {
+                    if ((modelIDs == null)) {
                         modelKinds = null;
                         modelIDs = new int[modelCount];
                         for (int l1 = 0; l1 < modelCount; l1++) {

@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class ObjType {
 
@@ -547,6 +548,7 @@ public class ObjType {
         }
 
         model.build(64 + lightAmbient, 768 + lightAttenuation, -50, -10, -50, true);
+
         model.pickable = true;
         modelCache.put(id, model);
         return model;
@@ -592,6 +594,14 @@ public class ObjType {
             int code = in.readU8();
 
             if (code == 0) {
+                switch (id) {
+                    case 303, 1109, 1893, 1919, 1925 -> {
+                        System.out.println(name + " (Model: " + modelID + ")");
+                        System.out.println("srcColor = " + Arrays.toString(srcColor));
+                        System.out.println("dstColor = " + Arrays.toString(dstColor));
+                    }
+                }
+
                 return;
             } else if (code == 1) {
                 modelID = in.readU16();
