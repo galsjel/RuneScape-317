@@ -13,7 +13,7 @@ public class ObjEntity extends Drawable {
     @Override
     public Model getModel() {
         ObjType type = ObjType.get(id);
-        return type.getModel(count);
+        return type.getLitModel(count);
     }
 
 }

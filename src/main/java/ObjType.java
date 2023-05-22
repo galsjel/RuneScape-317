@@ -74,11 +74,11 @@ public class ObjType {
         return type;
     }
 
-    public static Image24 getIcon(int id, int amount, int outlineColor) {
-        if (outlineColor == 0) {
+    public static Image24 getIcon(int id, int count, int outline) {
+        if (outline == 0) {
             Image24 icon = iconCache.get(id);
 
-            if ((icon != null) && (icon.cropH != amount) && (icon.cropH != -1)) {
+            if ((icon != null) && (icon.cropH != count) && (icon.cropH != -1)) {
                 icon.unlink();
                 icon = null;
             }
@@ -91,13 +91,13 @@ public class ObjType {
         ObjType type = get(id);
 
         if (type.stackID == null) {
-            amount = -1;
+            count = -1;
         }
 
-        if (amount > 1) {
+        if (count > 1) {
             int newID = -1;
             for (int stack = 0; stack < 10; stack++) {
-                if ((amount >= type.stackCount[stack]) && (type.stackCount[stack] != 0)) {
+                if ((count >= type.stackCount[stack]) && (type.stackCount[stack] != 0)) {
                     newID = type.stackID[stack];
                 }
             }
@@ -106,7 +106,7 @@ public class ObjType {
             }
         }
 
-        Model model = type.getModel(1);
+        Model model = type.getLitModel(1);
 
         if (model == null) {
             return null;
@@ -143,18 +143,18 @@ public class ObjType {
         Draw2D.fillRect(0, 0, 32, 32, 0);
         Draw3D.init2D();
 
-        int zoom = type.iconDistance;
+        int distance = type.iconDistance;
 
-        if (outlineColor == -1) {
-            zoom = (int) ((double) zoom * 1.5D);
+        if (outline == -1) {
+            distance = (int) ((double) distance * 1.5D);
         }
 
-        if (outlineColor > 0) {
-            zoom = (int) ((double) zoom * 1.04D);
+        if (outline > 0) {
+            distance = (int) ((double) distance * 1.04D);
         }
 
-        int sinPitch = (Draw3D.sin[type.iconPitch] * zoom) >> 16;
-        int cosPitch = (Draw3D.cos[type.iconPitch] * zoom) >> 16;
+        int sinPitch = (Draw3D.sin[type.iconPitch] * distance) >> 16;
+        int cosPitch = (Draw3D.cos[type.iconPitch] * distance) >> 16;
 
         model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
 
@@ -169,9 +169,9 @@ public class ObjType {
             Draw2D.bind(pixels, 512, 512);
             Draw3D.init2D();
 
-            zoom /= 10;
-            sinPitch = (Draw3D.sin[type.iconPitch] * zoom) >> 16;
-            cosPitch = (Draw3D.cos[type.iconPitch] * zoom) >> 16;
+            distance /= 10;
+            sinPitch = (Draw3D.sin[type.iconPitch] * distance) >> 16;
+            cosPitch = (Draw3D.cos[type.iconPitch] * distance) >> 16;
             System.out.println(id);
             model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
 
@@ -206,25 +206,25 @@ public class ObjType {
         }
 
         // color outline
-        if (outlineColor > 0) {
+        if (outline > 0) {
             for (int x = 31; x >= 0; x--) {
                 for (int y = 31; y >= 0; y--) {
                     if (icon.pixels[x + (y * 32)] == 0) {
                         if ((x > 0) && (icon.pixels[(x - 1) + (y * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outlineColor;
+                            icon.pixels[x + (y * 32)] = outline;
                         } else if ((y > 0) && (icon.pixels[x + ((y - 1) * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outlineColor;
+                            icon.pixels[x + (y * 32)] = outline;
                         } else if ((x < 31) && (icon.pixels[x + 1 + (y * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outlineColor;
+                            icon.pixels[x + (y * 32)] = outline;
                         } else if ((y < 31) && (icon.pixels[x + ((y + 1) * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outlineColor;
+                            icon.pixels[x + (y * 32)] = outline;
                         }
                     }
                 }
             }
         }
         // default outline color
-        else if (outlineColor == 0) {
+        else if (outline == 0) {
             for (int x = 31; x >= 0; x--) {
                 for (int y = 31; y >= 0; y--) {
                     if ((icon.pixels[x + (y * 32)] == 0) && (x > 0) && (y > 0) && (icon.pixels[(x - 1) + ((y - 1) * 32)] > 0)) {
@@ -244,7 +244,7 @@ public class ObjType {
             linkedIcon.cropH = h;
         }
 
-        if (outlineColor == 0) {
+        if (outline == 0) {
             iconCache.put(id, icon);
         }
 
@@ -262,7 +262,7 @@ public class ObjType {
             icon.cropW = 32;
         }
 
-        icon.cropH = amount;
+        icon.cropH = count;
         return icon;
     }
 
@@ -510,7 +510,7 @@ public class ObjType {
      * @param count the stack count.
      * @return the model or <code>null</code> if unavailable.
      */
-    public Model getModel(int count) {
+    public Model getLitModel(int count) {
         if ((stackID != null) && (count > 1)) {
             int id = -1;
 
@@ -521,7 +521,7 @@ public class ObjType {
             }
 
             if (id != -1) {
-                return get(id).getModel(1);
+                return get(id).getLitModel(1);
             }
         }
 
@@ -555,7 +555,7 @@ public class ObjType {
     }
 
     /**
-     * Retrieves the ground model of this {@link ObjType} without caching, rescaling, calculating normals, applying lighting, or making pickable. As opposed to {@link #getModel(int)}.
+     * Retrieves the ground model of this {@link ObjType} without caching, rescaling, calculating normals, applying lighting, or making pickable. As opposed to {@link #getLitModel(int)}.
      *
      * @param count the stack count.
      * @return the model or <code>null</code> if unavailable.

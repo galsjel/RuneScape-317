@@ -10823,14 +10823,21 @@ public class Game extends GameShell {
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
                 final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
-                int tmp = 0;
-                for (Model.Header header : Model.headers) {
-                    try {
-                        Files.write(Paths.get("out/mdl/", tmp + ".ob2"), header.data, options);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+
+                ObjType coins = ObjType.get(995);
+                try {
+                    Gson gson = new Gson();
+                    for (int count : coins.stackCount) {
+                        Files.writeString(Paths.get("out/item/coins_" + count + ".json"),gson.toJson(coins.getLitModel(count)), options);
+                        ImageIO.write(ObjType.getIcon(995, count, 0).toBufferedImage(), "png", Paths.get("out/item/coins_"+count+".png").toFile());
+                        ImageIO.write(ObjType.getIcon(995, count, 0xFFFFFF).toBufferedImage(), "png", Paths.get("out/item/coins_"+count+"_selected.png").toFile());
                     }
-                    tmp++;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+                for (int i : new int[]{995}) {
+
                 }
 
                 for (int id : new int[]{2535}) {
