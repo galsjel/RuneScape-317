@@ -2,6 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
@@ -29,16 +30,26 @@ public class SpotAnimType {
         }
     }
 
+    @SerializedName("color_src")
     public final int[] colorSrc = new int[6];
+@SerializedName("color_dst")
     public final int[] colorDst = new int[6];
+@SerializedName("id")
     public int index;
+@SerializedName("model")
     public int modelID;
+@SerializedName("animation")
     public int seqID = -1;
-    public SeqType seq;
+    public transient SeqType seq;
+    @SerializedName("scale_xy")
     public int scaleXY = 128;
+    @SerializedName("scale_z")
     public int scaleZ = 128;
+    @SerializedName("rotation")
     public int rotation;
+    @SerializedName("light_ambient")
     public int lightAmbient;
+    @SerializedName("light_attenuation")
     public int lightAttenuation;
 
     public SpotAnimType() {

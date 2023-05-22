@@ -87,7 +87,7 @@ public class IdkType {
         if (models.length == 1) {
             model = models[0];
         } else {
-            model = new Model(models.length, models);
+            model = Model.join_prebuilt(models.length, models);
         }
 
         for (int i = 0; i < 6; i++) {
@@ -118,7 +118,7 @@ public class IdkType {
                 models[i++] = Model.tryGet(headModelIDs[j]);
             }
         }
-        Model model = new Model(i, models);
+        Model model = Model.join_prebuilt(i, models);
         for (int k = 0; k < 6; k++) {
             if (colorSrc[k] == 0) {
                 break;

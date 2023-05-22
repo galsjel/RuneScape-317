@@ -71,13 +71,13 @@ public class ProjectileEntity extends Drawable {
         int transformID = -1;
 
         if (spotanim.seq != null) {
-            transformID = spotanim.seq.transformIDs[seqFrame];
+            transformID = spotanim.seq.transforms[seqFrame];
         }
 
-        Model model = new Model(true, SeqTransform.isNull(transformID), false, tmp);
+        Model model = Model.clone(true, SeqTransform.isNull(transformID), false, tmp);
         if (transformID != -1) {
-            model.createLabelReferences();
-            model.applyTransform(transformID);
+            model.build_labels();
+            model.transform(transformID);
             model.labelFaces = null;
             model.labelVertices = null;
         }

@@ -5,10 +5,14 @@
 import com.google.gson.Gson;
 import org.apache.commons.math3.random.ISAACRandom;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
@@ -550,7 +554,7 @@ public class Game extends GameShell {
     public int messageCounter;
     public int minimapZoom;
     public long lastWaveStartTime;
-    public String username = "dane";
+    public String username = "mad xanax";
     public String password = "qweasdzxc";
     public boolean errorHost = false;
     public int reportAbuseInterfaceID = -1;
@@ -726,7 +730,7 @@ public class Game extends GameShell {
             ondemand = new OnDemand();
             ondemand.load(archiveVersionlist, this);
 
-            SeqTransform.init(ondemand.getSeqFrameCount());
+            SeqTransform.init(ondemand.getAnimationFrameCount());
             Model.init(ondemand.getFileCount(0), ondemand);
 
             song = 0;
@@ -990,6 +994,17 @@ public class Game extends GameShell {
             SpotAnimType.unpack(archiveConfig);
             VarpType.unpack(archiveConfig);
             VarbitType.unpack(archiveConfig);
+
+            try {
+                Gson gson = new Gson();
+
+                Files.writeString(Paths.get("out/animations.json"), gson.toJson(SeqType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/animation_transforms.json"), gson.toJson(SeqTransform.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/animation_skeletons.json"), gson.toJson(SeqTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/spotanims.json"), gson.toJson(SpotAnimType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             drawProgress(90, "Unpacking sounds");
             SoundTrack.unpack(new Buffer(archiveSounds.read("sounds.dat")));
@@ -1741,11 +1756,6 @@ public class Game extends GameShell {
             clearTemporaryLocs();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (super.frame != null) {
-            out.writeOp(210);
-            out.write32(0x3F008EDD);
         }
 
         System.gc();
@@ -5522,7 +5532,7 @@ public class Game extends GameShell {
             reportAbuseInput = input;
             reportAbuseMuteOption = false;
             for (int i = 0; i < IfType.instances.length; i++) {
-                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != 600)) {
+                if ((IfType.instances[i] == null) || (IfType.instances[i].contentType != 327)) {
                     continue;
                 }
                 reportAbuseInterfaceID = viewportInterfaceID = IfType.instances[i].parentID;
@@ -6377,10 +6387,11 @@ public class Game extends GameShell {
                     int kit = designIdentikits[part];
                     if (kit >= 0) {
                         models[modelCount++] = IdkType.instances[kit].getModel();
+                        System.out.println("IdkType.instances[kit].modelIDs = " + Arrays.toString(IdkType.instances[kit].modelIDs));
                     }
                 }
 
-                Model model = new Model(modelCount, models);
+                Model model = Model.join_prebuilt(modelCount, models);
                 for (int part = 0; part < 5; part++) {
                     if (designColors[part] != 0) {
                         model.recolor(designPartColor[part][0], designPartColor[part][designColors[part]]);
@@ -6390,9 +6401,46 @@ public class Game extends GameShell {
                     }
                 }
 
-                model.createLabelReferences();
-                model.applyTransform(SeqType.instances[localPlayer.seqStandID].transformIDs[0]);
+                try {
+                    Gson gson = new Gson();
+                    Files.writeString(Paths.get("out/mdl/bob_unlit.json"), gson.toJson(model), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                model.build_labels();
+                model.transform(SeqType.instances[localPlayer.seqStandID].transforms[0]);
+                System.out.println("localPlayer.seqStandID = " + localPlayer.seqStandID);
                 model.build(64, 850, -30, -50, -30, true);
+
+                BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+                int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+                Draw2D.bind(pixels, 512, 512);
+                Draw3D.init3D(512, 512);
+                Draw3D.jagged = false;
+                Model.face_counter = 0;
+                model.drawSimple(0, 0, 0, 0, 0, 128, 256);
+                model.drawSimple(64, 0, 0, 0, -64, 128, 512);
+                model.drawSimple(128, 0, 0, 0, -64, 128, 384);
+                model.drawSimple(256, 0, 0, 0, -64, 128, 256);
+                model.drawSimple(2047 - 256, 0, 0, 0, 64, 128, 256);
+                model.drawSimple(2047 - 128, 0, 0, 0, 64, 96, 256);
+                model.drawSimple(2047 - 64, 0, 0, 0, 64, 64, 256);
+                System.out.println("Model.face_counter = " + Model.face_counter);
+                Draw3D.jagged = true;
+
+                try {
+                    for (int i = 0; i  <512*512; i++) {
+                        if (pixels[i]>0) {
+                            pixels[i] |= 255<<24;
+                        }
+                    }
+                    ImageIO.write(image, "png", new File("out/bob.png"));
+                    Gson gson = new Gson();
+                    Files.writeString(Paths.get("out/mdl/bob_lit.json"), gson.toJson(model), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 iface.modelType = IfType.MODEL_TYPE_PLAYER_DESIGN;
                 iface.modelID = 0;
@@ -6933,7 +6981,7 @@ public class Game extends GameShell {
                 out.write32(Signlink.uid);
                 out.writeString(username);
                 out.writeString(password);
-                out.writeString("boobies peepee");
+                out.writeString("@@@@@@@@@@@@@@@@@");
                 out.encrypt(RSA_EXPONENT, RSA_MODULUS);
 
                 login.position = 0;
@@ -8917,7 +8965,7 @@ public class Game extends GameShell {
             model = iface.getModel(-1, -1, active);
         } else {
             SeqType type = SeqType.instances[seqID];
-            model = iface.getModel(type.transformIDs[iface.seqFrame], type.auxiliaryTransformIDs[iface.seqFrame], active);
+            model = iface.getModel(type.transforms[iface.seqFrame], type.aux_transforms[iface.seqFrame], active);
         }
 
         if (model != null) {
@@ -10775,17 +10823,19 @@ public class Game extends GameShell {
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
                 final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
-                for (int id : new int[]{303, 1893, 1925, 1919, 1109}) {
+                int tmp = 0;
+                for (Model.Header header : Model.headers) {
                     try {
-                        Files.write(Paths.get("out/mdl/", ObjType.get(id).modelID + ".ob2"), Model.headers[id].data, options);
-                    } catch (IOException e) {
+                        Files.write(Paths.get("out/mdl/", tmp + ".ob2"), header.data, options);
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
+                    tmp++;
                 }
 
                 for (int id : new int[]{2535}) {
                     Gson gson = new Gson();
-                    Model model = new Model(id);
+                    Model model = Model.get(id);
                     try {
                         Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
                     } catch (IOException e) {
@@ -10793,19 +10843,16 @@ public class Game extends GameShell {
                     }
                 }
 
-                for (int id : new int[]{0, 20, 33, 135, 147, 148, 336}) {
+                for (int id : new int[]{0, 20, 33, 135, 147, 148, 336, 2558}) {
                     try {
-
-                        Files.write(Paths.get("out/", id + ".ob2"), Model.headers[id].data, options);
-
                         Gson gson = new Gson();
-                        Model model = new Model(id);
+                        Model model = Model.get(id);
                         Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
 
                         model.calculateBoundsAABB();
                         Files.write(Paths.get("out/", id + "_1.json"), gson.toJson(model).getBytes(), options);
 
-                        model.createLabelReferences();
+                        model.build_labels();
                         Files.write(Paths.get("out/", id + "_2.json"), gson.toJson(model).getBytes(), options);
 
                         model.build(64, 850, -30, -50, -30, false);
@@ -10814,16 +10861,20 @@ public class Game extends GameShell {
                         model.buildLighting(64, 850, -30, -50, -30);
                         Files.write(Paths.get("out/", id + "_4.json"), gson.toJson(model).getBytes(), options);
 
+                        model = Model.get(id);
+                        model.build(64, 850, -30, -50, -30, true);
+                        Files.write(Paths.get("out/", id + "_5.json"), gson.toJson(model).getBytes(), options);
+
                         model.rotateX(384);
                         model.rotateY90();
                         model.rotateY180();
-                        Files.write(Paths.get("out/", id + "_5.json"), gson.toJson(model).getBytes(), options);
-
-                        model.translate(40, 69, 120);
                         Files.write(Paths.get("out/", id + "_6.json"), gson.toJson(model).getBytes(), options);
 
-                        model.scale(64, 196, 100);
+                        model.translate(40, 69, 120);
                         Files.write(Paths.get("out/", id + "_7.json"), gson.toJson(model).getBytes(), options);
+
+                        model.scale(64, 196, 100);
+                        Files.write(Paths.get("out/", id + "_8.json"), gson.toJson(model).getBytes(), options);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -11225,6 +11276,7 @@ public class Game extends GameShell {
 
                 case PacketIn.UPDATE_REBOOT_TIMER:
                     systemUpdateTimer = in.readU16LE() * 30;
+                    in.readU16LE();
                     break;
 
                 case PacketIn.ZONE_UPDATE:

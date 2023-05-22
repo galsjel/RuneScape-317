@@ -279,7 +279,6 @@ public class Draw3D {
      * @param gamma the gamma.
      */
     public static void buildPalette(double gamma) throws RuntimeException {
-        System.out.println("gamma = " + gamma);
 
         int offset = 0;
         for (int y = 0; y < 512; y++) {
@@ -491,19 +490,19 @@ public class Draw3D {
                 Draw2D.bind(pix2, imageSize, imageSize);
 
                 fillTexturedTriangle(
-                        x0, y0, 127,
-                        x1, y1, 64,
-                        x2, y2, 0,
-                        x0 - 256, y0 - 256, 512,
-                        x1 - 256, y1 - 256, 512,
-                        x2 - 256, y2 - 256, 512,
+                        y0, y1, y2,
+                        x0, x1, x2,
+                        127,64,0,
+                        x0-256,x1-256,x2-256,
+                        y0-256,y1-256,y2-256,
+                        512,512,512,
                         0);
             }
         }
 
-        ImageIO.write(img0, "png", new File("d3d_1j.png"));
-        ImageIO.write(img1, "png", new File("d3d_2.png"));
-        ImageIO.write(img2, "png", new File("d3d_3j.png"));
+        ImageIO.write(img0, "png", new File("d3d_jagged_gouraud_triangles.png"));
+        ImageIO.write(img1, "png", new File("d3d_flat_triangles.png"));
+        ImageIO.write(img2, "png", new File("d3d_jagged_textured_triangles.png"));
 
         Draw3D.jagged = false;
 
@@ -529,7 +528,7 @@ public class Draw3D {
             }
         }
 
-        ImageIO.write(img0, "png", new File("d3d_1s.png"));
+        ImageIO.write(img0, "png", new File("d3d_smooth_gouraud_triangles.png"));
 
         tex = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
         System.arraycopy(texels, 0, ((DataBufferInt) tex.getRaster().getDataBuffer()).getData(), 0, 128 * 128 * 4);

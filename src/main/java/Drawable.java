@@ -2,8 +2,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class Drawable extends DoublyLinkedList.Node {
 
-    @SerializedName("normals1")
-    public VertexNormal[] vertexNormal;
+    @SerializedName("normals")
+    public VertexNormal[] normals;
     @SerializedName("min_y")
     public int minY = 1000;
 

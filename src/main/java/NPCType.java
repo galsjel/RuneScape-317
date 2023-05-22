@@ -127,7 +127,7 @@ public class NPCType {
         if (models.length == 1) {
             model = models[0];
         } else {
-            model = new Model(models.length, models);
+            model = Model.join_prebuilt(models.length, models);
         }
 
         if (colorSrc != null) {
@@ -193,7 +193,7 @@ public class NPCType {
             if (models.length == 1) {
                 model = models[0];
             } else {
-                model = new Model(models.length, models);
+                model = Model.join_prebuilt(models.length, models);
             }
 
             if (colorSrc != null) {
@@ -202,7 +202,7 @@ public class NPCType {
                 }
             }
 
-            model.createLabelReferences();
+            model.build_labels();
             model.build(64 + lightAmbient, 850 + lightAttenuation, -30, -50, -30, true);
             modelCache.put(uid, model);
         }
@@ -211,9 +211,9 @@ public class NPCType {
         tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
         if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-            tmp.applyTransforms(primaryTransformID, secondaryTransformID, seqMask);
+            tmp.transform2(primaryTransformID, secondaryTransformID, seqMask);
         } else if (primaryTransformID != -1) {
-            tmp.applyTransform(primaryTransformID);
+            tmp.transform(primaryTransformID);
         }
 
         if ((scaleXY != 128) || (scaleZ != 128)) {

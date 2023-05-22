@@ -75,7 +75,7 @@ public class LocEntity extends Drawable {
             seqCycle = Game.loopCycle - delta;
 
             if (seq != null) {
-                transformID = seq.transformIDs[seqFrame];
+                transformID = seq.transforms[seqFrame];
             }
         }
 

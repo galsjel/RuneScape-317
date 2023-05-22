@@ -143,7 +143,7 @@ public class SceneBuilder {
         } else if (type == LocType.TYPE_WALL_DIAGONAL) {
             addRoofOrDiagonalWall(scene, rotation, z, type, collision, x, locID, level, heightSW, heightSE, heightNE, heightNW, y, loc, bitset, info);
         } else {
-            if (loc.adjustToTerrain) {
+            if (loc.adjust_to_terrain) {
                 if (rotation == 1) {
                     int tmp = heightNW;
                     heightNW = heightNE;
@@ -954,7 +954,7 @@ public class SceneBuilder {
         } else if (kind == 9) {
             addRoofOrDiagonalWall(scene, collision, locID, kind, rotation, level, x, z, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
         } else {
-            if (type.adjustToTerrain) {
+            if (type.adjust_to_terrain) {
                 if (rotation == 1) {
                     int tmp = heightmapNW;
                     heightmapNW = heightmapNE;

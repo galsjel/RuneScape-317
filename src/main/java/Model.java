@@ -23,20 +23,20 @@ public class Model extends Drawable {
     public static OnDemand ondemand;
     public static boolean[] faceClippedX = new boolean[4096];
     public static boolean[] faceNearClipped = new boolean[4096];
-    public static int[] projectedX = new int[4096];
-    public static int[] projectedY = new int[4096];
-    public static int[] projectedZ = new int[4096];
+    public static int[] px = new int[4096];
+    public static int[] py = new int[4096];
+    public static int[] pz = new int[4096];
     public static int[] vertexViewSpaceX = new int[4096];
     public static int[] vertexViewSpaceY = new int[4096];
     public static int[] vertexViewSpaceZ = new int[4096];
 
-    public static int[] tmpDepthFaceCount = new int[1500];
-    public static int[][] tmpDepthFaces = new int[1500][512];
-    public static int[] tmpPriorityFaceCount = new int[12];
-    public static int[][] tmpPriorityFaces = new int[12][2000];
-    public static int[] tmpPriority10FaceDepth = new int[2000];
-    public static int[] tmpPriority11FaceDepth = new int[2000];
-    public static int[] tmpPriorityDepthSum = new int[12];
+    public static int[] depth_fcnt = new int[1500];
+    public static int[][] depth_faces = new int[1500][512];
+    public static int[] layer_fcnt = new int[12];
+    public static int[][] layer_faces = new int[12][2000];
+    public static int[] layer_10_face_depth = new int[2000];
+    public static int[] layer_11_face_depth = new int[2000];
+    public static int[] layer_accumulated_depth = new int[12];
     public static int baseX;
     public static int baseY;
     public static int baseZ;
@@ -48,6 +48,26 @@ public class Model extends Drawable {
     public static int[] cos = Draw3D.cos;
     public static int[] palette = Draw3D.palette;
     public static int[] reciprical16 = Draw3D.reciprocal16;
+
+    public static Model get(int id) {
+        return new Model(id);
+    }
+
+    public static Model join_prebuilt(int count, Model[] models) {
+        return new Model(count, models);
+    }
+
+    public static Model join_lit(int count, int dummy, Model[] models) {
+        return new Model(count, dummy, models);
+    }
+
+    public static Model clone(boolean share_colors, boolean shareAlpha, boolean share_vertices, Model src) {
+        return new Model(share_colors, shareAlpha, share_vertices, src);
+    }
+
+    public static Model clone_object(boolean copy_vertex_y, boolean copy_lighting, Model model) {
+        return new Model(copy_vertex_y, copy_lighting, model);
+    }
 
     public static final class Header {
         public byte[] data;
@@ -75,19 +95,19 @@ public class Model extends Drawable {
         headers = null;
         faceClippedX = null;
         faceNearClipped = null;
-        projectedX = null;
-        projectedY = null;
-        projectedZ = null;
+        px = null;
+        py = null;
+        pz = null;
         vertexViewSpaceX = null;
         vertexViewSpaceY = null;
         vertexViewSpaceZ = null;
-        tmpDepthFaceCount = null;
-        tmpDepthFaces = null;
-        tmpPriorityFaceCount = null;
-        tmpPriorityFaces = null;
-        tmpPriority10FaceDepth = null;
-        tmpPriority11FaceDepth = null;
-        tmpPriorityDepthSum = null;
+        depth_fcnt = null;
+        depth_faces = null;
+        layer_fcnt = null;
+        layer_faces = null;
+        layer_10_face_depth = null;
+        layer_11_face_depth = null;
+        layer_accumulated_depth = null;
         sin = null;
         cos = null;
         palette = null;
@@ -214,7 +234,7 @@ public class Model extends Drawable {
         Header header = headers[id];
 
         if (header != null) {
-            return new Model(id);
+            return get(id);
         } else {
             ondemand.requestModel(id);
             return null;
@@ -262,7 +282,7 @@ public class Model extends Drawable {
             scalar = 127 - scalar;
             return scalar;
         }
-        scalar = (scalar * (hsl & 0x7f)) >> 7;
+        scalar = scalar * (hsl & 0x7f) >> 7;
         if (scalar < 2) {
             scalar = 2;
         } else if (scalar > 126) {
@@ -271,45 +291,47 @@ public class Model extends Drawable {
         return (hsl & 0xff80) + scalar;
     }
 
-    @SerializedName("vcount")
+    @SerializedName("id")
+    public int id;
+    @SerializedName("vertex_count")
     public int vertexCount;
-    @SerializedName("vx")
+    @SerializedName("x")
     public int[] vertexX;
-    @SerializedName("vy")
+    @SerializedName("y")
     public int[] vertexY;
-    @SerializedName("vz")
+    @SerializedName("z")
     public int[] vertexZ;
-    @SerializedName("fcount")
-    public int faceCount;
-    @SerializedName("fa")
+    @SerializedName("face_count")
+    public int fcnt;
+    @SerializedName("face_a")
     public int[] faceVertexA;
-    @SerializedName("fb")
+    @SerializedName("face_b")
     public int[] faceVertexB;
-    @SerializedName("fc")
+    @SerializedName("face_c")
     public int[] faceVertexC;
-    @SerializedName("fcolor_a")
+    @SerializedName("face_colors_a")
     public int[] faceColorA;
-    @SerializedName("fcolor_b")
+    @SerializedName("face_colors_b")
     public int[] faceColorB;
-    @SerializedName("fcolor_c")
+    @SerializedName("face_colors_c")
     public int[] faceColorC;
-    @SerializedName("ftype")
-    public int[] faceType;
-    @SerializedName("fpriority")
-    public int[] facePriority;
-    @SerializedName("ftrans")
+    @SerializedName("face_types")
+    public int[] ftype;
+    @SerializedName("face_layers")
+    public int[] flayer;
+    @SerializedName("face_transparencies")
     public int[] faceAlpha;
-    @SerializedName("fcolor")
+    @SerializedName("face_colors")
     public int[] faceColor;
-    @SerializedName("priority")
-    public int priority;
-    @SerializedName("tfcount")
+    @SerializedName("layer")
+    public int layer;
+    @SerializedName("texture_face_count")
     public int texturedFaceCount;
-    @SerializedName("tfa")
+    @SerializedName("texture_face_a")
     public int[] texturedVertexA;
-    @SerializedName("tfb")
+    @SerializedName("texture_face_b")
     public int[] texturedVertexB;
-    @SerializedName("tfc")
+    @SerializedName("texture_face_c")
     public int[] texturedVertexC;
     @SerializedName("min_x")
 
@@ -330,9 +352,9 @@ public class Model extends Drawable {
     @SerializedName("radius_xz")
     public int radius;
     @SerializedName("min_depth")
-    public int minDepth;
+    public int min_depth;
     @SerializedName("max_depth")
-    public int maxDepth;
+    public int max_depth;
     /**
      * minDepth = (int) Math.sqrt((radius * radius) + (super.minY * super.minY));
      * maxDepth = minDepth + (int) Math.sqrt((radius * radius) + (maxY * maxY));
@@ -341,22 +363,22 @@ public class Model extends Drawable {
     /**
      * The label the vertex belongs to.
      */
-    @SerializedName("vlabel")
-    public int[] vertexLabel;
+    @SerializedName("labels")
+    public int[] labels;
     /**
      * The label the face belongs to.
      */
-    @SerializedName("flabel")
+    @SerializedName("face_labels")
     public int[] faceLabel;
     /**
      * A lookup table for label->vertex.
      */
-    @SerializedName("lvertex")
+    @SerializedName("label_vertices")
     public int[][] labelVertices;
     /**
      * A lookup table for label->face.
      */
-    @SerializedName("lface")
+    @SerializedName("label_faces")
     public int[][] labelFaces;
     /**
      * When set to <code>true</code>, this model will be picked based on its projected screen bounds.
@@ -368,8 +390,8 @@ public class Model extends Drawable {
      * A storage for the original vertex normals to give {@link Scene#mergeNormals(Model, Model, int, int, int, boolean)}
      * a reference.
      */
-    @SerializedName("normals2")
-    public VertexNormal[] vertexNormalOriginal;
+    @SerializedName("normals_copy")
+    public VertexNormal[] normals_copy;
 
     /**
      * Constructs an empty model.
@@ -385,46 +407,47 @@ public class Model extends Drawable {
      *
      * @param id the model id.
      */
-    public Model(int id) {
+    private Model(int id) {
         counter++;
 
+        this.id = id;
         Header header = headers[id];
         vertexCount = header.vertexCount;
-        faceCount = header.faceCount;
+        fcnt = header.faceCount;
         texturedFaceCount = header.texturedFaceCount;
         vertexX = new int[vertexCount];
         vertexY = new int[vertexCount];
         vertexZ = new int[vertexCount];
-        faceVertexA = new int[faceCount];
-        faceVertexB = new int[faceCount];
-        faceVertexC = new int[faceCount];
+        faceVertexA = new int[fcnt];
+        faceVertexB = new int[fcnt];
+        faceVertexC = new int[fcnt];
         texturedVertexA = new int[texturedFaceCount];
         texturedVertexB = new int[texturedFaceCount];
         texturedVertexC = new int[texturedFaceCount];
 
         if (header.vertexLabelsOffset >= 0) {
-            vertexLabel = new int[vertexCount];
+            labels = new int[vertexCount];
         }
 
         if (header.faceInfosOffset >= 0) {
-            faceType = new int[faceCount];
+            ftype = new int[fcnt];
         }
 
         if (header.facePrioritiesOffset >= 0) {
-            facePriority = new int[faceCount];
+            flayer = new int[fcnt];
         } else {
-            priority = -header.facePrioritiesOffset - 1;
+            layer = -header.facePrioritiesOffset - 1;
         }
 
         if (header.faceTransDataPos >= 0) {
-            faceAlpha = new int[faceCount];
+            faceAlpha = new int[fcnt];
         }
 
         if (header.faceLabelsOffset >= 0) {
-            faceLabel = new int[faceCount];
+            faceLabel = new int[fcnt];
         }
 
-        faceColor = new int[faceCount];
+        faceColor = new int[fcnt];
 
         Buffer buf0 = new Buffer(header.data);
         buf0.position = header.vertexFlagsOffset;
@@ -472,8 +495,8 @@ public class Model extends Drawable {
             y = vertexY[v];
             z = vertexZ[v];
 
-            if (vertexLabel != null) {
-                vertexLabel[v] = buf4.readU8();
+            if (labels != null) {
+                labels[v] = buf4.readU8();
             }
         }
 
@@ -483,15 +506,15 @@ public class Model extends Drawable {
         buf3.position = header.faceTransDataPos;
         buf4.position = header.faceLabelsOffset;
 
-        for (int face = 0; face < faceCount; face++) {
+        for (int face = 0; face < fcnt; face++) {
             faceColor[face] = buf0.readU16();
 
-            if (faceType != null) {
-                faceType[face] = buf1.readU8();
+            if (ftype != null) {
+                ftype[face] = buf1.readU8();
             }
 
-            if (facePriority != null) {
-                facePriority[face] = buf2.readU8();
+            if (flayer != null) {
+                flayer[face] = buf2.readU8();
             }
 
             if (faceAlpha != null) {
@@ -511,7 +534,7 @@ public class Model extends Drawable {
         int c = 0;
         int last = 0;
 
-        for (int face = 0; face < faceCount; face++) {
+        for (int face = 0; face < fcnt; face++) {
             int orientation = buf1.readU8();
 
             // fancy shmansy compression type stuff.
@@ -581,7 +604,7 @@ public class Model extends Drawable {
      * @param count  the model count.
      * @param models the models to merge.
      */
-    public Model(int count, Model[] models) {
+    private Model(int count, Model[] models) {
         counter++;
 
         boolean copyInfo = false;
@@ -590,9 +613,9 @@ public class Model extends Drawable {
         boolean copyLabels = false;
 
         vertexCount = 0;
-        faceCount = 0;
+        fcnt = 0;
         texturedFaceCount = 0;
-        priority = -1;
+        layer = -1;
 
         for (int i = 0; i < count; i++) {
             Model model = models[i];
@@ -602,18 +625,18 @@ public class Model extends Drawable {
             }
 
             vertexCount += model.vertexCount;
-            faceCount += model.faceCount;
+            fcnt += model.fcnt;
             texturedFaceCount += model.texturedFaceCount;
 
-            copyInfo |= model.faceType != null;
+            copyInfo |= model.ftype != null;
 
-            if (model.facePriority != null) {
+            if (model.flayer != null) {
                 copyPriority = true;
             } else {
-                if (priority == -1) {
-                    priority = model.priority;
+                if (layer == -1) {
+                    layer = model.layer;
                 }
-                if (priority != model.priority) {
+                if (layer != model.layer) {
                     copyPriority = true;
                 }
             }
@@ -625,33 +648,33 @@ public class Model extends Drawable {
         vertexX = new int[vertexCount];
         vertexY = new int[vertexCount];
         vertexZ = new int[vertexCount];
-        vertexLabel = new int[vertexCount];
-        faceVertexA = new int[faceCount];
-        faceVertexB = new int[faceCount];
-        faceVertexC = new int[faceCount];
+        labels = new int[vertexCount];
+        faceVertexA = new int[fcnt];
+        faceVertexB = new int[fcnt];
+        faceVertexC = new int[fcnt];
         texturedVertexA = new int[texturedFaceCount];
         texturedVertexB = new int[texturedFaceCount];
         texturedVertexC = new int[texturedFaceCount];
 
         if (copyInfo) {
-            faceType = new int[faceCount];
+            ftype = new int[fcnt];
         }
 
         if (copyPriority) {
-            facePriority = new int[faceCount];
+            flayer = new int[fcnt];
         }
 
         if (copyAlpha) {
-            faceAlpha = new int[faceCount];
+            faceAlpha = new int[fcnt];
         }
 
         if (copyLabels) {
-            faceLabel = new int[faceCount];
+            faceLabel = new int[fcnt];
         }
 
-        faceColor = new int[faceCount];
+        faceColor = new int[fcnt];
         vertexCount = 0;
-        faceCount = 0;
+        fcnt = 0;
         texturedFaceCount = 0;
 
         int tfaceCount = 0;
@@ -663,46 +686,46 @@ public class Model extends Drawable {
                 continue;
             }
 
-            for (int face = 0; face < model.faceCount; face++) {
+            for (int face = 0; face < model.fcnt; face++) {
                 if (copyInfo) {
-                    if (model.faceType == null) {
-                        faceType[faceCount] = 0;
+                    if (model.ftype == null) {
+                        ftype[fcnt] = 0;
                     } else {
-                        int info = model.faceType[face];
+                        int info = model.ftype[face];
 
                         if ((info & 2) == 2) {
                             info += tfaceCount << 2;
                         }
 
-                        faceType[faceCount] = info;
+                        ftype[fcnt] = info;
                     }
                 }
 
                 if (copyPriority) {
-                    if (model.facePriority == null) {
-                        facePriority[faceCount] = model.priority;
+                    if (model.flayer == null) {
+                        flayer[fcnt] = model.layer;
                     } else {
-                        facePriority[faceCount] = model.facePriority[face];
+                        flayer[fcnt] = model.flayer[face];
                     }
                 }
 
                 if (copyAlpha) {
                     if (model.faceAlpha == null) {
-                        faceAlpha[faceCount] = 0;
+                        faceAlpha[fcnt] = 0;
                     } else {
-                        faceAlpha[faceCount] = model.faceAlpha[face];
+                        faceAlpha[fcnt] = model.faceAlpha[face];
                     }
                 }
 
-                if (copyLabels && (model.faceLabel != null)) {
-                    faceLabel[faceCount] = model.faceLabel[face];
+                if (copyLabels && model.faceLabel != null) {
+                    faceLabel[fcnt] = model.faceLabel[face];
                 }
 
-                faceColor[faceCount] = model.faceColor[face];
-                faceVertexA[faceCount] = addVertex(model, model.faceVertexA[face]);
-                faceVertexB[faceCount] = addVertex(model, model.faceVertexB[face]);
-                faceVertexC[faceCount] = addVertex(model, model.faceVertexC[face]);
-                faceCount++;
+                faceColor[fcnt] = model.faceColor[face];
+                faceVertexA[fcnt] = addVertex(model, model.faceVertexA[face]);
+                faceVertexB[fcnt] = addVertex(model, model.faceVertexB[face]);
+                faceVertexC[fcnt] = addVertex(model, model.faceVertexC[face]);
+                fcnt++;
             }
 
             for (int face = 0; face < model.texturedFaceCount; face++) {
@@ -724,7 +747,7 @@ public class Model extends Drawable {
      * @param dummy  dummy.
      * @param models the models.
      */
-    public Model(int count, int dummy, Model[] models) {
+    private Model(int count, int dummy, Model[] models) {
         counter++;
 
         boolean copyInfo = false;
@@ -733,9 +756,9 @@ public class Model extends Drawable {
         boolean copyColor = false;
 
         vertexCount = 0;
-        faceCount = 0;
+        fcnt = 0;
         texturedFaceCount = 0;
-        priority = -1;
+        layer = -1;
 
         for (int i = 0; i < count; i++) {
             Model model = models[i];
@@ -745,17 +768,17 @@ public class Model extends Drawable {
             }
 
             vertexCount += model.vertexCount;
-            faceCount += model.faceCount;
+            fcnt += model.fcnt;
             texturedFaceCount += model.texturedFaceCount;
-            copyInfo |= model.faceType != null;
+            copyInfo |= model.ftype != null;
 
-            if (model.facePriority != null) {
+            if (model.flayer != null) {
                 copyPriority = true;
             } else {
-                if (priority == -1) {
-                    priority = model.priority;
+                if (layer == -1) {
+                    layer = model.layer;
                 }
-                if (priority != model.priority) {
+                if (layer != model.layer) {
                     copyPriority = true;
                 }
             }
@@ -767,34 +790,34 @@ public class Model extends Drawable {
         vertexX = new int[vertexCount];
         vertexY = new int[vertexCount];
         vertexZ = new int[vertexCount];
-        faceVertexA = new int[faceCount];
-        faceVertexB = new int[faceCount];
-        faceVertexC = new int[faceCount];
-        faceColorA = new int[faceCount];
-        faceColorB = new int[faceCount];
-        faceColorC = new int[faceCount];
+        faceVertexA = new int[fcnt];
+        faceVertexB = new int[fcnt];
+        faceVertexC = new int[fcnt];
+        faceColorA = new int[fcnt];
+        faceColorB = new int[fcnt];
+        faceColorC = new int[fcnt];
         texturedVertexA = new int[texturedFaceCount];
         texturedVertexB = new int[texturedFaceCount];
         texturedVertexC = new int[texturedFaceCount];
 
         if (copyInfo) {
-            faceType = new int[faceCount];
+            ftype = new int[fcnt];
         }
 
         if (copyPriority) {
-            facePriority = new int[faceCount];
+            flayer = new int[fcnt];
         }
 
         if (copyAlpha) {
-            faceAlpha = new int[faceCount];
+            faceAlpha = new int[fcnt];
         }
 
         if (copyColor) {
-            faceColor = new int[faceCount];
+            faceColor = new int[fcnt];
         }
 
         vertexCount = 0;
-        faceCount = 0;
+        fcnt = 0;
         texturedFaceCount = 0;
 
         int tfaceCount = 0;
@@ -814,49 +837,49 @@ public class Model extends Drawable {
                 this.vertexCount++;
             }
 
-            for (int f = 0; f < model.faceCount; f++) {
-                faceVertexA[faceCount] = model.faceVertexA[f] + vertexCount;
-                faceVertexB[faceCount] = model.faceVertexB[f] + vertexCount;
-                faceVertexC[faceCount] = model.faceVertexC[f] + vertexCount;
+            for (int f = 0; f < model.fcnt; f++) {
+                faceVertexA[fcnt] = model.faceVertexA[f] + vertexCount;
+                faceVertexB[fcnt] = model.faceVertexB[f] + vertexCount;
+                faceVertexC[fcnt] = model.faceVertexC[f] + vertexCount;
 
-                faceColorA[faceCount] = model.faceColorA[f];
-                faceColorB[faceCount] = model.faceColorB[f];
-                faceColorC[faceCount] = model.faceColorC[f];
+                faceColorA[fcnt] = model.faceColorA[f];
+                faceColorB[fcnt] = model.faceColorB[f];
+                faceColorC[fcnt] = model.faceColorC[f];
 
                 if (copyInfo) {
-                    if (model.faceType == null) {
-                        faceType[faceCount] = 0;
+                    if (model.ftype == null) {
+                        ftype[fcnt] = 0;
                     } else {
-                        int info = model.faceType[f];
+                        int info = model.ftype[f];
 
                         if ((info & 2) == 2) {
                             info += tfaceCount << 2;
                         }
 
-                        faceType[faceCount] = info;
+                        ftype[fcnt] = info;
                     }
                 }
 
                 if (copyPriority) {
-                    if (model.facePriority == null) {
-                        facePriority[faceCount] = model.priority;
+                    if (model.flayer == null) {
+                        flayer[fcnt] = model.layer;
                     } else {
-                        facePriority[faceCount] = model.facePriority[f];
+                        flayer[fcnt] = model.flayer[f];
                     }
                 }
 
                 if (copyAlpha) {
                     if (model.faceAlpha == null) {
-                        faceAlpha[faceCount] = 0;
+                        faceAlpha[fcnt] = 0;
                     } else {
-                        faceAlpha[faceCount] = model.faceAlpha[f];
+                        faceAlpha[fcnt] = model.faceAlpha[f];
                     }
                 }
 
-                if (copyColor && (model.faceColor != null)) {
-                    faceColor[faceCount] = model.faceColor[f];
+                if (copyColor && model.faceColor != null) {
+                    faceColor[fcnt] = model.faceColor[f];
                 }
-                faceCount++;
+                fcnt++;
             }
 
             for (int f = 0; f < model.texturedFaceCount; f++) {
@@ -875,69 +898,65 @@ public class Model extends Drawable {
      * Constructs a new model that can either share or clone the provided models attributes. This constructor is used to
      * save memory by avoiding allocations, and is meant to be used with models prior to having a {@link SeqTransform} applied.
      *
-     * @param shareColors   <code>true</code> to reference the provided model's colors.
-     * @param shareAlpha    <code>true</code> to reference the provided model's face alpha.
-     * @param shareVertices <code>true</code> to reference the provided model's vertices.
-     * @param model         the model to share or clone.
+     * @param share_colors   <code>true</code> to reference the provided model's colors.
+     * @param share_alpha    <code>true</code> to reference the provided model's face alpha.
+     * @param share_vertices <code>true</code> to reference the provided model's vertices.
+     * @param src         the model to share or clone.
      */
-    public Model(boolean shareColors, boolean shareAlpha, boolean shareVertices, Model model) {
+    private Model(boolean share_colors, boolean share_alpha, boolean share_vertices, Model src) {
         counter++;
-        vertexCount = model.vertexCount;
-        faceCount = model.faceCount;
-        texturedFaceCount = model.texturedFaceCount;
+        vertexCount = src.vertexCount;
+        fcnt = src.fcnt;
+        texturedFaceCount = src.texturedFaceCount;
 
-        if (shareVertices) {
-            vertexX = model.vertexX;
-            vertexY = model.vertexY;
-            vertexZ = model.vertexZ;
+        if (share_vertices) {
+            vertexX = src.vertexX;
+            vertexY = src.vertexY;
+            vertexZ = src.vertexZ;
         } else {
             vertexX = new int[vertexCount];
             vertexY = new int[vertexCount];
             vertexZ = new int[vertexCount];
 
             for (int j = 0; j < vertexCount; j++) {
-                vertexX[j] = model.vertexX[j];
-                vertexY[j] = model.vertexY[j];
-                vertexZ[j] = model.vertexZ[j];
+                vertexX[j] = src.vertexX[j];
+                vertexY[j] = src.vertexY[j];
+                vertexZ[j] = src.vertexZ[j];
             }
         }
 
-        if (shareColors) {
-            faceColor = model.faceColor;
+        if (share_colors) {
+            faceColor = src.faceColor;
         } else {
-            faceColor = new int[faceCount];
-
-            for (int k = 0; k < faceCount; k++) {
-                faceColor[k] = model.faceColor[k];
-            }
+            faceColor = new int[fcnt];
+            System.arraycopy(src.faceColor, 0, faceColor, 0, fcnt);
         }
 
-        if (shareAlpha) {
-            faceAlpha = model.faceAlpha;
+        if (share_alpha) {
+            faceAlpha = src.faceAlpha;
         } else {
-            faceAlpha = new int[faceCount];
-            if (model.faceAlpha == null) {
-                for (int l = 0; l < faceCount; l++) {
+            faceAlpha = new int[fcnt];
+            if (src.faceAlpha == null) {
+                for (int l = 0; l < fcnt; l++) {
                     faceAlpha[l] = 0;
                 }
             } else {
-                for (int i1 = 0; i1 < faceCount; i1++) {
-                    faceAlpha[i1] = model.faceAlpha[i1];
-                }
+                System.arraycopy(src.faceAlpha, 0, faceAlpha, 0, fcnt);
             }
         }
 
-        vertexLabel = model.vertexLabel;
-        faceLabel = model.faceLabel;
-        faceType = model.faceType;
-        faceVertexA = model.faceVertexA;
-        faceVertexB = model.faceVertexB;
-        faceVertexC = model.faceVertexC;
-        facePriority = model.facePriority;
-        priority = model.priority;
-        texturedVertexA = model.texturedVertexA;
-        texturedVertexB = model.texturedVertexB;
-        texturedVertexC = model.texturedVertexC;
+        labels = src.labels;
+        faceLabel = src.faceLabel;
+        ftype = src.ftype;
+
+        faceVertexA = src.faceVertexA;
+        faceVertexB = src.faceVertexB;
+        faceVertexC = src.faceVertexC;
+        flayer = src.flayer;
+        layer = src.layer;
+        texturedVertexA = src.texturedVertexA;
+        texturedVertexB = src.texturedVertexB;
+        texturedVertexC = src.texturedVertexC;
     }
 
     /**
@@ -945,72 +964,68 @@ public class Model extends Drawable {
      * <p>
      * This constructor is specifically used by Locs which adjust to terrain.
      *
-     * @param copyVertexY <code>true</code> to copy <code>model.vertexY</code>.
-     * @param copyFaces   <code>true</code> to copy all face data from <code>model</code>.
+     * @param copy_vertex_y <code>true</code> to copy <code>model.vertexY</code>.
+     * @param copy_lighting   <code>true</code> to copy all face data from <code>model</code>.
      * @param model       the model to copy.
      * @see LocType#getModel(int, int, int, int, int, int, int)
      */
-    public Model(boolean copyVertexY, boolean copyFaces, Model model) {
+    private Model(boolean copy_vertex_y, boolean copy_lighting, Model model) {
         counter++;
         vertexCount = model.vertexCount;
-        faceCount = model.faceCount;
+        fcnt = model.fcnt;
         texturedFaceCount = model.texturedFaceCount;
 
-        if (copyVertexY) {
+        if (copy_vertex_y) {
             vertexY = new int[vertexCount];
-            for (int v = 0; v < vertexCount; v++) {
-                vertexY[v] = model.vertexY[v];
-            }
+            System.arraycopy(model.vertexY, 0, vertexY, 0, vertexCount);
         } else {
             vertexY = model.vertexY;
         }
 
-        if (copyFaces) {
-            faceColorA = new int[faceCount];
-            faceColorB = new int[faceCount];
-            faceColorC = new int[faceCount];
+        if (copy_lighting) {
+            faceColorA = new int[fcnt];
+            faceColorB = new int[fcnt];
+            faceColorC = new int[fcnt];
 
-            for (int k = 0; k < faceCount; k++) {
+            for (int k = 0; k < fcnt; k++) {
                 faceColorA[k] = model.faceColorA[k];
                 faceColorB[k] = model.faceColorB[k];
                 faceColorC[k] = model.faceColorC[k];
             }
 
-            faceType = new int[faceCount];
+            ftype = new int[fcnt];
 
-            if (model.faceType == null) {
-                for (int l = 0; l < faceCount; l++) {
-                    faceType[l] = 0;
+            if (model.ftype == null) {
+                for (int l = 0; l < fcnt; l++) {
+                    ftype[l] = 0;
                 }
             } else {
-                for (int face = 0; face < faceCount; face++) {
-                    faceType[face] = model.faceType[face];
-                }
+                System.arraycopy(model.ftype, 0, ftype, 0, fcnt);
             }
 
-            super.vertexNormal = new VertexNormal[vertexCount];
+            super.normals = new VertexNormal[vertexCount];
             for (int v = 0; v < vertexCount; v++) {
-                VertexNormal duplicate = super.vertexNormal[v] = new VertexNormal();
-                VertexNormal original = model.vertexNormal[v];
+                VertexNormal duplicate = super.normals[v] = new VertexNormal();
+                VertexNormal original = model.normals[v];
                 duplicate.x = original.x;
                 duplicate.y = original.y;
                 duplicate.z = original.z;
                 duplicate.w = original.w;
             }
-            vertexNormalOriginal = model.vertexNormalOriginal;
+            normals_copy = model.normals_copy;
         } else {
             faceColorA = model.faceColorA;
             faceColorB = model.faceColorB;
             faceColorC = model.faceColorC;
-            faceType = model.faceType;
+            ftype = model.ftype;
         }
 
         vertexX = model.vertexX;
         vertexZ = model.vertexZ;
         faceColor = model.faceColor;
         faceAlpha = model.faceAlpha;
-        facePriority = model.facePriority;
-        priority = model.priority;
+        flayer = model.flayer;
+        layer = model.layer;
         faceVertexA = model.faceVertexA;
         faceVertexB = model.faceVertexB;
         faceVertexC = model.faceVertexC;
@@ -1020,8 +1035,8 @@ public class Model extends Drawable {
         super.minY = model.minY;
         maxY = model.maxY;
         radius = model.radius;
-        minDepth = model.minDepth;
-        maxDepth = model.maxDepth;
+        min_depth = model.min_depth;
+        max_depth = model.max_depth;
         minX = model.minX;
         maxZ = model.maxZ;
         minZ = model.minZ;
@@ -1038,7 +1053,7 @@ public class Model extends Drawable {
      */
     public void set(Model model, boolean shareAlpha) {
         vertexCount = model.vertexCount;
-        faceCount = model.faceCount;
+        fcnt = model.fcnt;
         texturedFaceCount = model.texturedFaceCount;
 
         if (tmpVertexX.length < vertexCount) {
@@ -1060,25 +1075,23 @@ public class Model extends Drawable {
         if (shareAlpha) {
             faceAlpha = model.faceAlpha;
         } else {
-            if (tmpFaceAlpha.length < faceCount) {
-                tmpFaceAlpha = new int[faceCount + 100];
+            if (tmpFaceAlpha.length < fcnt) {
+                tmpFaceAlpha = new int[fcnt + 100];
             }
             faceAlpha = tmpFaceAlpha;
             if (model.faceAlpha == null) {
-                for (int face = 0; face < faceCount; face++) {
+                for (int face = 0; face < fcnt; face++) {
                     faceAlpha[face] = 0;
                 }
             } else {
-                for (int face = 0; face < faceCount; face++) {
-                    faceAlpha[face] = model.faceAlpha[face];
-                }
+                if (fcnt >= 0) System.arraycopy(model.faceAlpha, 0, faceAlpha, 0, fcnt);
             }
         }
 
-        faceType = model.faceType;
+        ftype = model.ftype;
         faceColor = model.faceColor;
-        facePriority = model.facePriority;
-        priority = model.priority;
+        flayer = model.flayer;
+        layer = model.layer;
         labelFaces = model.labelFaces;
         labelVertices = model.labelVertices;
         faceVertexA = model.faceVertexA;
@@ -1107,7 +1120,7 @@ public class Model extends Drawable {
 
         int identical = -1;
         for (int v = 0; v < vertexCount; v++) {
-            if ((x == vertexX[v]) && (y == vertexY[v]) && (z == vertexZ[v])) {
+            if (x == vertexX[v] && y == vertexY[v] && z == vertexZ[v]) {
                 identical = v;
                 break;
             }
@@ -1118,8 +1131,8 @@ public class Model extends Drawable {
             vertexX[vertexCount] = x;
             vertexY[vertexCount] = y;
             vertexZ[vertexCount] = z;
-            if (src.vertexLabel != null) {
-                vertexLabel[vertexCount] = src.vertexLabel[vertexId];
+            if (src.labels != null) {
+                labels[vertexCount] = src.labels[vertexId];
             }
             identical = vertexCount++;
         }
@@ -1128,7 +1141,7 @@ public class Model extends Drawable {
     }
 
     /**
-     * Calculates {@link #minY}, {@link #maxY}, {@link #radius}, {@link #minDepth} and {@link #maxDepth}.
+     * Calculates {@link #minY}, {@link #maxY}, {@link #radius}, {@link #min_depth} and {@link #max_depth}.
      */
     public void calculateBoundsCylinder() {
         super.minY = 0;
@@ -1144,18 +1157,18 @@ public class Model extends Drawable {
             if (y > maxY) {
                 maxY = y;
             }
-            int radiusSqr = (x * x) + (z * z);
+            int radiusSqr = x * x + z * z;
             if (radiusSqr > radius) {
                 radius = radiusSqr;
             }
         }
         radius = (int) (Math.sqrt(radius) + 0.99);
-        minDepth = (int) (Math.sqrt((radius * radius) + (super.minY * super.minY)) + 0.99);
-        maxDepth = minDepth + (int) (Math.sqrt((radius * radius) + (maxY * maxY)) + 0.99);
+        min_depth = (int) (Math.sqrt(radius * radius + super.minY * super.minY) + 0.99);
+        max_depth = min_depth + (int) (Math.sqrt(radius * radius + maxY * maxY) + 0.99);
     }
 
     /**
-     * Calculates {@link #minY}, {@link #maxY}, {@link #minDepth} and {@link #maxDepth}.
+     * Calculates {@link #minY}, {@link #maxY}, {@link #min_depth} and {@link #max_depth}.
      */
     public void calculateBoundsY() {
         super.minY = 0;
@@ -1169,8 +1182,8 @@ public class Model extends Drawable {
                 maxY = y;
             }
         }
-        minDepth = (int) (Math.sqrt((radius * radius) + (super.minY * super.minY)) + 0.99);
-        maxDepth = minDepth + (int) (Math.sqrt((radius * radius) + (maxY * maxY)) + 0.99);
+        min_depth = (int) (Math.sqrt(radius * radius + super.minY * super.minY) + 0.99);
+        max_depth = min_depth + (int) (Math.sqrt(radius * radius + maxY * maxY) + 0.99);
     }
 
     /**
@@ -1206,36 +1219,36 @@ public class Model extends Drawable {
             if (y > maxY) {
                 maxY = y;
             }
-            int radiusSqr = (x * x) + (z * z);
+            int radiusSqr = x * x + z * z;
             if (radiusSqr > radius) {
                 radius = radiusSqr;
             }
         }
         radius = (int) Math.sqrt(radius);
-        minDepth = (int) Math.sqrt((radius * radius) + (super.minY * super.minY));
-        maxDepth = minDepth + (int) Math.sqrt((radius * radius) + (maxY * maxY));
+        min_depth = (int) Math.sqrt(radius * radius + super.minY * super.minY);
+        max_depth = min_depth + (int) Math.sqrt(radius * radius + maxY * maxY);
     }
 
     /**
-     * Builds {@link #labelVertices} and {@link #labelFaces} using {@link #vertexLabel} and {@link #faceLabel}.
+     * Builds {@link #labelVertices} and {@link #labelFaces} using {@link #labels} and {@link #faceLabel}.
      * <p>
-     * This method is <i>destructive</i>, meaning it sets {@link #vertexLabel} and {@link #faceLabel} to <code>null</code>
+     * This method is <i>destructive</i>, meaning it sets {@link #labels} and {@link #faceLabel} to <code>null</code>
      * after being called.
      * <p>
      * This method is required for applying animations to a model and should only be called once on a single instance
      * of a {@link Model}.
      *
-     * @see #applyTransform(int)
-     * @see #applyTransforms(int, int, int[])
-     * @see #applyTransform(int, int[], int, int, int)
+     * @see #transform(int)
+     * @see #transform2(int, int, int[])
+     * @see #transform(int, int[], int, int, int)
      */
-    public void createLabelReferences() {
-        if (vertexLabel != null) {
+    public void build_labels() {
+        if (labels != null) {
             int[] labelVertexCount = new int[256];
 
             int count = 0;
             for (int v = 0; v < vertexCount; v++) {
-                int label = vertexLabel[v];
+                int label = labels[v];
                 labelVertexCount[label]++;
                 if (label > count) {
                     count = label;
@@ -1250,18 +1263,18 @@ public class Model extends Drawable {
             }
 
             for (int v = 0; v < vertexCount; v++) {
-                int label = vertexLabel[v];
+                int label = labels[v];
                 labelVertices[label][labelVertexCount[label]++] = v;
             }
 
-            vertexLabel = null;
+            labels = null;
         }
 
         if (faceLabel != null) {
             int[] labelFaceCount = new int[256];
 
             int count = 0;
-            for (int f = 0; f < faceCount; f++) {
+            for (int f = 0; f < fcnt; f++) {
                 int label = faceLabel[f];
                 labelFaceCount[label]++;
                 if (label > count) {
@@ -1275,7 +1288,7 @@ public class Model extends Drawable {
                 labelFaceCount[label] = 0;
             }
 
-            for (int face = 0; face < faceCount; face++) {
+            for (int face = 0; face < fcnt; face++) {
                 int label = faceLabel[face];
                 labelFaces[label][labelFaceCount[label]++] = face;
             }
@@ -1289,7 +1302,7 @@ public class Model extends Drawable {
      *
      * @param id the transform id.
      */
-    public void applyTransform(int id) {
+    public void transform(int id) {
         if (labelVertices == null) {
             return;
         }
@@ -1306,7 +1319,7 @@ public class Model extends Drawable {
         baseZ = 0;
         for (int i = 0; i < transform.length; i++) {
             int base = transform.bases[i];
-            applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], transform.x[i], transform.y[i], transform.z[i]);
+            transform(skeleton.baseTypes[base], skeleton.baseLabels[base], transform.x[i], transform.y[i], transform.z[i]);
         }
     }
 
@@ -1317,13 +1330,13 @@ public class Model extends Drawable {
      * @param secondaryID the secondary transform id.
      * @param mask        the mask contains base ids to prevent the primary transform from using the same bases as the secondary transform.
      */
-    public void applyTransforms(int primaryID, int secondaryID, int[] mask) {
+    public void transform2(int primaryID, int secondaryID, int[] mask) {
         if (primaryID == -1) {
             return;
         }
 
-        if ((mask == null) || (secondaryID == -1)) {
-            applyTransform(primaryID);
+        if (mask == null || secondaryID == -1) {
+            transform(primaryID);
             return;
         }
 
@@ -1336,7 +1349,7 @@ public class Model extends Drawable {
         SeqTransform secondary = SeqTransform.get(secondaryID);
 
         if (secondary == null) {
-            applyTransform(primaryID);
+            transform(primaryID);
             return;
         }
 
@@ -1347,17 +1360,17 @@ public class Model extends Drawable {
         baseZ = 0;
 
         int counter = 0;
-        int maskBase = mask[counter++];
+        int masked = mask[counter++];
 
         for (int i = 0; i < primary.length; i++) {
             int base = primary.bases[i];
 
-            while (base > maskBase) {
-                maskBase = mask[counter++];
+            while (base > masked) {
+                masked = mask[counter++];
             }
 
-            if ((base != maskBase) || (skeleton.baseTypes[base] == 0)) {
-                applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], primary.x[i], primary.y[i], primary.z[i]);
+            if (base != masked || skeleton.baseTypes[base] == 0) {
+                transform(skeleton.baseTypes[base], skeleton.baseLabels[base], primary.x[i], primary.y[i], primary.z[i]);
             }
         }
 
@@ -1366,17 +1379,17 @@ public class Model extends Drawable {
         baseZ = 0;
 
         counter = 0;
-        maskBase = mask[counter++];
+        masked = mask[counter++];
 
         for (int i = 0; i < secondary.length; i++) {
             int base = secondary.bases[i];
 
-            while (base > maskBase) {
-                maskBase = mask[counter++];
+            while (base > masked) {
+                masked = mask[counter++];
             }
 
-            if ((base == maskBase) || (skeleton.baseTypes[base] == 0)) {
-                applyTransform(skeleton.baseTypes[base], skeleton.baseLabels[base], secondary.x[i], secondary.y[i], secondary.z[i]);
+            if (base == masked || skeleton.baseTypes[base] == 0) {
+                transform(skeleton.baseTypes[base], skeleton.baseLabels[base], secondary.x[i], secondary.y[i], secondary.z[i]);
             }
         }
     }
@@ -1390,17 +1403,17 @@ public class Model extends Drawable {
      * @param x      the param x.
      * @param y      the param y.
      * @param z      the param z.
-     * @see #applyTransforms(int, int, int[])
-     * @see #applyTransform(int)
+     * @see #transform2(int, int, int[])
+     * @see #transform(int)
      * @see SeqSkeleton#OP_BASE
      * @see SeqSkeleton#OP_TRANSLATE
      * @see SeqSkeleton#OP_ROTATE
      * @see SeqSkeleton#OP_SCALE
      * @see SeqSkeleton#OP_ALPHA
      */
-    public void applyTransform(int type, int[] labels, int x, int y, int z) {
+    public void transform(int type, int[] labels, int x, int y, int z) {
         switch (type) {
-            case SeqSkeleton.OP_BASE:
+            case SeqSkeleton.OP_BASE -> {
                 int count = 0;
                 baseX = 0;
                 baseY = 0;
@@ -1418,16 +1431,16 @@ public class Model extends Drawable {
                     }
                 }
                 if (count > 0) {
-                    baseX = (baseX / count) + x;
-                    baseY = (baseY / count) + y;
-                    baseZ = (baseZ / count) + z;
+                    baseX = baseX / count + x;
+                    baseY = baseY / count + y;
+                    baseZ = baseZ / count + z;
                 } else {
                     baseX = x;
                     baseY = y;
                     baseZ = z;
                 }
-                break;
-            case SeqSkeleton.OP_TRANSLATE:
+            }
+            case SeqSkeleton.OP_TRANSLATE -> {
                 for (int group : labels) {
                     if (group >= labelVertices.length) {
                         continue;
@@ -1439,8 +1452,8 @@ public class Model extends Drawable {
                         vertexZ[v] += z;
                     }
                 }
-                break;
-            case SeqSkeleton.OP_ROTATE:
+            }
+            case SeqSkeleton.OP_ROTATE -> {
                 for (int label : labels) {
                     if (label >= labelVertices.length) {
                         continue;
@@ -1456,22 +1469,22 @@ public class Model extends Drawable {
                         if (roll != 0) {
                             int sin = Model.sin[roll];
                             int cos = Model.cos[roll];
-                            int x_ = ((vertexY[v] * sin) + (vertexX[v] * cos)) >> 16;
-                            vertexY[v] = ((vertexY[v] * cos) - (vertexX[v] * sin)) >> 16;
+                            int x_ = vertexY[v] * sin + vertexX[v] * cos >> 16;
+                            vertexY[v] = vertexY[v] * cos - vertexX[v] * sin >> 16;
                             vertexX[v] = x_;
                         }
                         if (pitch != 0) {
                             int sin = Model.sin[pitch];
                             int cos = Model.cos[pitch];
-                            int y_ = ((vertexY[v] * cos) - (vertexZ[v] * sin)) >> 16;
-                            vertexZ[v] = ((vertexY[v] * sin) + (vertexZ[v] * cos)) >> 16;
+                            int y_ = vertexY[v] * cos - vertexZ[v] * sin >> 16;
+                            vertexZ[v] = vertexY[v] * sin + vertexZ[v] * cos >> 16;
                             vertexY[v] = y_;
                         }
                         if (yaw != 0) {
                             int sin = Model.sin[yaw];
                             int cos = Model.cos[yaw];
-                            int x_ = ((vertexZ[v] * sin) + (vertexX[v] * cos)) >> 16;
-                            vertexZ[v] = ((vertexZ[v] * cos) - (vertexX[v] * sin)) >> 16;
+                            int x_ = vertexZ[v] * sin + vertexX[v] * cos >> 16;
+                            vertexZ[v] = vertexZ[v] * cos - vertexX[v] * sin >> 16;
                             vertexX[v] = x_;
                         }
                         vertexX[v] += baseX;
@@ -1479,8 +1492,8 @@ public class Model extends Drawable {
                         vertexZ[v] += baseZ;
                     }
                 }
-                break;
-            case SeqSkeleton.OP_SCALE:
+            }
+            case SeqSkeleton.OP_SCALE -> {
                 for (int label : labels) {
                     if (label >= labelVertices.length) {
                         continue;
@@ -1490,17 +1503,17 @@ public class Model extends Drawable {
                         vertexX[v] -= baseX;
                         vertexY[v] -= baseY;
                         vertexZ[v] -= baseZ;
-                        vertexX[v] = (vertexX[v] * x) / 128;
-                        vertexY[v] = (vertexY[v] * y) / 128;
-                        vertexZ[v] = (vertexZ[v] * z) / 128;
+                        vertexX[v] = vertexX[v] * x / 128;
+                        vertexY[v] = vertexY[v] * y / 128;
+                        vertexZ[v] = vertexZ[v] * z / 128;
                         vertexX[v] += baseX;
                         vertexY[v] += baseY;
                         vertexZ[v] += baseZ;
                     }
                 }
-                break;
-            case SeqSkeleton.OP_ALPHA:
-                if ((labelFaces != null) && (faceAlpha != null)) {
+            }
+            case SeqSkeleton.OP_ALPHA -> {
+                if (labelFaces != null && faceAlpha != null) {
                     for (int label : labels) {
                         if (label >= labelFaces.length) {
                             continue;
@@ -1517,7 +1530,7 @@ public class Model extends Drawable {
                         }
                     }
                 }
-                break;
+            }
         }
     }
 
@@ -1541,8 +1554,8 @@ public class Model extends Drawable {
         int sin = Model.sin[angle];
         int cos = Model.cos[angle];
         for (int v = 0; v < vertexCount; v++) {
-            int tmp = ((vertexY[v] * cos) - (vertexZ[v] * sin)) >> 16;
-            vertexZ[v] = ((vertexY[v] * sin) + (vertexZ[v] * cos)) >> 16;
+            int tmp = vertexY[v] * cos - vertexZ[v] * sin >> 16;
+            vertexZ[v] = vertexY[v] * sin + vertexZ[v] * cos >> 16;
             vertexY[v] = tmp;
         }
     }
@@ -1569,7 +1582,7 @@ public class Model extends Drawable {
      * @param dst the destination texture id.
      */
     public void recolor(int src, int dst) {
-        for (int k = 0; k < faceCount; k++) {
+        for (int k = 0; k < fcnt; k++) {
             if (faceColor[k] == src) {
                 faceColor[k] = dst;
             }
@@ -1583,7 +1596,7 @@ public class Model extends Drawable {
         for (int v = 0; v < vertexCount; v++) {
             vertexZ[v] = -vertexZ[v];
         }
-        for (int f = 0; f < faceCount; f++) {
+        for (int f = 0; f < fcnt; f++) {
             int a = faceVertexA[f];
             faceVertexA[f] = faceVertexC[f];
             faceVertexC[f] = a;
@@ -1600,9 +1613,9 @@ public class Model extends Drawable {
      */
     public void scale(int x, int y, int z) {
         for (int v = 0; v < vertexCount; v++) {
-            vertexX[v] = (vertexX[v] * x) / 128;
-            vertexY[v] = (vertexY[v] * y) / 128;
-            vertexZ[v] = (vertexZ[v] * z) / 128;
+            vertexX[v] = vertexX[v] * x / 128;
+            vertexY[v] = vertexY[v] * y / 128;
+            vertexZ[v] = vertexZ[v] * z / 128;
         }
     }
 
@@ -1620,23 +1633,23 @@ public class Model extends Drawable {
      * @see #buildLighting(int, int, int, int, int)
      */
     public void build(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ, boolean applyLighting) {
-        int lightMagnitude = (int) Math.sqrt((lightSrcX * lightSrcX) + (lightSrcY * lightSrcY) + (lightSrcZ * lightSrcZ));
-        int attenuation = (lightAttenuation * lightMagnitude) >> 8;
+        int lightMagnitude = (int) Math.sqrt(lightSrcX * lightSrcX + lightSrcY * lightSrcY + lightSrcZ * lightSrcZ);
+        int attenuation = lightAttenuation * lightMagnitude >> 8;
 
         if (faceColorA == null) {
-            faceColorA = new int[faceCount];
-            faceColorB = new int[faceCount];
-            faceColorC = new int[faceCount];
+            faceColorA = new int[fcnt];
+            faceColorB = new int[fcnt];
+            faceColorC = new int[fcnt];
         }
 
-        if (super.vertexNormal == null) {
-            super.vertexNormal = new VertexNormal[vertexCount];
+        if (super.normals == null) {
+            super.normals = new VertexNormal[vertexCount];
             for (int v = 0; v < vertexCount; v++) {
-                super.vertexNormal[v] = new VertexNormal();
+                super.normals[v] = new VertexNormal();
             }
         }
 
-        for (int f = 0; f < faceCount; f++) {
+        for (int f = 0; f < fcnt; f++) {
             int a = faceVertexA[f];
             int b = faceVertexB[f];
             int c = faceVertexC[f];
@@ -1649,57 +1662,57 @@ public class Model extends Drawable {
             int dyAC = vertexY[c] - vertexY[a];
             int dzAC = vertexZ[c] - vertexZ[a];
 
-            int nx = (dyAB * dzAC) - (dyAC * dzAB);
-            int ny = (dzAB * dxAC) - (dzAC * dxAB);
-            int nz = (dxAB * dyAC) - (dxAC * dyAB);
+            int nx = dyAB * dzAC - dyAC * dzAB;
+            int ny = dzAB * dxAC - dzAC * dxAB;
+            int nz = dxAB * dyAC - dxAC * dyAB;
 
-            while ((nx > 8192) || (ny > 8192) || (nz > 8192) || (nx < -8192) || (ny < -8192) || (nz < -8192)) {
+            while (nx > 8192 || ny > 8192 || nz > 8192 || nx < -8192 || ny < -8192 || nz < -8192) {
                 nx >>= 1;
                 ny >>= 1;
                 nz >>= 1;
             }
 
-            int length = (int) Math.sqrt((nx * nx) + (ny * ny) + (nz * nz));
+            int length = (int) Math.sqrt(nx * nx + ny * ny + nz * nz);
 
             if (length <= 0) {
                 length = 1;
             }
 
             // normalize
-            nx = (nx * 256) / length;
-            ny = (ny * 256) / length;
-            nz = (nz * 256) / length;
+            nx = nx * 256 / length;
+            ny = ny * 256 / length;
+            nz = nz * 256 / length;
 
-            if ((faceType == null) || ((faceType[f] & 1) == 0)) {
-                VertexNormal n = super.vertexNormal[a];
+            if (ftype == null || (ftype[f] & 1) == 0) {
+                VertexNormal n = super.normals[a];
                 n.x += nx;
                 n.y += ny;
                 n.z += nz;
                 n.w++;
-                n = super.vertexNormal[b];
+                n = super.normals[b];
                 n.x += nx;
                 n.y += ny;
                 n.z += nz;
                 n.w++;
-                n = super.vertexNormal[c];
+                n = super.normals[c];
                 n.x += nx;
                 n.y += ny;
                 n.z += nz;
                 n.w++;
             } else {
-                int lightness = lightAmbient + (((lightSrcX * nx) + (lightSrcY * ny) + (lightSrcZ * nz)) / (attenuation + (attenuation / 2)));
-                faceColorA[f] = mulColorLightness(faceColor[f], lightness, faceType[f]);
+                int lightness = lightAmbient + (lightSrcX * nx + lightSrcY * ny + lightSrcZ * nz) / (attenuation + attenuation / 2);
+                faceColorA[f] = mulColorLightness(faceColor[f], lightness, ftype[f]);
             }
         }
 
         if (applyLighting) {
             buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
         } else {
-            vertexNormalOriginal = new VertexNormal[vertexCount];
+            normals_copy = new VertexNormal[vertexCount];
 
             for (int v = 0; v < vertexCount; v++) {
-                VertexNormal normal = super.vertexNormal[v];
-                VertexNormal copy = vertexNormalOriginal[v] = new VertexNormal();
+                VertexNormal normal = super.normals[v];
+                VertexNormal copy = normals_copy[v] = new VertexNormal();
                 copy.x = normal.x;
                 copy.y = normal.y;
                 copy.z = normal.z;
@@ -1725,51 +1738,51 @@ public class Model extends Drawable {
      * @param lightSrcZ        the light source z.
      */
     public void buildLighting(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ) {
-        for (int f = 0; f < faceCount; f++) {
+        for (int f = 0; f < fcnt; f++) {
             int a = faceVertexA[f];
             int b = faceVertexB[f];
             int c = faceVertexC[f];
 
-            if (faceType == null) {
+            if (ftype == null) {
                 int color = faceColor[f];
 
-                VertexNormal n = super.vertexNormal[a];
-                int lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                VertexNormal n = super.normals[a];
+                int lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorA[f] = mulColorLightness(color, lightness, 0);
 
-                n = super.vertexNormal[b];
-                lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                n = super.normals[b];
+                lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorB[f] = mulColorLightness(color, lightness, 0);
 
-                n = super.vertexNormal[c];
-                lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                n = super.normals[c];
+                lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorC[f] = mulColorLightness(color, lightness, 0);
-            } else if ((faceType[f] & 1) == 0) {
+            } else if ((ftype[f] & 1) == 0) {
                 int color = faceColor[f];
-                int info = faceType[f];
+                int info = ftype[f];
 
-                VertexNormal n = super.vertexNormal[a];
-                int lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                VertexNormal n = super.normals[a];
+                int lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorA[f] = mulColorLightness(color, lightness, info);
 
-                n = super.vertexNormal[b];
-                lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                n = super.normals[b];
+                lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorB[f] = mulColorLightness(color, lightness, info);
 
-                n = super.vertexNormal[c];
-                lightness = lightAmbient + (((lightSrcX * n.x) + (lightSrcY * n.y) + (lightSrcZ * n.z)) / (lightAttenuation * n.w));
+                n = super.normals[c];
+                lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorC[f] = mulColorLightness(color, lightness, info);
             }
         }
 
-        super.vertexNormal = null;
-        vertexNormalOriginal = null;
-        vertexLabel = null;
+        super.normals = null;
+        normals_copy = null;
+        labels = null;
         faceLabel = null;
 
-        if (faceType != null) {
-            for (int f = 0; f < faceCount; f++) {
-                if ((faceType[f] & 2) == 2) {
+        if (ftype != null) {
+            for (int f = 0; f < fcnt; f++) {
+                if ((ftype[f] & 2) == 2) {
                     return;
                 }
             }
@@ -1790,7 +1803,7 @@ public class Model extends Drawable {
      * @param eyeZ     the eye z.
      */
     public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int eyeX, int eyeY, int eyeZ) {
-        int centerX = Draw3D.centerX;
+       int centerX = Draw3D.centerX;
         int centerY = Draw3D.centerY;
         int sinPitch = sin[pitch];
         int cosPitch = cos[pitch];
@@ -1800,7 +1813,7 @@ public class Model extends Drawable {
         int cosRoll = cos[roll];
         int sinEyePitch = sin[eyePitch];
         int cosEyePitch = cos[eyePitch];
-        int midZ = ((eyeY * sinEyePitch) + (eyeZ * cosEyePitch)) >> 16;
+        int midZ = eyeY * sinEyePitch + eyeZ * cosEyePitch >> 16;
 
         for (int v = 0; v < vertexCount; v++) {
             int x = vertexX[v];
@@ -1810,20 +1823,20 @@ public class Model extends Drawable {
             // Local Space -> Model Space
 
             if (roll != 0) {
-                int x_ = ((y * sinRoll) + (x * cosRoll)) >> 16;
-                y = ((y * cosRoll) - (x * sinRoll)) >> 16;
+                int x_ = y * sinRoll + x * cosRoll >> 16;
+                y = y * cosRoll - x * sinRoll >> 16;
                 x = x_;
             }
 
             if (pitch != 0) {
-                int y_ = ((y * cosPitch) - (z * sinPitch)) >> 16;
-                z = ((y * sinPitch) + (z * cosPitch)) >> 16;
+                int y_ = y * cosPitch - z * sinPitch >> 16;
+                z = y * sinPitch + z * cosPitch >> 16;
                 y = y_;
             }
 
             if (yaw != 0) {
-                int x_ = ((z * sinYaw) + (x * cosYaw)) >> 16;
-                z = ((z * cosYaw) - (x * sinYaw)) >> 16;
+                int x_ = z * sinYaw + x * cosYaw >> 16;
+                z = z * cosYaw - x * sinYaw >> 16;
                 x = x_;
             }
 
@@ -1833,15 +1846,15 @@ public class Model extends Drawable {
             y += eyeY;
             z += eyeZ;
 
-            int y_ = ((y * cosEyePitch) - (z * sinEyePitch)) >> 16;
-            z = ((y * sinEyePitch) + (z * cosEyePitch)) >> 16;
+            int y_ = y * cosEyePitch - z * sinEyePitch >> 16;
+            z = y * sinEyePitch + z * cosEyePitch >> 16;
             y = y_;
 
             // View Space -> Screen Space
 
-            projectedX[v] = centerX + ((x << 9) / z);
-            projectedY[v] = centerY + ((y << 9) / z);
-            projectedZ[v] = z - midZ;
+            px[v] = centerX + (x << 9) / z;
+            py[v] = centerY + (y << 9) / z;
+            pz[v] = z - midZ;
 
             // Store viewspace coordinates to be transformed into screen space later (textured or clipped triangles)
 
@@ -1875,76 +1888,76 @@ public class Model extends Drawable {
         // Relative coordinates are ScenePos - EyePos
 
         // z' is our relative z value rotated by eye yaw.
-        int zPrime = ((relativeZ * cosEyeYaw) - (relativeX * sinEyeYaw)) >> 16;
+        int zPrime = relativeZ * cosEyeYaw - relativeX * sinEyeYaw >> 16;
 
         // midZ is our relative z value rotated by eye yaw and pitch. It's the distance from the camera from the center
         // of our model.
-        int midZ = ((relativeY * sinEyePitch) + (zPrime * cosEyePitch)) >> 16;
+        int midZ = relativeY * sinEyePitch + zPrime * cosEyePitch >> 16;
 
         // Our pitch is clamped between 128 and 384 (22.5 degrees and 67.5 degrees)
         // We know this will be positive and within 92->38% its original value.
-        int radiusCosEyePitch = (radius * cosEyePitch) >> 16;
+        int radiusCosEyePitch = radius * cosEyePitch >> 16;
 
         // +Z goes forward, which makes this value supposedly the farthest Z the model should be away from the camera.
         int maxZ = midZ + radiusCosEyePitch;
 
         // early z testing
-        if ((maxZ <= 50) || (midZ >= 3500)) {
+        if (maxZ <= 50 || midZ >= 3500) {
             return;
         }
 
         // calculate x'
-        int midX = ((relativeZ * sinEyeYaw) + (relativeX * cosEyeYaw)) >> 16;
+        int midX = relativeZ * sinEyeYaw + relativeX * cosEyeYaw >> 16;
 
         // calculate left bound
-        int leftX = (midX - radius) << 9;
+        int leftX = midX - radius << 9;
 
         // early fail
-        if ((leftX / maxZ) >= Draw2D.centerX) {
+        if (leftX / maxZ >= Draw2D.centerX) {
             return;
         }
 
         // calculate right bound
-        int rightX = (midX + radius) << 9;
+        int rightX = midX + radius << 9;
 
         // early fail
-        if ((rightX / maxZ) <= -Draw2D.centerX) {
+        if (rightX / maxZ <= -Draw2D.centerX) {
             return;
         }
 
         // midY is our relative y value rotated by eye pitch
-        int midY = ((relativeY * cosEyePitch) - (zPrime * sinEyePitch)) >> 16;
+        int midY = relativeY * cosEyePitch - zPrime * sinEyePitch >> 16;
 
         // Our pitch is clamped between 128 and 384 (22.5 degrees and 67.5 degrees)
         // We know this will be positive and within 38->92% its original value.
-        int radiusSinEyePitch = (radius * sinEyePitch) >> 16;
+        int radiusSinEyePitch = radius * sinEyePitch >> 16;
 
         // calculate bottom bound
-        int bottomY = (midY + radiusSinEyePitch) << 9;
+        int bottomY = midY + radiusSinEyePitch << 9;
 
         // early fail
-        if ((bottomY / maxZ) <= -Draw2D.centerY) {
+        if (bottomY / maxZ <= -Draw2D.centerY) {
             return;
         }
 
         // y' = (radius * sin(eyePitch)) + (minY * cos(eyePitch))
-        int yPrime = radiusSinEyePitch + ((super.minY * cosEyePitch) >> 16);
+        int yPrime = radiusSinEyePitch + (super.minY * cosEyePitch >> 16);
 
         // calculate top boundary
-        int topY = (midY - yPrime) << 9;
+        int topY = midY - yPrime << 9;
 
         // early fail
-        if ((topY / maxZ) >= Draw2D.centerY) {
+        if (topY / maxZ >= Draw2D.centerY) {
             return;
         }
 
         // (minY * sin(eyePitch)) + (radius * cos(eyePitch))
-        int radiusZ = ((super.minY * sinEyePitch) >> 16) + radiusCosEyePitch;
+        int radiusZ = (super.minY * sinEyePitch >> 16) + radiusCosEyePitch;
 
-        boolean clipped = (midZ - radiusZ) <= 50;
+        boolean clipped = midZ - radiusZ <= 50;
         boolean picking = false;
 
-        if ((bitset > 0) && Model.pick) {
+        if (bitset > 0 && Model.pick) {
             int z = midZ - radiusCosEyePitch;
 
             if (z <= 50) {
@@ -1970,7 +1983,7 @@ public class Model extends Drawable {
             int mouseX = Model.mouseX - Draw3D.centerX;
             int mouseY = Model.mouseY - Draw3D.centerY;
 
-            if ((mouseX > leftX) && (mouseX < rightX) && (mouseY > topY) && (mouseY < bottomY)) {
+            if (mouseX > leftX && mouseX < rightX && mouseY > topY && mouseY < bottomY) {
                 if (pickable) {
                     pickedBitsets[pickedCount++] = bitset;
                 } else {
@@ -1997,8 +2010,8 @@ public class Model extends Drawable {
             // Local Space -> Model Space
 
             if (yaw != 0) {
-                int x_ = ((z * sinYaw) + (x * cosYaw)) >> 16;
-                z = ((z * cosYaw) - (x * sinYaw)) >> 16;
+                int x_ = z * sinYaw + x * cosYaw >> 16;
+                z = z * cosYaw - x * sinYaw >> 16;
                 x = x_;
             }
 
@@ -2009,26 +2022,26 @@ public class Model extends Drawable {
             z += relativeZ;
 
             // Rotate on Y axis (Yaw)
-            int tmp = ((z * sinEyeYaw) + (x * cosEyeYaw)) >> 16;
-            z = ((z * cosEyeYaw) - (x * sinEyeYaw)) >> 16;
+            int tmp = z * sinEyeYaw + x * cosEyeYaw >> 16;
+            z = z * cosEyeYaw - x * sinEyeYaw >> 16;
             x = tmp;
 
             // Rotate on X axis (Pitch)
-            tmp = ((y * cosEyePitch) - (z * sinEyePitch)) >> 16;
-            z = ((y * sinEyePitch) + (z * cosEyePitch)) >> 16;
+            tmp = y * cosEyePitch - z * sinEyePitch >> 16;
+            z = y * sinEyePitch + z * cosEyePitch >> 16;
             y = tmp;
 
             if (z >= 50) {
-                projectedX[v] = centerX + ((x << 9) / z);
-                projectedY[v] = centerY + ((y << 9) / z);
+                px[v] = centerX + (x << 9) / z;
+                py[v] = centerY + (y << 9) / z;
             } else {
-                projectedX[v] = -5000; // used in drawTriangle to denote a near-clipped triangle.
+                px[v] = -5000; // used in drawTriangle to denote a near-clipped triangle.
                 clipped = true;
             }
 
-            projectedZ[v] = z - midZ;
+            pz[v] = z - midZ;
 
-            if (clipped || (texturedFaceCount > 0)) {
+            if (clipped || texturedFaceCount > 0) {
                 vertexViewSpaceX[v] = x;
                 vertexViewSpaceY[v] = y;
                 vertexViewSpaceZ[v] = z;
@@ -2043,133 +2056,134 @@ public class Model extends Drawable {
     /**
      * Draws the {@link Model} with the provided parameters. This method performs depth and priority sorting.
      *
-     * @param clipped whether to check near plane clipping.
+     * @param near_clipped whether to check near plane clipping.
      * @param picking <code>true</code> to enable picking.
      * @param bitset  the bitset. Used with <code>pick</code> set to true.
      */
-    public void draw(boolean clipped, boolean picking, int bitset) {
-        for (int depth = 0; depth < maxDepth; depth++) {
-            tmpDepthFaceCount[depth] = 0;
+    public void draw(boolean near_clipped, boolean picking, int bitset) {
+        for (int depth = 0; depth < max_depth; depth++) {
+            depth_fcnt[depth] = 0;
         }
 
-        for (int f = 0; f < faceCount; f++) {
-            if ((faceType != null) && (faceType[f] == -1)) {
+        for (int f = 0; f < fcnt; f++) {
+            if (ftype != null && ftype[f] == -1) {
                 continue;
             }
 
             int a = faceVertexA[f];
             int b = faceVertexB[f];
             int c = faceVertexC[f];
-            int xA = projectedX[a];
-            int xB = projectedX[b];
-            int xC = projectedX[c];
 
-            if (clipped && ((xA == -5000) || (xB == -5000) || (xC == -5000))) {
+            int ax = px[a];
+            int bx = px[b];
+            int cx = px[c];
+
+            if (near_clipped && (ax == -5000 || bx == -5000 || cx == -5000)) {
                 faceNearClipped[f] = true;
-                int depthAverage = ((projectedZ[a] + projectedZ[b] + projectedZ[c]) / 3) + minDepth;
-                tmpDepthFaces[depthAverage][tmpDepthFaceCount[depthAverage]++] = f;
+                int depth = min_depth + (pz[a] + pz[b] + pz[c]) / 3;
+                depth_faces[depth][depth_fcnt[depth]++] = f;
             } else {
-                if (picking && pointWithinTriangle(mouseX, mouseY, projectedY[a], projectedY[b], projectedY[c], xA, xB, xC)) {
+                if (picking && pick_triangle(mouseX, mouseY, py[a], py[b], py[c], ax, bx, cx)) {
                     pickedBitsets[pickedCount++] = bitset;
                     picking = false;
                 }
 
                 // Back-face culling
-                int dxAB = xA - xB;
-                int dyAB = projectedY[a] - projectedY[b];
-                int dxCB = xC - xB;
-                int dyCB = projectedY[c] - projectedY[b];
+                int ab_dx = ax - bx;
+                int ab_dy = py[a] - py[b];
+                int cb_dx = cx - bx;
+                int cb_dy = py[c] - py[b];
 
-                if (((dxAB * dyCB) - (dyAB * dxCB)) <= 0) {
+                if (ab_dx * cb_dy - ab_dy * cb_dx <= 0) {
                     continue;
                 }
 
                 faceNearClipped[f] = false;
-                faceClippedX[f] = (xA < 0) || (xB < 0) || (xC < 0) || (xA > Draw2D.boundX) || (xB > Draw2D.boundX) || (xC > Draw2D.boundX);
+                faceClippedX[f] = ax < 0 || bx < 0 || cx < 0 || ax > Draw2D.boundX || bx > Draw2D.boundX || cx > Draw2D.boundX;
 
-                int depthAverage = ((projectedZ[a] + projectedZ[b] + projectedZ[c]) / 3) + minDepth;
-                tmpDepthFaces[depthAverage][tmpDepthFaceCount[depthAverage]++] = f;
+                int depthAverage = min_depth + (pz[a] + pz[b] + pz[c]) / 3;
+                depth_faces[depthAverage][depth_fcnt[depthAverage]++] = f;
             }
         }
 
-        if (facePriority == null) {
-            for (int depth = maxDepth - 1; depth >= 0; depth--) {
-                int count = tmpDepthFaceCount[depth];
+        if (flayer == null) {
+            for (int depth = max_depth - 1; depth >= 0; depth--) {
+                int count = depth_fcnt[depth];
                 if (count > 0) {
-                    int[] faces = tmpDepthFaces[depth];
+                    int[] faces = depth_faces[depth];
                     for (int f = 0; f < count; f++) {
-                        drawFace(faces[f]);
+                        draw_face(faces[f]);
                     }
                 }
             }
             return;
         }
 
-        for (int priority = 0; priority < 12; priority++) {
-            Model.tmpPriorityFaceCount[priority] = 0;
-            tmpPriorityDepthSum[priority] = 0;
+        for (int layer = 0; layer < 12; layer++) {
+            Model.layer_fcnt[layer] = 0;
+            layer_accumulated_depth[layer] = 0;
         }
 
-        for (int depth = maxDepth - 1; depth >= 0; depth--) {
-            int faceCount = tmpDepthFaceCount[depth];
+        for (int depth = max_depth - 1; depth >= 0; depth--) {
+            int depth_fcnt = Model.depth_fcnt[depth];
 
-            if (faceCount <= 0) {
+            if (depth_fcnt <= 0) {
                 continue;
             }
 
-            int[] faces = tmpDepthFaces[depth];
+            for (int f = 0; f < depth_fcnt; f++) {
+                int depth_face = depth_faces[depth][f];
+                int layer = flayer[depth_face];
+                int layer_fid = Model.layer_fcnt[layer];
+                Model.layer_faces[layer][layer_fid] = depth_face;
+                Model.layer_fcnt[layer]++;
 
-            for (int i = 0; i < faceCount; i++) {
-                int face = faces[i];
-                int priority = facePriority[face];
-                int count = Model.tmpPriorityFaceCount[priority]++;
-                Model.tmpPriorityFaces[priority][count] = face;
-
-                if (priority < 10) {
-                    tmpPriorityDepthSum[priority] += depth;
-                } else if (priority == 10) {
-                    tmpPriority10FaceDepth[count] = depth;
+                if (layer < 10) {
+                    layer_accumulated_depth[layer] += depth;
+                } else if (layer == 10) {
+                    layer_10_face_depth[layer_fid] = depth;
                 } else {
-                    tmpPriority11FaceDepth[count] = depth;
+                    layer_11_face_depth[layer_fid] = depth;
                 }
             }
         }
 
         // These are as the name implies, the average depth between two priorities.
-        int averagePriorityDepth1_2 = 0;
-        int averagePriorityDepth3_4 = 0;
-        int averagePriorityDepth6_8 = 0;
+        int layer1_2_average_depth = 0;
+        int layer3_4_average_depth = 0;
+        int layer6_8_average_depth = 0;
 
         // Don't think too hard about it. It's just a way of calculating averages with integers but with two sums averaged together.
 
-        if ((Model.tmpPriorityFaceCount[1] > 0) || (Model.tmpPriorityFaceCount[2] > 0)) {
-            averagePriorityDepth1_2 = (tmpPriorityDepthSum[1] + tmpPriorityDepthSum[2]) / (Model.tmpPriorityFaceCount[1] + Model.tmpPriorityFaceCount[2]);
+        if (Model.layer_fcnt[1] > 0 || Model.layer_fcnt[2] > 0) {
+            layer1_2_average_depth = (layer_accumulated_depth[1] + layer_accumulated_depth[2]) / (Model.layer_fcnt[1] + Model.layer_fcnt[2]);
         }
 
-        if ((Model.tmpPriorityFaceCount[3] > 0) || (Model.tmpPriorityFaceCount[4] > 0)) {
-            averagePriorityDepth3_4 = (tmpPriorityDepthSum[3] + tmpPriorityDepthSum[4]) / (Model.tmpPriorityFaceCount[3] + Model.tmpPriorityFaceCount[4]);
+        if (Model.layer_fcnt[3] > 0 || Model.layer_fcnt[4] > 0) {
+            layer3_4_average_depth = (layer_accumulated_depth[3] + layer_accumulated_depth[4]) / (Model.layer_fcnt[3] + Model.layer_fcnt[4]);
         }
 
-        if ((Model.tmpPriorityFaceCount[6] > 0) || (Model.tmpPriorityFaceCount[8] > 0)) {
-            averagePriorityDepth6_8 = (tmpPriorityDepthSum[6] + tmpPriorityDepthSum[8]) / (Model.tmpPriorityFaceCount[6] + Model.tmpPriorityFaceCount[8]);
+        if (Model.layer_fcnt[6] > 0 || Model.layer_fcnt[8] > 0) {
+            layer6_8_average_depth = (layer_accumulated_depth[6] + layer_accumulated_depth[8]) / (Model.layer_fcnt[6] + Model.layer_fcnt[8]);
         }
 
-        int priorityFace = 0;
-        int priorityFaceCount = Model.tmpPriorityFaceCount[10];
-        int[] priorityFaces = Model.tmpPriorityFaces[10];
-        int[] priorityFaceDepths = tmpPriority10FaceDepth;
+        int face_id = 0;
+        int face_count = Model.layer_fcnt[10];
+        int[] faces = Model.layer_faces[10];
+        int[] face_depths = layer_10_face_depth;
 
-        if (priorityFace == priorityFaceCount) {
-            priorityFaceCount = Model.tmpPriorityFaceCount[11];
-            priorityFaces = Model.tmpPriorityFaces[11];
-            priorityFaceDepths = tmpPriority11FaceDepth;
+        if (face_id == face_count) {
+            face_count = Model.layer_fcnt[11];
+            faces = Model.layer_faces[11];
+            face_depths = layer_11_face_depth;
         }
 
-        int priorityDepth;
-        if (priorityFace < priorityFaceCount) {
-            priorityDepth = priorityFaceDepths[priorityFace];
+        int layer_depth;
+
+        if (face_id < face_count) {
+            layer_depth = face_depths[face_id];
         } else {
-            priorityDepth = -1000;
+            layer_depth = -1000;
         }
 
         // The code below essentially gives priorities 10 and 11 a chance to draw during priorities 0, 3, and 5 as long
@@ -2178,92 +2192,97 @@ public class Model extends Drawable {
 
         // If they didn't do this then higher priority triangles would always draw on top, which look weird.
 
-        for (int priority = 0; priority < 10; priority++) {
-            while ((priority == 0) && (priorityDepth > averagePriorityDepth1_2)) {
-                drawFace(priorityFaces[priorityFace++]);
+        for (int layer = 0; layer < 10; layer++) {
+            while (layer == 0 && layer_depth > layer1_2_average_depth) {
+                draw_face(faces[face_id]);
+                face_id++;
 
-                if ((priorityFace == priorityFaceCount) && (priorityFaces != Model.tmpPriorityFaces[11])) {
-                    priorityFace = 0;
-                    priorityFaceCount = Model.tmpPriorityFaceCount[11];
-                    priorityFaces = Model.tmpPriorityFaces[11];
-                    priorityFaceDepths = tmpPriority11FaceDepth;
+                if (face_id == face_count && faces != Model.layer_faces[11]) {
+                    face_id = 0;
+                    face_count = Model.layer_fcnt[11];
+                    faces = Model.layer_faces[11];
+                    face_depths = layer_11_face_depth;
                 }
 
-                if (priorityFace < priorityFaceCount) {
-                    priorityDepth = priorityFaceDepths[priorityFace];
+                if (face_id < face_count) {
+                    layer_depth = face_depths[face_id];
                 } else {
-                    priorityDepth = -1000;
+                    layer_depth = -1000;
                 }
             }
 
-            while ((priority == 3) && (priorityDepth > averagePriorityDepth3_4)) {
-                drawFace(priorityFaces[priorityFace++]);
+            while (layer == 3 && layer_depth > layer3_4_average_depth) {
+                draw_face(faces[face_id++]);
 
-                if ((priorityFace == priorityFaceCount) && (priorityFaces != Model.tmpPriorityFaces[11])) {
-                    priorityFace = 0;
-                    priorityFaceCount = Model.tmpPriorityFaceCount[11];
-                    priorityFaces = Model.tmpPriorityFaces[11];
-                    priorityFaceDepths = tmpPriority11FaceDepth;
+                if (face_id == face_count && faces != Model.layer_faces[11]) {
+                    face_id = 0;
+                    face_count = Model.layer_fcnt[11];
+                    faces = Model.layer_faces[11];
+                    face_depths = layer_11_face_depth;
                 }
 
-                if (priorityFace < priorityFaceCount) {
-                    priorityDepth = priorityFaceDepths[priorityFace];
+                if (face_id < face_count) {
+                    layer_depth = face_depths[face_id];
                 } else {
-                    priorityDepth = -1000;
+                    layer_depth = -1000;
                 }
             }
 
-            while ((priority == 5) && (priorityDepth > averagePriorityDepth6_8)) {
-                drawFace(priorityFaces[priorityFace++]);
+            while (layer == 5 && layer_depth > layer6_8_average_depth) {
+                draw_face(faces[face_id++]);
 
-                if ((priorityFace == priorityFaceCount) && (priorityFaces != Model.tmpPriorityFaces[11])) {
-                    priorityFace = 0;
-                    priorityFaceCount = Model.tmpPriorityFaceCount[11];
-                    priorityFaces = Model.tmpPriorityFaces[11];
-                    priorityFaceDepths = tmpPriority11FaceDepth;
+                if (face_id == face_count && faces != Model.layer_faces[11]) {
+                    face_id = 0;
+                    face_count = Model.layer_fcnt[11];
+                    faces = Model.layer_faces[11];
+                    face_depths = layer_11_face_depth;
                 }
 
-                if (priorityFace < priorityFaceCount) {
-                    priorityDepth = priorityFaceDepths[priorityFace];
+                if (face_id < face_count) {
+                    layer_depth = face_depths[face_id];
                 } else {
-                    priorityDepth = -1000;
+                    layer_depth = -1000;
                 }
             }
 
-            int count = Model.tmpPriorityFaceCount[priority];
-            int[] faces = Model.tmpPriorityFaces[priority];
+            int _face_count = Model.layer_fcnt[layer];
+            int[] _faces = Model.layer_faces[layer];
 
-            for (int i = 0; i < count; i++) {
-                drawFace(faces[i]);
+            for (int i = 0; i < _face_count; i++) {
+                draw_face(_faces[i]);
             }
         }
 
         // finish off remaining faces (priorities 10 and 11)
 
-        while (priorityDepth != -1000) {
-            drawFace(priorityFaces[priorityFace++]);
+        while (layer_depth != -1000) {
+            draw_face(faces[face_id++]);
 
-            if ((priorityFace == priorityFaceCount) && (priorityFaces != Model.tmpPriorityFaces[11])) {
-                priorityFace = 0;
-                priorityFaces = Model.tmpPriorityFaces[11];
-                priorityFaceCount = Model.tmpPriorityFaceCount[11];
-                priorityFaceDepths = tmpPriority11FaceDepth;
+            if (face_id == face_count && faces != Model.layer_faces[11]) {
+                face_id = 0;
+                faces = Model.layer_faces[11];
+                face_count = Model.layer_fcnt[11];
+                face_depths = layer_11_face_depth;
             }
 
-            if (priorityFace < priorityFaceCount) {
-                priorityDepth = priorityFaceDepths[priorityFace];
+            if (face_id < face_count) {
+                layer_depth = face_depths[face_id];
             } else {
-                priorityDepth = -1000;
+                layer_depth = -1000;
             }
         }
     }
+
+    public static int face_counter = 0;
 
     /**
      * Draws the provided face id.
      *
      * @param face the face id.
      */
-    public void drawFace(int face) {
+    public void draw_face(int face) {
+        face_counter++;
+
         if (faceNearClipped[face]) {
             drawNearClippedFace(face);
             return;
@@ -2282,28 +2301,28 @@ public class Model extends Drawable {
 
         int type;
 
-        if (faceType == null) {
+        if (ftype == null) {
             type = 0;
         } else {
-            type = faceType[face] & 0b11;
+            type = ftype[face] & 0b11;
         }
 
         if (type == 0) {
-            Draw3D.fillGouraudTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorB[face], faceColorC[face]);
+            Draw3D.fillGouraudTriangle(py[a], py[b], py[c], px[a], px[b], px[c], faceColorA[face], faceColorB[face], faceColorC[face]);
         } else if (type == 1) {
-            Draw3D.fillTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], palette[faceColorA[face]]);
+            Draw3D.fillTriangle(py[a], py[b], py[c], px[a], px[b], px[c], palette[faceColorA[face]]);
         } else if (type == 2) {
-            int texturedFace = faceType[face] >> 2;
+            int texturedFace = ftype[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
-            Draw3D.fillTexturedTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
+            Draw3D.fillTexturedTriangle(py[a], py[b], py[c], px[a], px[b], px[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
         } else {
-            int texturedFace = faceType[face] >> 2;
+            int texturedFace = ftype[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
-            Draw3D.fillTexturedTriangle(projectedY[a], projectedY[b], projectedY[c], projectedX[a], projectedX[b], projectedX[c], faceColorA[face], faceColorA[face], faceColorA[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
+            Draw3D.fillTexturedTriangle(py[a], py[b], py[c], px[a], px[b], px[c], faceColorA[face], faceColorA[face], faceColorA[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
         }
     }
 
@@ -2326,8 +2345,8 @@ public class Model extends Drawable {
         int zC = vertexViewSpaceZ[c];
 
         if (zA >= 50) {
-            clippedX[elements] = projectedX[a];
-            clippedY[elements] = projectedY[a];
+            clippedX[elements] = px[a];
+            clippedY[elements] = py[a];
             clippedColor[elements++] = faceColorA[face];
         } else {
             int xA = vertexViewSpaceX[a];
@@ -2336,22 +2355,22 @@ public class Model extends Drawable {
 
             if (zC >= 50) {
                 int scalar = (50 - zA) * reciprical16[zC - zA];
-                clippedX[elements] = centerX + (((xA + (((vertexViewSpaceX[c] - xA) * scalar) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yA + (((vertexViewSpaceY[c] - yA) * scalar) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorA + (((faceColorC[face] - colorA) * scalar) >> 16);
+                clippedX[elements] = centerX + (xA + ((vertexViewSpaceX[c] - xA) * scalar >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yA + ((vertexViewSpaceY[c] - yA) * scalar >> 16) << 9) / 50;
+                clippedColor[elements++] = colorA + ((faceColorC[face] - colorA) * scalar >> 16);
             }
 
             if (zB >= 50) {
                 int scalar = (50 - zA) * reciprical16[zB - zA];
-                clippedX[elements] = centerX + (((xA + (((vertexViewSpaceX[b] - xA) * scalar) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yA + (((vertexViewSpaceY[b] - yA) * scalar) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorA + (((faceColorB[face] - colorA) * scalar) >> 16);
+                clippedX[elements] = centerX + (xA + ((vertexViewSpaceX[b] - xA) * scalar >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yA + ((vertexViewSpaceY[b] - yA) * scalar >> 16) << 9) / 50;
+                clippedColor[elements++] = colorA + ((faceColorB[face] - colorA) * scalar >> 16);
             }
         }
 
         if (zB >= 50) {
-            clippedX[elements] = projectedX[b];
-            clippedY[elements] = projectedY[b];
+            clippedX[elements] = px[b];
+            clippedY[elements] = py[b];
             clippedColor[elements++] = faceColorB[face];
         } else {
             int xB = vertexViewSpaceX[b];
@@ -2360,22 +2379,22 @@ public class Model extends Drawable {
 
             if (zA >= 50) {
                 int scalar = (50 - zB) * reciprical16[zA - zB];
-                clippedX[elements] = centerX + (((xB + (((vertexViewSpaceX[a] - xB) * scalar) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yB + (((vertexViewSpaceY[a] - yB) * scalar) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorB + (((faceColorA[face] - colorB) * scalar) >> 16);
+                clippedX[elements] = centerX + (xB + ((vertexViewSpaceX[a] - xB) * scalar >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yB + ((vertexViewSpaceY[a] - yB) * scalar >> 16) << 9) / 50;
+                clippedColor[elements++] = colorB + ((faceColorA[face] - colorB) * scalar >> 16);
             }
 
             if (zC >= 50) {
                 int scalar = (50 - zB) * reciprical16[zC - zB];
-                clippedX[elements] = centerX + (((xB + (((vertexViewSpaceX[c] - xB) * scalar) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yB + (((vertexViewSpaceY[c] - yB) * scalar) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorB + (((faceColorC[face] - colorB) * scalar) >> 16);
+                clippedX[elements] = centerX + (xB + ((vertexViewSpaceX[c] - xB) * scalar >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yB + ((vertexViewSpaceY[c] - yB) * scalar >> 16) << 9) / 50;
+                clippedColor[elements++] = colorB + ((faceColorC[face] - colorB) * scalar >> 16);
             }
         }
 
         if (zC >= 50) {
-            clippedX[elements] = projectedX[c];
-            clippedY[elements] = projectedY[c];
+            clippedX[elements] = px[c];
+            clippedY[elements] = py[c];
             clippedColor[elements++] = faceColorC[face];
         } else {
             int xC = vertexViewSpaceX[c];
@@ -2384,16 +2403,16 @@ public class Model extends Drawable {
 
             if (zB >= 50) {
                 int k6 = (50 - zC) * reciprical16[zB - zC];
-                clippedX[elements] = centerX + (((xC + (((vertexViewSpaceX[b] - xC) * k6) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yC + (((vertexViewSpaceY[b] - yC) * k6) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorC + (((faceColorB[face] - colorC) * k6) >> 16);
+                clippedX[elements] = centerX + (xC + ((vertexViewSpaceX[b] - xC) * k6 >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yC + ((vertexViewSpaceY[b] - yC) * k6 >> 16) << 9) / 50;
+                clippedColor[elements++] = colorC + ((faceColorB[face] - colorC) * k6 >> 16);
             }
 
             if (zA >= 50) {
                 int l6 = (50 - zC) * reciprical16[zA - zC];
-                clippedX[elements] = centerX + (((xC + (((vertexViewSpaceX[a] - xC) * l6) >> 16)) << 9) / 50);
-                clippedY[elements] = centerY + (((yC + (((vertexViewSpaceY[a] - yC) * l6) >> 16)) << 9) / 50);
-                clippedColor[elements++] = colorC + (((faceColorA[face] - colorC) * l6) >> 16);
+                clippedX[elements] = centerX + (xC + ((vertexViewSpaceX[a] - xC) * l6 >> 16) << 9) / 50;
+                clippedY[elements] = centerY + (yC + ((vertexViewSpaceY[a] - yC) * l6 >> 16) << 9) / 50;
+                clippedColor[elements++] = colorC + ((faceColorA[face] - colorC) * l6 >> 16);
             }
         }
 
@@ -2405,7 +2424,7 @@ public class Model extends Drawable {
         int y2 = clippedY[2];
 
         // Back-face culling
-        if ((((x0 - x1) * (y2 - y1)) - ((y0 - y1) * (x2 - x1))) <= 0) {
+        if ((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1) <= 0) {
             return;
         }
 
@@ -2414,16 +2433,16 @@ public class Model extends Drawable {
         // It's possible for a single triangle to be clipped into two separate triangles.
 
         if (elements == 3) {
-            if ((x0 < 0) || (x1 < 0) || (x2 < 0) || (x0 > Draw2D.boundX) || (x1 > Draw2D.boundX) || (x2 > Draw2D.boundX)) {
+            if (x0 < 0 || x1 < 0 || x2 < 0 || x0 > Draw2D.boundX || x1 > Draw2D.boundX || x2 > Draw2D.boundX) {
                 Draw3D.clipX = true;
             }
 
             int type;
 
-            if (faceType == null) {
+            if (ftype == null) {
                 type = 0;
             } else {
-                type = faceType[face] & 3;
+                type = ftype[face] & 3;
             }
 
             if (type == 0) {
@@ -2431,29 +2450,29 @@ public class Model extends Drawable {
             } else if (type == 1) {
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, palette[faceColorA[face]]);
             } else if (type == 2) {
-                int texturedFace = faceType[face] >> 2;
+                int texturedFace = ftype[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
                 Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
             } else if (type == 3) {
-                int texturedFace = faceType[face] >> 2;
+                int texturedFace = ftype[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
                 Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, faceColorA[face], faceColorA[face], faceColorA[face], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
             }
         } else if (elements == 4) {
-            if ((x0 < 0) || (x1 < 0) || (x2 < 0) || (x0 > Draw2D.boundX) || (x1 > Draw2D.boundX) || (x2 > Draw2D.boundX) || (clippedX[3] < 0) || (clippedX[3] > Draw2D.boundX)) {
+            if (x0 < 0 || x1 < 0 || x2 < 0 || x0 > Draw2D.boundX || x1 > Draw2D.boundX || x2 > Draw2D.boundX || clippedX[3] < 0 || clippedX[3] > Draw2D.boundX) {
                 Draw3D.clipX = true;
             }
 
             int type;
 
-            if (faceType == null) {
+            if (ftype == null) {
                 type = 0;
             } else {
-                type = faceType[face] & 3;
+                type = ftype[face] & 3;
             }
 
             if (type == 0) {
@@ -2464,14 +2483,14 @@ public class Model extends Drawable {
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, colorA);
                 Draw3D.fillTriangle(y0, y2, clippedY[3], x0, x2, clippedX[3], colorA);
             } else if (type == 2) {
-                int texturedFace = faceType[face] >> 2;
+                int texturedFace = ftype[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
                 Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
                 Draw3D.fillTexturedTriangle(y0, y2, clippedY[3], x0, x2, clippedX[3], clippedColor[0], clippedColor[2], clippedColor[3], vertexViewSpaceX[tA], vertexViewSpaceX[tB], vertexViewSpaceX[tC], vertexViewSpaceY[tA], vertexViewSpaceY[tB], vertexViewSpaceY[tC], vertexViewSpaceZ[tA], vertexViewSpaceZ[tB], vertexViewSpaceZ[tC], faceColor[face]);
             } else if (type == 3) {
-                int texturedFace = faceType[face] >> 2;
+                int texturedFace = ftype[face] >> 2;
                 int tA = texturedVertexA[texturedFace];
                 int tB = texturedVertexB[texturedFace];
                 int tC = texturedVertexC[texturedFace];
@@ -2494,17 +2513,17 @@ public class Model extends Drawable {
      * @param xC x of corner c.
      * @return <code>true</code> if <code>(x, y)</code> is within the triangle.
      */
-    public static boolean pointWithinTriangle(int x, int y, int yA, int yB, int yC, int xA, int xB, int xC) {
-        if ((y < yA) && (y < yB) && (y < yC)) {
+    public static boolean pick_triangle(int x, int y, int yA, int yB, int yC, int xA, int xB, int xC) {
+        if (y < yA && y < yB && y < yC) {
             return false;
         }
-        if ((y > yA) && (y > yB) && (y > yC)) {
+        if (y > yA && y > yB && y > yC) {
             return false;
         }
-        if ((x < xA) && (x < xB) && (x < xC)) {
+        if (x < xA && x < xB && x < xC) {
             return false;
         }
-        return (x <= xA) || (x <= xB) || (x <= xC);
+        return x <= xA || x <= xB || x <= xC;
     }
 
 }

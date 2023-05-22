@@ -350,7 +350,7 @@ public class ObjType {
         }
 
         if (modelID1 != -1) {
-            model = new Model(2, new Model[]{model, Model.tryGet(modelID1)});
+            model = Model.join_prebuilt(2, new Model[]{model, Model.tryGet(modelID1)});
         }
 
         if (srcColor != null) {
@@ -412,9 +412,9 @@ public class ObjType {
 
         if (modelID1 != -1) {
             if (modelID2 != -1) {
-                model = new Model(3, new Model[]{model, Model.tryGet(modelID1), Model.tryGet(modelID2)});
+                model = Model.join_prebuilt(3, new Model[]{model, Model.tryGet(modelID1), Model.tryGet(modelID2)});
             } else {
-                model = new Model(2, new Model[]{model, Model.tryGet(modelID1)});
+                model = Model.join_prebuilt(2, new Model[]{model, Model.tryGet(modelID1)});
             }
         }
 

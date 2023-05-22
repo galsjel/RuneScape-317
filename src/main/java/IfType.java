@@ -412,18 +412,18 @@ public class IfType {
             return model;
         }
 
-        model = new Model(true, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID), false, model);
+        model = Model.clone(true, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID), false, model);
 
         if ((primaryTransformID != -1) || (secondaryTransformID != -1)) {
-            model.createLabelReferences();
+            model.build_labels();
         }
 
         if (primaryTransformID != -1) {
-            model.applyTransform(primaryTransformID);
+            model.transform(primaryTransformID);
         }
 
         if (secondaryTransformID != -1) {
-            model.applyTransform(secondaryTransformID);
+            model.transform(secondaryTransformID);
         }
 
         model.build(64, 768, -50, -10, -50, true);

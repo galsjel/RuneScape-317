@@ -1,12 +1,18 @@
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A {@link SeqTransform} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
  *
- * @see Model#applyTransform(int)
- * @see Model#applyTransforms(int, int, int[])
+ * @see Model#transform(int)
+ * @see Model#transform2(int, int, int[])
  */
 public class SeqTransform {
 
     public static SeqTransform[] instances;
+    public static List<SeqSkeleton> skeletons = new ArrayList<>();
 
     /**
      * Syntax sugar.
@@ -82,6 +88,9 @@ public class SeqTransform {
 
         SeqSkeleton skeleton = new SeqSkeleton(skel);
 
+        int skeletonID = skeletons.size();
+        skeletons.add(skeleton);
+
         int frameCount = header.readU16();
         int[] bases = new int[500];
         int[] x = new int[500];
@@ -92,6 +101,7 @@ public class SeqTransform {
             SeqTransform transform = instances[header.readU16()] = new SeqTransform();
             transform.delay = del.readU8();
             transform.skeleton = skeleton;
+            transform.skeletonID = skeletonID;
 
             int baseCount = header.readU8();
             int lastBase = -1;
@@ -166,22 +176,33 @@ public class SeqTransform {
     /**
      * The skeleton associated to this transform.
      */
-    public SeqSkeleton skeleton;
+    public transient SeqSkeleton skeleton;
+
+    @SerializedName("skeleton")
+    public int skeletonID;
     /**
      * The delay in <code>ticks</code>.
      */
+    @SerializedName("delay")
     public int delay;
     /**
      * The number of operations this transform performs.
      */
+    @SerializedName("length")
     public int length;
     /**
      * The list of bases this transform uses.
      */
+    @SerializedName("bases")
     public int[] bases;
     /**
      * This transforms parameters.
      */
-    public int[] x, y, z;
+    @SerializedName("x")
+    public int[] x;
+    @SerializedName("y")
+    public int[] y;
+    @SerializedName("z")
+    public int[] z;
 
 }

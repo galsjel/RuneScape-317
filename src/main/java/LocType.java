@@ -109,7 +109,7 @@ public class LocType {
     public int[] overrideTypeIDs;
     public int supportsObj;
     public int sizeZ;
-    public boolean adjustToTerrain;
+    public boolean adjust_to_terrain;
     public boolean occludes;
     public boolean decorative;
     public boolean solid;
@@ -149,7 +149,7 @@ public class LocType {
         solid = true;
         blocksProjectiles = true;
         interactable = false;
-        adjustToTerrain = false;
+        adjust_to_terrain = false;
         dynamic = false;
         occludes = false;
         seqID = -1;
@@ -214,11 +214,11 @@ public class LocType {
             return null;
         }
 
-        if (adjustToTerrain || dynamic) {
-            model = new Model(adjustToTerrain, dynamic, model);
+        if (adjust_to_terrain || dynamic) {
+            model = Model.clone_object(adjust_to_terrain, dynamic, model);
         }
 
-        if (adjustToTerrain) {
+        if (adjust_to_terrain) {
             int groundY = (heightmapSW + heightmapSE + heightmapNE + heightmapNW) / 4;
             for (int i = 0; i < model.vertexCount; i++) {
                 int x = model.vertexX[i];
@@ -313,7 +313,7 @@ public class LocType {
             }
 
             if (modelCount > 1) {
-                model = new Model(modelCount, TMP_MODELS);
+                model = Model.join_prebuilt(modelCount, TMP_MODELS);
             }
         } else {
             int kindIndex = -1;
@@ -365,11 +365,11 @@ public class LocType {
         boolean scaled = (scaleX != 128) || (scaleZ != 128) || (scaleY != 128);
         boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
 
-        Model modified = new Model(srcColor == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
+        Model modified = Model.clone(srcColor == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
 
         if (transformID != -1) {
-            modified.createLabelReferences();
-            modified.applyTransform(transformID);
+            modified.build_labels();
+            modified.transform(transformID);
             modified.labelFaces = null;
             modified.labelVertices = null;
         }
@@ -456,7 +456,7 @@ public class LocType {
                     this.interactable = true;
                 }
             } else if (code == 21) {
-                adjustToTerrain = true;
+                adjust_to_terrain = true;
             } else if (code == 22) {
                 dynamic = true;
             } else if (code == 23) {

@@ -31,13 +31,13 @@ public class SpotAnimEntity extends Drawable {
             return null;
         }
 
-        int transformID = type.seq.transformIDs[seqFrame];
+        int transformID = type.seq.transforms[seqFrame];
 
-        Model model = new Model(true, SeqTransform.isNull(transformID), false, base);
+        Model model = Model.clone(true, SeqTransform.isNull(transformID), false, base);
 
         if (!seqComplete) {
-            model.createLabelReferences();
-            model.applyTransform(transformID);
+            model.build_labels();
+            model.transform(transformID);
             model.labelFaces = null;
             model.labelVertices = null;
         }

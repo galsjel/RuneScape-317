@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
-import java.util.zip.CRC32;
 
 public class OnDemand implements Runnable {
 
@@ -315,7 +314,7 @@ public class OnDemand implements Runnable {
         failCount++;
     }
 
-    public int getSeqFrameCount() {
+    public int getAnimationFrameCount() {
         return animIndex.length;
     }
 

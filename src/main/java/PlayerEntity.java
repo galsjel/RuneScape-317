@@ -2,7 +2,16 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.Gson;
 import org.apache.commons.collections4.map.LRUMap;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class PlayerEntity extends PathingEntity {
 
@@ -34,6 +43,7 @@ public class PlayerEntity extends PathingEntity {
     public PlayerEntity() {
     }
 
+    public static int max_animated_frame = -1;
     @Override
     public Model getModel() {
         if (!visible) {
@@ -54,17 +64,66 @@ public class PlayerEntity extends PathingEntity {
             Model spotModel1 = spot.getModel();
 
             if (spotModel1 != null) {
-                Model spotModel2 = new Model(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
+                Model spotModel2 = Model.clone(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
                 spotModel2.translate(0, -super.spotanimOffset, 0);
-                spotModel2.createLabelReferences();
-                spotModel2.applyTransform(spot.seq.transformIDs[super.spotanimFrame]);
+                spotModel2.build_labels();
+                spotModel2.transform(spot.seq.transforms[super.spotanimFrame]);
                 spotModel2.labelFaces = null;
                 spotModel2.labelVertices = null;
                 if ((spot.scaleXY != 128) || (spot.scaleZ != 128)) {
                     spotModel2.scale(spot.scaleXY, spot.scaleZ, spot.scaleXY);
                 }
                 spotModel2.build(64 + spot.lightAmbient, 850 + spot.lightAttenuation, -30, -50, -30, true);
-                model = new Model(2, -819, new Model[]{model, spotModel2});
+                model = Model.join_lit(2, -819, new Model[]{model, spotModel2});
+
+                if (this == Game.localPlayer && spotanimFrame > max_animated_frame) {
+                    System.out.println("spotanimFrame = " + spotanimFrame + ", offset: " + -super.spotanimOffset);
+                    System.out.println("primarySeqFrame = " + primarySeqFrame);
+
+                    BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+                    int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+
+
+                    int _cx = Draw3D.centerX;
+                    int _cy = Draw3D.centerY;
+                    int[] _loff = Draw3D.lineOffset;
+                    int[] _pix = Draw2D.pixels;
+                    int _w = Draw2D.width;
+                    int _h = Draw2D.height;
+                    int _l = Draw2D.left;
+                    int _r = Draw2D.right;
+                    int _t = Draw2D.top;
+                    int _b = Draw2D.bottom;
+
+                    Draw2D.bind(pixels, 512, 512);
+                    Draw3D.init3D(512, 512);
+                    Draw3D.jagged = false;
+
+                    model.drawSimple(0,256,0,196,20,250,200);
+
+                    // restore state
+                    Draw2D.bind(_pix, _w, _h);
+                    Draw2D.setBounds(_l, _t, _r, _b);
+                    Draw3D.centerX = _cx;
+                    Draw3D.centerY = _cy;
+                    Draw3D.lineOffset = _loff;
+                    Draw3D.jagged = true;
+
+                    try {
+                        for (int i = 0; i  <512*512; i++) {
+                            if (pixels[i]>0) {
+                                pixels[i] |= 255<<24;
+                            }
+                        }
+                        ImageIO.write(image, "png", new File("out/animated" + spotanimFrame + ".png"));
+
+                        Gson gson = new Gson();
+                        Files.writeString(Paths.get("out/animated_"+spotanimFrame+".json"), gson.toJson(model), StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    max_animated_frame = spotanimFrame;
+                }
             }
         }
 
@@ -88,7 +147,7 @@ public class PlayerEntity extends PathingEntity {
                     locModel.rotateY90();
                 }
 
-                model = new Model(2, -819, new Model[]{model, locModel});
+                model = Model.join_lit(2, -819, new Model[]{model, locModel});
 
                 if (super.dstYaw == 512) {
                     locModel.rotateY90();
@@ -214,9 +273,9 @@ public class PlayerEntity extends PathingEntity {
         if (transmogrify != null) {
             int transformID = -1;
             if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-                transformID = SeqType.instances[super.primarySeqID].transformIDs[super.primarySeqFrame];
+                transformID = SeqType.instances[super.primarySeqID].transforms[super.primarySeqFrame];
             } else if (super.secondarySeqID >= 0) {
-                transformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
+                transformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
             }
             return transmogrify.getSequencedModel(-1, transformID, null);
         }
@@ -229,10 +288,10 @@ public class PlayerEntity extends PathingEntity {
 
         if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
             SeqType type = SeqType.instances[super.primarySeqID];
-            primaryTransformID = type.transformIDs[super.primarySeqFrame];
+            primaryTransformID = type.transforms[super.primarySeqFrame];
 
             if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
-                secondaryTransformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
+                secondaryTransformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
             }
 
             if (type.rightHandOverride >= 0) {
@@ -245,7 +304,7 @@ public class PlayerEntity extends PathingEntity {
                 hashCode += ((long) leftHandValue - appearances[3]) << 16;
             }
         } else if (super.secondarySeqID >= 0) {
-            primaryTransformID = SeqType.instances[super.secondarySeqID].transformIDs[super.secondarySeqFrame];
+            primaryTransformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
         }
 
         Model model = modelCache.get(hashCode);
@@ -314,7 +373,7 @@ public class PlayerEntity extends PathingEntity {
                 }
             }
 
-            model = new Model(modelCount, models);
+            model = Model.join_prebuilt(modelCount, models);
             for (int part = 0; part < 5; part++) {
                 if (colors[part] != 0) {
                     model.recolor(Game.designPartColor[part][0], Game.designPartColor[part][colors[part]]);
@@ -323,7 +382,7 @@ public class PlayerEntity extends PathingEntity {
                     }
                 }
             }
-            model.createLabelReferences();
+            model.build_labels();
             model.build(64, 850, -30, -50, -30, true);
             modelCache.put(hashCode, model);
             modelUID = hashCode;
@@ -333,9 +392,9 @@ public class PlayerEntity extends PathingEntity {
         tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
         if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-            tmp.applyTransforms(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
+            tmp.transform2(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
         } else if (primaryTransformID != -1) {
-            tmp.applyTransform(primaryTransformID);
+            tmp.transform(primaryTransformID);
         }
 
         tmp.calculateBoundsCylinder();
@@ -395,7 +454,7 @@ public class PlayerEntity extends PathingEntity {
             }
         }
 
-        Model model = new Model(modelCount, models);
+        Model model = Model.join_prebuilt(modelCount, models);
 
         for (int part = 0; part < 5; part++) {
             if (colors[part] != 0) {

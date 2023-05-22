@@ -829,10 +829,10 @@ public class Scene {
 
                     SceneWall wall = tile.wall;
 
-                    if ((wall != null) && (wall.entityA != null) && (wall.entityA.vertexNormal != null)) {
+                    if ((wall != null) && (wall.entityA != null) && (wall.entityA.normals != null)) {
                         mergeLocNormals(level, 1, 1, tileX, tileZ, (Model) wall.entityA);
 
-                        if ((wall.entityB != null) && (wall.entityB.vertexNormal != null)) {
+                        if ((wall.entityB != null) && (wall.entityB.normals != null)) {
                             mergeLocNormals(level, 1, 1, tileX, tileZ, (Model) wall.entityB);
                             mergeNormals((Model) wall.entityA, (Model) wall.entityB, 0, 0, 0, false);
                             ((Model) wall.entityB).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
@@ -844,14 +844,14 @@ public class Scene {
                     for (int i = 0; i < tile.locCount; i++) {
                         SceneLoc loc = tile.locs[i];
 
-                        if ((loc != null) && (loc.entity != null) && (loc.entity.vertexNormal != null)) {
+                        if ((loc != null) && (loc.entity != null) && (loc.entity.normals != null)) {
                             mergeLocNormals(level, (loc.maxSceneTileX - loc.minSceneTileX) + 1, (loc.maxSceneTileZ - loc.minSceneTileZ) + 1, tileX, tileZ, (Model) loc.entity);
                             ((Model) loc.entity).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                         }
                     }
 
                     SceneGroundDecoration decoration = tile.groundDecoration;
-                    if ((decoration != null) && (decoration.entity.vertexNormal != null)) {
+                    if ((decoration != null) && (decoration.entity.normals != null)) {
                         mergeGroundDecorationNormals(tileX, level, (Model) decoration.entity, tileZ);
                         ((Model) decoration.entity).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                     }
@@ -863,28 +863,28 @@ public class Scene {
     public void mergeGroundDecorationNormals(int tileX, int level, Model model, int tileZ) {
         if (tileX < maxTileX) {
             SceneTile tile = levelTiles[level][tileX + 1][tileZ];
-            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.vertexNormal != null)) {
+            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.normals != null)) {
                 mergeNormals(model, (Model) tile.groundDecoration.entity, 128, 0, 0, true);
             }
         }
 
         if (tileZ < maxTileX) {
             SceneTile tile = levelTiles[level][tileX][tileZ + 1];
-            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.vertexNormal != null)) {
+            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.normals != null)) {
                 mergeNormals(model, (Model) tile.groundDecoration.entity, 0, 0, 128, true);
             }
         }
 
         if ((tileX < maxTileX) && (tileZ < maxTileZ)) {
             SceneTile tile = levelTiles[level][tileX + 1][tileZ + 1];
-            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.vertexNormal != null)) {
+            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.normals != null)) {
                 mergeNormals(model, (Model) tile.groundDecoration.entity, 128, 0, 128, true);
             }
         }
 
         if ((tileX < maxTileX) && (tileZ > 0)) {
             SceneTile tile = levelTiles[level][tileX + 1][tileZ - 1];
-            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.vertexNormal != null)) {
+            if ((tile != null) && (tile.groundDecoration != null) && (tile.groundDecoration.entity.normals != null)) {
                 mergeNormals(model, (Model) tile.groundDecoration.entity, 128, 0, -128, true);
             }
         }
@@ -924,18 +924,18 @@ public class Scene {
                     int offsetX = ((x - tileX) * 128) + ((1 - tileSizeX) * 64);
                     int offsetZ = ((z - tileZ) * 128) + ((1 - tileSizeZ) * 64);
 
-                    if ((wall != null) && (wall.entityA != null) && (wall.entityA.vertexNormal != null)) {
+                    if ((wall != null) && (wall.entityA != null) && (wall.entityA.normals != null)) {
                         mergeNormals(model, (Model) wall.entityA, offsetX, offsetY, offsetZ, allowFaceRemoval);
                     }
 
-                    if ((wall != null) && (wall.entityB != null) && (wall.entityB.vertexNormal != null)) {
+                    if ((wall != null) && (wall.entityB != null) && (wall.entityB.normals != null)) {
                         mergeNormals(model, (Model) wall.entityB, offsetX, offsetY, offsetZ, allowFaceRemoval);
                     }
 
                     for (int i = 0; i < tile.locCount; i++) {
                         SceneLoc loc = tile.locs[i];
 
-                        if ((loc != null) && (loc.entity != null) && (loc.entity.vertexNormal != null)) {
+                        if ((loc != null) && (loc.entity != null) && (loc.entity.normals != null)) {
                             int locTileSizeX = (loc.maxSceneTileX - loc.minSceneTileX) + 1;
                             int locTileSizeZ = (loc.maxSceneTileZ - loc.minSceneTileZ) + 1;
                             mergeNormals(model, (Model) loc.entity, ((loc.minSceneTileX - tileX) * 128) + ((locTileSizeX - tileSizeX) * 64), offsetY, ((loc.minSceneTileZ - tileZ) * 128) + ((locTileSizeZ - tileSizeZ) * 64), allowFaceRemoval);
@@ -953,8 +953,8 @@ public class Scene {
         tmpMergeIndex++;
         int merged = 0;
         for (int vertexA = 0; vertexA < modelA.vertexCount; vertexA++) {
-            VertexNormal normalA = modelA.vertexNormal[vertexA];
-            VertexNormal originalNormalA = modelA.vertexNormalOriginal[vertexA];
+            VertexNormal normalA = modelA.normals[vertexA];
+            VertexNormal originalNormalA = modelA.normals_copy[vertexA];
 
             // undefined normal
             if (originalNormalA.w == 0) {
@@ -980,8 +980,8 @@ public class Scene {
             }
 
             for (int vertexB = 0; vertexB < modelB.vertexCount; vertexB++) {
-                VertexNormal normalB = modelB.vertexNormal[vertexB];
-                VertexNormal originalNormalB = modelB.vertexNormalOriginal[vertexB];
+                VertexNormal normalB = modelB.normals[vertexB];
+                VertexNormal originalNormalB = modelB.normals_copy[vertexB];
 
                 if ((x == modelB.vertexX[vertexB]) && (z == modelB.vertexZ[vertexB]) && (y == modelB.vertexY[vertexB]) && (originalNormalB.w != 0)) {
                     normalA.x += originalNormalB.x;
@@ -1006,16 +1006,16 @@ public class Scene {
         }
 
         // if every vertex of a given face had their normals merged, clear the face info causing that face not to draw.
-        for (int i = 0; i < modelA.faceCount; i++) {
+        for (int i = 0; i < modelA.fcnt; i++) {
             if ((mergeIndexA[modelA.faceVertexA[i]] == tmpMergeIndex) && (mergeIndexA[modelA.faceVertexB[i]] == tmpMergeIndex) && (mergeIndexA[modelA.faceVertexC[i]] == tmpMergeIndex)) {
-                modelA.faceType[i] = -1;
+                modelA.ftype[i] = -1;
             }
         }
 
         // same as above but for model B
-        for (int i = 0; i < modelB.faceCount; i++) {
+        for (int i = 0; i < modelB.fcnt; i++) {
             if ((mergeIndexB[modelB.faceVertexA[i]] == tmpMergeIndex) && (mergeIndexB[modelB.faceVertexB[i]] == tmpMergeIndex) && (mergeIndexB[modelB.faceVertexC[i]] == tmpMergeIndex)) {
-                modelB.faceType[i] = -1;
+                modelB.ftype[i] = -1;
             }
         }
     }

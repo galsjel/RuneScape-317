@@ -110,7 +110,7 @@ public final class PacketIn {
         SIZE[MAP_SOUND] = 8;
         SIZE[TAB_SELECTED] = 1;
         SIZE[UPDATE_RUNENERGY] = 1;
-        SIZE[UPDATE_REBOOT_TIMER] = 2;
+        SIZE[UPDATE_REBOOT_TIMER] = 4;
         SIZE[MAP_PROJECTILE] = 15;
         SIZE[MIDI_JINGLE] = 4;
         SIZE[IF_SETCOLOR] = 4;

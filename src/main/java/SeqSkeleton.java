@@ -1,8 +1,10 @@
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A {@link SeqSkeleton} describes the usage and relationship between groups of vertices.
  *
- * @see Model#applyTransform(int)
- * @see Model#applyTransforms(int, int, int[])
+ * @see Model#transform(int)
+ * @see Model#transform2(int, int, int[])
  */
 public class SeqSkeleton {
     /**
@@ -23,12 +25,14 @@ public class SeqSkeleton {
      * @see #OP_SCALE
      * @see #OP_ALPHA
      */
+    @SerializedName("base_types")
     public final int[] baseTypes;
     /**
      * The labels belonging to the base.
      *
-     * @see Model#createLabelReferences()
+     * @see Model#build_labels()
      */
+    @SerializedName("base_labels")
     public final int[][] baseLabels;
 
     /**

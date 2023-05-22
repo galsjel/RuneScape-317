@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.IOException;
 
 public class SeqType {
@@ -27,6 +29,7 @@ public class SeqType {
     /**
      * The amount of frames in this {@link SeqType}.
      */
+    @SerializedName("frame_count")
     public int frameCount;
 
     /**
@@ -34,28 +37,33 @@ public class SeqType {
      *
      * @see SeqTransform
      */
-    public int[] transformIDs;
+    @SerializedName("transforms")
+    public int[] transforms;
 
     /**
      * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentInterface(IfType, int, int, int)}.
      */
-    public int[] auxiliaryTransformIDs;
+    @SerializedName("aux_transforms")
+    public int[] aux_transforms;
 
     /**
      * A list of durations indexed by Frame ID.
      */
+    @SerializedName("frame_duration")
     public int[] frameDuration;
 
     /**
      * The number of frames from the end of this {@link SeqType} used for looping.
      */
+    @SerializedName("loop_frame_count")
     public int loopFrameCount = -1;
 
     /**
      * Used to determine which transform bases a primary frame is allowed to use, and secondary not.
      *
-     * @see Model#applyTransforms(int, int, int[])
+     * @see Model#transform2(int, int, int[])
      */
+    @SerializedName("mask")
     public int[] mask;
 
     /**
@@ -63,11 +71,13 @@ public class SeqType {
      *
      * @see Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)
      */
+    @SerializedName("forward_render_padding")
     public boolean forwardRenderPadding = false;
 
     /**
      * The priority.
      */
+    @SerializedName("priority")
     public int priority = 5;
 
     /**
@@ -75,6 +85,7 @@ public class SeqType {
      *
      * @see PlayerEntity#getSequencedModel()
      */
+    @SerializedName("override_right_hand")
     public int rightHandOverride = -1;
 
     /**
@@ -82,11 +93,13 @@ public class SeqType {
      *
      * @see PlayerEntity#getSequencedModel()
      */
+    @SerializedName("override_left_hand")
     public int leftHandOverride = -1;
 
     /**
      * How many times this seq is allowed to loop before stopping.
      */
+    @SerializedName("loop_count")
     public int loopCount = 99;
 
     /**
@@ -96,6 +109,7 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+    @SerializedName("move_type")
     public int moveStyle = -1;
 
     /**
@@ -105,6 +119,7 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+    @SerializedName("idle_type")
     public int idleStyle = -1;
 
     /**
@@ -113,6 +128,7 @@ public class SeqType {
      *
      * @see Game#readNPCUpdates()
      */
+    @SerializedName("replay_type")
     public int replayStyle = 1;
 
     public SeqType() {
@@ -122,7 +138,7 @@ public class SeqType {
         int duration = frameDuration[frame];
 
         if (duration == 0) {
-            SeqTransform transform = SeqTransform.get(transformIDs[frame]);
+            SeqTransform transform = SeqTransform.get(transforms[frame]);
             if (transform != null) {
                 duration = frameDuration[frame] = transform.delay;
             }
@@ -143,14 +159,14 @@ public class SeqType {
                 break;
             } else if (code == 1) {
                 frameCount = buffer.readU8();
-                transformIDs = new int[frameCount];
-                auxiliaryTransformIDs = new int[frameCount];
+                transforms = new int[frameCount];
+                aux_transforms = new int[frameCount];
                 frameDuration = new int[frameCount];
                 for (int f = 0; f < frameCount; f++) {
-                    transformIDs[f] = buffer.readU16();
-                    auxiliaryTransformIDs[f] = buffer.readU16();
-                    if (auxiliaryTransformIDs[f] == 65535) {
-                        auxiliaryTransformIDs[f] = -1;
+                    transforms[f] = buffer.readU16();
+                    aux_transforms[f] = buffer.readU16();
+                    if (aux_transforms[f] == 65535) {
+                        aux_transforms[f] = -1;
                     }
                     frameDuration[f] = buffer.readU16();
                 }
@@ -188,10 +204,10 @@ public class SeqType {
 
         if (frameCount == 0) {
             frameCount = 1;
-            transformIDs = new int[1];
-            transformIDs[0] = -1;
-            auxiliaryTransformIDs = new int[1];
-            auxiliaryTransformIDs[0] = -1;
+            transforms = new int[1];
+            transforms[0] = -1;
+            aux_transforms = new int[1];
+            aux_transforms[0] = -1;
             frameDuration = new int[1];
             frameDuration[0] = -1;
         }
