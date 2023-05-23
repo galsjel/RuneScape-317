@@ -1,3 +1,4 @@
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -178,30 +179,43 @@ public class SeqTransform {
      */
     public transient SeqSkeleton skeleton;
 
+    @Expose
     @SerializedName("skeleton")
     public int skeletonID;
+
     /**
      * The delay in <code>ticks</code>.
      */
+    @Expose
     @SerializedName("delay")
     public int delay;
+
     /**
      * The number of operations this transform performs.
      */
+    @Expose
     @SerializedName("length")
     public int length;
+
     /**
      * The list of bases this transform uses.
      */
+    @Expose
     @SerializedName("bases")
     public int[] bases;
+
     /**
      * This transforms parameters.
      */
+    @Expose
     @SerializedName("x")
     public int[] x;
+
+    @Expose
     @SerializedName("y")
     public int[] y;
+
+    @Expose
     @SerializedName("z")
     public int[] z;
 

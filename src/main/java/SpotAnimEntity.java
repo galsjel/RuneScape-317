@@ -42,25 +42,25 @@ public class SpotAnimEntity extends Drawable {
             model.labelVertices = null;
         }
 
-        if ((type.scaleXY != 128) || (type.scaleZ != 128)) {
-            model.scale(type.scaleXY, type.scaleZ, type.scaleXY);
+        if ((type.scaleXZ != 128) || (type.scaleY != 128)) {
+            model.scale(type.scaleXZ, type.scaleY, type.scaleXZ);
         }
 
-        if (type.rotation != 0) {
-            if (type.rotation == 90) {
+        if (type.rotateY != 0) {
+            if (type.rotateY == 90) {
                 model.rotateY90();
             }
-            if (type.rotation == 180) {
+            if (type.rotateY == 180) {
                 model.rotateY90();
                 model.rotateY90();
             }
-            if (type.rotation == 270) {
+            if (type.rotateY == 270) {
                 model.rotateY90();
                 model.rotateY90();
                 model.rotateY90();
             }
         }
-        model.build(64 + type.lightAmbient, 850 + type.lightAttenuation, -30, -50, -30, true);
+        model.build(64 + type.lightAmbient, 850 + type.lightContrast, -30, -50, -30, true);
         return model;
     }
 

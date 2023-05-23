@@ -12,6 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 public class PlayerEntity extends PathingEntity {
 
@@ -70,10 +71,10 @@ public class PlayerEntity extends PathingEntity {
                 spotModel2.transform(spot.seq.transforms[super.spotanimFrame]);
                 spotModel2.labelFaces = null;
                 spotModel2.labelVertices = null;
-                if ((spot.scaleXY != 128) || (spot.scaleZ != 128)) {
-                    spotModel2.scale(spot.scaleXY, spot.scaleZ, spot.scaleXY);
+                if ((spot.scaleXZ != 128) || (spot.scaleY != 128)) {
+                    spotModel2.scale(spot.scaleXZ, spot.scaleY, spot.scaleXZ);
                 }
-                spotModel2.build(64 + spot.lightAmbient, 850 + spot.lightAttenuation, -30, -50, -30, true);
+                spotModel2.build(64 + spot.lightAmbient, 850 + spot.lightContrast, -30, -50, -30, true);
                 model = Model.join_lit(2, -819, new Model[]{model, spotModel2});
 
                 if (this == Game.localPlayer && spotanimFrame > max_animated_frame) {
@@ -209,6 +210,9 @@ public class PlayerEntity extends PathingEntity {
 
             colors[part] = color;
         }
+
+        System.out.println("appearances = " + Arrays.toString(appearances));
+        System.out.println("colors = " + Arrays.toString(colors));
 
         super.seqStandID = in.readU16();
         if (super.seqStandID == 65535) {

@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Draw3D {
 
@@ -155,7 +157,7 @@ public class Draw3D {
     public static void initPool(int poolSize) {
         if (Draw3D.texelPool == null) {
             Draw3D.poolSize = poolSize;
-                Draw3D.texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
+            Draw3D.texelPool = new int[Draw3D.poolSize][128 * 128 * 4];
             for (int k = 0; k < 50; k++) {
                 Draw3D.activeTexels[k] = null;
             }
@@ -170,6 +172,16 @@ public class Draw3D {
                 Draw3D.textures[textureID] = new Image8(archive, String.valueOf(textureID), 0);
                 Draw3D.textures[textureID].crop();
                 Draw3D.textureCount++;
+
+
+                int size = textures[textureID].width;
+                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+                int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+                for (int i = 0; i < size * size; i++) {
+                    pixels[i] = Draw3D.textures[textureID].palette[Draw3D.textures[textureID].pixels[i]];
+                }
+                ImageIO.write(image, "png", Paths.get("out/textures/" + textureID + ".png").toFile());
+
             } catch (Exception ignored) {
             }
         }
@@ -242,34 +254,34 @@ public class Draw3D {
         Image8 texture = Draw3D.textures[textureID];
         int[] palette = Draw3D.texturePalette[textureID];
 
-            // scale 64x64 textures up to 128x128
-            if (texture.width == 64) {
-                for (int y = 0; y < 128; y++) {
-                    for (int x = 0; x < 128; x++) {
-                        texels[x + (y << 7)] = palette[texture.pixels[(x >> 1) + ((y >> 1) << 6)]];
-                    }
-                }
-            } else {
-                for (int i = 0; i < 16384; i++) {
-                    texels[i] = palette[texture.pixels[i]];
+        // scale 64x64 textures up to 128x128
+        if (texture.width == 64) {
+            for (int y = 0; y < 128; y++) {
+                for (int x = 0; x < 128; x++) {
+                    texels[x + (y << 7)] = palette[texture.pixels[(x >> 1) + ((y >> 1) << 6)]];
                 }
             }
-
-            Draw3D.textureTranslucent[textureID] = false;
-
+        } else {
             for (int i = 0; i < 16384; i++) {
-                texels[i] &= 0xf8f8ff;
-
-                int rgb = texels[i];
-
-                if (rgb == 0) {
-                    Draw3D.textureTranslucent[textureID] = true;
-                }
-
-                texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
-                texels[32768 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
-                texels[49152 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
+                texels[i] = palette[texture.pixels[i]];
             }
+        }
+
+        Draw3D.textureTranslucent[textureID] = false;
+
+        for (int i = 0; i < 16384; i++) {
+            texels[i] &= 0xf8f8ff;
+
+            int rgb = texels[i];
+
+            if (rgb == 0) {
+                Draw3D.textureTranslucent[textureID] = true;
+            }
+
+            texels[16384 + i] = (rgb - (rgb >>> 3)) & 0xf8f8ff;
+            texels[32768 + i] = (rgb - (rgb >>> 2)) & 0xf8f8ff;
+            texels[49152 + i] = (rgb - (rgb >>> 2) - (rgb >>> 3)) & 0xf8f8ff;
+        }
         return texels;
     }
 
@@ -354,8 +366,8 @@ public class Draw3D {
         }
 
 
-        BufferedImage img = new BufferedImage(128,512, BufferedImage.TYPE_INT_RGB);
-        System.arraycopy(Draw3D.palette,0,((DataBufferInt)img.getRaster().getDataBuffer()).getData(),0,128*512);
+        BufferedImage img = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
+        System.arraycopy(Draw3D.palette, 0, ((DataBufferInt) img.getRaster().getDataBuffer()).getData(), 0, 128 * 512);
 
         try {
             ImageIO.write(img, "png", new File("palette_raw.png"));
@@ -363,7 +375,7 @@ public class Draw3D {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < 128*512; i++) {
+        for (int i = 0; i < 128 * 512; i++) {
             int rgb = Draw3D.palette[i];
             rgb = Draw3D.setGamma(rgb, gamma);
 
@@ -373,7 +385,7 @@ public class Draw3D {
             Draw3D.palette[i] = rgb;
         }
 
-        System.arraycopy(Draw3D.palette,0,((DataBufferInt)img.getRaster().getDataBuffer()).getData(),0,128*512);
+        System.arraycopy(Draw3D.palette, 0, ((DataBufferInt) img.getRaster().getDataBuffer()).getData(), 0, 128 * 512);
 
         try {
             ImageIO.write(img, "png", new File("palette_gamma.png"));
@@ -457,7 +469,7 @@ public class Draw3D {
         int[] pix2 = ((DataBufferInt) img2.getRaster().getDataBuffer()).getData();
 
         Draw3D.init3D(imageSize, imageSize);
-        Draw3D.jagged =true;
+        Draw3D.jagged = true;
 
         int splits = 3;
         int segmentSize = imageSize / splits;
@@ -492,10 +504,10 @@ public class Draw3D {
                 fillTexturedTriangle(
                         y0, y1, y2,
                         x0, x1, x2,
-                        127,64,0,
-                        x0-256,x1-256,x2-256,
-                        y0-256,y1-256,y2-256,
-                        512,512,512,
+                        127, 64, 0,
+                        x0 - 256, x1 - 256, x2 - 256,
+                        y0 - 256, y1 - 256, y2 - 256,
+                        512, 512, 512,
                         0);
             }
         }
@@ -1671,6 +1683,7 @@ public class Draw3D {
             drawTransparentTexturedScanlineHighmem(dst, texels, offset, x0, y, shade0, u, v, w, uStep, vStep, wStep, shadeStep, length);
         }
     }
+
     private static void drawOpaqueTexturedScanlineHighmem(int[] dst, int[] texels, int offset, int x, int y, int shade, int u, int v, int w, int uStep, int vStep, int wStep, int shadeStep, int length) {
         while (length-- > 0) {
             int w1 = w >> 14;

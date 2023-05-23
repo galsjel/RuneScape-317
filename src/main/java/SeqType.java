@@ -2,6 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class SeqType {
     /**
      * The amount of frames in this {@link SeqType}.
      */
+    @Expose
     @SerializedName("frame_count")
     public int frameCount;
 
@@ -37,24 +39,28 @@ public class SeqType {
      *
      * @see SeqTransform
      */
+    @Expose
     @SerializedName("transforms")
     public int[] transforms;
 
     /**
      * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentInterface(IfType, int, int, int)}.
      */
+    @Expose
     @SerializedName("aux_transforms")
     public int[] aux_transforms;
 
     /**
      * A list of durations indexed by Frame ID.
      */
+    @Expose
     @SerializedName("frame_duration")
     public int[] frameDuration;
 
     /**
      * The number of frames from the end of this {@link SeqType} used for looping.
      */
+    @Expose
     @SerializedName("loop_frame_count")
     public int loopFrameCount = -1;
 
@@ -63,6 +69,7 @@ public class SeqType {
      *
      * @see Model#transform2(int, int, int[])
      */
+    @Expose
     @SerializedName("mask")
     public int[] mask;
 
@@ -71,12 +78,14 @@ public class SeqType {
      *
      * @see Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)
      */
+    @Expose
     @SerializedName("forward_render_padding")
-    public boolean forwardRenderPadding = false;
+    public Boolean forwardRenderPadding = false;
 
     /**
      * The priority.
      */
+    @Expose
     @SerializedName("priority")
     public int priority = 5;
 
@@ -85,20 +94,23 @@ public class SeqType {
      *
      * @see PlayerEntity#getSequencedModel()
      */
+    @Expose
     @SerializedName("override_right_hand")
-    public int rightHandOverride = -1;
+    public Integer rightHandOverride = -1;
 
     /**
      * Allows this {@link SeqType} to override the left hand of a {@link PlayerEntity}.
      *
      * @see PlayerEntity#getSequencedModel()
      */
+    @Expose
     @SerializedName("override_left_hand")
-    public int leftHandOverride = -1;
+    public Integer leftHandOverride = -1;
 
     /**
      * How many times this seq is allowed to loop before stopping.
      */
+    @Expose
     @SerializedName("loop_count")
     public int loopCount = 99;
 
@@ -109,6 +121,7 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+    @Expose
     @SerializedName("move_type")
     public int moveStyle = -1;
 
@@ -119,6 +132,7 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+    @Expose
     @SerializedName("idle_type")
     public int idleStyle = -1;
 
@@ -128,6 +142,7 @@ public class SeqType {
      *
      * @see Game#readNPCUpdates()
      */
+    @Expose
     @SerializedName("replay_type")
     public int replayStyle = 1;
 

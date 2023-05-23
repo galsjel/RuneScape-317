@@ -81,11 +81,11 @@ public class ProjectileEntity extends Drawable {
             model.labelFaces = null;
             model.labelVertices = null;
         }
-        if ((spotanim.scaleXY != 128) || (spotanim.scaleZ != 128)) {
-            model.scale(spotanim.scaleXY, spotanim.scaleZ, spotanim.scaleXY);
+        if ((spotanim.scaleXZ != 128) || (spotanim.scaleY != 128)) {
+            model.scale(spotanim.scaleXZ, spotanim.scaleY, spotanim.scaleXZ);
         }
         model.rotateX(pitch);
-        model.build(64 + spotanim.lightAmbient, 850 + spotanim.lightAttenuation, -30, -50, -30, true);
+        model.build(64 + spotanim.lightAmbient, 850 + spotanim.lightContrast, -30, -50, -30, true);
         return model;
     }
 

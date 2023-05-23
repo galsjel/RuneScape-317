@@ -2,6 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.collections4.map.LRUMap;
 
@@ -30,27 +31,31 @@ public class SpotAnimType {
         }
     }
 
-    @SerializedName("color_src")
     public final int[] colorSrc = new int[6];
-@SerializedName("color_dst")
     public final int[] colorDst = new int[6];
-@SerializedName("id")
-    public int index;
-@SerializedName("model")
     public int modelID;
-@SerializedName("animation")
-    public int seqID = -1;
     public transient SeqType seq;
-    @SerializedName("scale_xy")
-    public int scaleXY = 128;
-    @SerializedName("scale_z")
-    public int scaleZ = 128;
-    @SerializedName("rotation")
-    public int rotation;
-    @SerializedName("light_ambient")
+    public int scaleXZ = 128;
+    public int scaleY = 128;
+    public int rotateY;
     public int lightAmbient;
-    @SerializedName("light_attenuation")
-    public int lightAttenuation;
+    public int lightContrast;
+    @Expose
+    @SerializedName("id")
+    public int index;
+    @Expose
+    @SerializedName("animation")
+    public Integer animation;
+    @Expose
+    @SerializedName("light")
+    public Model.Light light;
+
+    @Expose
+    @SerializedName("model")
+    public Model.Ref model;
+    @Expose
+    @SerializedName("recolors")
+    public Model.Recolor[] recolors;
 
     public SpotAnimType() {
     }
@@ -59,24 +64,38 @@ public class SpotAnimType {
         while (true) {
             int code = in.readU8();
             if (code == 0) {
+                model = Model.ref(modelID);
+                if (model != null) {
+                    if (scaleXZ != 128) {
+                        model.scaleX = model.scaleZ = scaleXZ;
+                    }
+                    if (scaleY != 128) {
+                        model.scaleY = scaleY;
+                    }
+                    if (rotateY != 0) {
+                        model.rotateY = rotateY;
+                    }
+                }
+                light = Model.makeLight(lightAmbient, lightContrast);
+                recolors = Model.Recolor.make(colorSrc,colorDst,i->i!=0);
                 return;
             } else if (code == 1) {
                 modelID = in.readU16();
             } else if (code == 2) {
-                seqID = in.readU16();
+                animation = in.readU16();
                 if (SeqType.instances != null) {
-                    seq = SeqType.instances[seqID];
+                    seq = SeqType.instances[animation];
                 }
             } else if (code == 4) {
-                scaleXY = in.readU16();
+                scaleXZ = in.readU16();
             } else if (code == 5) {
-                scaleZ = in.readU16();
+                scaleY = in.readU16();
             } else if (code == 6) {
-                rotation = in.readU16();
+                rotateY = in.readU16();
             } else if (code == 7) {
                 lightAmbient = in.readU8();
             } else if (code == 8) {
-                lightAttenuation = in.readU8();
+                lightContrast = in.readU8();
             } else if ((code >= 40) && (code < 50)) {
                 colorSrc[code - 40] = in.readU16();
             } else if ((code >= 50) && (code < 60)) {

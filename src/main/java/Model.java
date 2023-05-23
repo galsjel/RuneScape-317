@@ -2,9 +2,117 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+import java.util.function.IntPredicate;
+
 public class Model extends Drawable {
+
+    public static Light makeLight(int ambient, int contrast) {
+        if (ambient == 0 && contrast == 0) {
+            return null;
+        }
+        Light light = new Light();
+        if (ambient != 0) {
+            light.ambient = ambient;
+        }
+        if (contrast != 0) {
+            light.contrast = contrast;
+        }
+        return light;
+    }
+
+    public static class Light {
+        @Expose
+        public Integer ambient;
+        @Expose
+        public Integer contrast;
+    }
+
+    public static Ref ref(Integer... ids) {
+        int[] filtered = Arrays.stream(ids).filter(i -> i != -1).mapToInt(i -> i).toArray();
+        if (filtered.length == 0) {
+            return null;
+        }
+        Ref ref = new Ref();
+        if (filtered.length == 1) {
+            ref.id = filtered[0];
+        } else {
+            ref.join = filtered;
+        }
+        return ref;
+    }
+    public static final class Recolor {
+
+        public static Recolor[] make(int[] src, int[] dst) {
+            return make(src, dst, null);
+        }
+
+        public static Recolor[] make(int[] src, int[] dst, IntPredicate predicate) {
+            if (src == null || dst == null || src.length != dst.length) {
+                return null;
+            }
+            if (predicate != null) {
+                src = Arrays.stream(src).filter(predicate).toArray();
+                dst = Arrays.stream(dst).filter(predicate).toArray();
+            }
+            if (src.length == 0 || dst.length == 0) {
+                return null;
+            }
+            Recolor[] recolors = new Recolor[src.length];
+            for (int i = 0; i < recolors.length; i++) {
+                recolors[i] = new Recolor(src[i], dst[i]);
+            }
+            return recolors;
+        }
+
+        @Expose
+        public int src;
+        @Expose
+        public int dst;
+
+        public Recolor(int src, int dst) {
+            this.src = src;
+            this.dst = dst;
+        }
+    }
+
+    public static final class Ref {
+        @Expose
+        public Integer id;
+        @Expose
+        public int[] join;
+        @Expose
+        @SerializedName("scale_x")
+        public Integer scaleX;
+        @Expose
+        @SerializedName("scale_y")
+        public Integer scaleY;
+        @Expose
+        @SerializedName("scale_z")
+        public Integer scaleZ;
+        @Expose
+        @SerializedName("translate_x")
+        public Integer translateX;
+        @Expose
+        @SerializedName("translate_y")
+        public Integer translateY;
+        @Expose
+        @SerializedName("translate_z")
+        public Integer translateZ;
+        @Expose
+        @SerializedName("rotate_x")
+        public Integer rotateX;
+        @Expose
+        @SerializedName("rotate_y")
+        public Integer rotateY;
+        @Expose
+        @SerializedName("rotate_z")
+        public Integer rotateZ;
+    }
 
     public static final Model EMPTY = new Model();
 
@@ -901,7 +1009,7 @@ public class Model extends Drawable {
      * @param share_colors   <code>true</code> to reference the provided model's colors.
      * @param share_alpha    <code>true</code> to reference the provided model's face alpha.
      * @param share_vertices <code>true</code> to reference the provided model's vertices.
-     * @param src         the model to share or clone.
+     * @param src            the model to share or clone.
      */
     private Model(boolean share_colors, boolean share_alpha, boolean share_vertices, Model src) {
         counter++;
@@ -965,8 +1073,8 @@ public class Model extends Drawable {
      * This constructor is specifically used by Locs which adjust to terrain.
      *
      * @param copy_vertex_y <code>true</code> to copy <code>model.vertexY</code>.
-     * @param copy_lighting   <code>true</code> to copy all face data from <code>model</code>.
-     * @param model       the model to copy.
+     * @param copy_lighting <code>true</code> to copy all face data from <code>model</code>.
+     * @param model         the model to copy.
      * @see LocType#getModel(int, int, int, int, int, int, int)
      */
     private Model(boolean copy_vertex_y, boolean copy_lighting, Model model) {
@@ -1803,7 +1911,7 @@ public class Model extends Drawable {
      * @param eyeZ     the eye z.
      */
     public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int eyeX, int eyeY, int eyeZ) {
-       int centerX = Draw3D.centerX;
+        int centerX = Draw3D.centerX;
         int centerY = Draw3D.centerY;
         int sinPitch = sin[pitch];
         int cosPitch = cos[pitch];
@@ -2057,8 +2165,8 @@ public class Model extends Drawable {
      * Draws the {@link Model} with the provided parameters. This method performs depth and priority sorting.
      *
      * @param near_clipped whether to check near plane clipping.
-     * @param picking <code>true</code> to enable picking.
-     * @param bitset  the bitset. Used with <code>pick</code> set to true.
+     * @param picking      <code>true</code> to enable picking.
+     * @param bitset       the bitset. Used with <code>pick</code> set to true.
      */
     public void draw(boolean near_clipped, boolean picking, int bitset) {
         for (int depth = 0; depth < max_depth; depth++) {

@@ -2,10 +2,11 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3)
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import org.apache.commons.math3.random.ISAACRandom;
 
 import javax.imageio.ImageIO;
+import javax.lang.model.SourceVersion;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -995,13 +996,18 @@ public class Game extends GameShell {
             VarpType.unpack(archiveConfig);
             VarbitType.unpack(archiveConfig);
 
-            try {
-                Gson gson = new Gson();
+            ObjType tmp = ObjType.get(4653);
+            Model model = Model.tryGet(tmp.modelID);
+            System.out.println(model);
+            System.out.println(tmp);
 
+            try {
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 Files.writeString(Paths.get("out/animations.json"), gson.toJson(SeqType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/animation_transforms.json"), gson.toJson(SeqTransform.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/animation_skeletons.json"), gson.toJson(SeqTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/spotanims.json"), gson.toJson(SpotAnimType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/identikits.json"), gson.toJson(IdkType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -3052,7 +3058,7 @@ public class Game extends GameShell {
         for (int part = 0; part < 7; part++) {
             designIdentikits[part] = -1;
             for (int kit = 0; kit < IdkType.count; kit++) {
-                if (IdkType.instances[kit].selectable || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7)))) {
+                if (Boolean.TRUE.equals(IdkType.instances[kit].disabled) || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7)))) {
                     continue;
                 }
                 designIdentikits[part] = kit;
@@ -3218,7 +3224,7 @@ public class Game extends GameShell {
                     if ((direction == 1) && (++kit >= IdkType.count)) {
                         kit = 0;
                     }
-                } while (IdkType.instances[kit].selectable || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7))));
+                } while (IdkType.instances[kit].disabled || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7))));
 
                 designIdentikits[part] = kit;
                 updateDesignModel = true;
@@ -10823,15 +10829,22 @@ public class Game extends GameShell {
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
                 final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
+                for (int i = 0; i < ObjType.count; i++) {
+                    try {
+                        ImageIO.write(ObjType.getIcon(i, 1, 0).toBufferedImage(), "png", Paths.get("out/item/"+i+".png").toFile());
+                        ImageIO.write(ObjType.getIcon(i, 1, 0xFFFFFF).toBufferedImage(), "png", Paths.get("out/item/"+i+"_selected.png").toFile());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
                 ObjType coins = ObjType.get(995);
+
                 try {
                     Gson gson = new Gson();
                     for (int count : coins.stackCount) {
                         Files.writeString(Paths.get("out/item/coins_" + count + ".json"),gson.toJson(coins.getLitModel(count)), options);
-                        ImageIO.write(ObjType.getIcon(995, count, 0).toBufferedImage(), "png", Paths.get("out/item/coins_"+count+".png").toFile());
-                        ImageIO.write(ObjType.getIcon(995, count, 0xFFFFFF).toBufferedImage(), "png", Paths.get("out/item/coins_"+count+"_selected.png").toFile());
-                    }
+                   }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

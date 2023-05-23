@@ -1,3 +1,4 @@
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,6 +26,7 @@ public class SeqSkeleton {
      * @see #OP_SCALE
      * @see #OP_ALPHA
      */
+    @Expose
     @SerializedName("base_types")
     public final int[] baseTypes;
     /**
@@ -32,6 +34,7 @@ public class SeqSkeleton {
      *
      * @see Model#build_labels()
      */
+    @Expose
     @SerializedName("base_labels")
     public final int[][] baseLabels;
 

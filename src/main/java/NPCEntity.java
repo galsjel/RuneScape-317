@@ -57,11 +57,11 @@ public class NPCEntity extends PathingEntity {
                 model1.labelFaces = null;
                 model1.labelVertices = null;
 
-                if ((spotanim.scaleXY != 128) || (spotanim.scaleZ != 128)) {
-                    model1.scale(spotanim.scaleXY, spotanim.scaleZ, spotanim.scaleXY);
+                if ((spotanim.scaleXZ != 128) || (spotanim.scaleY != 128)) {
+                    model1.scale(spotanim.scaleXZ, spotanim.scaleY, spotanim.scaleXZ);
                 }
 
-                model1.build(64 + spotanim.lightAmbient, 850 + spotanim.lightAttenuation, -30, -50, -30, true);
+                model1.build(64 + spotanim.lightAmbient, 850 + spotanim.lightContrast, -30, -50, -30, true);
                 model = Model.join_lit(2, -819, new Model[]{model, model1});
             }
         }

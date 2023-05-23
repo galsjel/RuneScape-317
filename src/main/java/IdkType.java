@@ -2,6 +2,9 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.IOException;
 
 public class IdkType {
@@ -23,12 +26,27 @@ public class IdkType {
         }
     }
 
-    public final int[] colorSrc = new int[6];
-    public final int[] colorDst = new int[6];
-    public final int[] headModelIDs = {-1, -1, -1, -1, -1};
+    public transient final int[] colorSrc = new int[6];
+    public transient final int[] colorDst = new int[6];
+
+    public transient final Integer[] chatModelIDs = {-1, -1, -1, -1, -1};
+    public transient Integer[] modelIDs;
+
+    @Expose
+    @SerializedName("type")
     public int type = -1;
-    public int[] modelIDs;
-    public boolean selectable = false;
+    @Expose
+    @SerializedName("disabled")
+    public Boolean disabled;
+    @Expose
+    @SerializedName("model")
+    public Model.Ref model;
+    @Expose
+    @SerializedName("chat_model")
+    public Model.Ref chat_model;
+    @Expose
+    @SerializedName("recolors")
+    public Model.Recolor[] recolors;
 
     public IdkType() {
     }
@@ -37,23 +55,26 @@ public class IdkType {
         while (true) {
             int code = in.readU8();
             if (code == 0) {
+                model = Model.ref(modelIDs);
+                chat_model = Model.ref(modelIDs);
+                recolors = Model.Recolor.make(colorSrc, colorDst, i -> i != 0);
                 return;
             } else if (code == 1) {
                 type = in.readU8();
             } else if (code == 2) {
                 int j = in.readU8();
-                modelIDs = new int[j];
+                modelIDs = new Integer[j];
                 for (int k = 0; k < j; k++) {
                     modelIDs[k] = in.readU16();
                 }
             } else if (code == 3) {
-                selectable = true;
+                disabled = true;
             } else if ((code >= 40) && (code < 50)) {
                 colorSrc[code - 40] = in.readU16();
             } else if ((code >= 50) && (code < 60)) {
                 colorDst[code - 50] = in.readU16();
             } else if ((code >= 60) && (code < 70)) {
-                headModelIDs[code - 60] = in.readU16();
+                chatModelIDs[code - 60] = in.readU16();
             } else {
                 System.out.println("Error unrecognised identikit config code: " + code);
             }
@@ -103,7 +124,7 @@ public class IdkType {
     public boolean validateHeadModel() {
         boolean loaded = true;
         for (int i = 0; i < 5; i++) {
-            if ((headModelIDs[i] != -1) && !Model.loaded(headModelIDs[i])) {
+            if ((chatModelIDs[i] != -1) && !Model.loaded(chatModelIDs[i])) {
                 loaded = false;
             }
         }
@@ -114,8 +135,8 @@ public class IdkType {
         Model[] models = new Model[5];
         int i = 0;
         for (int j = 0; j < 5; j++) {
-            if (headModelIDs[j] != -1) {
-                models[i++] = Model.tryGet(headModelIDs[j]);
+            if (chatModelIDs[j] != -1) {
+                models[i++] = Model.tryGet(chatModelIDs[j]);
             }
         }
         Model model = Model.join_prebuilt(i, models);
