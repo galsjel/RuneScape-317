@@ -1897,7 +1897,7 @@ public class Scene {
 
             if (underlay.textureID == -1) {
                 if (underlay.northeastColor != 12345678) {
-                    Draw3D.fillGouraudTriangle(py2, py3, py1, px2, px3, px1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor);
+                    Draw3D.fillGouraudTriangle(px2, py2, px3, py3, px1, py1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor);
                 }
             } else                 if (underlay.flat) {
                 Draw3D.fillTexturedTriangle(py2, py3, py1, px2, px3, px1, underlay.northeastColor, underlay.northwestColor, underlay.southeastColor, x0,x1,x3,y0,y1,y3,z0,z1,z3, underlay.textureID);
@@ -1916,7 +1916,7 @@ public class Scene {
 
             if (underlay.textureID == -1) {
                 if (underlay.southwestColor != 12345678) {
-                    Draw3D.fillGouraudTriangle(py0, py1, py3, px0, px1, px3, underlay.southwestColor, underlay.southeastColor, underlay.northwestColor);
+                    Draw3D.fillGouraudTriangle(px0, py0, px1, py1, px3, py3, underlay.southwestColor, underlay.southeastColor, underlay.northwestColor);
                 }
             } else {
                 Draw3D.fillTexturedTriangle(py0, py1, py3, px0, px1, px3, underlay.southwestColor, underlay.southeastColor, underlay.northwestColor, x0,x1,x3,y0,y1,y3,z0,z1,z3, underlay.textureID);
@@ -1978,7 +1978,7 @@ public class Scene {
 
                 if ((overlay.triangleTextureIDs == null) || (overlay.triangleTextureIDs[f] == -1)) {
                     if (overlay.triangleColorA[f] != 12345678) {
-                        Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f]);
+                        Draw3D.fillGouraudTriangle(x0, y0, x1, y1, x2, y2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f]);
                     }
                 } else if (overlay.flat) {
                     Draw3D.fillTexturedTriangle(y0, y1, y2, x0, x1, x2, overlay.triangleColorA[f], overlay.triangleColorB[f], overlay.triangleColorC[f], SceneTileOverlay.tmpViewspaceX[0],SceneTileOverlay.tmpViewspaceX[1],SceneTileOverlay.tmpViewspaceX[3],SceneTileOverlay.tmpViewspaceY[0],SceneTileOverlay.tmpViewspaceY[1],SceneTileOverlay.tmpViewspaceY[3],SceneTileOverlay.tmpViewspaceZ[0],SceneTileOverlay.tmpViewspaceZ[1],SceneTileOverlay.tmpViewspaceZ[3],overlay.triangleTextureIDs[f]);

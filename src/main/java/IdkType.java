@@ -34,7 +34,10 @@ public class IdkType {
 
     @Expose
     @SerializedName("type")
-    public int type = -1;
+    public String type;
+
+    public int _type = -1;
+
     @Expose
     @SerializedName("disabled")
     public Boolean disabled;
@@ -58,9 +61,25 @@ public class IdkType {
                 model = Model.ref(modelIDs);
                 chat_model = Model.ref(modelIDs);
                 recolors = Model.Recolor.make(colorSrc, colorDst, i -> i != 0);
+                switch (_type) {
+                    case 0 -> type = "male_hair";
+                    case 1 -> type = "male_jaw";
+                    case 2 -> type = "male_torso";
+                    case 3 -> type = "male_arms";
+                    case 4 -> type = "male_hands";
+                    case 5 -> type = "male_legs";
+                    case 6 -> type = "male_feet";
+                    case 7 -> type = "female_hair";
+                    case 8 -> type = "female_jaw";
+                    case 9 -> type = "female_torso";
+                    case 10 -> type = "female_arms";
+                    case 11 -> type = "female_hands";
+                    case 12 -> type = "female_legs";
+                    case 13 -> type = "female_feet";
+                }
                 return;
             } else if (code == 1) {
-                type = in.readU8();
+                _type = in.readU8();
             } else if (code == 2) {
                 int j = in.readU8();
                 modelIDs = new Integer[j];

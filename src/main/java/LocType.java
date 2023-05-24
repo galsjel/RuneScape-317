@@ -2,9 +2,14 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class LocType {
 
@@ -31,6 +36,32 @@ public class LocType {
     public static final int TYPE_ROOFEDGE_L = 20;
     public static final int TYPE_ROOFEDGE_SQUARECORNER = 21;
     public static final int TYPE_GROUND_DECOR = 22;
+
+    public static final String[] TYPE_NAMES = {
+            "wall_straight",
+            "wall_corner_diagonal",
+            "wall_l",
+            "wall_square_corner",
+            "wall_decoration_straight",
+            "wall_decoration_straight_offset",
+            "wall_decoration_diagonal_no_offset",
+            "wall_decoration_diagonal_offset",
+            "wall_decoration_diagonal_both",
+            "wall_diagonal",
+            "centrepiece",
+            "centrepiece_diagonal",
+            "roof_straight",
+            "roof_diagonal",
+            "roof_diagonal_with_roofedge",
+            "roof_l_concave",
+            "roof_l_convex",
+            "roof_flat",
+            "roof_edge_straight",
+            "roof_edge_diagonal_corner",
+            "roof_edge_l",
+            "roof_edge_square_corner",
+            "ground_decoration",
+    };
 
     public static final Model[] TMP_MODELS = new Model[4];
     public static Buffer dat;
@@ -66,6 +97,15 @@ public class LocType {
         return type;
     }
 
+    public static LocType getUncached(int id) {
+        LocType type = new LocType();
+        dat.position = offsets[id];
+        type.index = id;
+        type.reset();
+        type.read(dat);
+        return type;
+    }
+
     public static void unload() {
         modelCacheStatic = null;
         modelCacheDynamic = null;
@@ -90,118 +130,231 @@ public class LocType {
         }
     }
 
-    public boolean important;
-    public byte lightAmbient;
-    public int translateX;
-    public String name;
-    public int scaleY;
-    public byte lightAttenuation;
-    public int sizeX;
-    public int translateY;
-    public int mapfunctionIcon;
-    public int[] dstColor;
-    public int scaleX;
-    public int varp;
-    public boolean invert;
+    @Expose
     public int index = -1;
-    public boolean blocksProjectiles;
-    public int mapsceneIcon;
-    public int[] overrideTypeIDs;
-    public int supportsObj;
-    public int sizeZ;
-    public boolean adjust_to_terrain;
-    public boolean occludes;
-    public boolean decorative;
-    public boolean solid;
-    public int interactionSideFlags;
-    /**
-     * Models flagged as <code>dynamic</code> will <b>always</b> copy their models face information by making <code>copyFaces</code>
-     * equal <code>true</code>.
-     *
-     * @see Model#Model(boolean, boolean, Model)
-     */
-    public boolean dynamic;
-    public int scaleZ;
-    public int[] modelIDs;
-    public int varbit;
-    public int decorOffset;
-    public int[] modelKinds;
+    @Expose
+    public String name;
+    public String[] _options;
+    @Expose
+    public List<String> options;
+    @Expose
     public String examine;
-    public boolean interactable;
-    public boolean castShadow;
-    public int seqID;
+    @Expose
+    public int width;
+    @Expose
+    public int length;
+    @Expose
+    public Integer animation;
+    public Integer unreachable_flags;
+    @Expose
+    public String[] unreachable_sides;
+    @Expose
+    public Boolean block_projectile;
+    @Expose
+    public Boolean block_entity;
+    @Expose
+    public Boolean hill_skew;
+    @Expose
+    public Boolean cast_shadow;
+    @Expose
+    public Boolean dynamic;
+    @Expose
+    public Boolean important;
+    @Expose
+    public Boolean interactable;
+    @Expose
+    public Boolean mirror_z;
+    @Expose
+    public Boolean occlude;
+    @Expose
+    public Integer wall_offset;
+    @Expose
+    public Integer mapfunction;
+    @Expose
+    public Integer mapscene;
+    @Expose
+    public Boolean support_items;
+    @Expose
+    public Integer varbit;
+    @Expose
+    public Integer varp;
+    @Expose
+    public int[] overrides;
+    public int scaleX;
+    public int scaleY;
+    public int scaleZ;
+    public int translateX;
+    public int translateY;
     public int translateZ;
-    public int[] srcColor;
-    public String[] options;
+    public int[] color_dst;
+    public int[] model_ids;
+    public int[] model_types;
+    public int[] color_src;
+    public boolean _decorative;
+    public byte _ambient;
+    public byte _contrast;
+    @Expose
+    public Model.Light light;
+    @Expose
+    @SerializedName("model")
+    public Map<String, Model.Ref> models;
+    @Expose
+    public Model.Recolor[] recolors;
 
     public LocType() {
     }
 
+    static <T> List<T> trim(List<T> list, Predicate<T> isEmpty) {
+        ListIterator<T> it = list.listIterator();
+        while (it.hasNext() && isEmpty.test(it.next())) {
+            it.remove();
+        }
+        it = list.listIterator(list.size());
+        while (it.hasPrevious() && isEmpty.test(it.previous())) {
+            it.remove();
+        }
+        return list;
+    }
+
+    public void prepareExport() {
+        if (_options != null) {
+            options = trim(Arrays.stream(_options).map(a->a == null ? "hidden" : a).collect(Collectors.toList()), s -> s.equals("hidden"));
+        }
+        if (_ambient != 0 || _contrast != 0) {
+            light = new Model.Light();
+            if (_ambient != 0) {
+                light.ambient = (int) _ambient;
+            }
+            if (_contrast != 0) {
+                light.contrast = (int) _contrast;
+            }
+        }
+
+        if (model_ids != null && model_ids.length > 0) {
+            models = new HashMap<>();
+            for (int i = 0; i < model_ids.length; i++) {
+                Model.Ref ref = Model.ref(model_ids[i]);
+                int type = 10;
+                if (model_types != null) {
+                    type = model_types[i];
+                }
+                if (translateX != 0) ref.translateX = translateX;
+                if (translateY != 0) ref.translateY = translateY;
+                if (translateZ != 0) ref.translateZ = translateZ;
+                if (scaleX != 128) ref.scaleX = scaleX;
+                if (scaleY != 128) ref.scaleY = scaleY;
+                if (scaleZ != 128) ref.scaleZ = scaleZ;
+                models.put(TYPE_NAMES[type], ref);
+            }
+        }
+
+        if (unreachable_flags != 0) {
+            int count = Integer.bitCount(unreachable_flags);
+            unreachable_sides = new String[count];
+            int added = 0;
+            final String[] sides = {"back", "left", "front", "right"};
+            for (int i = 0; i < sides.length; i++) {
+                if ((unreachable_flags&(1<<i))!=0) {
+                    unreachable_sides[added++] = sides[i];
+                }
+            }
+        }
+
+        recolors = Model.Recolor.make(color_src, color_dst);
+
+        if (animation == -1) {
+            animation = null;
+        }
+        if (wall_offset == 16) {
+            wall_offset = null;
+        }
+        if (mapfunction == -1) {
+            mapfunction = null;
+        }
+        if (mapscene == -1) {
+            mapscene = null;
+        }
+        if (!mirror_z) {
+            mirror_z = null;
+        }
+        if (unreachable_flags == 0) {
+            unreachable_flags = null;
+        }
+        if (!important) {
+            important = null;
+        }
+        if (varbit == -1) {
+            varbit = null;
+        }
+        if (varp == -1) {
+            varp = null;
+        }
+    }
+
     public void reset() {
-        modelIDs = null;
-        modelKinds = null;
+        model_ids = null;
+        model_types = null;
         name = null;
         examine = null;
-        srcColor = null;
-        dstColor = null;
-        sizeX = 1;
-        sizeZ = 1;
-        solid = true;
-        blocksProjectiles = true;
+        color_src = null;
+        color_dst = null;
+        width = 1;
+        length = 1;
+        block_entity = true;
+        block_projectile = true;
         interactable = false;
-        adjust_to_terrain = false;
+        hill_skew = false;
         dynamic = false;
-        occludes = false;
-        seqID = -1;
-        decorOffset = 16;
-        lightAmbient = 0;
-        lightAttenuation = 0;
-        options = null;
-        mapfunctionIcon = -1;
-        mapsceneIcon = -1;
-        invert = false;
-        castShadow = true;
+        occlude = false;
+        animation = -1;
+        wall_offset = 16;
+        _ambient = 0;
+        _contrast = 0;
+        _options = null;
+        mapfunction = -1;
+        mapscene = -1;
+        mirror_z = false;
+        cast_shadow = true;
         scaleX = 128;
         scaleZ = 128;
         scaleY = 128;
-        interactionSideFlags = 0;
+        unreachable_flags = 0;
         translateX = 0;
         translateY = 0;
         translateZ = 0;
         important = false;
-        decorative = false;
-        supportsObj = -1;
+        _decorative = false;
         varbit = -1;
         varp = -1;
-        overrideTypeIDs = null;
+        overrides = null;
     }
 
     public void prefetch(OnDemand onDemand) {
-        if (modelIDs == null) {
+        if (model_ids == null) {
             return;
         }
-        for (int modelID : modelIDs) {
+        for (int modelID : model_ids) {
             onDemand.prefetch(modelID & 0xffff, 0);
         }
     }
 
     public boolean validate(int kind) {
-        if (modelKinds == null) {
-            if (modelIDs == null) {
+        if (model_types == null) {
+            if (model_ids == null) {
                 return true;
             }
             if (kind != 10) {
                 return true;
             }
             boolean valid = true;
-            for (int modelID : modelIDs) {
+            for (int modelID : model_ids) {
                 valid &= Model.loaded(modelID & 0xffff);
             }
             return valid;
         }
-        for (int i = 0; i < modelKinds.length; i++) {
-            if (modelKinds[i] == kind) {
-                return Model.loaded(modelIDs[i] & 0xffff);
+        for (int i = 0; i < model_types.length; i++) {
+            if (model_types[i] == kind) {
+                return Model.loaded(model_ids[i] & 0xffff);
             }
         }
         return true;
@@ -214,11 +367,11 @@ public class LocType {
             return null;
         }
 
-        if (adjust_to_terrain || dynamic) {
-            model = Model.clone_object(adjust_to_terrain, dynamic, model);
+        if (hill_skew || dynamic) {
+            model = Model.clone_object(hill_skew, dynamic, model);
         }
 
-        if (adjust_to_terrain) {
+        if (hill_skew) {
             int groundY = (heightmapSW + heightmapSE + heightmapNE + heightmapNW) / 4;
             for (int i = 0; i < model.vertexCount; i++) {
                 int x = model.vertexX[i];
@@ -234,11 +387,11 @@ public class LocType {
     }
 
     public boolean validate() {
-        if (modelIDs == null) {
+        if (model_ids == null) {
             return true;
         }
         boolean ok = true;
-        for (int modelID : modelIDs) {
+        for (int modelID : model_ids) {
             ok &= Model.loaded(modelID & 0xffff);
         }
         return ok;
@@ -258,10 +411,10 @@ public class LocType {
             value = game.varps[varp];
         }
 
-        if ((value < 0) || (value >= overrideTypeIDs.length) || (overrideTypeIDs[value] == -1)) {
+        if ((value < 0) || (value >= overrides.length) || (overrides[value] == -1)) {
             return null;
         } else {
-            return get(overrideTypeIDs[value]);
+            return get(overrides[value]);
         }
     }
 
@@ -269,7 +422,7 @@ public class LocType {
         Model model = null;
         long bitset;
 
-        if (modelKinds == null) {
+        if (model_types == null) {
             if (kind != 10) {
                 return null;
             }
@@ -281,17 +434,17 @@ public class LocType {
                 return cached;
             }
 
-            if (modelIDs == null) {
+            if (model_ids == null) {
                 return null;
             }
 
-            boolean flip = invert ^ (rotation > 3);
-            int modelCount = modelIDs.length;
+            boolean mirror = this.mirror_z ^ (rotation > 3);
+            int modelCount = model_ids.length;
 
             for (int i = 0; i < modelCount; i++) {
-                int modelID = modelIDs[i];
+                int modelID = model_ids[i];
 
-                if (flip) {
+                if (mirror) {
                     modelID += 0x10000;
                 }
 
@@ -301,8 +454,8 @@ public class LocType {
                     if (model == null) {
                         return null;
                     }
-                    if (flip) {
-                        model.rotateY180();
+                    if (mirror) {
+                        model.mirrorZ();
                     }
                     modelCacheStatic.put((long) modelID, model);
                 }
@@ -318,8 +471,8 @@ public class LocType {
         } else {
             int kindIndex = -1;
 
-            for (int i = 0; i < modelKinds.length; i++) {
-                if (modelKinds[i] != kind) {
+            for (int i = 0; i < model_types.length; i++) {
+                if (model_types[i] != kind) {
                     continue;
                 }
                 kindIndex = i;
@@ -338,10 +491,10 @@ public class LocType {
                 return cached;
             }
 
-            int modelID = modelIDs[kindIndex];
-            boolean flip = invert ^ (rotation > 3);
+            int modelID = model_ids[kindIndex];
+            boolean mirror = this.mirror_z ^ (rotation > 3);
 
-            if (flip) {
+            if (mirror) {
                 modelID += 0x10000;
             }
 
@@ -354,8 +507,8 @@ public class LocType {
                     return null;
                 }
 
-                if (flip) {
-                    model.rotateY180();
+                if (mirror) {
+                    model.mirrorZ();
                 }
 
                 modelCacheStatic.put((long) modelID, model);
@@ -365,7 +518,7 @@ public class LocType {
         boolean scaled = (scaleX != 128) || (scaleZ != 128) || (scaleY != 128);
         boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
 
-        Model modified = Model.clone(srcColor == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
+        Model modified = Model.clone(color_src == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
 
         if (transformID != -1) {
             modified.build_labels();
@@ -378,9 +531,9 @@ public class LocType {
             modified.rotateY90();
         }
 
-        if (srcColor != null) {
-            for (int k2 = 0; k2 < srcColor.length; k2++) {
-                modified.recolor(srcColor[k2], dstColor[k2]);
+        if (color_src != null) {
+            for (int k2 = 0; k2 < color_src.length; k2++) {
+                modified.recolor(color_src[k2], color_dst[k2]);
             }
         }
 
@@ -392,9 +545,9 @@ public class LocType {
             modified.translate(translateX, translateY, translateZ);
         }
 
-        modified.build(64 + lightAmbient, 768 + (lightAttenuation * 5), -50, -10, -50, !dynamic);
+        modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, !dynamic);
 
-        if (supportsObj == 1) {
+        if (support_items) {
             modified.objRaise = modified.minY;
         }
 
@@ -413,12 +566,12 @@ public class LocType {
             } else if (code == 1) {
                 int k = buffer.readU8();
                 if (k > 0) {
-                    if ((modelIDs == null)) {
-                        modelKinds = new int[k];
-                        modelIDs = new int[k];
+                    if ((model_ids == null)) {
+                        model_types = new int[k];
+                        model_ids = new int[k];
                         for (int k1 = 0; k1 < k; k1++) {
-                            modelIDs[k1] = buffer.readU16();
-                            modelKinds[k1] = buffer.readU8();
+                            model_ids[k1] = buffer.readU16();
+                            model_types[k1] = buffer.readU8();
                         }
                     } else {
                         buffer.position += k * 3;
@@ -431,24 +584,24 @@ public class LocType {
             } else if (code == 5) {
                 int modelCount = buffer.readU8();
                 if (modelCount > 0) {
-                    if ((modelIDs == null)) {
-                        modelKinds = null;
-                        modelIDs = new int[modelCount];
+                    if ((model_ids == null)) {
+                        model_types = null;
+                        model_ids = new int[modelCount];
                         for (int l1 = 0; l1 < modelCount; l1++) {
-                            modelIDs[l1] = buffer.readU16();
+                            model_ids[l1] = buffer.readU16();
                         }
                     } else {
                         buffer.position += modelCount * 2;
                     }
                 }
             } else if (code == 14) {
-                sizeX = buffer.readU8();
+                width = buffer.readU8();
             } else if (code == 15) {
-                sizeZ = buffer.readU8();
+                length = buffer.readU8();
             } else if (code == 17) {
-                solid = false;
+                block_entity = false;
             } else if (code == 18) {
-                blocksProjectiles = false;
+                block_projectile = false;
             } else if (code == 19) {
                 interactable = buffer.readU8();
 
@@ -456,44 +609,44 @@ public class LocType {
                     this.interactable = true;
                 }
             } else if (code == 21) {
-                adjust_to_terrain = true;
+                hill_skew = true;
             } else if (code == 22) {
                 dynamic = true;
             } else if (code == 23) {
-                occludes = true;
+                occlude = true;
             } else if (code == 24) {
-                seqID = buffer.readU16();
-                if (seqID == 65535) {
-                    seqID = -1;
+                animation = buffer.readU16();
+                if (animation == 65535) {
+                    animation = -1;
                 }
             } else if (code == 28) {
-                decorOffset = buffer.readU8();
+                wall_offset = buffer.readU8();
             } else if (code == 29) {
-                lightAmbient = buffer.read8();
+                _ambient = buffer.read8();
             } else if (code == 39) {
-                lightAttenuation = buffer.read8();
+                _contrast = buffer.read8();
             } else if ((code >= 30) && (code < 39)) {
-                if (options == null) {
-                    options = new String[5];
+                if (_options == null) {
+                    _options = new String[5];
                 }
-                options[code - 30] = buffer.readString();
-                if (options[code - 30].equalsIgnoreCase("hidden")) {
-                    options[code - 30] = null;
+                _options[code - 30] = buffer.readString();
+                if (_options[code - 30].equalsIgnoreCase("hidden")) {
+                    _options[code - 30] = null;
                 }
             } else if (code == 40) {
                 int recolorCount = buffer.readU8();
-                srcColor = new int[recolorCount];
-                dstColor = new int[recolorCount];
+                color_src = new int[recolorCount];
+                color_dst = new int[recolorCount];
                 for (int i = 0; i < recolorCount; i++) {
-                    srcColor[i] = buffer.readU16();
-                    dstColor[i] = buffer.readU16();
+                    color_src[i] = buffer.readU16();
+                    color_dst[i] = buffer.readU16();
                 }
             } else if (code == 60) {
-                mapfunctionIcon = buffer.readU16();
+                mapfunction = buffer.readU16();
             } else if (code == 62) {
-                invert = true;
+                mirror_z = true;
             } else if (code == 64) {
-                castShadow = false;
+                cast_shadow = false;
             } else if (code == 65) {
                 scaleX = buffer.readU16();
             } else if (code == 66) {
@@ -501,9 +654,9 @@ public class LocType {
             } else if (code == 67) {
                 scaleY = buffer.readU16();
             } else if (code == 68) {
-                mapsceneIcon = buffer.readU16();
+                mapscene = buffer.readU16();
             } else if (code == 69) {
-                interactionSideFlags = buffer.readU8();
+                unreachable_flags = buffer.readU8();
             } else if (code == 70) {
                 translateX = buffer.read16();
             } else if (code == 71) {
@@ -513,9 +666,9 @@ public class LocType {
             } else if (code == 73) {
                 important = true;
             } else if (code == 74) {
-                decorative = true;
+                _decorative = true;
             } else if (code == 75) {
-                supportsObj = buffer.readU8();
+                support_items = buffer.readU8() == 1;
             } else if (code == 77) {
                 varbit = buffer.readU16();
 
@@ -530,13 +683,13 @@ public class LocType {
                 }
 
                 int overrideCount = buffer.readU8();
-                overrideTypeIDs = new int[overrideCount + 1];
+                overrides = new int[overrideCount + 1];
 
                 for (int i = 0; i <= overrideCount; i++) {
-                    overrideTypeIDs[i] = buffer.readU16();
+                    overrides[i] = buffer.readU16();
 
-                    if (overrideTypeIDs[i] == 65535) {
-                        overrideTypeIDs[i] = -1;
+                    if (overrides[i] == 65535) {
+                        overrides[i] = -1;
                     }
                 }
             }
@@ -544,20 +697,20 @@ public class LocType {
 
         // no code 19
         if (interactable == -1) {
-            this.interactable = (modelIDs != null) && ((modelKinds == null) || (modelKinds[0] == 10));
+            this.interactable = (model_ids != null) && ((model_types == null) || (model_types[0] == 10));
 
-            if (options != null) {
+            if (_options != null) {
                 this.interactable = true;
             }
         }
 
-        if (decorative) {
-            solid = false;
-            blocksProjectiles = false;
+        if (_decorative) {
+            block_entity = false;
+            block_projectile = false;
         }
-        
-        if (supportsObj == -1) {
-            supportsObj = solid ? 1 : 0;
+
+        if (support_items == null) {
+            support_items = block_entity;
         }
     }
 

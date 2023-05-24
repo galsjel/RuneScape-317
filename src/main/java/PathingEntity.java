@@ -68,7 +68,7 @@ public class PathingEntity extends Drawable {
     }
 
     public void move(int x, int z, boolean teleport) {
-        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].idleStyle == 1)) {
+        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID]._idle_type == 1)) {
             primarySeqID = -1;
         }
         if (!teleport) {
@@ -143,7 +143,7 @@ public class PathingEntity extends Drawable {
             nextZ--;
         }
 
-        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID].idleStyle == 1)) {
+        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID]._idle_type == 1)) {
             primarySeqID = -1;
         }
 

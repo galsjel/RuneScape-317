@@ -71,7 +71,7 @@ public class ProjectileEntity extends Drawable {
         int transformID = -1;
 
         if (spotanim.seq != null) {
-            transformID = spotanim.seq.transforms[seqFrame];
+            transformID = spotanim.seq.primary_transforms[seqFrame];
         }
 
         Model model = Model.clone(true, SeqTransform.isNull(transformID), false, tmp);

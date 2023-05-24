@@ -41,7 +41,7 @@ public class LocEntity extends Drawable {
         LocType type = LocType.get(this.id);
         varbit = type.varbit;
         varp = type.varp;
-        overrideTypeIDs = type.overrideTypeIDs;
+        overrideTypeIDs = type.overrides;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class LocEntity extends Drawable {
             seqCycle = Game.loopCycle - delta;
 
             if (seq != null) {
-                transformID = seq.transforms[seqFrame];
+                transformID = seq.primary_transforms[seqFrame];
             }
         }
 

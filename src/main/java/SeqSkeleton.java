@@ -26,9 +26,10 @@ public class SeqSkeleton {
      * @see #OP_SCALE
      * @see #OP_ALPHA
      */
+    public final int[] _base_types;
+
     @Expose
-    @SerializedName("base_types")
-    public final int[] baseTypes;
+    public final String[] base_types;
     /**
      * The labels belonging to the base.
      *
@@ -45,10 +46,20 @@ public class SeqSkeleton {
      */
     public SeqSkeleton(Buffer in) {
         final int length = in.readU8();
-        baseTypes = new int[length];
+        _base_types = new int[length];
         baseLabels = new int[length][];
         for (int group = 0; group < length; group++) {
-            baseTypes[group] = in.readU8();
+            _base_types[group] = in.readU8();
+        }
+        base_types = new String[length];
+        for (int i = 0; i < length; i++) {
+            switch (_base_types[i]) {
+                case 0 -> base_types[i] = "origin";
+                case 1 -> base_types[i] = "translate";
+                case 2 -> base_types[i] = "rotate";
+                case 3 -> base_types[i] = "scale";
+                case 5 -> base_types[i] = "transparency";
+            }
         }
         for (int group = 0; group < length; group++) {
             int count = in.readU8();

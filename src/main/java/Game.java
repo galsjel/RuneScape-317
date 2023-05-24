@@ -2,18 +2,14 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3)
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.math3.random.ISAACRandom;
 
-import javax.imageio.ImageIO;
-import javax.lang.model.SourceVersion;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.DataInputStream;
 import java.io.EOFException;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
@@ -105,7 +101,6 @@ public class Game extends GameShell {
         nodeID = Integer.parseInt(args[0]);
         portOffset = Integer.parseInt(args[1]);
 
-
         if (args[3].equals("free")) {
             members = false;
         } else if (args[3].equals("members")) {
@@ -144,7 +139,6 @@ public class Game extends GameShell {
             return "@yel@";
         }
     }
-
 
     public final int[] LOC_KIND_TO_CLASS_ID = {0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
     /**
@@ -1002,12 +996,20 @@ public class Game extends GameShell {
             System.out.println(tmp);
 
             try {
-                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
                 Files.writeString(Paths.get("out/animations.json"), gson.toJson(SeqType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/animation_transforms.json"), gson.toJson(SeqTransform.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/animation_skeletons.json"), gson.toJson(SeqTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/spotanims.json"), gson.toJson(SpotAnimType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/identikits.json"), gson.toJson(IdkType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+                LocType[] locs = new LocType[LocType.count];
+                for (int i = 0; i < locs.length; i++) {
+                    locs[i] = LocType.getUncached(i);
+                    locs[i].prepareExport();
+                }
+                Files.writeString(Paths.get("out/objects.json"), gson.toJson(locs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/varbits.json"), gson.toJson(VarbitType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1752,7 +1754,6 @@ public class Game extends GameShell {
 
             scene.setMinLevel(0);
 
-
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
                     sortObjStacks(x, z);
@@ -1960,7 +1961,7 @@ public class Game extends GameShell {
 
                 bitset = (bitset >> 14) & 0x7fff;
 
-                int func = LocType.get(bitset).mapfunctionIcon;
+                int func = LocType.get(bitset).mapfunction;
 
                 if (func < 0) {
                     continue;
@@ -3058,7 +3059,7 @@ public class Game extends GameShell {
         for (int part = 0; part < 7; part++) {
             designIdentikits[part] = -1;
             for (int kit = 0; kit < IdkType.count; kit++) {
-                if (Boolean.TRUE.equals(IdkType.instances[kit].disabled) || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7)))) {
+                if (Boolean.TRUE.equals(IdkType.instances[kit].disabled) || (IdkType.instances[kit]._type != (part + (designGenderMale ? 0 : 7)))) {
                     continue;
                 }
                 designIdentikits[part] = kit;
@@ -3224,7 +3225,7 @@ public class Game extends GameShell {
                     if ((direction == 1) && (++kit >= IdkType.count)) {
                         kit = 0;
                     }
-                } while (IdkType.instances[kit].disabled || (IdkType.instances[kit].type != (part + (designGenderMale ? 0 : 7))));
+                } while (Boolean.TRUE.equals(IdkType.instances[kit].disabled) || (IdkType.instances[kit]._type != (part + (designGenderMale ? 0 : 7))));
 
                 designIdentikits[part] = kit;
                 updateDesignModel = true;
@@ -3369,7 +3370,7 @@ public class Game extends GameShell {
         int delay = in.readU8C();
 
         if ((seqID == player.primarySeqID) && (seqID != -1)) {
-            int style = SeqType.instances[seqID].replayStyle;
+            int style = SeqType.instances[seqID]._replay_type;
 
             if (style == 1) {
                 player.primarySeqFrame = 0;
@@ -3508,12 +3509,12 @@ public class Game extends GameShell {
             int locID = (bitset >> 14) & 0x7fff;
             LocType type = LocType.get(locID);
 
-            if (type.mapsceneIcon != -1) {
-                Image8 icon = imageMapscene[type.mapsceneIcon];
+            if (type.mapscene != -1) {
+                Image8 icon = imageMapscene[type.mapscene];
                 if (icon != null) {
-                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
-                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
+                    int offsetX = ((type.width * 4) - icon.width) / 2;
+                    int offsetY = ((type.length * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             } else {
                 if ((kind == 0) || (kind == 2)) {
@@ -3585,13 +3586,13 @@ public class Game extends GameShell {
             int locID = (bitset >> 14) & 0x7fff;
             LocType type = LocType.get(locID);
 
-            if (type.mapsceneIcon != -1) {
-                Image8 icon = imageMapscene[type.mapsceneIcon];
+            if (type.mapscene != -1) {
+                Image8 icon = imageMapscene[type.mapscene];
 
                 if (icon != null) {
-                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
-                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
+                    int offsetX = ((type.width * 4) - icon.width) / 2;
+                    int offsetY = ((type.length * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             } else if (kind == 9) {
                 int rgb = 0xEEEEEE;
@@ -3623,13 +3624,13 @@ public class Game extends GameShell {
             int locID = (bitset >> 14) & 0x7fff;
             LocType type = LocType.get(locID);
 
-            if (type.mapsceneIcon != -1) {
-                Image8 icon = imageMapscene[type.mapsceneIcon];
+            if (type.mapscene != -1) {
+                Image8 icon = imageMapscene[type.mapscene];
 
                 if (icon != null) {
-                    int offsetX = ((type.sizeX * 4) - icon.width) / 2;
-                    int offsetY = ((type.sizeZ * 4) - icon.height) / 2;
-                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.sizeZ) * 4) + offsetY);
+                    int offsetX = ((type.width * 4) - icon.width) / 2;
+                    int offsetY = ((type.length * 4) - icon.height) / 2;
+                    icon.blit(48 + (tileX * 4) + offsetX, 48 + ((104 - tileZ - type.length) * 4) + offsetY);
                 }
             }
         }
@@ -4507,13 +4508,13 @@ public class Game extends GameShell {
             int width;
             int length;
             if ((angle == 0) || (angle == 2)) {
-                width = loc.sizeX;
-                length = loc.sizeZ;
+                width = loc.width;
+                length = loc.length;
             } else {
-                width = loc.sizeZ;
-                length = loc.sizeX;
+                width = loc.length;
+                length = loc.width;
             }
-            int interactionFlags = loc.interactionSideFlags;
+            int interactionFlags = loc.unreachable_flags;
             if (angle != 0) {
                 interactionFlags = ((interactionFlags << angle) & 0xf) + (interactionFlags >> (4 - angle));
             }
@@ -5790,7 +5791,7 @@ public class Game extends GameShell {
 
         LocType loc = LocType.get(id);
 
-        if (loc.overrideTypeIDs != null) {
+        if (loc.overrides != null) {
             loc = loc.getOverrideType();
         }
 
@@ -5805,10 +5806,10 @@ public class Game extends GameShell {
                 addMenuOption(spellCaption + " @cya@" + loc.name, 956, x, z, bitset);
             }
         } else {
-            if (loc.options != null) {
+            if (loc._options != null) {
                 for (int op = 4; op >= 0; op--) {
-                    if (loc.options[op] != null) {
-                        addMenuOption(loc.options[op] + " @cya@" + loc.name, LOC_OP_ACTION[op], x, z, bitset);
+                    if (loc._options[op] != null) {
+                        addMenuOption(loc._options[op] + " @cya@" + loc.name, LOC_OP_ACTION[op], x, z, bitset);
                     }
                 }
             }
@@ -6393,7 +6394,6 @@ public class Game extends GameShell {
                     int kit = designIdentikits[part];
                     if (kit >= 0) {
                         models[modelCount++] = IdkType.instances[kit].getModel();
-                        System.out.println("IdkType.instances[kit].modelIDs = " + Arrays.toString(IdkType.instances[kit].modelIDs));
                     }
                 }
 
@@ -6407,46 +6407,9 @@ public class Game extends GameShell {
                     }
                 }
 
-                try {
-                    Gson gson = new Gson();
-                    Files.writeString(Paths.get("out/mdl/bob_unlit.json"), gson.toJson(model), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
                 model.build_labels();
-                model.transform(SeqType.instances[localPlayer.seqStandID].transforms[0]);
-                System.out.println("localPlayer.seqStandID = " + localPlayer.seqStandID);
+                model.transform(SeqType.instances[localPlayer.seqStandID].primary_transforms[0]);
                 model.build(64, 850, -30, -50, -30, true);
-
-                BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
-                int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-                Draw2D.bind(pixels, 512, 512);
-                Draw3D.init3D(512, 512);
-                Draw3D.jagged = false;
-                Model.face_counter = 0;
-                model.drawSimple(0, 0, 0, 0, 0, 128, 256);
-                model.drawSimple(64, 0, 0, 0, -64, 128, 512);
-                model.drawSimple(128, 0, 0, 0, -64, 128, 384);
-                model.drawSimple(256, 0, 0, 0, -64, 128, 256);
-                model.drawSimple(2047 - 256, 0, 0, 0, 64, 128, 256);
-                model.drawSimple(2047 - 128, 0, 0, 0, 64, 96, 256);
-                model.drawSimple(2047 - 64, 0, 0, 0, 64, 64, 256);
-                System.out.println("Model.face_counter = " + Model.face_counter);
-                Draw3D.jagged = true;
-
-                try {
-                    for (int i = 0; i  <512*512; i++) {
-                        if (pixels[i]>0) {
-                            pixels[i] |= 255<<24;
-                        }
-                    }
-                    ImageIO.write(image, "png", new File("out/bob.png"));
-                    Gson gson = new Gson();
-                    Files.writeString(Paths.get("out/mdl/bob_lit.json"), gson.toJson(model), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
                 iface.modelType = IfType.MODEL_TYPE_PLAYER_DESIGN;
                 iface.modelID = 0;
@@ -7565,16 +7528,16 @@ public class Game extends GameShell {
 
         int delay = in.readU8();
         if ((seqID == npc.primarySeqID) && (seqID != -1)) {
-            int style = SeqType.instances[seqID].replayStyle;
+            int style = SeqType.instances[seqID]._replay_type;
 
-            if (style == 0) {
+            if (style == 1) {
                 npc.primarySeqFrame = 0;
                 npc.primarySeqCycle = 0;
                 npc.primarySeqDelay = delay;
                 npc.primarySeqLoop = 0;
             }
 
-            if (style == 1) {
+            if (style == 2) {
                 npc.primarySeqLoop = 0;
             }
         } else if ((seqID == -1) || (npc.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[npc.primarySeqID].priority)) {
@@ -8067,14 +8030,14 @@ public class Game extends GameShell {
 
             // if we're moving, and our move style is 0:
             //      Move faster[, and look a tile/entity if applicable.] (Side effects of seqTrigger)
-            if ((entity.seqPathLength > 0) && (seq.moveStyle == 0)) {
+            if ((entity.seqPathLength > 0) && (seq._move_type == 0)) {
                 entity.seqTrigger++;
                 return;
             }
 
             // if we're stationary, and our idle style is 0:
             //      Look at a tile/entity if applicable. (Side effect of seqTrigger)
-            if ((entity.seqPathLength <= 0) && (seq.idleStyle == 0)) {
+            if ((entity.seqPathLength <= 0) && (seq._idle_type == 0)) {
                 entity.seqTrigger++;
                 return;
             }
@@ -8311,7 +8274,7 @@ public class Game extends GameShell {
 
             // we're moving, and it's not due to a force move:
             //  pause primary sequence
-            if ((seq.moveStyle == 1) && (e.seqPathLength > 0) && (e.forceMoveEndCycle <= loopCycle) && (e.forceMoveStartCycle < loopCycle)) {
+            if ((seq._move_type == 1) && (e.seqPathLength > 0) && (e.forceMoveEndCycle <= loopCycle) && (e.forceMoveStartCycle < loopCycle)) {
                 e.primarySeqDelay = 1;
                 return;
             }
@@ -8971,7 +8934,7 @@ public class Game extends GameShell {
             model = iface.getModel(-1, -1, active);
         } else {
             SeqType type = SeqType.instances[seqID];
-            model = iface.getModel(type.transforms[iface.seqFrame], type.aux_transforms[iface.seqFrame], active);
+            model = iface.getModel(type.primary_transforms[iface.seqFrame], type.secondary_transforms[iface.seqFrame], active);
         }
 
         if (model != null) {
@@ -10672,12 +10635,12 @@ public class Game extends GameShell {
                 player.locStartCycle = delay + loopCycle;
                 player.locStopCycle = duration + loopCycle;
                 player.locModel = model;
-                int sizeX = type.sizeX;
-                int sizeZ = type.sizeZ;
+                int sizeX = type.width;
+                int sizeZ = type.length;
 
                 if ((rotation == 1) || (rotation == 3)) {
-                    sizeX = type.sizeZ;
-                    sizeZ = type.sizeX;
+                    sizeX = type.length;
+                    sizeZ = type.width;
                 }
 
                 player.locOffsetX = (x * 128) + (sizeX * 64);
@@ -10829,40 +10792,6 @@ public class Game extends GameShell {
             if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
                 final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
 
-                for (int i = 0; i < ObjType.count; i++) {
-                    try {
-                        ImageIO.write(ObjType.getIcon(i, 1, 0).toBufferedImage(), "png", Paths.get("out/item/"+i+".png").toFile());
-                        ImageIO.write(ObjType.getIcon(i, 1, 0xFFFFFF).toBufferedImage(), "png", Paths.get("out/item/"+i+"_selected.png").toFile());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                ObjType coins = ObjType.get(995);
-
-                try {
-                    Gson gson = new Gson();
-                    for (int count : coins.stackCount) {
-                        Files.writeString(Paths.get("out/item/coins_" + count + ".json"),gson.toJson(coins.getLitModel(count)), options);
-                   }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-                for (int i : new int[]{995}) {
-
-                }
-
-                for (int id : new int[]{2535}) {
-                    Gson gson = new Gson();
-                    Model model = Model.get(id);
-                    try {
-                        Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
                 for (int id : new int[]{0, 20, 33, 135, 147, 148, 336, 2558}) {
                     try {
                         Gson gson = new Gson();
@@ -10887,7 +10816,7 @@ public class Game extends GameShell {
 
                         model.rotateX(384);
                         model.rotateY90();
-                        model.rotateY180();
+                        model.mirrorZ();
                         Files.write(Paths.get("out/", id + "_6.json"), gson.toJson(model).getBytes(), options);
 
                         model.translate(40, 69, 120);
@@ -11057,8 +10986,8 @@ public class Game extends GameShell {
             if (classID == 0) {
                 scene.removeWall(x, level, z);
                 LocType type = LocType.get(otherID);
-                if (type.solid) {
-                    levelCollisionMap[level].remove(x, z, otherRotation, otherKind, type.blocksProjectiles);
+                if (type.block_entity) {
+                    levelCollisionMap[level].remove(x, z, otherRotation, otherKind, type.block_projectile);
                 }
             }
 
@@ -11070,12 +10999,12 @@ public class Game extends GameShell {
                 scene.removeLoc(level, x, z);
                 LocType type = LocType.get(otherID);
 
-                if (((x + type.sizeX) > 103) || ((z + type.sizeX) > 103) || ((x + type.sizeZ) > 103) || ((z + type.sizeZ) > 103)) {
+                if (((x + type.width) > 103) || ((z + type.width) > 103) || ((x + type.length) > 103) || ((z + type.length) > 103)) {
                     return;
                 }
 
-                if (type.solid) {
-                    levelCollisionMap[level].remove(otherRotation, type.sizeX, x, z, type.sizeZ, type.blocksProjectiles);
+                if (type.block_entity) {
+                    levelCollisionMap[level].remove(otherRotation, type.width, x, z, type.length, type.block_projectile);
                 }
             }
 
@@ -11083,7 +11012,7 @@ public class Game extends GameShell {
                 scene.removeGroundDecoration(level, x, z);
                 LocType type = LocType.get(otherID);
 
-                if (type.solid && type.interactable) {
+                if (type.block_entity && type.interactable) {
                     levelCollisionMap[level].removeSolid(x, z);
                 }
             }

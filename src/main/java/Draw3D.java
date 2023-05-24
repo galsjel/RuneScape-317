@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Draw3D {
@@ -494,7 +493,7 @@ public class Draw3D {
                 int y2 = y + (int) (Math.sin(angle + turn * 2) * radius);
 
                 Draw2D.bind(pix0, imageSize, imageSize);
-                fillGouraudTriangle(y0, y1, y2, x0, x1, x2, 1, 64, 127);
+                fillGouraudTriangle(x0, y0, x1, y1, x2, y2, 1, 64, 127);
 
                 Draw2D.bind(pix1, imageSize, imageSize);
                 fillTriangle(y0, y1, y2, x0, x1, x2, 0xFFFFFF);
@@ -535,7 +534,7 @@ public class Draw3D {
                 int y2 = y + (int) (Math.sin(angle + turn * 2) * radius);
 
                 Draw2D.bind(pix0, imageSize, imageSize);
-                fillGouraudTriangle(y0, y1, y2, x0, x1, x2, 1, 64, 127);
+                fillGouraudTriangle(x0, y0, x1, y1, x2, y2, 1, 64, 127);
 
             }
         }
@@ -560,7 +559,11 @@ public class Draw3D {
      * @param colorB the color for corner B.
      * @param colorC the color for corner C.
      */
-    public static void fillGouraudTriangle(int yA, int yB, int yC, int xA, int xB, int xC, int colorA, int colorB, int colorC) {
+    public static boolean debug = false;
+    public static void fillGouraudTriangle(int xA, int yA, int xB, int yB, int xC, int yC, int colorA, int colorB, int colorC) {
+        if (debug) {
+            System.out.println("fillGouraudTriangle xA = " + xA + ", yA = " + yA + ", xB = " + xB + ", yB = " + yB + ", xC = " + xC + ", yC = " + yC + ", colorA = " + colorA + ", colorB = " + colorB + ", colorC = " + colorC);
+        }
         int xStepAB = 0;
         int xStepBC = 0;
         int xStepAC = 0;

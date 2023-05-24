@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
+
 import java.io.IOException;
 
 public class VarbitType {
@@ -27,14 +29,17 @@ public class VarbitType {
         }
     }
 
+    @Expose
     public int varp;
     /**
      * The least significant bit.
      */
+    @Expose
     public int lsb;
     /**
      * The most significant bit.
      */
+    @Expose
     public int msb;
 
     public VarbitType() {

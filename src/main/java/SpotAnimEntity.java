@@ -31,7 +31,7 @@ public class SpotAnimEntity extends Drawable {
             return null;
         }
 
-        int transformID = type.seq.transforms[seqFrame];
+        int transformID = type.seq.primary_transforms[seqFrame];
 
         Model model = Model.clone(true, SeqTransform.isNull(transformID), false, base);
 

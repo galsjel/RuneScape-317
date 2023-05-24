@@ -3,7 +3,6 @@
 // Decompiler options: packimports(3) 
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -1427,7 +1426,7 @@ public class Model extends Drawable {
         baseZ = 0;
         for (int i = 0; i < transform.length; i++) {
             int base = transform.bases[i];
-            transform(skeleton.baseTypes[base], skeleton.baseLabels[base], transform.x[i], transform.y[i], transform.z[i]);
+            transform(skeleton._base_types[base], skeleton.baseLabels[base], transform.x[i], transform.y[i], transform.z[i]);
         }
     }
 
@@ -1477,8 +1476,8 @@ public class Model extends Drawable {
                 masked = mask[counter++];
             }
 
-            if (base != masked || skeleton.baseTypes[base] == 0) {
-                transform(skeleton.baseTypes[base], skeleton.baseLabels[base], primary.x[i], primary.y[i], primary.z[i]);
+            if (base != masked || skeleton._base_types[base] == 0) {
+                transform(skeleton._base_types[base], skeleton.baseLabels[base], primary.x[i], primary.y[i], primary.z[i]);
             }
         }
 
@@ -1496,8 +1495,8 @@ public class Model extends Drawable {
                 masked = mask[counter++];
             }
 
-            if (base == masked || skeleton.baseTypes[base] == 0) {
-                transform(skeleton.baseTypes[base], skeleton.baseLabels[base], secondary.x[i], secondary.y[i], secondary.z[i]);
+            if (base == masked || skeleton._base_types[base] == 0) {
+                transform(skeleton._base_types[base], skeleton.baseLabels[base], secondary.x[i], secondary.y[i], secondary.z[i]);
             }
         }
     }
@@ -1700,7 +1699,7 @@ public class Model extends Drawable {
     /**
      * Performs the equivalent operation of rotating the entire model on the Y axis by 180 degrees.
      */
-    public void rotateY180() {
+    public void mirrorZ() {
         for (int v = 0; v < vertexCount; v++) {
             vertexZ[v] = -vertexZ[v];
         }
@@ -1742,7 +1741,7 @@ public class Model extends Drawable {
      */
     public void build(int lightAmbient, int lightAttenuation, int lightSrcX, int lightSrcY, int lightSrcZ, boolean applyLighting) {
         int lightMagnitude = (int) Math.sqrt(lightSrcX * lightSrcX + lightSrcY * lightSrcY + lightSrcZ * lightSrcZ);
-        int attenuation = lightAttenuation * lightMagnitude >> 8;
+        int attenuation = (lightAttenuation * lightMagnitude) >> 8;
 
         if (faceColorA == null) {
             faceColorA = new int[fcnt];
@@ -2416,7 +2415,7 @@ public class Model extends Drawable {
         }
 
         if (type == 0) {
-            Draw3D.fillGouraudTriangle(py[a], py[b], py[c], px[a], px[b], px[c], faceColorA[face], faceColorB[face], faceColorC[face]);
+            Draw3D.fillGouraudTriangle(px[a], py[a], px[b], py[b], px[c], py[c], faceColorA[face], faceColorB[face], faceColorC[face]);
         } else if (type == 1) {
             Draw3D.fillTriangle(py[a], py[b], py[c], px[a], px[b], px[c], palette[faceColorA[face]]);
         } else if (type == 2) {
@@ -2554,7 +2553,7 @@ public class Model extends Drawable {
             }
 
             if (type == 0) {
-                Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2]);
+                Draw3D.fillGouraudTriangle(x0, y0, x1, y1, x2, y2, clippedColor[0], clippedColor[1], clippedColor[2]);
             } else if (type == 1) {
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, palette[faceColorA[face]]);
             } else if (type == 2) {
@@ -2584,8 +2583,8 @@ public class Model extends Drawable {
             }
 
             if (type == 0) {
-                Draw3D.fillGouraudTriangle(y0, y1, y2, x0, x1, x2, clippedColor[0], clippedColor[1], clippedColor[2]);
-                Draw3D.fillGouraudTriangle(y0, y2, clippedY[3], x0, x2, clippedX[3], clippedColor[0], clippedColor[2], clippedColor[3]);
+                Draw3D.fillGouraudTriangle(x0, y0, x1, y1, x2, y2, clippedColor[0], clippedColor[1], clippedColor[2]);
+                Draw3D.fillGouraudTriangle(x0, y0, x2, y2, clippedX[3], clippedY[3], clippedColor[0], clippedColor[2], clippedColor[3]);
             } else if (type == 1) {
                 int colorA = palette[faceColorA[face]];
                 Draw3D.fillTriangle(y0, y1, y2, x0, x1, x2, colorA);

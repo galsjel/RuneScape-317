@@ -115,10 +115,10 @@ public class SeqTransform {
                     continue;
                 }
 
-                if (skeleton.baseTypes[base] != SeqSkeleton.OP_BASE) {
+                if (skeleton._base_types[base] != SeqSkeleton.OP_BASE) {
                     // Look for any skipped ORIGIN bases and insert them into this transform.
                     for (int cur = base - 1; cur > lastBase; cur--) {
-                        if (skeleton.baseTypes[cur] == SeqSkeleton.OP_BASE) {
+                        if (skeleton._base_types[cur] == SeqSkeleton.OP_BASE) {
                             bases[length] = cur;
                             x[length] = 0;
                             y[length] = 0;
@@ -133,7 +133,7 @@ public class SeqTransform {
 
                 int defaultValue = 0;
 
-                if (skeleton.baseTypes[base] == SeqSkeleton.OP_SCALE) {
+                if (skeleton._base_types[base] == SeqSkeleton.OP_SCALE) {
                     defaultValue = 128;
                 }
 

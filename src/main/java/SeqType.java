@@ -40,22 +40,30 @@ public class SeqType {
      * @see SeqTransform
      */
     @Expose
-    @SerializedName("transforms")
-    public int[] transforms;
+    @SerializedName("primary_transforms")
+    public int[] primary_transforms;
 
     /**
      * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentInterface(IfType, int, int, int)}.
      */
     @Expose
-    @SerializedName("aux_transforms")
-    public int[] aux_transforms;
+    @SerializedName("secondary_transforms")
+    public int[] secondary_transforms;
+    /**
+     * Used to determine which transform bases a primary frame is allowed to use, and secondary not.
+     *
+     * @see Model#transform2(int, int, int[])
+     */
+    @Expose
+    @SerializedName("secondary_transform_mask")
+    public int[] secondary_transform_mask;
 
     /**
      * A list of durations indexed by Frame ID.
      */
     @Expose
     @SerializedName("frame_duration")
-    public int[] frameDuration;
+    public int[] frame_duration;
 
     /**
      * The number of frames from the end of this {@link SeqType} used for looping.
@@ -63,15 +71,6 @@ public class SeqType {
     @Expose
     @SerializedName("loop_frame_count")
     public int loopFrameCount = -1;
-
-    /**
-     * Used to determine which transform bases a primary frame is allowed to use, and secondary not.
-     *
-     * @see Model#transform2(int, int, int[])
-     */
-    @Expose
-    @SerializedName("mask")
-    public int[] mask;
 
     /**
      * Adds additional space to the render bounds.
@@ -95,8 +94,8 @@ public class SeqType {
      * @see PlayerEntity#getSequencedModel()
      */
     @Expose
-    @SerializedName("override_right_hand")
-    public Integer rightHandOverride = -1;
+    @SerializedName("rhand_override")
+    public Integer rightHandOverride;
 
     /**
      * Allows this {@link SeqType} to override the left hand of a {@link PlayerEntity}.
@@ -104,8 +103,8 @@ public class SeqType {
      * @see PlayerEntity#getSequencedModel()
      */
     @Expose
-    @SerializedName("override_left_hand")
-    public Integer leftHandOverride = -1;
+    @SerializedName("lhand_override")
+    public Integer leftHandOverride;
 
     /**
      * How many times this seq is allowed to loop before stopping.
@@ -121,10 +120,12 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+
+    public int _move_type = -1;
+
     @Expose
     @SerializedName("move_type")
-    public int moveStyle = -1;
-
+    public String move_type;
     /**
      * If 0, allows looking at a target
      * If 1, stops playing on move
@@ -132,9 +133,11 @@ public class SeqType {
      *
      * @see Game#updateMovement(PathingEntity)
      */
+    public int _idle_type = -1;
+
     @Expose
     @SerializedName("idle_type")
-    public int idleStyle = -1;
+    public String idle_type;
 
     /**
      * If 0, restarts the sequence if already playing
@@ -144,18 +147,20 @@ public class SeqType {
      */
     @Expose
     @SerializedName("replay_type")
-    public int replayStyle = 1;
+    public String replay_type;
+
+    public int _replay_type = 1;
 
     public SeqType() {
     }
 
     public int getFrameDuration(int frame) {
-        int duration = frameDuration[frame];
+        int duration = frame_duration[frame];
 
         if (duration == 0) {
-            SeqTransform transform = SeqTransform.get(transforms[frame]);
+            SeqTransform transform = SeqTransform.get(primary_transforms[frame]);
             if (transform != null) {
-                duration = frameDuration[frame] = transform.delay;
+                duration = frame_duration[frame] = transform.delay;
             }
         }
 
@@ -174,26 +179,26 @@ public class SeqType {
                 break;
             } else if (code == 1) {
                 frameCount = buffer.readU8();
-                transforms = new int[frameCount];
-                aux_transforms = new int[frameCount];
-                frameDuration = new int[frameCount];
+                primary_transforms = new int[frameCount];
+                secondary_transforms = new int[frameCount];
+                frame_duration = new int[frameCount];
                 for (int f = 0; f < frameCount; f++) {
-                    transforms[f] = buffer.readU16();
-                    aux_transforms[f] = buffer.readU16();
-                    if (aux_transforms[f] == 65535) {
-                        aux_transforms[f] = -1;
+                    primary_transforms[f] = buffer.readU16();
+                    secondary_transforms[f] = buffer.readU16();
+                    if (secondary_transforms[f] == 65535) {
+                        secondary_transforms[f] = -1;
                     }
-                    frameDuration[f] = buffer.readU16();
+                    frame_duration[f] = buffer.readU16();
                 }
             } else if (code == 2) {
                 loopFrameCount = buffer.readU16();
             } else if (code == 3) {
                 int count = buffer.readU8();
-                mask = new int[count + 1];
+                secondary_transform_mask = new int[count + 1];
                 for (int l = 0; l < count; l++) {
-                    mask[l] = buffer.readU8();
+                    secondary_transform_mask[l] = buffer.readU8();
                 }
-                mask[count] = 9999999;
+                secondary_transform_mask[count] = 9999999;
             } else if (code == 4) {
                 forwardRenderPadding = true;
             } else if (code == 5) {
@@ -205,11 +210,12 @@ public class SeqType {
             } else if (code == 8) {
                 loopCount = buffer.readU8();
             } else if (code == 9) {
-                moveStyle = buffer.readU8();
+                _move_type = buffer.readU8();
+
             } else if (code == 10) {
-                idleStyle = buffer.readU8();
+                _idle_type = buffer.readU8();
             } else if (code == 11) {
-                replayStyle = buffer.readU8();
+                _replay_type = buffer.readU8();
             } else if (code == 12) {
                 buffer.read32();
             } else {
@@ -219,28 +225,46 @@ public class SeqType {
 
         if (frameCount == 0) {
             frameCount = 1;
-            transforms = new int[1];
-            transforms[0] = -1;
-            aux_transforms = new int[1];
-            aux_transforms[0] = -1;
-            frameDuration = new int[1];
-            frameDuration[0] = -1;
+            primary_transforms = new int[1];
+            primary_transforms[0] = -1;
+            secondary_transforms = new int[1];
+            secondary_transforms[0] = -1;
+            frame_duration = new int[1];
+            frame_duration[0] = -1;
         }
 
-        if (moveStyle == -1) {
-            if (mask != null) {
-                moveStyle = 2;
+        if (_move_type == -1) {
+            if (secondary_transform_mask != null) {
+                _move_type = 2;
             } else {
-                moveStyle = 0;
+                _move_type = 0;
             }
         }
 
-        if (idleStyle == -1) {
-            if (mask != null) {
-                idleStyle = 2;
+        if (_idle_type == -1) {
+            if (secondary_transform_mask != null) {
+                _idle_type = 2;
             } else {
-                idleStyle = 0;
+                _idle_type = 0;
             }
+        }
+
+        switch (_move_type) {
+            case 0 -> move_type = "default";
+            case 1 -> move_type = "pause";
+            case 2 -> move_type = "no_target";
+            default -> move_type = "invalid:"+_move_type;
+        }
+        switch (_idle_type) {
+            case 0 -> idle_type = "default";
+            case 1 -> idle_type = "stop_on_move";
+            case 2 -> idle_type = "no_target";
+            default -> idle_type = "invalid:"+_idle_type;
+        }
+        switch(_replay_type) {
+            case 1 -> replay_type = "restart";
+            case 2 -> replay_type = "continue";
+            default -> replay_type = "invalid:"+_replay_type;
         }
     }
 

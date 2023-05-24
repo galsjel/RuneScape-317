@@ -68,7 +68,7 @@ public class PlayerEntity extends PathingEntity {
                 Model spotModel2 = Model.clone(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
                 spotModel2.translate(0, -super.spotanimOffset, 0);
                 spotModel2.build_labels();
-                spotModel2.transform(spot.seq.transforms[super.spotanimFrame]);
+                spotModel2.transform(spot.seq.primary_transforms[super.spotanimFrame]);
                 spotModel2.labelFaces = null;
                 spotModel2.labelVertices = null;
                 if ((spot.scaleXZ != 128) || (spot.scaleY != 128)) {
@@ -277,9 +277,9 @@ public class PlayerEntity extends PathingEntity {
         if (transmogrify != null) {
             int transformID = -1;
             if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-                transformID = SeqType.instances[super.primarySeqID].transforms[super.primarySeqFrame];
+                transformID = SeqType.instances[super.primarySeqID].primary_transforms[super.primarySeqFrame];
             } else if (super.secondarySeqID >= 0) {
-                transformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
+                transformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
             return transmogrify.getSequencedModel(-1, transformID, null);
         }
@@ -292,10 +292,10 @@ public class PlayerEntity extends PathingEntity {
 
         if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
             SeqType type = SeqType.instances[super.primarySeqID];
-            primaryTransformID = type.transforms[super.primarySeqFrame];
+            primaryTransformID = type.primary_transforms[super.primarySeqFrame];
 
             if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
-                secondaryTransformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
+                secondaryTransformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
 
             if (type.rightHandOverride >= 0) {
@@ -308,7 +308,7 @@ public class PlayerEntity extends PathingEntity {
                 hashCode += ((long) leftHandValue - appearances[3]) << 16;
             }
         } else if (super.secondarySeqID >= 0) {
-            primaryTransformID = SeqType.instances[super.secondarySeqID].transforms[super.secondarySeqFrame];
+            primaryTransformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
         }
 
         Model model = modelCache.get(hashCode);
@@ -396,7 +396,7 @@ public class PlayerEntity extends PathingEntity {
         tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
 
         if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-            tmp.transform2(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].mask);
+            tmp.transform2(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].secondary_transform_mask);
         } else if (primaryTransformID != -1) {
             tmp.transform(primaryTransformID);
         }
