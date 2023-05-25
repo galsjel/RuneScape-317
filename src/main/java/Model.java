@@ -1720,9 +1720,9 @@ public class Model extends Drawable {
      */
     public void scale(int x, int y, int z) {
         for (int v = 0; v < vertexCount; v++) {
-            vertexX[v] = vertexX[v] * x / 128;
-            vertexY[v] = vertexY[v] * y / 128;
-            vertexZ[v] = vertexZ[v] * z / 128;
+            vertexX[v] = (vertexX[v] * x) / 128;
+            vertexY[v] = (vertexY[v] * y) / 128;
+            vertexZ[v] = (vertexZ[v] * z) / 128;
         }
     }
 

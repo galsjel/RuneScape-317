@@ -293,8 +293,8 @@ public class ObjType {
     public int maleModelID1;
     public String[] inventoryOptions;
     public int iconPitch;
-    public int scaleY;
     public int scaleZ;
+    public int scaleY;
     public int[] stackID;
     public int iconOffsetY;
     public int lightAmbient;
@@ -469,8 +469,8 @@ public class ObjType {
         linkedID = -1;
         certificateID = -1;
         scaleX = 128;
-        scaleZ = 128;
         scaleY = 128;
+        scaleZ = 128;
         lightAmbient = 0;
         lightAttenuation = 0;
         team = 0;
@@ -537,8 +537,8 @@ public class ObjType {
             return null;
         }
 
-        if ((scaleX != 128) || (scaleZ != 128) || (scaleY != 128)) {
-            model.scale(scaleX, scaleZ, scaleY);
+        if ((scaleX != 128) || (scaleY != 128) || (scaleZ != 128)) {
+            model.scale(scaleX, scaleY, scaleZ);
         }
 
         if (srcColor != null) {
@@ -692,9 +692,9 @@ public class ObjType {
             } else if (code == 110) {
                 scaleX = in.readU16();
             } else if (code == 111) {
-                scaleZ = in.readU16();
-            } else if (code == 112) {
                 scaleY = in.readU16();
+            } else if (code == 112) {
+                scaleZ = in.readU16();
             } else if (code == 113) {
                 lightAmbient = in.read8();
             } else if (code == 114) {

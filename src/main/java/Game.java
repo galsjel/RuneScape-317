@@ -1007,11 +1007,17 @@ public class Game extends GameShell {
                 for (int i = 0; i < locs.length; i++) {
                     locs[i] = LocType.getUncached(i);
                     locs[i].prepareExport();
+
+                    if (i == 3769) {
+                        Model mdl = locs[i].getModel(10,-1,0);
+                        System.out.println("mdl = " + mdl);
+                    }
                 }
                 Files.writeString(Paths.get("out/objects.json"), gson.toJson(locs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
                 Files.writeString(Paths.get("out/varbits.json"), gson.toJson(VarbitType.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
 
             drawProgress(90, "Unpacking sounds");
@@ -4461,7 +4467,8 @@ public class Game extends GameShell {
         redrawTitleBackground = true;
     }
 
-    public void handleScrollInput(int left, int height, int mouseX, int mouseY, IfType iface, int top, boolean redraw, int scrollableHeight) {
+    public void handleScrollInput(int left, int height, int mouseX, int mouseY, IfType iface, int top,
+                                  boolean redraw, int scrollableHeight) {
         if (scrollGrabbed) {
             scrollInputPadding = 32;
         } else {
@@ -4529,7 +4536,9 @@ public class Game extends GameShell {
         return true;
     }
 
-    public FileArchive loadArchive(int fileId, String caption, String fileName, int expectedChecksum, int progress) throws IOException {
+    public FileArchive loadArchive(int fileId, String caption, String fileName, int expectedChecksum,
+                                   int progress) throws
+            IOException {
         byte[] data = null;
         int wait = 5;
 
@@ -5813,7 +5822,7 @@ public class Game extends GameShell {
                     }
                 }
             }
-            addMenuOption("Examine @cya@" + loc.name, 1226, x, z, loc.index << 14);
+            addMenuOption("Examine @cya@" + loc.name, 1226, x, z, loc.id << 14);
         }
     }
 
@@ -7202,7 +7211,9 @@ public class Game extends GameShell {
         }
     }
 
-    public boolean tryMove(int type, int srcX, int srcZ, int dx, int dz, int locType, int locWidth, int locLength, int locAngle, int locInteractionFlags, boolean tryNearest) {
+    public boolean tryMove(int type, int srcX, int srcZ, int dx, int dz, int locType, int locWidth,
+                           int locLength,
+                           int locAngle, int locInteractionFlags, boolean tryNearest) {
         byte sceneWidth = 104;
         byte sceneLength = 104;
         for (int x = 0; x < sceneWidth; x++) {
@@ -10062,7 +10073,8 @@ public class Game extends GameShell {
         }
     }
 
-    public void appendLoc(int duration, int id, int rotation, int classID, int z, int kind, int level, int x, int delay) {
+    public void appendLoc(int duration, int id, int rotation, int classID, int z, int kind, int level, int x,
+                          int delay) {
         SceneLocTemporary loc = null;
         for (SceneLocTemporary other = (SceneLocTemporary) temporaryLocs.peekFront(); other != null; other = (SceneLocTemporary) temporaryLocs.prev()) {
             if ((other.level != level) || (other.localX != x) || (other.localZ != z) || (other.classID != classID)) {

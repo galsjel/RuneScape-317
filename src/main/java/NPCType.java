@@ -75,11 +75,11 @@ public class NPCType {
     public int seqTurnLeftID = -1;
     public boolean interactable = true;
     public int lightAmbient;
-    public int scaleZ = 128;
+    public int scaleY = 128;
     public boolean showOnMinimap = true;
     public int[] overrides;
     public String examine;
-    public int scaleXY = 128;
+    public int scaleXZ = 128;
     public int lightAttenuation;
     /**
      * Causes the npc to render on top of other npcs.
@@ -216,8 +216,8 @@ public class NPCType {
             tmp.transform(primaryTransformID);
         }
 
-        if ((scaleXY != 128) || (scaleZ != 128)) {
-            tmp.scale(scaleXY, scaleZ, scaleXY);
+        if ((scaleXZ != 128) || (scaleY != 128)) {
+            tmp.scale(scaleXZ, scaleY, scaleXZ);
         }
 
         tmp.calculateBoundsCylinder();
@@ -290,9 +290,9 @@ public class NPCType {
             } else if (code == 95) {
                 level = in.readU16();
             } else if (code == 97) {
-                scaleXY = in.readU16();
+                scaleXZ = in.readU16();
             } else if (code == 98) {
-                scaleZ = in.readU16();
+                scaleY = in.readU16();
             } else if (code == 99) {
                 important = true;
             } else if (code == 100) {

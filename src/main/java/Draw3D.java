@@ -940,7 +940,7 @@ public class Draw3D {
             colorC += colorStepAC;
         }
         while (--yA >= 0) {
-            Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+            Draw3D.drawGouraudScanline(Draw2D.pixels, yC,  xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
             xB += xStepAB;
             xC += xStepAC;
             colorB += colorStepAB;

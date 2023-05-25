@@ -84,14 +84,14 @@ public class LocType {
             locID = 0;
         }
         for (int i = 0; i < 20; i++) {
-            if (cache[i].index == locID) {
+            if (cache[i].id == locID) {
                 return cache[i];
             }
         }
         cachePos = (cachePos + 1) % 20;
         LocType type = cache[cachePos];
         dat.position = offsets[locID];
-        type.index = locID;
+        type.id = locID;
         type.reset();
         type.read(dat);
         return type;
@@ -100,7 +100,7 @@ public class LocType {
     public static LocType getUncached(int id) {
         LocType type = new LocType();
         dat.position = offsets[id];
-        type.index = id;
+        type.id = id;
         type.reset();
         type.read(dat);
         return type;
@@ -131,7 +131,7 @@ public class LocType {
     }
 
     @Expose
-    public int index = -1;
+    public int id = -1;
     @Expose
     public String name;
     public String[] _options;
@@ -187,7 +187,7 @@ public class LocType {
     public int translateY;
     public int translateZ;
     public int[] color_dst;
-    public int[] model_ids;
+    public Integer[] model_ids;
     public int[] model_types;
     public int[] color_src;
     public boolean _decorative;
@@ -232,19 +232,28 @@ public class LocType {
 
         if (model_ids != null && model_ids.length > 0) {
             models = new HashMap<>();
-            for (int i = 0; i < model_ids.length; i++) {
-                Model.Ref ref = Model.ref(model_ids[i]);
-                int type = 10;
-                if (model_types != null) {
-                    type = model_types[i];
+
+            if (model_types != null) {
+                for (int i = 0; i < model_types.length; i++) {
+                    int type = model_types[i];
+                    Model.Ref ref = Model.ref(model_ids[i]);
+                    if (translateX != 0) ref.translateX = translateX;
+                    if (translateY != 0) ref.translateY = translateY;
+                    if (translateZ != 0) ref.translateZ = translateZ;
+                    if (scaleX != 128) ref.scaleX = scaleX;
+                    if (scaleY != 128) ref.scaleY = scaleY;
+                    if (scaleZ != 128) ref.scaleZ = scaleZ;
+                    models.put(TYPE_NAMES[type], ref);
                 }
+            } else {
+                Model.Ref ref = Model.ref(model_ids);
                 if (translateX != 0) ref.translateX = translateX;
                 if (translateY != 0) ref.translateY = translateY;
                 if (translateZ != 0) ref.translateZ = translateZ;
                 if (scaleX != 128) ref.scaleX = scaleX;
                 if (scaleY != 128) ref.scaleY = scaleY;
                 if (scaleZ != 128) ref.scaleZ = scaleZ;
-                models.put(TYPE_NAMES[type], ref);
+                models.put(TYPE_NAMES[10], ref);
             }
         }
 
@@ -316,8 +325,8 @@ public class LocType {
         mirror_z = false;
         cast_shadow = true;
         scaleX = 128;
-        scaleZ = 128;
         scaleY = 128;
+        scaleZ = 128;
         unreachable_flags = 0;
         translateX = 0;
         translateY = 0;
@@ -427,7 +436,7 @@ public class LocType {
                 return null;
             }
 
-            bitset = ((long) index << 6) + rotation + ((long) (transformID + 1) << 32);
+            bitset = ((long) id << 6) + rotation + ((long) (transformID + 1) << 32);
             Model cached = modelCacheDynamic.get(bitset);
 
             if (cached != null) {
@@ -438,7 +447,7 @@ public class LocType {
                 return null;
             }
 
-            boolean mirror = this.mirror_z ^ (rotation > 3);
+            boolean mirror = Boolean.TRUE.equals(this.mirror_z) ^ (rotation > 3);
             int modelCount = model_ids.length;
 
             for (int i = 0; i < modelCount; i++) {
@@ -483,7 +492,7 @@ public class LocType {
                 return null;
             }
 
-            bitset = ((long) this.index << 6) + ((long) kindIndex << 3) + rotation + ((long) (transformID + 1) << 32);
+            bitset = ((long) this.id << 6) + ((long) kindIndex << 3) + rotation + ((long) (transformID + 1) << 32);
 
             Model cached = modelCacheDynamic.get(bitset);
 
@@ -492,7 +501,7 @@ public class LocType {
             }
 
             int modelID = model_ids[kindIndex];
-            boolean mirror = this.mirror_z ^ (rotation > 3);
+            boolean mirror = Boolean.TRUE.equals(this.mirror_z) ^ (rotation > 3);
 
             if (mirror) {
                 modelID += 0x10000;
@@ -515,7 +524,7 @@ public class LocType {
             }
         }
 
-        boolean scaled = (scaleX != 128) || (scaleZ != 128) || (scaleY != 128);
+        boolean scaled = (scaleX != 128) || (scaleY != 128) || (scaleZ != 128);
         boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
 
         Model modified = Model.clone(color_src == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
@@ -538,14 +547,14 @@ public class LocType {
         }
 
         if (scaled) {
-            modified.scale(scaleX, scaleZ, scaleY);
+            modified.scale(scaleX, scaleY, scaleZ);
         }
 
         if (translated) {
             modified.translate(translateX, translateY, translateZ);
         }
 
-        modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, !dynamic);
+        modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, true/*!dynamic*/);
 
         if (support_items) {
             modified.objRaise = modified.minY;
@@ -568,7 +577,7 @@ public class LocType {
                 if (k > 0) {
                     if ((model_ids == null)) {
                         model_types = new int[k];
-                        model_ids = new int[k];
+                        model_ids = new Integer[k];
                         for (int k1 = 0; k1 < k; k1++) {
                             model_ids[k1] = buffer.readU16();
                             model_types[k1] = buffer.readU8();
@@ -586,7 +595,7 @@ public class LocType {
                 if (modelCount > 0) {
                     if ((model_ids == null)) {
                         model_types = null;
-                        model_ids = new int[modelCount];
+                        model_ids = new Integer[modelCount];
                         for (int l1 = 0; l1 < modelCount; l1++) {
                             model_ids[l1] = buffer.readU16();
                         }
@@ -650,9 +659,9 @@ public class LocType {
             } else if (code == 65) {
                 scaleX = buffer.readU16();
             } else if (code == 66) {
-                scaleZ = buffer.readU16();
-            } else if (code == 67) {
                 scaleY = buffer.readU16();
+            } else if (code == 67) {
+                scaleZ = buffer.readU16();
             } else if (code == 68) {
                 mapscene = buffer.readU16();
             } else if (code == 69) {
