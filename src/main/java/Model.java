@@ -498,7 +498,7 @@ public class Model extends Drawable {
      * a reference.
      */
     @SerializedName("normals_copy")
-    public VertexNormal[] normals_copy;
+    public Normal[] normals_copy;
 
     /**
      * Constructs an empty model.
@@ -705,7 +705,7 @@ public class Model extends Drawable {
 
     /**
      * Constructs a new model by merging the provided models. This constructor is used to combine models <i>before</i>
-     * {@link SeqTransform}'s have been applied. Using this constructor implies all models merged are compatible with any
+     * {@link AnimationTransform}'s have been applied. Using this constructor implies all models merged are compatible with any
      * animations played on them.
      *
      * @param count  the model count.
@@ -848,7 +848,7 @@ public class Model extends Drawable {
 
     /**
      * Constructs a new model by combining models. This constructor is commonly used to combine models which have already
-     * had a {@link SeqTransform} applied, and does not copy label information.
+     * had a {@link AnimationTransform} applied, and does not copy label information.
      *
      * @param count  the model count.
      * @param dummy  dummy.
@@ -1003,7 +1003,7 @@ public class Model extends Drawable {
 
     /**
      * Constructs a new model that can either share or clone the provided models attributes. This constructor is used to
-     * save memory by avoiding allocations, and is meant to be used with models prior to having a {@link SeqTransform} applied.
+     * save memory by avoiding allocations, and is meant to be used with models prior to having a {@link AnimationTransform} applied.
      *
      * @param share_colors   <code>true</code> to reference the provided model's colors.
      * @param share_alpha    <code>true</code> to reference the provided model's face alpha.
@@ -1074,7 +1074,7 @@ public class Model extends Drawable {
      * @param copy_vertex_y <code>true</code> to copy <code>model.vertexY</code>.
      * @param copy_lighting <code>true</code> to copy all face data from <code>model</code>.
      * @param model         the model to copy.
-     * @see LocType#getModel(int, int, int, int, int, int, int)
+     * @see Obj#getModel(int, int, int, int, int, int, int)
      */
     private Model(boolean copy_vertex_y, boolean copy_lighting, Model model) {
         counter++;
@@ -1110,10 +1110,10 @@ public class Model extends Drawable {
                 System.arraycopy(model.ftype, 0, ftype, 0, fcnt);
             }
 
-            super.normals = new VertexNormal[vertexCount];
+            super.normals = new Normal[vertexCount];
             for (int v = 0; v < vertexCount; v++) {
-                VertexNormal duplicate = super.normals[v] = new VertexNormal();
-                VertexNormal original = model.normals[v];
+                Normal duplicate = super.normals[v] = new Normal();
+                Normal original = model.normals[v];
                 duplicate.x = original.x;
                 duplicate.y = original.y;
                 duplicate.z = original.z;
@@ -1153,7 +1153,7 @@ public class Model extends Drawable {
     /**
      * Sets <code>this</code> model to the provided model using a vertex pool.
      * <p>
-     * Face alpha may be optionally copied in case an applied {@link SeqTransform} modifies the alpha of the model.
+     * Face alpha may be optionally copied in case an applied {@link AnimationTransform} modifies the alpha of the model.
      *
      * @param model      the model.
      * @param shareAlpha whether to copy or share a reference to face alphas.
@@ -1405,7 +1405,7 @@ public class Model extends Drawable {
     }
 
     /**
-     * Applies a {@link SeqTransform} of the specified <code>id</code>.
+     * Applies a {@link AnimationTransform} of the specified <code>id</code>.
      *
      * @param id the transform id.
      */
@@ -1416,11 +1416,11 @@ public class Model extends Drawable {
         if (id == -1) {
             return;
         }
-        SeqTransform transform = SeqTransform.get(id);
+        AnimationTransform transform = AnimationTransform.get(id);
         if (transform == null) {
             return;
         }
-        SeqSkeleton skeleton = transform.skeleton;
+        AnimationSkeleton skeleton = transform.skeleton;
         baseX = 0;
         baseY = 0;
         baseZ = 0;
@@ -1431,7 +1431,7 @@ public class Model extends Drawable {
     }
 
     /**
-     * Applies the specified {@link SeqTransform} ids.
+     * Applies the specified {@link AnimationTransform} ids.
      *
      * @param primaryID   the primary transform id.
      * @param secondaryID the secondary transform id.
@@ -1447,20 +1447,20 @@ public class Model extends Drawable {
             return;
         }
 
-        SeqTransform primary = SeqTransform.get(primaryID);
+        AnimationTransform primary = AnimationTransform.get(primaryID);
 
         if (primary == null) {
             return;
         }
 
-        SeqTransform secondary = SeqTransform.get(secondaryID);
+        AnimationTransform secondary = AnimationTransform.get(secondaryID);
 
         if (secondary == null) {
             transform(primaryID);
             return;
         }
 
-        SeqSkeleton skeleton = primary.skeleton;
+        AnimationSkeleton skeleton = primary.skeleton;
 
         baseX = 0;
         baseY = 0;
@@ -1512,15 +1512,15 @@ public class Model extends Drawable {
      * @param z      the param z.
      * @see #transform2(int, int, int[])
      * @see #transform(int)
-     * @see SeqSkeleton#OP_BASE
-     * @see SeqSkeleton#OP_TRANSLATE
-     * @see SeqSkeleton#OP_ROTATE
-     * @see SeqSkeleton#OP_SCALE
-     * @see SeqSkeleton#OP_ALPHA
+     * @see AnimationSkeleton#OP_BASE
+     * @see AnimationSkeleton#OP_TRANSLATE
+     * @see AnimationSkeleton#OP_ROTATE
+     * @see AnimationSkeleton#OP_SCALE
+     * @see AnimationSkeleton#OP_ALPHA
      */
     public void transform(int type, int[] labels, int x, int y, int z) {
         switch (type) {
-            case SeqSkeleton.OP_BASE -> {
+            case AnimationSkeleton.OP_BASE -> {
                 int count = 0;
                 baseX = 0;
                 baseY = 0;
@@ -1547,7 +1547,7 @@ public class Model extends Drawable {
                     baseZ = z;
                 }
             }
-            case SeqSkeleton.OP_TRANSLATE -> {
+            case AnimationSkeleton.OP_TRANSLATE -> {
                 for (int group : labels) {
                     if (group >= labelVertices.length) {
                         continue;
@@ -1560,7 +1560,7 @@ public class Model extends Drawable {
                     }
                 }
             }
-            case SeqSkeleton.OP_ROTATE -> {
+            case AnimationSkeleton.OP_ROTATE -> {
                 for (int label : labels) {
                     if (label >= labelVertices.length) {
                         continue;
@@ -1600,7 +1600,7 @@ public class Model extends Drawable {
                     }
                 }
             }
-            case SeqSkeleton.OP_SCALE -> {
+            case AnimationSkeleton.OP_SCALE -> {
                 for (int label : labels) {
                     if (label >= labelVertices.length) {
                         continue;
@@ -1619,7 +1619,7 @@ public class Model extends Drawable {
                     }
                 }
             }
-            case SeqSkeleton.OP_ALPHA -> {
+            case AnimationSkeleton.OP_ALPHA -> {
                 if (labelFaces != null && faceAlpha != null) {
                     for (int label : labels) {
                         if (label >= labelFaces.length) {
@@ -1750,9 +1750,9 @@ public class Model extends Drawable {
         }
 
         if (super.normals == null) {
-            super.normals = new VertexNormal[vertexCount];
+            super.normals = new Normal[vertexCount];
             for (int v = 0; v < vertexCount; v++) {
-                super.normals[v] = new VertexNormal();
+                super.normals[v] = new Normal();
             }
         }
 
@@ -1791,7 +1791,7 @@ public class Model extends Drawable {
             nz = nz * 256 / length;
 
             if (ftype == null || (ftype[f] & 1) == 0) {
-                VertexNormal n = super.normals[a];
+                Normal n = super.normals[a];
                 n.x += nx;
                 n.y += ny;
                 n.z += nz;
@@ -1815,11 +1815,11 @@ public class Model extends Drawable {
         if (applyLighting) {
             buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
         } else {
-            normals_copy = new VertexNormal[vertexCount];
+            normals_copy = new Normal[vertexCount];
 
             for (int v = 0; v < vertexCount; v++) {
-                VertexNormal normal = super.normals[v];
-                VertexNormal copy = normals_copy[v] = new VertexNormal();
+                Normal normal = super.normals[v];
+                Normal copy = normals_copy[v] = new Normal();
                 copy.x = normal.x;
                 copy.y = normal.y;
                 copy.z = normal.z;
@@ -1853,7 +1853,7 @@ public class Model extends Drawable {
             if (ftype == null) {
                 int color = faceColor[f];
 
-                VertexNormal n = super.normals[a];
+                Normal n = super.normals[a];
                 int lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorA[f] = mulColorLightness(color, lightness, 0);
 
@@ -1868,7 +1868,7 @@ public class Model extends Drawable {
                 int color = faceColor[f];
                 int info = ftype[f];
 
-                VertexNormal n = super.normals[a];
+                Normal n = super.normals[a];
                 int lightness = lightAmbient + (lightSrcX * n.x + lightSrcY * n.y + lightSrcZ * n.z) / (lightAttenuation * n.w);
                 faceColorA[f] = mulColorLightness(color, lightness, info);
 

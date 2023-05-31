@@ -6,21 +6,21 @@ import com.google.gson.annotations.Expose;
 
 import java.io.IOException;
 
-public class VarbitType {
+public class Varbit {
 
-    public static VarbitType[] instances;
+    public static Varbit[] instances;
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("varbit.dat"));
         int count = buffer.readU16();
 
         if (instances == null) {
-            instances = new VarbitType[count];
+            instances = new Varbit[count];
         }
 
         for (int j = 0; j < count; j++) {
             if (instances[j] == null) {
-                instances[j] = new VarbitType();
+                instances[j] = new Varbit();
             }
             instances[j].read(buffer);
         }
@@ -42,7 +42,7 @@ public class VarbitType {
     @Expose
     public int msb;
 
-    public VarbitType() {
+    public Varbit() {
     }
 
     public void read(Buffer in) {

@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class PathingEntity extends Drawable {
+public class SceneCharacter extends Drawable {
 
     public final int[] pathTileX = new int[10];
     public final int[] pathTileZ = new int[10];
@@ -44,7 +44,7 @@ public class PathingEntity extends Drawable {
     public int targetTileZ;
     public int size = 1;
     /**
-     * Passed to {@link Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)} to provide an additional
+     * Passed to {@link Scene#push_temporary(Drawable, int, int, int, int, int, int, boolean, int)} to provide an additional
      * tile worth of draw padding ahead of this entity for things like animations that extend past the normal boundary.
      */
     public boolean needsForwardDrawPadding = false;
@@ -64,11 +64,11 @@ public class PathingEntity extends Drawable {
     public int seqTurnLeftID = -1;
     public int seqTurnRightID = -1;
 
-    public PathingEntity() {
+    public SceneCharacter() {
     }
 
     public void move(int x, int z, boolean teleport) {
-        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID]._idle_type == 1)) {
+        if ((primarySeqID != -1) && (Animation.instances[primarySeqID]._idle_type == 1)) {
             primarySeqID = -1;
         }
         if (!teleport) {
@@ -143,7 +143,7 @@ public class PathingEntity extends Drawable {
             nextZ--;
         }
 
-        if ((primarySeqID != -1) && (SeqType.instances[primarySeqID]._idle_type == 1)) {
+        if ((primarySeqID != -1) && (Animation.instances[primarySeqID]._idle_type == 1)) {
             primarySeqID = -1;
         }
 

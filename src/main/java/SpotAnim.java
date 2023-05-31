@@ -8,10 +8,10 @@ import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
 
-public class SpotAnimType {
+public class SpotAnim {
 
     public static int count;
-    public static SpotAnimType[] instances;
+    public static SpotAnim[] instances;
     public static LRUMap<Integer, Model> modelCache = new LRUMap<>(30);
 
     public static void unpack(FileArchive archive) throws IOException {
@@ -19,12 +19,12 @@ public class SpotAnimType {
         count = buffer.readU16();
 
         if (instances == null) {
-            instances = new SpotAnimType[count];
+            instances = new SpotAnim[count];
         }
 
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
-                instances[i] = new SpotAnimType();
+                instances[i] = new SpotAnim();
             }
             instances[i].index = i;
             instances[i].read(buffer);
@@ -34,7 +34,7 @@ public class SpotAnimType {
     public final int[] colorSrc = new int[6];
     public final int[] colorDst = new int[6];
     public int modelID;
-    public transient SeqType seq;
+    public transient Animation seq;
     public int scaleXZ = 128;
     public int scaleY = 128;
     public int rotateY;
@@ -57,7 +57,7 @@ public class SpotAnimType {
     @SerializedName("recolors")
     public Model.Recolor[] recolors;
 
-    public SpotAnimType() {
+    public SpotAnim() {
     }
 
     public void read(Buffer in) {
@@ -83,8 +83,8 @@ public class SpotAnimType {
                 modelID = in.readU16();
             } else if (code == 2) {
                 animation = in.readU16();
-                if (SeqType.instances != null) {
-                    seq = SeqType.instances[animation];
+                if (Animation.instances != null) {
+                    seq = Animation.instances[animation];
                 }
             } else if (code == 4) {
                 scaleXZ = in.readU16();

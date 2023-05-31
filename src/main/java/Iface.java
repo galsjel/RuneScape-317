@@ -6,11 +6,11 @@ import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
 
-public class IfType {
+public class Iface {
 
     public static final LRUMap<Long, Model> modelCache = new LRUMap<>(30);
     public static LRUMap<Long, Image24> imageCache;
-    public static IfType[] instances;
+    public static Iface[] instances;
 
     public static final int TYPE_PARENT = 0;
     public static final int TYPE_UNUSED = 1;
@@ -40,7 +40,7 @@ public class IfType {
         int parentID = -1;
         int count = in.readU16();
 
-        instances = new IfType[count];
+        instances = new Iface[count];
 
         while (in.position < in.data.length) {
             int id = in.readU16();
@@ -50,7 +50,7 @@ public class IfType {
                 id = in.readU16();
             }
 
-            IfType iface = instances[id] = new IfType();
+            Iface iface = instances[id] = new Iface();
             iface.id = id;
             iface.parentID = parentID;
             iface.type = in.readU8();
@@ -314,7 +314,7 @@ public class IfType {
     /**
      * Hides this component. Only works for parent components by default.
      *
-     * @see Game#drawParentInterface(IfType, int, int, int)
+     * @see Game#drawParentInterface(Iface, int, int, int)
      */
     public boolean hide;
     public int hoverColor;
@@ -358,7 +358,7 @@ public class IfType {
     public int x;
     public int y;
 
-    public IfType() {
+    public Iface() {
     }
 
     public void inventorySwap(int src, int dst) {
@@ -381,11 +381,11 @@ public class IfType {
         if (category == MODEL_TYPE_NORMAL) {
             model = Model.tryGet(id);
         } else if (category == MODEL_TYPE_NPC) {
-            model = NPCType.get(id).getHeadModel();
+            model = NPC.get(id).getHeadModel();
         } else if (category == MODEL_TYPE_PLAYER) {
             model = Game.localPlayer.getHeadModel();
         } else if (category == MODEL_TYPE_OBJ) {
-            model = ObjType.get(id).getInterfaceModel(50);
+            model = Item.get(id).getInterfaceModel(50);
         }
 
         if (model != null) {
@@ -412,7 +412,7 @@ public class IfType {
             return model;
         }
 
-        model = Model.clone(true, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID), false, model);
+        model = Model.clone(true, AnimationTransform.isNull(primaryTransformID) & AnimationTransform.isNull(secondaryTransformID), false, model);
 
         if ((primaryTransformID != -1) || (secondaryTransformID != -1)) {
             model.build_labels();

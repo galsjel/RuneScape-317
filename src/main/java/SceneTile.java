@@ -10,16 +10,16 @@ public class SceneTile extends DoublyLinkedList.Node {
      * Which level to sample when testing against this tile for occlusion.
      */
     public final int occludeLevel;
-    public final SceneLoc[] locs = new SceneLoc[5];
-    public final int[] locSpan = new int[5];
+    public final SceneDrawable[] drawables = new SceneDrawable[5];
+    public final int[] drawable_span = new int[5];
     public int level;
     public SceneTileUnderlay underlay;
     public SceneTileOverlay overlay;
     public SceneWall wall;
-    public SceneWallDecoration wallDecoration;
-    public SceneGroundDecoration groundDecoration;
-    public SceneObjStack objStack;
-    public int locCount;
+    public SceneWallDecoration wall_decoration;
+    public SceneGroundDecoration ground_decoration;
+    public SceneItemStack item_stack;
+    public int drawable_count;
     /**
      * When larger than 1x1 locs reside on a tile, we have to know which part of it might be on this tile to properly
      * cull it.
@@ -29,13 +29,13 @@ public class SceneTile extends DoublyLinkedList.Node {
      * 0b0100 = x < loc.maxSceneTileX
      * 0b1000 = z > loc.minSceneTileZ
      */
-    public int locSpans;
+    public int drawable_spans;
     /**
      * Used as a short circuit to prevent drawing tiles above the top level. Mostly applies to lowmem.
      *
      * @see Scene#draw(int, int, int, int, int, int)
      */
-    public int drawLevel;
+    public int draw_level;
     public boolean visible;
     public boolean update;
     public boolean containsLocs;

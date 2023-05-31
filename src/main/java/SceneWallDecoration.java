@@ -5,7 +5,7 @@ public class SceneWallDecoration {
     public int z;
     public int type;
     public int rotation;
-    public Drawable entity;
+    public Drawable drawable;
     public int bitset;
     public byte info;
 

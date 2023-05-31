@@ -2,17 +2,17 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ObjEntity extends Drawable {
+public class SceneItem extends Drawable {
 
     public int id;
     public int count;
 
-    public ObjEntity() {
+    public SceneItem() {
     }
 
     @Override
     public Model getModel() {
-        ObjType type = ObjType.get(id);
+        Item type = Item.get(id);
         return type.getLitModel(count);
     }
 

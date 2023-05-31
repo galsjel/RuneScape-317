@@ -7,44 +7,44 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 
-public class SeqType {
+public class Animation {
 
     public static int count;
-    public static SeqType[] instances;
+    public static Animation[] instances;
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("seq.dat"));
         count = buffer.readU16();
         if (instances == null) {
-            instances = new SeqType[count];
+            instances = new Animation[count];
         }
 
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
-                instances[i] = new SeqType();
+                instances[i] = new Animation();
             }
             instances[i].load(buffer);
         }
     }
 
     /**
-     * The amount of frames in this {@link SeqType}.
+     * The amount of frames in this {@link Animation}.
      */
     @Expose
     @SerializedName("frame_count")
     public int frameCount;
 
     /**
-     * The list of {@link SeqTransform} indices indexed by Frame ID.
+     * The list of {@link AnimationTransform} indices indexed by Frame ID.
      *
-     * @see SeqTransform
+     * @see AnimationTransform
      */
     @Expose
     @SerializedName("primary_transforms")
     public int[] primary_transforms;
 
     /**
-     * Auxiliary transform indices appear to only be used by a {@link IfType} of type <code>6</code> as seen in {@link Game#drawParentInterface(IfType, int, int, int)}.
+     * Auxiliary transform indices appear to only be used by a {@link Iface} of type <code>6</code> as seen in {@link Game#drawParentInterface(Iface, int, int, int)}.
      */
     @Expose
     @SerializedName("secondary_transforms")
@@ -66,7 +66,7 @@ public class SeqType {
     public int[] frame_duration;
 
     /**
-     * The number of frames from the end of this {@link SeqType} used for looping.
+     * The number of frames from the end of this {@link Animation} used for looping.
      */
     @Expose
     @SerializedName("loop_frame_count")
@@ -75,7 +75,7 @@ public class SeqType {
     /**
      * Adds additional space to the render bounds.
      *
-     * @see Scene#addTemporary(Drawable, int, int, int, int, int, int, boolean, int)
+     * @see Scene#push_temporary(Drawable, int, int, int, int, int, int, boolean, int)
      */
     @Expose
     @SerializedName("forward_render_padding")
@@ -89,18 +89,18 @@ public class SeqType {
     public int priority = 5;
 
     /**
-     * Allows this {@link SeqType} to override the right hand of a {@link PlayerEntity}.
+     * Allows this {@link Animation} to override the right hand of a {@link ScenePlayer}.
      *
-     * @see PlayerEntity#getSequencedModel()
+     * @see ScenePlayer#getSequencedModel()
      */
     @Expose
     @SerializedName("rhand_override")
     public Integer rightHandOverride;
 
     /**
-     * Allows this {@link SeqType} to override the left hand of a {@link PlayerEntity}.
+     * Allows this {@link Animation} to override the left hand of a {@link ScenePlayer}.
      *
-     * @see PlayerEntity#getSequencedModel()
+     * @see ScenePlayer#getSequencedModel()
      */
     @Expose
     @SerializedName("lhand_override")
@@ -118,7 +118,7 @@ public class SeqType {
      * If 1, pause while moving
      * If 2, does not look at target, continues playing during movement
      *
-     * @see Game#updateMovement(PathingEntity)
+     * @see Game#updateMovement(SceneCharacter)
      */
 
     public int _move_type = -1;
@@ -131,7 +131,7 @@ public class SeqType {
      * If 1, stops playing on move
      * If 2, does not look at target, continues playing during movement
      *
-     * @see Game#updateMovement(PathingEntity)
+     * @see Game#updateMovement(SceneCharacter)
      */
     public int _idle_type = -1;
 
@@ -151,14 +151,14 @@ public class SeqType {
 
     public int _replay_type = 1;
 
-    public SeqType() {
+    public Animation() {
     }
 
     public int getFrameDuration(int frame) {
         int duration = frame_duration[frame];
 
         if (duration == 0) {
-            SeqTransform transform = SeqTransform.get(primary_transforms[frame]);
+            AnimationTransform transform = AnimationTransform.get(primary_transforms[frame]);
             if (transform != null) {
                 duration = frame_duration[frame] = transform.delay;
             }

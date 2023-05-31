@@ -2,28 +2,28 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SceneLoc {
+public class SceneDrawable {
 
     public int level;
     public int y;
     public int x;
     public int z;
-    public Drawable entity;
+    public Drawable drawable;
     public int yaw;
-    public int minSceneTileX;
-    public int maxSceneTileX;
-    public int minSceneTileZ;
-    public int maxSceneTileZ;
+    public int min_tile_x;
+    public int max_tile_x;
+    public int min_tile_z;
+    public int max_tile_z;
     public int distance;
-    public int cycle;
+    public int draw_cycle;
     public int bitset;
     public byte info;
 
     public boolean drawn() {
-        return cycle == Scene.cycle;
+        return draw_cycle == Scene.cycle;
     }
 
-    public SceneLoc() {
+    public SceneDrawable() {
     }
 
 }

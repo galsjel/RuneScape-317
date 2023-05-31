@@ -4,20 +4,20 @@
 
 import java.io.IOException;
 
-public class FloType {
+public class Flo {
 
     public static int count;
-    public static FloType[] instances;
+    public static Flo[] instances;
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("flo.dat"));
         count = buffer.readU16();
         if (instances == null) {
-            instances = new FloType[count];
+            instances = new Flo[count];
         }
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
-                instances[i] = new FloType();
+                instances[i] = new Flo();
             }
             instances[i].read(buffer);
         }
@@ -33,7 +33,7 @@ public class FloType {
     public int luminance;
     public int hsl;
 
-    public FloType() {
+    public Flo() {
     }
 
     public void read(Buffer in) {
@@ -173,7 +173,7 @@ public class FloType {
         hsl = decimateHSL(hue, saturation, lightness);
     }
 
-    public int decimateHSL(int hue, int saturation, int lightness) {
+    public static int decimateHSL(int hue, int saturation, int lightness) {
         if (lightness > 179) {
             saturation /= 2;
         }

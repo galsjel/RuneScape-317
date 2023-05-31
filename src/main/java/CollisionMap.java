@@ -48,7 +48,7 @@ public class CollisionMap {
         }
     }
 
-    public void addWall(int x, int z, int type, int rotation, boolean projectiles) {
+    public void set_wall(int x, int z, int type, int rotation, boolean projectiles) {
         if (type == 0) {
             if (rotation == 0) {
                 add(x, z, FLAG_BLOCK_ENTITY_W);
@@ -172,7 +172,7 @@ public class CollisionMap {
         }
     }
 
-    public void addSolid(int x, int z) {
+    public void set_solid(int x, int z) {
         flags[x][z] |= FLAG_UNINITIALIZED;
     }
 

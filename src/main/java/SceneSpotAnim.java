@@ -2,20 +2,20 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SpotAnimEntity extends Drawable {
+public class SceneSpotAnim extends Drawable {
 
     public final int level;
     public final int x;
     public final int z;
     public final int y;
     public final int startCycle;
-    public final SpotAnimType type;
+    public final SpotAnim type;
     public boolean seqComplete = false;
     public int seqFrame;
     public int seqCycle;
 
-    public SpotAnimEntity(int level, int cycle, int delay, int id, int y, int z, int x) {
-        type = SpotAnimType.instances[id];
+    public SceneSpotAnim(int level, int cycle, int delay, int id, int y, int z, int x) {
+        type = SpotAnim.instances[id];
         this.level = level;
         this.x = x;
         this.z = z;
@@ -33,7 +33,7 @@ public class SpotAnimEntity extends Drawable {
 
         int transformID = type.seq.primary_transforms[seqFrame];
 
-        Model model = Model.clone(true, SeqTransform.isNull(transformID), false, base);
+        Model model = Model.clone(true, AnimationTransform.isNull(transformID), false, base);
 
         if (!seqComplete) {
             model.build_labels();

@@ -7,20 +7,20 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 
-public class IdkType {
+public class Identikit {
 
     public static int count;
-    public static IdkType[] instances;
+    public static Identikit[] instances;
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("idk.dat"));
         count = buffer.readU16();
         if (instances == null) {
-            instances = new IdkType[count];
+            instances = new Identikit[count];
         }
         for (int j = 0; j < count; j++) {
             if (instances[j] == null) {
-                instances[j] = new IdkType();
+                instances[j] = new Identikit();
             }
             instances[j].read(buffer);
         }
@@ -51,7 +51,7 @@ public class IdkType {
     @SerializedName("recolors")
     public Model.Recolor[] recolors;
 
-    public IdkType() {
+    public Identikit() {
     }
 
     public void read(Buffer in) {

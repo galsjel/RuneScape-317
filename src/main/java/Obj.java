@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class LocType {
+public class Obj {
 
     public static final int TYPE_WALL_STRAIGHT = 0;
     public static final int TYPE_WALL_CORNER_DIAGONAL = 1;
@@ -73,13 +73,13 @@ public class LocType {
      * This is where dynamically generated models go.
      */
     public static LRUMap<Long, Model> modelCacheDynamic = new LRUMap(30);
-    public static LocType[] cache;
+    public static Obj[] cache;
     /**
      * This is where basic models go.
      */
     public static LRUMap<Long, Model> modelCacheStatic = new LRUMap(500);
 
-    public static LocType get(int locID) {
+    public static Obj get(int locID) {
         if (locID >= count) {
             locID = 0;
         }
@@ -89,7 +89,7 @@ public class LocType {
             }
         }
         cachePos = (cachePos + 1) % 20;
-        LocType type = cache[cachePos];
+        Obj type = cache[cachePos];
         dat.position = offsets[locID];
         type.id = locID;
         type.reset();
@@ -97,8 +97,8 @@ public class LocType {
         return type;
     }
 
-    public static LocType getUncached(int id) {
-        LocType type = new LocType();
+    public static Obj getUncached(int id) {
+        Obj type = new Obj();
         dat.position = offsets[id];
         type.id = id;
         type.reset();
@@ -124,9 +124,9 @@ public class LocType {
             offsets[j] = offset;
             offset += buffer.readU16();
         }
-        cache = new LocType[20];
+        cache = new Obj[20];
         for (int i = 0; i < 20; i++) {
-            cache[i] = new LocType();
+            cache[i] = new Obj();
         }
     }
 
@@ -201,7 +201,7 @@ public class LocType {
     @Expose
     public Model.Recolor[] recolors;
 
-    public LocType() {
+    public Obj() {
     }
 
     static <T> List<T> trim(List<T> list, Predicate<T> isEmpty) {
@@ -369,8 +369,8 @@ public class LocType {
         return true;
     }
 
-    public Model getModel(int kind, int rotation, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int transformID) {
-        Model model = getModel(kind, transformID, rotation);
+    public Model getModel(int kind, int rotation, int y_sw, int y_se, int y_ne, int y_nw, int transform_id) {
+        Model model = getModel(kind, transform_id, rotation);
 
         if (model == null) {
             return null;
@@ -381,12 +381,12 @@ public class LocType {
         }
 
         if (hill_skew) {
-            int groundY = (heightmapSW + heightmapSE + heightmapNE + heightmapNW) / 4;
+            int groundY = (y_sw + y_se + y_ne + y_nw) / 4;
             for (int i = 0; i < model.vertexCount; i++) {
                 int x = model.vertexX[i];
                 int z = model.vertexZ[i];
-                int heightS = heightmapSW + (((heightmapSE - heightmapSW) * (x + 64)) / 128);
-                int heightN = heightmapNW + (((heightmapNE - heightmapNW) * (x + 64)) / 128);
+                int heightS = y_sw + (((y_se - y_sw) * (x + 64)) / 128);
+                int heightN = y_nw + (((y_ne - y_nw) * (x + 64)) / 128);
                 int y = heightS + (((heightN - heightS) * (z + 64)) / 128);
                 model.vertexY[i] += y - groundY;
             }
@@ -406,11 +406,11 @@ public class LocType {
         return ok;
     }
 
-    public LocType getOverrideType() {
+    public Obj getOverrideType() {
         int value = -1;
 
         if (varbit != -1) {
-            VarbitType varbit = VarbitType.instances[this.varbit];
+            Varbit varbit = Varbit.instances[this.varbit];
             int varp = varbit.varp;
             int low = varbit.lsb;
             int high = varbit.msb;
@@ -527,7 +527,7 @@ public class LocType {
         boolean scaled = (scaleX != 128) || (scaleY != 128) || (scaleZ != 128);
         boolean translated = (translateX != 0) || (translateY != 0) || (translateZ != 0);
 
-        Model modified = Model.clone(color_src == null, SeqTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
+        Model modified = Model.clone(color_src == null, AnimationTransform.isNull(transformID), (rotation == 0) && (transformID == -1) && !scaled && !translated, model);
 
         if (transformID != -1) {
             modified.build_labels();
@@ -554,7 +554,7 @@ public class LocType {
             modified.translate(translateX, translateY, translateZ);
         }
 
-        modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, true/*!dynamic*/);
+        modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, !dynamic);
 
         if (support_items) {
             modified.objRaise = modified.minY;

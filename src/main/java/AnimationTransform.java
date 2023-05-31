@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link SeqTransform} contains the {@link SeqSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
+ * A {@link AnimationTransform} contains the {@link AnimationSkeleton} and <code>x,y,z</code> parameters to transform a {@link Model}.
  *
  * @see Model#transform(int)
  * @see Model#transform2(int, int, int[])
  */
-public class SeqTransform {
+public class AnimationTransform {
 
-    public static SeqTransform[] instances;
-    public static List<SeqSkeleton> skeletons = new ArrayList<>();
+    public static AnimationTransform[] instances;
+    public static List<AnimationSkeleton> skeletons = new ArrayList<>();
 
     /**
      * Syntax sugar.
@@ -31,7 +31,7 @@ public class SeqTransform {
      * @param count the count
      */
     public static void init(int count) {
-        instances = new SeqTransform[count + 1];
+        instances = new AnimationTransform[count + 1];
     }
 
     /**
@@ -42,12 +42,12 @@ public class SeqTransform {
     }
 
     /**
-     * Gets the {@link SeqTransform}
+     * Gets the {@link AnimationTransform}
      *
      * @param id the transform id.
-     * @return the {@link SeqTransform} or <code>null</code> if it does not exist.
+     * @return the {@link AnimationTransform} or <code>null</code> if it does not exist.
      */
-    public static SeqTransform get(int id) {
+    public static AnimationTransform get(int id) {
         if ((instances == null) || (id < 0) || (id >= instances.length)) {
             return null;
         } else {
@@ -56,7 +56,7 @@ public class SeqTransform {
     }
 
     /**
-     * This method can read <i>multiple</i> {@link SeqTransform}s which means the input data can be all the transforms
+     * This method can read <i>multiple</i> {@link AnimationTransform}s which means the input data can be all the transforms
      * related to the loaded skeleton.
      *
      * @param src the animation data.
@@ -87,7 +87,7 @@ public class SeqTransform {
 
         skel.position = offset;
 
-        SeqSkeleton skeleton = new SeqSkeleton(skel);
+        AnimationSkeleton skeleton = new AnimationSkeleton(skel);
 
         int skeletonID = skeletons.size();
         skeletons.add(skeleton);
@@ -99,7 +99,7 @@ public class SeqTransform {
         int[] z = new int[500];
 
         for (int i = 0; i < frameCount; i++) {
-            SeqTransform transform = instances[header.readU16()] = new SeqTransform();
+            AnimationTransform transform = instances[header.readU16()] = new AnimationTransform();
             transform.delay = del.readU8();
             transform.skeleton = skeleton;
             transform.skeletonID = skeletonID;
@@ -115,10 +115,10 @@ public class SeqTransform {
                     continue;
                 }
 
-                if (skeleton._base_types[base] != SeqSkeleton.OP_BASE) {
+                if (skeleton._base_types[base] != AnimationSkeleton.OP_BASE) {
                     // Look for any skipped ORIGIN bases and insert them into this transform.
                     for (int cur = base - 1; cur > lastBase; cur--) {
-                        if (skeleton._base_types[cur] == SeqSkeleton.OP_BASE) {
+                        if (skeleton._base_types[cur] == AnimationSkeleton.OP_BASE) {
                             bases[length] = cur;
                             x[length] = 0;
                             y[length] = 0;
@@ -133,7 +133,7 @@ public class SeqTransform {
 
                 int defaultValue = 0;
 
-                if (skeleton._base_types[base] == SeqSkeleton.OP_SCALE) {
+                if (skeleton._base_types[base] == AnimationSkeleton.OP_SCALE) {
                     defaultValue = 128;
                 }
 
@@ -177,7 +177,7 @@ public class SeqTransform {
     /**
      * The skeleton associated to this transform.
      */
-    public transient SeqSkeleton skeleton;
+    public transient AnimationSkeleton skeleton;
 
     @Expose
     @SerializedName("skeleton")

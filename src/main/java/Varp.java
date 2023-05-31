@@ -4,20 +4,20 @@
 
 import java.io.IOException;
 
-public class VarpType {
+public class Varp {
 
     public static int count;
-    public static VarpType[] instances;
+    public static Varp[] instances;
 
     public static void unpack(FileArchive archive) throws IOException {
         Buffer buffer = new Buffer(archive.read("varp.dat"));
         count = buffer.readU16();
         if (instances == null) {
-            instances = new VarpType[count];
+            instances = new Varp[count];
         }
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
-                instances[i] = new VarpType();
+                instances[i] = new Varp();
             }
             instances[i].read(buffer);
         }
@@ -28,7 +28,7 @@ public class VarpType {
 
     public int type;
 
-    public VarpType() {
+    public Varp() {
     }
 
     public void read(Buffer in) {

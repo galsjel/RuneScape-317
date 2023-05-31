@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class ProjectileEntity extends Drawable {
+public class SceneProjectile extends Drawable {
 
     public final int startCycle;
     public final int lastCycle;
@@ -13,7 +13,7 @@ public class ProjectileEntity extends Drawable {
     public final int peakPitch;
     public final int arc;
     public final int target;
-    public final SpotAnimType spotanim;
+    public final SpotAnim spotanim;
     public final int level;
     public double velocityX;
     public double velocityZ;
@@ -29,8 +29,8 @@ public class ProjectileEntity extends Drawable {
     public int yaw;
     public int pitch;
 
-    public ProjectileEntity(int peakPitch, int offsetY, int startCycle, int lastCycle, int arc, int level, int srcY, int srcZ, int srcX, int target, int spotanim) {
-        this.spotanim = SpotAnimType.instances[spotanim];
+    public SceneProjectile(int peakPitch, int offsetY, int startCycle, int lastCycle, int arc, int level, int srcY, int srcZ, int srcX, int target, int spotanim) {
+        this.spotanim = SpotAnim.instances[spotanim];
         this.level = level;
         this.srcX = srcX;
         this.srcZ = srcZ;
@@ -74,7 +74,7 @@ public class ProjectileEntity extends Drawable {
             transformID = spotanim.seq.primary_transforms[seqFrame];
         }
 
-        Model model = Model.clone(true, SeqTransform.isNull(transformID), false, tmp);
+        Model model = Model.clone(true, AnimationTransform.isNull(transformID), false, tmp);
         if (transformID != -1) {
             model.build_labels();
             model.transform(transformID);

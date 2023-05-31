@@ -2,18 +2,18 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class SceneObjStack {
+public class SceneItemStack {
 
     public int y;
     public int x;
     public int z;
-    public Drawable topObj;
-    public Drawable bottomObj;
-    public Drawable middleObj;
+    public Drawable top;
+    public Drawable bottom;
+    public Drawable middle;
     public int bitset;
     public int offset;
 
-    public SceneObjStack() {
+    public SceneItemStack() {
     }
 
 }

@@ -6,24 +6,24 @@ import org.apache.commons.collections4.map.LRUMap;
 
 import java.io.IOException;
 
-public class NPCType {
+public class NPC {
 
     private static int cachePosition;
     private static Buffer dat;
     public static int[] offsets;
-    private static NPCType[] cache;
+    private static NPC[] cache;
     public static Game game;
     public static int count;
     public static LRUMap<Long, Model> modelCache = new LRUMap<>(30);
 
-    public static NPCType get(int id) {
+    public static NPC get(int id) {
         for (int j = 0; j < 20; j++) {
             if (cache[j].uid == (long) id) {
                 return cache[j];
             }
         }
         cachePosition = (cachePosition + 1) % 20;
-        NPCType type = cache[cachePosition] = new NPCType();
+        NPC type = cache[cachePosition] = new NPC();
         dat.position = offsets[id];
         type.uid = id;
         type.read(dat);
@@ -42,10 +42,10 @@ public class NPCType {
             offset += buffer.readU16();
         }
 
-        cache = new NPCType[20];
+        cache = new NPC[20];
 
         for (int k = 0; k < 20; k++) {
-            cache[k] = new NPCType();
+            cache[k] = new NPC();
         }
     }
 
@@ -87,12 +87,12 @@ public class NPCType {
     public boolean important = false;
     public int[] modelIDs;
 
-    public NPCType() {
+    public NPC() {
     }
 
     public Model getHeadModel() {
         if (overrides != null) {
-            NPCType type = getOverrideType();
+            NPC type = getOverrideType();
             if (type == null) {
                 return null;
             } else {
@@ -138,11 +138,11 @@ public class NPCType {
         return model;
     }
 
-    public NPCType getOverrideType() {
+    public NPC getOverrideType() {
         int value = -1;
 
         if (varbitID != -1) {
-            VarbitType vb = VarbitType.instances[this.varbitID];
+            Varbit vb = Varbit.instances[this.varbitID];
             int varp = vb.varp;
             int lsb = vb.lsb;
             int msb = vb.msb;
@@ -161,7 +161,7 @@ public class NPCType {
 
     public Model getSequencedModel(int secondaryTransformID, int primaryTransformID, int[] seqMask) {
         if (overrides != null) {
-            NPCType override = getOverrideType();
+            NPC override = getOverrideType();
             if (override == null) {
                 return null;
             } else {
@@ -208,7 +208,7 @@ public class NPCType {
         }
 
         Model tmp = Model.EMPTY;
-        tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
+        tmp.set(model, AnimationTransform.isNull(primaryTransformID) & AnimationTransform.isNull(secondaryTransformID));
 
         if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
             tmp.transform2(primaryTransformID, secondaryTransformID, seqMask);

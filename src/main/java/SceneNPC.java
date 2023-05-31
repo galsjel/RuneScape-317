@@ -2,27 +2,27 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class NPCEntity extends PathingEntity {
+public class SceneNPC extends SceneCharacter {
 
-    public NPCType type;
+    public NPC type;
 
-    public NPCEntity() {
+    public SceneNPC() {
     }
 
     public Model getSequencedModel() {
         if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-            int primaryTransformID = SeqType.instances[super.primarySeqID].primary_transforms[super.primarySeqFrame];
+            int primaryTransformID = Animation.instances[super.primarySeqID].primary_transforms[super.primarySeqFrame];
             int secondaryTransformID = -1;
             if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
-                secondaryTransformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
+                secondaryTransformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
-            return type.getSequencedModel(secondaryTransformID, primaryTransformID, SeqType.instances[super.primarySeqID].secondary_transform_mask);
+            return type.getSequencedModel(secondaryTransformID, primaryTransformID, Animation.instances[super.primarySeqID].secondary_transform_mask);
         }
 
         int transformID = -1;
 
         if (super.secondarySeqID >= 0) {
-            transformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
+            transformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
         }
 
         return type.getSequencedModel(-1, transformID, null);
@@ -43,14 +43,14 @@ public class NPCEntity extends PathingEntity {
         super.height = model.minY;
 
         if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
-            SpotAnimType spotanim = SpotAnimType.instances[super.spotanimID];
+            SpotAnim spotanim = SpotAnim.instances[super.spotanimID];
             Model model0 = spotanim.getModel();
 
             if (model0 != null) {
                 int transformID = spotanim.seq.primary_transforms[super.spotanimFrame];
 
                 // create a copy of the model
-                Model model1 = Model.clone(true, SeqTransform.isNull(transformID), false, model0);
+                Model model1 = Model.clone(true, AnimationTransform.isNull(transformID), false, model0);
                 model1.translate(0, -super.spotanimOffset, 0);
                 model1.build_labels();
                 model1.transform(transformID);

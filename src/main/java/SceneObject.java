@@ -2,7 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class LocEntity extends Drawable {
+public class SceneObject extends Drawable {
 
     public static Game game;
     public final int[] overrideTypeIDs;
@@ -16,10 +16,10 @@ public class LocEntity extends Drawable {
     public final int kind;
     public final int rotation;
     public int seqFrame;
-    public SeqType seq;
+    public Animation seq;
     public int seqCycle;
 
-    public LocEntity(int id, int rotation, int kind, int heightmapSE, int heightmapNE, int heightmapSW, int heightmapNW, int seqID, boolean randomFrame) {
+    public SceneObject(int id, int rotation, int kind, int heightmapSE, int heightmapNE, int heightmapSW, int heightmapNW, int seqID, boolean randomFrame) {
         this.id = id;
         this.kind = kind;
         this.rotation = rotation;
@@ -29,7 +29,7 @@ public class LocEntity extends Drawable {
         this.heightmapNW = heightmapNW;
 
         if (seqID != -1) {
-            seq = SeqType.instances[seqID];
+            seq = Animation.instances[seqID];
             seqFrame = 0;
             seqCycle = Game.loopCycle;
 
@@ -38,7 +38,7 @@ public class LocEntity extends Drawable {
                 seqCycle -= (int) (Math.random() * (double) seq.getFrameDuration(seqFrame));
             }
         }
-        LocType type = LocType.get(this.id);
+        Obj type = Obj.get(this.id);
         varbit = type.varbit;
         varp = type.varp;
         overrideTypeIDs = type.overrides;
@@ -79,12 +79,12 @@ public class LocEntity extends Drawable {
             }
         }
 
-        LocType type;
+        Obj type;
 
         if (overrideTypeIDs != null) {
             type = getOverrideType();
         } else {
-            type = LocType.get(id);
+            type = Obj.get(id);
         }
 
         if (type == null) {
@@ -94,11 +94,11 @@ public class LocEntity extends Drawable {
         }
     }
 
-    public LocType getOverrideType() {
+    public Obj getOverrideType() {
         int value = -1;
 
         if (varbit != -1) {
-            VarbitType varbit = VarbitType.instances[this.varbit];
+            Varbit varbit = Varbit.instances[this.varbit];
             int varp = varbit.varp;
             int low = varbit.lsb;
             int high = varbit.msb;
@@ -111,7 +111,7 @@ public class LocEntity extends Drawable {
         if ((value < 0) || (value >= overrideTypeIDs.length) || (overrideTypeIDs[value] == -1)) {
             return null;
         } else {
-            return LocType.get(overrideTypeIDs[value]);
+            return Obj.get(overrideTypeIDs[value]);
         }
     }
 

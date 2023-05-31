@@ -14,13 +14,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
-public class PlayerEntity extends PathingEntity {
+public class ScenePlayer extends SceneCharacter {
 
     public static LRUMap<Long, Model> modelCache = new LRUMap<>(260);
     public final int[] colors = new int[5];
     public final int[] appearances = new int[12];
     public long modelUID = -1L;
-    public NPCType transmogrify;
+    public NPC transmogrify;
     public int team;
     public int gender;
     public String name;
@@ -41,7 +41,7 @@ public class PlayerEntity extends PathingEntity {
     public int maxSceneTileZ;
     public int skillLevel;
 
-    public PlayerEntity() {
+    public ScenePlayer() {
     }
 
     public static int max_animated_frame = -1;
@@ -61,11 +61,11 @@ public class PlayerEntity extends PathingEntity {
         model.pickable = true;
 
         if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
-            SpotAnimType spot = SpotAnimType.instances[super.spotanimID];
+            SpotAnim spot = SpotAnim.instances[super.spotanimID];
             Model spotModel1 = spot.getModel();
 
             if (spotModel1 != null) {
-                Model spotModel2 = Model.clone(true, SeqTransform.isNull(super.spotanimFrame), false, spotModel1);
+                Model spotModel2 = Model.clone(true, AnimationTransform.isNull(super.spotanimFrame), false, spotModel1);
                 spotModel2.translate(0, -super.spotanimOffset, 0);
                 spotModel2.build_labels();
                 spotModel2.transform(spot.seq.primary_transforms[super.spotanimFrame]);
@@ -188,12 +188,12 @@ public class PlayerEntity extends PathingEntity {
             appearances[part] = (msb << 8) + lsb;
 
             if ((part == 0) && (appearances[0] == 65535)) {
-                transmogrify = NPCType.get(in.readU16());
+                transmogrify = NPC.get(in.readU16());
                 break;
             }
 
-            if ((appearances[part] >= 512) && ((appearances[part] - 512) < ObjType.count)) {
-                int team = ObjType.get(appearances[part] - 512).team;
+            if ((appearances[part] >= 512) && ((appearances[part] - 512) < Item.count)) {
+                int team = Item.get(appearances[part] - 512).team;
 
                 if (team != 0) {
                     this.team = team;
@@ -277,9 +277,9 @@ public class PlayerEntity extends PathingEntity {
         if (transmogrify != null) {
             int transformID = -1;
             if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-                transformID = SeqType.instances[super.primarySeqID].primary_transforms[super.primarySeqFrame];
+                transformID = Animation.instances[super.primarySeqID].primary_transforms[super.primarySeqFrame];
             } else if (super.secondarySeqID >= 0) {
-                transformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
+                transformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
             return transmogrify.getSequencedModel(-1, transformID, null);
         }
@@ -291,11 +291,11 @@ public class PlayerEntity extends PathingEntity {
         int leftHandValue = -1;
 
         if ((super.primarySeqID >= 0) && (super.primarySeqDelay == 0)) {
-            SeqType type = SeqType.instances[super.primarySeqID];
+            Animation type = Animation.instances[super.primarySeqID];
             primaryTransformID = type.primary_transforms[super.primarySeqFrame];
 
             if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
-                secondaryTransformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
+                secondaryTransformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
 
             if (type.rightHandOverride >= 0) {
@@ -308,7 +308,7 @@ public class PlayerEntity extends PathingEntity {
                 hashCode += ((long) leftHandValue - appearances[3]) << 16;
             }
         } else if (super.secondarySeqID >= 0) {
-            primaryTransformID = SeqType.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
+            primaryTransformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
         }
 
         Model model = modelCache.get(hashCode);
@@ -327,11 +327,11 @@ public class PlayerEntity extends PathingEntity {
                     value = rightHandValue;
                 }
 
-                if ((value >= 256) && (value < 512) && !IdkType.instances[value - 256].validateModel()) {
+                if ((value >= 256) && (value < 512) && !Identikit.instances[value - 256].validateModel()) {
                     invalid = true;
                 }
 
-                if ((value >= 512) && !ObjType.get(value - 512).validateWornModel(gender)) {
+                if ((value >= 512) && !Item.get(value - 512).validateWornModel(gender)) {
                     invalid = true;
                 }
             }
@@ -362,14 +362,14 @@ public class PlayerEntity extends PathingEntity {
                 }
 
                 if ((value >= 256) && (value < 512)) {
-                    Model kitModel = IdkType.instances[value - 256].getModel();
+                    Model kitModel = Identikit.instances[value - 256].getModel();
                     if (kitModel != null) {
                         models[modelCount++] = kitModel;
                     }
                 }
 
                 if (value >= 512) {
-                    Model objModel = ObjType.get(value - 512).getWornModel(gender);
+                    Model objModel = Item.get(value - 512).getWornModel(gender);
 
                     if (objModel != null) {
                         models[modelCount++] = objModel;
@@ -393,10 +393,10 @@ public class PlayerEntity extends PathingEntity {
         }
 
         Model tmp = Model.EMPTY;
-        tmp.set(model, SeqTransform.isNull(primaryTransformID) & SeqTransform.isNull(secondaryTransformID));
+        tmp.set(model, AnimationTransform.isNull(primaryTransformID) & AnimationTransform.isNull(secondaryTransformID));
 
         if ((primaryTransformID != -1) && (secondaryTransformID != -1)) {
-            tmp.transform2(primaryTransformID, secondaryTransformID, SeqType.instances[super.primarySeqID].secondary_transform_mask);
+            tmp.transform2(primaryTransformID, secondaryTransformID, Animation.instances[super.primarySeqID].secondary_transform_mask);
         } else if (primaryTransformID != -1) {
             tmp.transform(primaryTransformID);
         }
@@ -426,11 +426,11 @@ public class PlayerEntity extends PathingEntity {
         for (int part = 0; part < 12; part++) {
             int value = appearances[part];
 
-            if ((value >= 256) && (value < 512) && !IdkType.instances[value - 256].validateHeadModel()) {
+            if ((value >= 256) && (value < 512) && !Identikit.instances[value - 256].validateHeadModel()) {
                 invalid = true;
             }
 
-            if ((value >= 512) && !ObjType.get(value - 512).validateHeadModel(gender)) {
+            if ((value >= 512) && !Item.get(value - 512).validateHeadModel(gender)) {
                 invalid = true;
             }
         }
@@ -445,13 +445,13 @@ public class PlayerEntity extends PathingEntity {
             int value = appearances[part];
 
             if ((value >= 256) && (value < 512)) {
-                Model model = IdkType.instances[value - 256].getHeadModel();
+                Model model = Identikit.instances[value - 256].getHeadModel();
                 if (model != null) {
                     models[modelCount++] = model;
                 }
             }
             if (value >= 512) {
-                Model model = ObjType.get(value - 512).getHeadModel(gender);
+                Model model = Item.get(value - 512).getHeadModel(gender);
                 if (model != null) {
                     models[modelCount++] = model;
                 }

@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-public class ObjType {
+public class Item {
 
     public static LRUMap<Integer, Image24> iconCache = new LRUMap<>(100);
     public static LRUMap<Integer, Model> modelCache = new LRUMap<>(50);
-    public static ObjType[] recent;
+    public static Item[] recent;
     public static int recentPos;
     public static Buffer dat;
     public static int[] typeOffset;
@@ -39,13 +39,13 @@ public class ObjType {
             typeOffset[j] = offset;
             offset += idx.readU16();
         }
-        recent = new ObjType[10];
+        recent = new Item[10];
         for (int k = 0; k < 10; k++) {
-            recent[k] = new ObjType();
+            recent[k] = new Item();
         }
     }
 
-    public static ObjType get(int id) {
+    public static Item get(int id) {
         for (int i = 0; i < 10; i++) {
             if (recent[i].id == id) {
                 return recent[i];
@@ -53,7 +53,7 @@ public class ObjType {
         }
 
         recentPos = (recentPos + 1) % 10;
-        ObjType type = recent[recentPos];
+        Item type = recent[recentPos];
         dat.position = typeOffset[id];
         type.id = id;
         type.reset();
@@ -88,7 +88,7 @@ public class ObjType {
             }
         }
 
-        ObjType type = get(id);
+        Item type = get(id);
 
         if (type.stackID == null) {
             count = -1;
@@ -306,7 +306,7 @@ public class ObjType {
     public int iconRoll;
     public byte maleOffsetY;
 
-    public ObjType() {
+    public Item() {
     }
 
     public boolean validateHeadModel(int gender) {
@@ -477,7 +477,7 @@ public class ObjType {
     }
 
     public void toCertificate() {
-        ObjType cert = get(certificateID);
+        Item cert = get(certificateID);
         modelID = cert.modelID;
         iconDistance = cert.iconDistance;
         iconPitch = cert.iconPitch;
@@ -488,7 +488,7 @@ public class ObjType {
         srcColor = cert.srcColor;
         dstColor = cert.dstColor;
 
-        ObjType linked = get(linkedID);
+        Item linked = get(linkedID);
         name = linked.name;
         members = linked.members;
         cost = linked.cost;
@@ -505,7 +505,7 @@ public class ObjType {
     }
 
     /**
-     * Retrieves a fully built ground model of this {@link ObjType}.
+     * Retrieves a fully built ground model of this {@link Item}.
      *
      * @param count the stack count.
      * @return the model or <code>null</code> if unavailable.
@@ -555,7 +555,7 @@ public class ObjType {
     }
 
     /**
-     * Retrieves the ground model of this {@link ObjType} without caching, rescaling, calculating normals, applying lighting, or making pickable. As opposed to {@link #getLitModel(int)}.
+     * Retrieves the ground model of this {@link Item} without caching, rescaling, calculating normals, applying lighting, or making pickable. As opposed to {@link #getLitModel(int)}.
      *
      * @param count the stack count.
      * @return the model or <code>null</code> if unavailable.

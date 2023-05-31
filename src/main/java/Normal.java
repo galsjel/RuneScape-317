@@ -2,14 +2,14 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-public class VertexNormal {
+public class Normal {
 
     public int x;
     public int y;
     public int z;
     public int w;
 
-    public VertexNormal() {
+    public Normal() {
     }
 
     @Override

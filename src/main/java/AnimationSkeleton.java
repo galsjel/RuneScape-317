@@ -2,12 +2,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * A {@link SeqSkeleton} describes the usage and relationship between groups of vertices.
+ * A {@link AnimationSkeleton} describes the usage and relationship between groups of vertices.
  *
  * @see Model#transform(int)
  * @see Model#transform2(int, int, int[])
  */
-public class SeqSkeleton {
+public class AnimationSkeleton {
     /**
      * A base can be thought of as the origin of a bone. This operator comes first before any other operations occur.
      */
@@ -40,11 +40,11 @@ public class SeqSkeleton {
     public final int[][] baseLabels;
 
     /**
-     * Constructs a new {@link SeqSkeleton} read from the provided input.
+     * Constructs a new {@link AnimationSkeleton} read from the provided input.
      *
      * @param in the input
      */
-    public SeqSkeleton(Buffer in) {
+    public AnimationSkeleton(Buffer in) {
         final int length = in.readU8();
         _base_types = new int[length];
         baseLabels = new int[length][];
