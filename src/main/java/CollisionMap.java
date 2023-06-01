@@ -42,7 +42,7 @@ public class CollisionMap {
                 if ((x == 0) || (z == 0) || (x == (sizeX - 1)) || (z == (sizeZ - 1))) {
                     flags[x][z] = FLAG_CLOSED;
                 } else {
-                    flags[x][z] = FLAG_UNINITIALIZED;
+                    flags[x][z] = 0;
                 }
             }
         }
@@ -303,7 +303,7 @@ public class CollisionMap {
     }
 
     public void remove(int x, int z, int flags) {
-        this.flags[x][z] &= 0xffffff - flags;
+        this.flags[x][z] &= ~flags;
     }
 
     public void removeSolid(int x, int z) {

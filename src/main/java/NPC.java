@@ -63,6 +63,14 @@ public class NPC {
         return npc;
     }
 
+    public static NPC get_uncached(int id) {
+        NPC type = new NPC();
+        dat.position = offsets[id];
+        type.id = id;
+        type.read(dat);
+        return type;
+    }
+
     public static void unpack(FileArchive archive) throws IOException {
         dat = new Buffer(archive.read("npc.dat"));
         Buffer buffer = new Buffer(archive.read("npc.idx"));
