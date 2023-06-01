@@ -16,7 +16,7 @@ public class SceneNPC extends SceneCharacter {
             if ((super.secondarySeqID >= 0) && (super.secondarySeqID != super.seqStandID)) {
                 secondaryTransformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
-            return type.getSequencedModel(secondaryTransformID, primaryTransformID, Animation.instances[super.primarySeqID].secondary_transform_mask);
+            return type.built_model(primaryTransformID, secondaryTransformID, Animation.instances[super.primarySeqID].secondary_transform_mask);
         }
 
         int transformID = -1;
@@ -25,7 +25,7 @@ public class SceneNPC extends SceneCharacter {
             transformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
         }
 
-        return type.getSequencedModel(-1, transformID, null);
+        return type.built_model(transformID, -1, null);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class SceneNPC extends SceneCharacter {
                 model1.translate(0, -super.spotanimOffset, 0);
                 model1.build_labels();
                 model1.transform(transformID);
-                model1.labelFaces = null;
-                model1.labelVertices = null;
+                model1.label_faces = null;
+                model1.label_vertices = null;
 
                 if ((spotanim.scaleXZ != 128) || (spotanim.scaleY != 128)) {
                     model1.scale(spotanim.scaleXZ, spotanim.scaleY, spotanim.scaleXZ);

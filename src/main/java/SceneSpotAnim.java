@@ -38,8 +38,8 @@ public class SceneSpotAnim extends Drawable {
         if (!seqComplete) {
             model.build_labels();
             model.transform(transformID);
-            model.labelFaces = null;
-            model.labelVertices = null;
+            model.label_faces = null;
+            model.label_vertices = null;
         }
 
         if ((type.scaleXZ != 128) || (type.scaleY != 128)) {

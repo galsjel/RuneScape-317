@@ -18,6 +18,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.zip.CRC32;
 
 public class Game extends GameShell {
@@ -1002,18 +1003,28 @@ public class Game extends GameShell {
                 Files.writeString(Paths.get("out/animation_skeletons.json"), gson.toJson(AnimationTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/spotanims.json"), gson.toJson(SpotAnim.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 Files.writeString(Paths.get("out/identikits.json"), gson.toJson(Identikit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/varps.json"), gson.toJson(Varp.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/floors.json"), gson.toJson(Flo.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
                 Obj[] locs = new Obj[Obj.count];
                 for (int i = 0; i < locs.length; i++) {
-                    locs[i] = Obj.getUncached(i);
-                    locs[i].prepareExport();
+                    locs[i] = Obj.get_uncached(i);
+                    locs[i].prepare_export();
 
-                    if (i == 3769) {
-                        Model mdl = locs[i].getModel(10,-1,0);
-                        System.out.println("mdl = " + mdl);
-                    }
+                    // TODO: export images
                 }
                 Files.writeString(Paths.get("out/objects.json"), gson.toJson(locs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+                NPC[] npcs = new NPC[NPC.count];
+                for (int i = 0; i < npcs.length; i++) {
+                    npcs[i] = NPC.getUncached(i);
+                    npcs[i].prepare_export();
+
+                    // TODO: export images
+                    // TODO: export model json
+                }
+                Files.writeString(Paths.get("out/npcs.json"), gson.toJson(npcs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
 
                 Files.writeString(Paths.get("out/varbits.json"), gson.toJson(Varbit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
@@ -1908,7 +1919,7 @@ public class Game extends GameShell {
     public void clearCaches() {
         Obj.modelCacheStatic.clear();
         Obj.modelCacheDynamic.clear();
-        NPC.modelCache.clear();
+        NPC.built_model_cache.clear();
         Item.modelCache.clear();
         Item.iconCache.clear();
         ScenePlayer.modelCache.clear();
@@ -2052,7 +2063,7 @@ public class Game extends GameShell {
             SceneNPC npc = npcs[npcIDs[i]];
             int bitset = 0x20000000 + (npcIDs[i] << 14);
 
-            if ((npc == null) || !npc.isVisible() || (npc.type.important != important)) {
+            if ((npc == null) || !npc.isVisible() || Objects.equals(important, npc.type.important)) {
                 continue;
             }
 
@@ -2070,7 +2081,7 @@ public class Game extends GameShell {
                 tileLastOccupiedCycle[x][z] = sceneCycle;
             }
 
-            if (!npc.type.interactable) {
+            if (!npc.type._interactable) {
                 bitset += 0x80000000;
             }
 
@@ -2335,7 +2346,7 @@ public class Game extends GameShell {
             return;
         }
 
-        int type = Varp.instances[varpID].type;
+        int type = Objects.requireNonNullElse(Varp.instances[varpID].code,0);
 
         if (type == 0) {
             return;
@@ -2459,7 +2470,7 @@ public class Game extends GameShell {
             if (entity instanceof SceneNPC) {
                 NPC type = ((SceneNPC) entity).type;
                 if (type.overrides != null) {
-                    type = type.getOverrideType();
+                    type = type.evaluate();
                 }
                 if (type == null) {
                     continue;
@@ -2494,11 +2505,11 @@ public class Game extends GameShell {
             } else {
                 NPC type = ((SceneNPC) entity).type;
 
-                if ((type.headicon >= 0) && (type.headicon < imageHeadicons.length)) {
+                if ((type._headicon >= 0) && (type._headicon < imageHeadicons.length)) {
                     projectFromGround(entity, entity.height + 15);
 
                     if (projectX > -1) {
-                        imageHeadicons[type.headicon].draw(projectX - 12, projectY - 30);
+                        imageHeadicons[type._headicon].draw(projectX - 12, projectY - 30);
                     }
                 }
                 if ((hintType == 1) && (hintNPC == npcIDs[index - playerCount]) && ((loopCycle % 20) < 10)) {
@@ -3108,12 +3119,12 @@ public class Game extends GameShell {
             }
 
             npc.size = npc.type.size;
-            npc.turnSpeed = npc.type.turnSpeed;
-            npc.seqWalkID = npc.type.seqWalkID;
-            npc.seqTurnAroundID = npc.type.seqTurnAroundID;
-            npc.seqTurnLeftID = npc.type.seqTurnLeftID;
-            npc.seqTurnRightID = npc.type.seqTurnRightID;
-            npc.seqStandID = npc.type.seqStandID;
+            npc.turnSpeed = npc.type._turn_speed;
+            npc.seqWalkID = npc.type._animation_move;
+            npc.seqTurnAroundID = npc.type._animation_turn_around;
+            npc.seqTurnLeftID = npc.type._animation_turn_left;
+            npc.seqTurnRightID = npc.type._animation_turn_right;
+            npc.seqStandID = npc.type._animation_idle;
             npc.move(localPlayer.pathTileX[0] + x, localPlayer.pathTileZ[0] + z, teleport == 1);
         }
     }
@@ -5402,7 +5413,7 @@ public class Game extends GameShell {
         NPC type = npc.type;
 
         if (type.overrides != null) {
-            type = type.getOverrideType();
+            type = type.evaluate();
         }
 
         if (type == null) {
@@ -7517,12 +7528,12 @@ public class Game extends GameShell {
     private void readNPCTransform(SceneNPC npc) {
         npc.type = NPC.get(in.readU16LEA());
         npc.size = npc.type.size;
-        npc.turnSpeed = npc.type.turnSpeed;
-        npc.seqWalkID = npc.type.seqWalkID;
-        npc.seqTurnAroundID = npc.type.seqTurnAroundID;
-        npc.seqTurnLeftID = npc.type.seqTurnLeftID;
-        npc.seqTurnRightID = npc.type.seqTurnRightID;
-        npc.seqStandID = npc.type.seqStandID;
+        npc.turnSpeed = npc.type._turn_speed;
+        npc.seqWalkID = npc.type._animation_move;
+        npc.seqTurnAroundID = npc.type._animation_turn_around;
+        npc.seqTurnLeftID = npc.type._animation_turn_left;
+        npc.seqTurnRightID = npc.type._animation_turn_right;
+        npc.seqStandID = npc.type._animation_idle;
     }
 
     private void readNPCAnimation(SceneNPC npc) {
@@ -7575,21 +7586,21 @@ public class Game extends GameShell {
         }
 
         if (type.overrides != null) {
-            type = type.getOverrideType();
+            type = type.evaluate();
         }
 
         if (type == null) {
             return;
         }
 
-        if (!type.interactable) {
+        if (!type._interactable) {
             return;
         }
 
         String text = type.name;
 
-        if (type.level != 0) {
-            text = text + getCombatLevelColorTag(localPlayer.combatLevel, type.level) + " (level-" + type.level + ")";
+        if (type._combat_level != 0) {
+            text = text + getCombatLevelColorTag(localPlayer.combatLevel, type._combat_level) + " (level-" + type._combat_level + ")";
         }
 
         if (objSelected == 1) {
@@ -7602,22 +7613,22 @@ public class Game extends GameShell {
                 addMenuOption(spellCaption + " @yel@" + text, 413, tileX, tileZ, npcID);
             }
         } else {
-            if (type.options != null) {
+            if (type._options != null) {
                 for (int option = 4; option >= 0; option--) {
-                    if ((type.options[option] != null) && !type.options[option].equalsIgnoreCase("attack")) {
-                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option], tileX, tileZ, npcID);
+                    if ((type._options[option] != null) && !type._options[option].equalsIgnoreCase("attack")) {
+                        addMenuOption(type._options[option] + " @yel@" + text, NPC_OP_ACTION[option], tileX, tileZ, npcID);
                     }
                 }
             }
 
-            if (type.options != null) {
+            if (type._options != null) {
                 for (int option = 4; option >= 0; option--) {
-                    if ((type.options[option] != null) && type.options[option].equalsIgnoreCase("attack")) {
+                    if ((type._options[option] != null) && type._options[option].equalsIgnoreCase("attack")) {
                         int offset = 0;
-                        if (type.level > localPlayer.combatLevel) {
+                        if (type._combat_level > localPlayer.combatLevel) {
                             offset = 2000;
                         }
-                        addMenuOption(type.options[option] + " @yel@" + text, NPC_OP_ACTION[option] + offset, tileX, tileZ, npcID);
+                        addMenuOption(type._options[option] + " @yel@" + text, NPC_OP_ACTION[option] + offset, tileX, tileZ, npcID);
                     }
                 }
             }
@@ -9879,9 +9890,9 @@ public class Game extends GameShell {
             }
             NPC type = npc.type;
             if (type.overrides != null) {
-                type = type.getOverrideType();
+                type = type.evaluate();
             }
-            if ((type != null) && type.showOnMinimap && type.interactable) {
+            if ((type != null) && type._mapdot && type._interactable) {
                 int x = (npc.x / 32) - (localPlayer.x / 32);
                 int y = (npc.z / 32) - (localPlayer.z / 32);
                 drawOnMinimap(imageMapdot1, x, y);
@@ -11499,7 +11510,7 @@ public class Game extends GameShell {
         if (localPlayer.transmogrify == null) {
             iface.modelID = (localPlayer.colors[0] << 25) + (localPlayer.colors[4] << 20) + (localPlayer.appearances[0] << 15) + (localPlayer.appearances[8] << 10) + (localPlayer.appearances[11] << 5) + localPlayer.appearances[1];
         } else {
-            iface.modelID = (int) (0x12345678L + localPlayer.transmogrify.uid);
+            iface.modelID = (int) (0x12345678L + localPlayer.transmogrify.id);
         }
     }
 

@@ -2,6 +2,8 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.google.gson.annotations.Expose;
+
 import java.io.IOException;
 
 public class Varp {
@@ -18,6 +20,7 @@ public class Varp {
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
                 instances[i] = new Varp();
+                instances[i].id = i;
             }
             instances[i].read(buffer);
         }
@@ -26,7 +29,11 @@ public class Varp {
         }
     }
 
-    public int type;
+    @Expose
+    public int id;
+    @Expose
+    public Integer code;
+
 
     public Varp() {
     }
@@ -37,13 +44,13 @@ public class Varp {
             if (code == 0) {
                 return;
             } else if (code == 1 || code == 2) {
-                in.readU8();
+                System.out.println("in.readU8() = " + in.readU8());
             } else if (code == 5) {
-                type = in.readU16();
+                this.code = in.readU16();
             } else if (code == 7 || code == 12) {
-                in.read32();
+                System.out.println("in.read32() = " + in.read32());
             } else if (code == 10) {
-                in.readString();
+                System.out.println("in.readString() = " + in.readString());
             } else {
                 System.out.println("Error unrecognised varp config code: " + code);
             }

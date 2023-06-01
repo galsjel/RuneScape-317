@@ -97,7 +97,7 @@ public class Obj {
         return type;
     }
 
-    public static Obj getUncached(int id) {
+    public static Obj get_uncached(int id) {
         Obj type = new Obj();
         dat.position = offsets[id];
         type.id = id;
@@ -204,7 +204,7 @@ public class Obj {
     public Obj() {
     }
 
-    static <T> List<T> trim(List<T> list, Predicate<T> isEmpty) {
+    public static <T> List<T> trim(List<T> list, Predicate<T> isEmpty) {
         ListIterator<T> it = list.listIterator();
         while (it.hasNext() && isEmpty.test(it.next())) {
             it.remove();
@@ -213,10 +213,13 @@ public class Obj {
         while (it.hasPrevious() && isEmpty.test(it.previous())) {
             it.remove();
         }
+        if (list.size() == 0) {
+            return null;
+        }
         return list;
     }
 
-    public void prepareExport() {
+    public void prepare_export() {
         if (_options != null) {
             options = trim(Arrays.stream(_options).map(a->a == null ? "hidden" : a).collect(Collectors.toList()), s -> s.equals("hidden"));
         }
@@ -532,8 +535,8 @@ public class Obj {
         if (transformID != -1) {
             modified.build_labels();
             modified.transform(transformID);
-            modified.labelFaces = null;
-            modified.labelVertices = null;
+            modified.label_faces = null;
+            modified.label_vertices = null;
         }
 
         while (rotation-- > 0) {

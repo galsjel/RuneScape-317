@@ -78,8 +78,8 @@ public class SceneProjectile extends Drawable {
         if (transformID != -1) {
             model.build_labels();
             model.transform(transformID);
-            model.labelFaces = null;
-            model.labelVertices = null;
+            model.label_faces = null;
+            model.label_vertices = null;
         }
         if ((spotanim.scaleXZ != 128) || (spotanim.scaleY != 128)) {
             model.scale(spotanim.scaleXZ, spotanim.scaleY, spotanim.scaleXZ);

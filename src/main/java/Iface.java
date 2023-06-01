@@ -381,7 +381,7 @@ public class Iface {
         if (category == MODEL_TYPE_NORMAL) {
             model = Model.tryGet(id);
         } else if (category == MODEL_TYPE_NPC) {
-            model = NPC.get(id).getHeadModel();
+            model = NPC.get(id).get_chat_model();
         } else if (category == MODEL_TYPE_PLAYER) {
             model = Game.localPlayer.getHeadModel();
         } else if (category == MODEL_TYPE_OBJ) {

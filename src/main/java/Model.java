@@ -481,12 +481,12 @@ public class Model extends Drawable {
      * A lookup table for label->vertex.
      */
     @SerializedName("label_vertices")
-    public int[][] labelVertices;
+    public int[][] label_vertices;
     /**
      * A lookup table for label->face.
      */
     @SerializedName("label_faces")
-    public int[][] labelFaces;
+    public int[][] label_faces;
     /**
      * When set to <code>true</code>, this model will be picked based on its projected screen bounds.
      *
@@ -998,7 +998,7 @@ public class Model extends Drawable {
 
             tfaceCount += model.texturedFaceCount;
         }
-        calculateBoundsCylinder();
+        calc_bounds_cylinder();
     }
 
     /**
@@ -1199,8 +1199,8 @@ public class Model extends Drawable {
         faceColor = model.faceColor;
         flayer = model.flayer;
         layer = model.layer;
-        labelFaces = model.labelFaces;
-        labelVertices = model.labelVertices;
+        label_faces = model.label_faces;
+        label_vertices = model.label_vertices;
         faceVertexA = model.faceVertexA;
         faceVertexB = model.faceVertexB;
         faceVertexC = model.faceVertexC;
@@ -1250,7 +1250,7 @@ public class Model extends Drawable {
     /**
      * Calculates {@link #minY}, {@link #maxY}, {@link #radius}, {@link #min_depth} and {@link #max_depth}.
      */
-    public void calculateBoundsCylinder() {
+    public void calc_bounds_cylinder() {
         super.minY = 0;
         radius = 0;
         maxY = 0;
@@ -1337,7 +1337,7 @@ public class Model extends Drawable {
     }
 
     /**
-     * Builds {@link #labelVertices} and {@link #labelFaces} using {@link #labels} and {@link #faceLabel}.
+     * Builds {@link #label_vertices} and {@link #label_faces} using {@link #labels} and {@link #faceLabel}.
      * <p>
      * This method is <i>destructive</i>, meaning it sets {@link #labels} and {@link #faceLabel} to <code>null</code>
      * after being called.
@@ -1362,16 +1362,16 @@ public class Model extends Drawable {
                 }
             }
 
-            labelVertices = new int[count + 1][];
+            label_vertices = new int[count + 1][];
 
             for (int label = 0; label <= count; label++) {
-                labelVertices[label] = new int[labelVertexCount[label]];
+                label_vertices[label] = new int[labelVertexCount[label]];
                 labelVertexCount[label] = 0;
             }
 
             for (int v = 0; v < vertexCount; v++) {
                 int label = labels[v];
-                labelVertices[label][labelVertexCount[label]++] = v;
+                label_vertices[label][labelVertexCount[label]++] = v;
             }
 
             labels = null;
@@ -1389,15 +1389,15 @@ public class Model extends Drawable {
                 }
             }
 
-            labelFaces = new int[count + 1][];
+            label_faces = new int[count + 1][];
             for (int label = 0; label <= count; label++) {
-                labelFaces[label] = new int[labelFaceCount[label]];
+                label_faces[label] = new int[labelFaceCount[label]];
                 labelFaceCount[label] = 0;
             }
 
             for (int face = 0; face < fcnt; face++) {
                 int label = faceLabel[face];
-                labelFaces[label][labelFaceCount[label]++] = face;
+                label_faces[label][labelFaceCount[label]++] = face;
             }
 
             faceLabel = null;
@@ -1410,7 +1410,7 @@ public class Model extends Drawable {
      * @param id the transform id.
      */
     public void transform(int id) {
-        if (labelVertices == null) {
+        if (label_vertices == null) {
             return;
         }
         if (id == -1) {
@@ -1526,10 +1526,10 @@ public class Model extends Drawable {
                 baseY = 0;
                 baseZ = 0;
                 for (int label : labels) {
-                    if (label >= labelVertices.length) {
+                    if (label >= label_vertices.length) {
                         continue;
                     }
-                    int[] vertices = labelVertices[label];
+                    int[] vertices = label_vertices[label];
                     for (int v : vertices) {
                         baseX += vertexX[v];
                         baseY += vertexY[v];
@@ -1549,10 +1549,10 @@ public class Model extends Drawable {
             }
             case AnimationSkeleton.OP_TRANSLATE -> {
                 for (int group : labels) {
-                    if (group >= labelVertices.length) {
+                    if (group >= label_vertices.length) {
                         continue;
                     }
-                    int[] vertices = labelVertices[group];
+                    int[] vertices = label_vertices[group];
                     for (int v : vertices) {
                         vertexX[v] += x;
                         vertexY[v] += y;
@@ -1562,10 +1562,10 @@ public class Model extends Drawable {
             }
             case AnimationSkeleton.OP_ROTATE -> {
                 for (int label : labels) {
-                    if (label >= labelVertices.length) {
+                    if (label >= label_vertices.length) {
                         continue;
                     }
-                    int[] vertices = labelVertices[label];
+                    int[] vertices = label_vertices[label];
                     for (int v : vertices) {
                         vertexX[v] -= baseX;
                         vertexY[v] -= baseY;
@@ -1602,10 +1602,10 @@ public class Model extends Drawable {
             }
             case AnimationSkeleton.OP_SCALE -> {
                 for (int label : labels) {
-                    if (label >= labelVertices.length) {
+                    if (label >= label_vertices.length) {
                         continue;
                     }
-                    int[] vertices = labelVertices[label];
+                    int[] vertices = label_vertices[label];
                     for (int v : vertices) {
                         vertexX[v] -= baseX;
                         vertexY[v] -= baseY;
@@ -1620,12 +1620,12 @@ public class Model extends Drawable {
                 }
             }
             case AnimationSkeleton.OP_ALPHA -> {
-                if (labelFaces != null && faceAlpha != null) {
+                if (label_faces != null && faceAlpha != null) {
                     for (int label : labels) {
-                        if (label >= labelFaces.length) {
+                        if (label >= label_faces.length) {
                             continue;
                         }
-                        int[] triangles = labelFaces[label];
+                        int[] triangles = label_faces[label];
                         for (int t : triangles) {
                             faceAlpha[t] += x * 8;
                             if (faceAlpha[t] < 0) {
@@ -1828,7 +1828,7 @@ public class Model extends Drawable {
         }
 
         if (applyLighting) {
-            calculateBoundsCylinder();
+            calc_bounds_cylinder();
         } else {
             calculateBoundsAABB();
         }

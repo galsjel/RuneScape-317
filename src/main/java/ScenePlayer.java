@@ -69,8 +69,8 @@ public class ScenePlayer extends SceneCharacter {
                 spotModel2.translate(0, -super.spotanimOffset, 0);
                 spotModel2.build_labels();
                 spotModel2.transform(spot.seq.primary_transforms[super.spotanimFrame]);
-                spotModel2.labelFaces = null;
-                spotModel2.labelVertices = null;
+                spotModel2.label_faces = null;
+                spotModel2.label_vertices = null;
                 if ((spot.scaleXZ != 128) || (spot.scaleY != 128)) {
                     spotModel2.scale(spot.scaleXZ, spot.scaleY, spot.scaleXZ);
                 }
@@ -281,7 +281,7 @@ public class ScenePlayer extends SceneCharacter {
             } else if (super.secondarySeqID >= 0) {
                 transformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
-            return transmogrify.getSequencedModel(-1, transformID, null);
+            return transmogrify.built_model(transformID, -1, null);
         }
 
         long hashCode = this.appearanceHashcode;
@@ -401,9 +401,9 @@ public class ScenePlayer extends SceneCharacter {
             tmp.transform(primaryTransformID);
         }
 
-        tmp.calculateBoundsCylinder();
-        tmp.labelFaces = null;
-        tmp.labelVertices = null;
+        tmp.calc_bounds_cylinder();
+        tmp.label_faces = null;
+        tmp.label_vertices = null;
         return tmp;
     }
 
@@ -418,7 +418,7 @@ public class ScenePlayer extends SceneCharacter {
         }
 
         if (transmogrify != null) {
-            return transmogrify.getHeadModel();
+            return transmogrify.get_chat_model();
         }
 
         boolean invalid = false;

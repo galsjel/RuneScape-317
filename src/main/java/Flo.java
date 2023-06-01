@@ -1,6 +1,4 @@
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+import com.google.gson.annotations.Expose;
 
 import java.io.IOException;
 
@@ -18,20 +16,34 @@ public class Flo {
         for (int i = 0; i < count; i++) {
             if (instances[i] == null) {
                 instances[i] = new Flo();
+                instances[i].id = i;
             }
             instances[i].read(buffer);
         }
     }
 
+    @Expose
+    public int id;
+    @Expose
+    public String name;
+    @Expose
     public int rgb;
-    public int textureID = -1;
-    public boolean occludes = true;
-    public int hue;
-    public int saturation;
-    public int lightness;
-    public int chroma;
-    public int luminance;
+    @Expose
     public int hsl;
+    @Expose
+    public int texture = -1;
+    @Expose
+    public boolean occlude = true;
+    @Expose
+    public int hue;
+    @Expose
+    public int saturation;
+    @Expose
+    public int lightness;
+    @Expose
+    public int chroma;
+    @Expose
+    public int luminance;
 
     public Flo() {
     }
@@ -45,12 +57,12 @@ public class Flo {
                 rgb = in.read24();
                 setColor(rgb);
             } else if (code == 2) {
-                textureID = in.readU8();
+                texture = in.readU8();
             } else if (code == 3) {
             } else if (code == 5) {
-                occludes = false;
+                occlude = false;
             } else if (code == 6) {
-                in.readString(); // name
+                name = in.readString(); // name
             } else if (code == 7) {
                 int hue = this.hue;
                 int saturation = this.saturation;
@@ -146,7 +158,7 @@ public class Flo {
 
         chroma = (int) (h * (double) luminance);
 
-        int hue = (this.hue + (int) (Math.random() * 16D)) - 8;
+//        int hue = (this.hue + (int) (Math.random() * 16D)) - 8;
 
         if (hue < 0) {
             hue = 0;
@@ -154,23 +166,11 @@ public class Flo {
             hue = 255;
         }
 
-        int saturation = (this.saturation + (int) (Math.random() * 48D)) - 24;
+//        int saturation = (this.saturation + (int) (Math.random() * 48D)) - 24;
 
-        if (saturation < 0) {
-            saturation = 0;
-        } else if (saturation > 255) {
-            saturation = 255;
-        }
+        //        int lightness = (this.lightness + (int) (Math.random() * 48D)) - 24;
 
-        int lightness = (this.lightness + (int) (Math.random() * 48D)) - 24;
-
-        if (lightness < 0) {
-            lightness = 0;
-        } else if (lightness > 255) {
-            lightness = 255;
-        }
-
-        hsl = decimateHSL(hue, saturation, lightness);
+        hsl = decimateHSL(this.hue, this.saturation,this.lightness);
     }
 
     public static int decimateHSL(int hue, int saturation, int lightness) {

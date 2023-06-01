@@ -593,7 +593,7 @@ public class SceneBuilder {
                     if (level > 0) {
                         boolean occludes = (underlayID != 0) || (levelTileOverlayShape[level][x0][z0] == 0);
 
-                        if ((overlayID > 0) && !Flo.instances[overlayID - 1].occludes) {
+                        if ((overlayID > 0) && !Flo.instances[overlayID - 1].occlude) {
                             occludes = false;
                         }
 
@@ -615,14 +615,14 @@ public class SceneBuilder {
                         int shape = levelTileOverlayShape[level][x0][z0] + 1;
                         byte rotation = levelTileOverlayRotation[level][x0][z0];
                         Flo flo = Flo.instances[overlayID - 1];
-                        int textureID = flo.textureID;
+                        int textureID = flo.texture;
                         int rgb;
                         int hsl;
 
                         if (textureID >= 0) {
                             rgb = Draw3D.getAverageTextureRGB(textureID);
                             hsl = -1;
-                        } else if (flo.rgb == 16711935) {
+                        } else if (flo.rgb == 0xFF00FF) {
                             rgb = 0;
                             hsl = -2;
                             textureID = -1;
