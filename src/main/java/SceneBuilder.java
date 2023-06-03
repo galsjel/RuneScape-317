@@ -192,7 +192,7 @@ public class SceneBuilder {
         Drawable drawable;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            drawable = object.getModel(22, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = object.getModel(22, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(locID, rotation, 22, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }
@@ -241,7 +241,7 @@ public class SceneBuilder {
         Drawable drawable;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            drawable = object.getModel(0, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = object.getModel(0, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(locID, rotation, 0, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }
@@ -277,7 +277,7 @@ public class SceneBuilder {
         Drawable drawable;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            drawable = object.getModel(3, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = object.getModel(3, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(object_id, rotation, 3, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }
@@ -998,7 +998,7 @@ public class SceneBuilder {
                 if (drawable instanceof Model) {
                     model = (Model) drawable;
                 } else {
-                    model = object.getModel(10, rotation, y_sw, y_se, y_ne, y_nw, -1);
+                    model = object.getModel(10, -1, rotation, y_sw, y_se, y_ne, y_nw);
                 }
 
                 if (model != null) {
@@ -1028,7 +1028,7 @@ public class SceneBuilder {
         Drawable drawable;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            drawable = object.getModel(10, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = object.getModel(10, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(locID, rotation, 10, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }
@@ -1051,7 +1051,7 @@ public class SceneBuilder {
         Drawable entity;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            entity = object.getModel(kind, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            entity = object.getModel(kind, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             entity = new SceneObject(obj_id, rotation, kind, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }
@@ -1118,7 +1118,7 @@ public class SceneBuilder {
         Drawable drawable;
 
         if ((type.animation == -1) && (type.overrides == null)) {
-            drawable = type.getModel(1, rotation, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = type.getModel(1, -1, rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(locID, rotation, 1, y_se, y_ne, y_sw, y_nw, type.animation, true);
         }
@@ -1161,8 +1161,8 @@ public class SceneBuilder {
         Drawable b;
 
         if ((object.animation == -1) && (object.overrides == null)) {
-            a = object.getModel(2, 4 + rotation, y_sw, y_se, y_ne, y_nw, -1);
-            b = object.getModel(2, next_rotation, y_sw, y_se, y_ne, y_nw, -1);
+            a = object.getModel(2, -1, 4 + rotation, y_sw, y_se, y_ne, y_nw);
+            b = object.getModel(2, -1, next_rotation, y_sw, y_se, y_ne, y_nw);
         } else {
             a = new SceneObject(locID, 4 + rotation, 2, y_se, y_ne, y_sw, y_nw, object.animation, true);
             b = new SceneObject(locID, next_rotation, 2, y_se, y_ne, y_sw, y_nw, object.animation, true);
@@ -1211,7 +1211,7 @@ public class SceneBuilder {
     private static Drawable make_wall_decoration(Obj object, int object_id, int y_sw, int y_se, int y_ne, int y_nw) {
         Drawable drawable;
         if ((object.animation == -1) && (object.overrides == null)) {
-            drawable = object.getModel(4, 0, y_sw, y_se, y_ne, y_nw, -1);
+            drawable = object.getModel(4, -1, 0, y_sw, y_se, y_ne, y_nw);
         } else {
             drawable = new SceneObject(object_id, 0, 4, y_se, y_ne, y_sw, y_nw, object.animation, true);
         }

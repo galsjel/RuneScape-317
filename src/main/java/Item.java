@@ -4,11 +4,7 @@
 
 import org.apache.commons.collections4.map.LRUMap;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class Item {
@@ -74,11 +70,33 @@ public class Item {
         return type;
     }
 
+    public static Item get_uncached(int id) {
+        Item type = new Item();
+        dat.position = typeOffset[id];
+        type.id = id;
+        type.reset();
+        type.read(dat);
+
+        if (type.certificateID != -1) {
+            type.toCertificate();
+        }
+
+        if (!Game.members && type.members) {
+            type.name = "Members Object";
+            type.examine = "Login to a members' server to use this object.";
+            type.options = null;
+            type.inventoryOptions = null;
+            type.team = 0;
+        }
+
+        return type;
+    }
+
     public static Image24 getIcon(int id, int count, int outline) {
         if (outline == 0) {
             Image24 icon = iconCache.get(id);
 
-            if ((icon != null) && (icon.cropH != count) && (icon.cropH != -1)) {
+            if (icon != null && icon.cropH != count && icon.cropH != -1) {
                 icon.unlink();
                 icon = null;
             }
@@ -97,7 +115,7 @@ public class Item {
         if (count > 1) {
             int newID = -1;
             for (int stack = 0; stack < 10; stack++) {
-                if ((count >= type.stackCount[stack]) && (type.stackCount[stack] != 0)) {
+                if (count >= type.stackCount[stack] && type.stackCount[stack] != 0) {
                     newID = type.stackID[stack];
                 }
             }
@@ -153,54 +171,26 @@ public class Item {
             distance = (int) ((double) distance * 1.04D);
         }
 
-        int sinPitch = (Draw3D.sin[type.iconPitch] * distance) >> 16;
-        int cosPitch = (Draw3D.cos[type.iconPitch] * distance) >> 16;
+        int sinPitch = Draw3D.sin[type.iconPitch] * distance >> 16;
+        int cosPitch = Draw3D.cos[type.iconPitch] * distance >> 16;
 
-        model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
-
-        for (int j : new int[]{303,1109,1893,1919,1925}) {
-            if (id != j) {
-                continue;
-            }
-
-            BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
-            int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-
-            Draw2D.bind(pixels, 512, 512);
-            Draw3D.init2D();
-
-            distance /= 10;
-            sinPitch = (Draw3D.sin[type.iconPitch] * distance) >> 16;
-            cosPitch = (Draw3D.cos[type.iconPitch] * distance) >> 16;
-            System.out.println(id);
-            model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + (model.minY / 2) + type.iconOffsetY, cosPitch + type.iconOffsetY);
-
-            try {
-                for (int i = 0; i < pixels.length; i++) {
-                    if (pixels[i] > 0) {
-                        pixels[i] |= 0xFF << 24;
-                    }
-                }
-                ImageIO.write(image, "png", Paths.get("out/", "item" + id + ".png").toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + model.minY / 2 + type.iconOffsetY, cosPitch + type.iconOffsetY);
 
         // define outline
         for (int x = 31; x >= 0; x--) {
             for (int y = 31; y >= 0; y--) {
-                if (icon.pixels[x + (y * 32)] != 0) {
+                int pos = x + y * 32;
+                if (icon.pixels[pos] != 0) {
                     continue;
                 }
-                if ((x > 0) && (icon.pixels[(x - 1) + (y * 32)] > 1)) {
-                    icon.pixels[x + (y * 32)] = 1;
-                } else if ((y > 0) && (icon.pixels[x + ((y - 1) * 32)] > 1)) {
-                    icon.pixels[x + (y * 32)] = 1;
-                } else if ((x < 31) && (icon.pixels[x + 1 + (y * 32)] > 1)) {
-                    icon.pixels[x + (y * 32)] = 1;
-                } else if ((y < 31) && (icon.pixels[x + ((y + 1) * 32)] > 1)) {
-                    icon.pixels[x + (y * 32)] = 1;
+                if (x > 0 && icon.pixels[pos-1] > 1) {
+                    icon.pixels[pos] = 1;
+                } else if (y > 0 && icon.pixels[pos-32] > 1) {
+                    icon.pixels[pos] = 1;
+                } else if (x < 31 && icon.pixels[pos+1] > 1) {
+                    icon.pixels[pos] = 1;
+                } else if (y < 31 && icon.pixels[pos+32] > 1) {
+                    icon.pixels[pos] = 1;
                 }
             }
         }
@@ -209,28 +199,36 @@ public class Item {
         if (outline > 0) {
             for (int x = 31; x >= 0; x--) {
                 for (int y = 31; y >= 0; y--) {
-                    if (icon.pixels[x + (y * 32)] == 0) {
-                        if ((x > 0) && (icon.pixels[(x - 1) + (y * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outline;
-                        } else if ((y > 0) && (icon.pixels[x + ((y - 1) * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outline;
-                        } else if ((x < 31) && (icon.pixels[x + 1 + (y * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outline;
-                        } else if ((y < 31) && (icon.pixels[x + ((y + 1) * 32)] == 1)) {
-                            icon.pixels[x + (y * 32)] = outline;
+                    int pos = x + (y * 32);
+                    if (icon.pixels[pos] == 0) {
+                        if (x > 0 && icon.pixels[pos-1] == 1) {
+                            icon.pixels[pos] = outline;
+                        } else if (y > 0 && icon.pixels[pos-32] == 1) {
+                            icon.pixels[pos] = outline;
+                        } else if (x < 31 && icon.pixels[pos+1] == 1) {
+                            icon.pixels[pos] = outline;
+                        } else if (y < 31 && icon.pixels[pos+32] == 1) {
+                            icon.pixels[pos] = outline;
                         }
                     }
                 }
             }
         }
-        // default outline color
+        // shadow if no outline
         else if (outline == 0) {
             for (int x = 31; x >= 0; x--) {
                 for (int y = 31; y >= 0; y--) {
-                    if ((icon.pixels[x + (y * 32)] == 0) && (x > 0) && (y > 0) && (icon.pixels[(x - 1) + ((y - 1) * 32)] > 0)) {
-                        icon.pixels[x + (y * 32)] = 0x302020;
+                    int pos = x + y * 32;
+                    if (icon.pixels[pos] == 0 && x > 0 && y > 0 && icon.pixels[pos-33] > 0) {
+                        icon.pixels[pos] = 0x302020;
                     }
                 }
+            }
+        }
+
+        for (int i = 0; i < 32*32;i++) {
+            if (icon.pixels[i] > 0) {
+                icon.pixels[i] |= 0xFF000000;
             }
         }
 
@@ -288,7 +286,7 @@ public class Item {
     public String examine;
     public int linkedID;
     public int iconDistance;
-    public int lightAttenuation;
+    public int contrast;
     public int maleModelID2;
     public int maleModelID1;
     public String[] inventoryOptions;
@@ -297,7 +295,7 @@ public class Item {
     public int scaleY;
     public int[] stackID;
     public int iconOffsetY;
-    public int lightAmbient;
+    public int ambient;
     public int femaleHeadModelID0;
     public int iconYaw;
     public int femaleModelID0;
@@ -324,7 +322,7 @@ public class Item {
 
         boolean valid = Model.loaded(modelID0);
 
-        if ((modelID1 != -1) && !Model.loaded(modelID1)) {
+        if (modelID1 != -1 && !Model.loaded(modelID1)) {
             valid = false;
         }
         return valid;
@@ -378,11 +376,11 @@ public class Item {
 
         boolean valid = Model.loaded(modelID0);
 
-        if ((modelID1 != -1) && !Model.loaded(modelID1)) {
+        if (modelID1 != -1 && !Model.loaded(modelID1)) {
             valid = false;
         }
 
-        if ((modelID2 != -1) && !Model.loaded(modelID2)) {
+        if (modelID2 != -1 && !Model.loaded(modelID2)) {
             valid = false;
         }
 
@@ -418,11 +416,11 @@ public class Item {
             }
         }
 
-        if ((gender == 0) && (maleOffsetY != 0)) {
+        if (gender == 0 && maleOffsetY != 0) {
             model.translate(0, maleOffsetY, 0);
         }
 
-        if ((gender == 1) && (femaleOffsetY != 0)) {
+        if (gender == 1 && femaleOffsetY != 0) {
             model.translate(0, femaleOffsetY, 0);
         }
 
@@ -471,8 +469,8 @@ public class Item {
         scaleX = 128;
         scaleY = 128;
         scaleZ = 128;
-        lightAmbient = 0;
-        lightAttenuation = 0;
+        ambient = 0;
+        contrast = 0;
         team = 0;
     }
 
@@ -496,7 +494,7 @@ public class Item {
         String s = "a";
         char c = linked.name.charAt(0);
 
-        if ((c == 'A') || (c == 'E') || (c == 'I') || (c == 'O') || (c == 'U')) {
+        if (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U') {
             s = "an";
         }
 
@@ -511,11 +509,11 @@ public class Item {
      * @return the model or <code>null</code> if unavailable.
      */
     public Model getLitModel(int count) {
-        if ((stackID != null) && (count > 1)) {
+        if (stackID != null && count > 1) {
             int id = -1;
 
             for (int i = 0; i < 10; i++) {
-                if ((count >= stackCount[i]) && (stackCount[i] != 0)) {
+                if (count >= stackCount[i] && stackCount[i] != 0) {
                     id = stackID[i];
                 }
             }
@@ -537,7 +535,7 @@ public class Item {
             return null;
         }
 
-        if ((scaleX != 128) || (scaleY != 128) || (scaleZ != 128)) {
+        if (scaleX != 128 || scaleY != 128 || scaleZ != 128) {
             model.scale(scaleX, scaleY, scaleZ);
         }
 
@@ -547,7 +545,7 @@ public class Item {
             }
         }
 
-        model.build(64 + lightAmbient, 768 + lightAttenuation, -50, -10, -50, true);
+        model.build(64 + ambient, 768 + contrast, -50, -10, -50, true);
 
         model.pickable = true;
         modelCache.put(id, model);
@@ -561,11 +559,11 @@ public class Item {
      * @return the model or <code>null</code> if unavailable.
      */
     public Model getInterfaceModel(int count) {
-        if ((stackID != null) && (count > 1)) {
+        if (stackID != null && count > 1) {
             int id = -1;
 
             for (int i = 0; i < 10; i++) {
-                if ((count >= stackCount[i]) && (stackCount[i] != 0)) {
+                if (count >= stackCount[i] && stackCount[i] != 0) {
                     id = stackID[i];
                 }
             }
@@ -643,7 +641,7 @@ public class Item {
                 femaleOffsetY = in.read8();
             } else if (code == 26) {
                 femaleModelID1 = in.readU16();
-            } else if ((code >= 30) && (code < 35)) {
+            } else if (code >= 30 && code < 35) {
                 if (options == null) {
                     options = new String[5];
                 }
@@ -651,7 +649,7 @@ public class Item {
                 if (options[code - 30].equalsIgnoreCase("hidden")) {
                     options[code - 30] = null;
                 }
-            } else if ((code >= 35) && (code < 40)) {
+            } else if (code >= 35 && code < 40) {
                 if (inventoryOptions == null) {
                     inventoryOptions = new String[5];
                 }
@@ -682,7 +680,7 @@ public class Item {
                 linkedID = in.readU16();
             } else if (code == 98) {
                 certificateID = in.readU16();
-            } else if ((code >= 100) && (code < 110)) {
+            } else if (code >= 100 && code < 110) {
                 if (stackID == null) {
                     stackID = new int[10];
                     stackCount = new int[10];
@@ -696,9 +694,9 @@ public class Item {
             } else if (code == 112) {
                 scaleZ = in.readU16();
             } else if (code == 113) {
-                lightAmbient = in.read8();
+                ambient = in.read8();
             } else if (code == 114) {
-                lightAttenuation = in.read8() * 5;
+                contrast = in.read8() * 5;
             } else if (code == 115) {
                 team = in.readU8();
             }

@@ -14,17 +14,6 @@ public class Image24 extends DoublyLinkedList.Node {
     public int cropW;
     public int cropH;
 
-    public BufferedImage toBufferedImage() {
-        BufferedImage image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-        for (int i = 0; i < pixels.length; i++) {
-            if (pixels[i] > 0) {
-                pixels[i] |= 0xFF000000;
-            }
-        }
-        System.arraycopy(pixels, 0, ((DataBufferInt)image.getRaster().getDataBuffer()).getData(), 0, pixels.length);
-        return image;
-    }
-
     public Image24(int i, int j) {
         pixels = new int[i * j];
         width = cropW = i;

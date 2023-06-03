@@ -6,15 +6,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.math3.random.ISAACRandom;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -997,36 +1000,198 @@ public class Game extends GameShell {
             System.out.println(tmp);
 
             try {
-                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
-                Files.writeString(Paths.get("out/animations.json"), gson.toJson(Animation.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/animation_transforms.json"), gson.toJson(AnimationTransform.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/animation_skeletons.json"), gson.toJson(AnimationTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/spotanims.json"), gson.toJson(SpotAnim.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/identikits.json"), gson.toJson(Identikit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/varps.json"), gson.toJson(Varp.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                Files.writeString(Paths.get("out/floors.json"), gson.toJson(Flo.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Gson exposed = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
+                Gson all = new Gson();
+                Files.writeString(Paths.get("out/animations.json"), exposed.toJson(Animation.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/animation_transforms.json"), exposed.toJson(AnimationTransform.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/animation_skeletons.json"), exposed.toJson(AnimationTransform.skeletons.toArray()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/spotanims.json"), exposed.toJson(SpotAnim.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/identikits.json"), exposed.toJson(Identikit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/varps.json"), exposed.toJson(Varp.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/floors.json"), exposed.toJson(Flo.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-                Obj[] locs = new Obj[Obj.count];
-                for (int i = 0; i < locs.length; i++) {
-                    locs[i] = Obj.get_uncached(i);
-                    locs[i].prepare_export();
+                BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+                int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-                    // TODO: export images
+                BufferedImage icon = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+                int[] icon_pixels = ((DataBufferInt) icon.getRaster().getDataBuffer()).getData();
+
+                Draw2D.bind(pixels, 512, 512);
+                Draw3D.init3D(512, 512);
+                Draw3D.jagged = false;
+
+                Item[] items = new Item[Item.count];
+                for (int i = 0; i < Item.count; i++) {
+                    File file = new File(String.format("out/items/%d.png", i));
+
+                    if (file.exists()) {
+                        continue;
+                    }
+
+                    System.out.println("Item " + i);
+
+                    items[i] = Item.get_uncached(i);
+                    Item item = items[i];
+
+                    Image24 item_icon = Item.getIcon(i, 1, 0);
+                    Draw3D.jagged = false; // getIcon sets jagged back to true
+
+                    System.arraycopy(item_icon.pixels, 0, icon_pixels, 0, 32 * 32);
+                    ImageIO.write(icon, "png", new File(String.format("out/items/%d_icon.png", i)));
+
+                    item_icon = Item.getIcon(i, 1, 0xFFFFFF);
+                    Draw3D.jagged = false; // getIcon sets jagged back to true
+
+                    System.arraycopy(item_icon.pixels, 0, icon_pixels, 0, 32 * 32);
+                    ImageIO.write(icon, "png", new File(String.format("out/items/%d_icon_sel.png", i)));
+
+                    // certificate models are all the same
+                    if (item.certificateID != -1) {
+                        continue;
+                    }
+
+                    Model mdl = item.getLitModel(1);
+
+                    if (mdl != null) {
+                        Draw2D.bind(pixels, 512, 512);
+                        Arrays.fill(pixels, 0xFF000000);
+                        Draw3D.centerX = 256;
+                        Draw3D.centerY = 256;
+
+                        int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                        mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
+
+                        for (int j = 0; j < 512 * 512; j++) {
+                            if (pixels[j] == 0xFF000000) {
+                                pixels[j] = 0;
+                            } else {
+                                pixels[j] |= 0xFF000000;
+                            }
+                        }
+
+                        ImageIO.write(image, "png", file);
+                        Files.writeString(Paths.get(String.format("out/items/%d.json", i)), all.toJson(mdl), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    }
                 }
-                Files.writeString(Paths.get("out/objects.json"), gson.toJson(locs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+                Obj[] objs = new Obj[Obj.count];
+                for (int i = 0; i < objs.length; i++) {
+                    objs[i] = Obj.get_uncached(i);
+
+                    Obj obj = objs[i];
+                    obj.prepare_export();
+
+                    if (obj.model_types != null) {
+                        for (int type : obj.model_types) {
+                            File file = new File(String.format("out/objects/%d_%s.png", i, Obj.TYPE_NAMES[type]));
+
+                            if (file.exists()) {
+                                continue;
+                            }
+
+                            System.out.println("Object " + i + " " + Obj.TYPE_NAMES[type]);
+
+                            Model mdl = obj.getModel(type, -1, 0,0,0,64,64);
+                            mdl.calc_bounds_box();
+
+                            if (obj.dynamic) {
+                                mdl.build(64 + obj._ambient, 768 + (obj._contrast * 5), -50, -10, -50, true);
+                            }
+
+                            Arrays.fill(pixels, 0xFF000000);
+
+                            int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                            mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
+
+                            for (int j = 0; j < 512 * 512; j++) {
+                                if (pixels[j] == 0xFF000000) {
+                                    pixels[j] = 0;
+                                } else {
+                                    pixels[j] |= 0xFF000000;
+                                }
+                            }
+
+                            ImageIO.write(image, "png", file);
+                            Files.writeString(Paths.get(String.format("out/objects/%d_%s.json", i, Obj.TYPE_NAMES[type])), all.toJson(mdl), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                        }
+                    } else {
+                        File file = new File(String.format("out/objects/%d_%s.png", i, Obj.TYPE_NAMES[10]));
+
+                        if (file.exists()) {
+                            continue;
+                        }
+
+                        Model mdl = obj.getModel(10, -1, 0,0,0,64,64);
+
+                        if (mdl != null) {
+                            System.out.println("Object " + i + " " + Obj.TYPE_NAMES[10]);
+
+                            mdl.calc_bounds_box();
+
+                            if (obj.dynamic) {
+                                mdl.build(64 + obj._ambient, 768 + (obj._contrast * 5), -50, -10, -50, true);
+                            }
+
+                            Arrays.fill(pixels, 0xAA << 24);
+
+                            int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                            mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
+
+                            for (int j = 0; j < 512 * 512; j++) {
+                                if (pixels[j] == 0xAA << 24) {
+                                    pixels[j] = 0;
+                                } else {
+                                    pixels[j] |= 0xFF << 24;
+                                }
+                            }
+
+                            ImageIO.write(image, "png", new File(String.format("out/objects/%d_%s.png", i, Obj.TYPE_NAMES[10])));
+                            Files.writeString(Paths.get(String.format("out/objects/%d_%s.json", i, Obj.TYPE_NAMES[10])), all.toJson(mdl), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                        }
+                    }
+                }
+
+                Files.writeString(Paths.get("out/objects.json"), exposed.toJson(objs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
                 NPC[] npcs = new NPC[NPC.count];
+                NPC.game = this;
                 for (int i = 0; i < npcs.length; i++) {
-                    npcs[i] = NPC.getUncached(i);
-                    npcs[i].prepare_export();
+                    File file = new File(String.format("out/npcs/%d.png", i));
 
-                    // TODO: export images
-                    // TODO: export model json
+                    if (file.exists()) {
+                        continue;
+                    }
+                    npcs[i] = NPC.get_uncached(i);
+
+                    NPC npc = npcs[i];
+                    npc.prepare_export();
+                    Model mdl = npc.built_model(-1, -1, null);
+
+                    if (mdl != null) {
+
+                        System.out.println("NPC " + i);
+                        Arrays.fill(pixels, 0xAA << 24);
+
+                        int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                        int distance = (mdl.max_depth * 196) >> 8; // ~76% closer
+                        mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, distance + midY, distance);
+
+                        for (int j = 0; j < 512 * 512; j++) {
+                            if (pixels[j] == 0xAA << 24) {
+                                pixels[j] = 0;
+                            } else {
+                                pixels[j] |= 0xFF << 24;
+                            }
+                        }
+
+                        ImageIO.write(image, "png", file);
+                        Files.writeString(Paths.get(String.format("out/npcs/%d.json", i)), all.toJson(mdl), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    }
                 }
-                Files.writeString(Paths.get("out/npcs.json"), gson.toJson(npcs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
+                Files.writeString(Paths.get("out/npcs.json"), exposed.toJson(npcs), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-                Files.writeString(Paths.get("out/varbits.json"), gson.toJson(Varbit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(Paths.get("out/varbits.json"), exposed.toJson(Varbit.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -2346,7 +2511,7 @@ public class Game extends GameShell {
             return;
         }
 
-        int type = Objects.requireNonNullElse(Varp.instances[varpID].code,0);
+        int type = Objects.requireNonNullElse(Varp.instances[varpID].code, 0);
 
         if (type == 0) {
             return;
@@ -4477,8 +4642,7 @@ public class Game extends GameShell {
         redrawTitleBackground = true;
     }
 
-    public void handleScrollInput(int left, int height, int mouseX, int mouseY, Iface iface, int top,
-                                  boolean redraw, int scrollableHeight) {
+    public void handleScrollInput(int left, int height, int mouseX, int mouseY, Iface iface, int top, boolean redraw, int scrollableHeight) {
         if (scrollGrabbed) {
             scrollInputPadding = 32;
         } else {
@@ -4546,9 +4710,7 @@ public class Game extends GameShell {
         return true;
     }
 
-    public FileArchive loadArchive(int fileId, String caption, String fileName, int expectedChecksum,
-                                   int progress) throws
-            IOException {
+    public FileArchive loadArchive(int fileId, String caption, String fileName, int expectedChecksum, int progress) throws IOException {
         byte[] data = null;
         int wait = 5;
 
@@ -7221,9 +7383,7 @@ public class Game extends GameShell {
         }
     }
 
-    public boolean tryMove(int type, int srcX, int srcZ, int dx, int dz, int locType, int locWidth,
-                           int locLength,
-                           int locAngle, int locInteractionFlags, boolean tryNearest) {
+    public boolean tryMove(int type, int srcX, int srcZ, int dx, int dz, int locType, int locWidth, int locLength, int locAngle, int locInteractionFlags, boolean tryNearest) {
         byte sceneWidth = 104;
         byte sceneLength = 104;
         for (int x = 0; x < sceneWidth; x++) {
@@ -10083,8 +10243,7 @@ public class Game extends GameShell {
         }
     }
 
-    public void appendLoc(int duration, int id, int rotation, int classID, int z, int kind, int level, int x,
-                          int delay) {
+    public void appendLoc(int duration, int id, int rotation, int classID, int z, int kind, int level, int x, int delay) {
         SceneTemporaryObject loc = null;
         for (SceneTemporaryObject other = (SceneTemporaryObject) temporaryLocs.peekFront(); other != null; other = (SceneTemporaryObject) temporaryLocs.prev()) {
             if ((other.level != level) || (other.localX != x) || (other.localZ != z) || (other.classID != classID)) {
@@ -10649,7 +10808,7 @@ public class Game extends GameShell {
             int heightmapNE = level_heightmap[currentLevel][x + 1][z + 1];
             int heightmapNW = level_heightmap[currentLevel][x][z + 1];
 
-            Model model = type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, -1);
+            Model model = type.getModel(kind, -1, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW);
 
             if (model != null) {
                 appendLoc(duration + 1, -1, 0, classID, z, 0, currentLevel, x, delay + 1);
@@ -10810,47 +10969,6 @@ public class Game extends GameShell {
             int x = (super.screenWidth / 2) - 80;
             int y = (super.screenHeight / 2) + 20;
             y += 20;
-
-            if ((super.mouseClickButton == 1) && (super.mouseClickX >= (x - 75)) && (super.mouseClickX <= (x + 75)) && (super.mouseClickY >= (y - 20)) && (super.mouseClickY <= (y + 20))) {
-                final OpenOption[] options = new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
-
-                for (int id : new int[]{0, 20, 33, 135, 147, 148, 336, 2558}) {
-                    try {
-                        Gson gson = new Gson();
-                        Model model = Model.get(id);
-                        Files.write(Paths.get("out/", id + ".json"), gson.toJson(model).getBytes(), options);
-
-                        model.calculateBoundsAABB();
-                        Files.write(Paths.get("out/", id + "_1.json"), gson.toJson(model).getBytes(), options);
-
-                        model.build_labels();
-                        Files.write(Paths.get("out/", id + "_2.json"), gson.toJson(model).getBytes(), options);
-
-                        model.build(64, 850, -30, -50, -30, false);
-                        Files.write(Paths.get("out/", id + "_3.json"), gson.toJson(model).getBytes(), options);
-
-                        model.buildLighting(64, 850, -30, -50, -30);
-                        Files.write(Paths.get("out/", id + "_4.json"), gson.toJson(model).getBytes(), options);
-
-                        model = Model.get(id);
-                        model.build(64, 850, -30, -50, -30, true);
-                        Files.write(Paths.get("out/", id + "_5.json"), gson.toJson(model).getBytes(), options);
-
-                        model.rotateX(384);
-                        model.rotateY90();
-                        model.mirrorZ();
-                        Files.write(Paths.get("out/", id + "_6.json"), gson.toJson(model).getBytes(), options);
-
-                        model.translate(40, 69, 120);
-                        Files.write(Paths.get("out/", id + "_7.json"), gson.toJson(model).getBytes(), options);
-
-                        model.scale(64, 196, 100);
-                        Files.write(Paths.get("out/", id + "_8.json"), gson.toJson(model).getBytes(), options);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
 
             x = (super.screenWidth / 2) + 80;
 

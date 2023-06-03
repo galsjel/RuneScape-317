@@ -90,7 +90,7 @@ public class SceneObject extends Drawable {
         if (type == null) {
             return null;
         } else {
-            return type.getModel(kind, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW, transformID);
+            return type.getModel(kind, transformID, rotation, heightmapSW, heightmapSE, heightmapNE, heightmapNW);
         }
     }
 

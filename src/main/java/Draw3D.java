@@ -161,6 +161,17 @@ public class Draw3D {
                 Draw3D.activeTexels[k] = null;
             }
         }
+
+        for (int i = 0; i < 50; i++) {
+            BufferedImage image = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
+            int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+            System.arraycopy(getTexels(i), 0, pixels, 0, pixels.length);
+            try {
+                ImageIO.write(image, "png", Paths.get("out/texels/" + i + ".png").toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static void unpackTextures(FileArchive archive) {
@@ -172,7 +183,6 @@ public class Draw3D {
                 Draw3D.textures[textureID].crop();
                 Draw3D.textureCount++;
 
-
                 int size = textures[textureID].width;
                 BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
                 int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -180,8 +190,8 @@ public class Draw3D {
                     pixels[i] = Draw3D.textures[textureID].palette[Draw3D.textures[textureID].pixels[i]];
                 }
                 ImageIO.write(image, "png", Paths.get("out/textures/" + textureID + ".png").toFile());
-
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -364,7 +374,6 @@ public class Draw3D {
             }
         }
 
-
         BufferedImage img = new BufferedImage(128, 512, BufferedImage.TYPE_INT_RGB);
         System.arraycopy(Draw3D.palette, 0, ((DataBufferInt) img.getRaster().getDataBuffer()).getData(), 0, 128 * 512);
 
@@ -500,14 +509,7 @@ public class Draw3D {
 
                 Draw2D.bind(pix2, imageSize, imageSize);
 
-                fillTexturedTriangle(
-                        y0, y1, y2,
-                        x0, x1, x2,
-                        127, 64, 0,
-                        x0 - 256, x1 - 256, x2 - 256,
-                        y0 - 256, y1 - 256, y2 - 256,
-                        512, 512, 512,
-                        0);
+                fillTexturedTriangle(y0, y1, y2, x0, x1, x2, 127, 64, 0, x0 - 256, x1 - 256, x2 - 256, y0 - 256, y1 - 256, y2 - 256, 512, 512, 512, 0);
             }
         }
 
@@ -560,6 +562,7 @@ public class Draw3D {
      * @param colorC the color for corner C.
      */
     public static boolean debug = false;
+
     public static void fillGouraudTriangle(int xA, int yA, int xB, int yB, int xC, int yC, int colorA, int colorB, int colorC) {
         if (debug) {
             System.out.println("fillGouraudTriangle xA = " + xA + ", yA = " + yA + ", xB = " + xB + ", yB = " + yB + ", xC = " + xC + ", yC = " + yC + ", colorA = " + colorA + ", colorB = " + colorB + ", colorC = " + colorC);
@@ -940,7 +943,7 @@ public class Draw3D {
             colorC += colorStepAC;
         }
         while (--yA >= 0) {
-            Draw3D.drawGouraudScanline(Draw2D.pixels, yC,  xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
+            Draw3D.drawGouraudScanline(Draw2D.pixels, yC, xC >> 16, xB >> 16, colorC >> 7, colorB >> 7);
             xB += xStepAB;
             xC += xStepAC;
             colorB += colorStepAB;

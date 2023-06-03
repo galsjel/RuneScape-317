@@ -454,7 +454,7 @@ public class Model extends Drawable {
     /**
      * The radius of this model on the XZ plane.
      *
-     * @see #calculateBoundsAABB()
+     * @see #calc_bounds_box()
      */
     @SerializedName("radius_xz")
     public int radius;
@@ -1296,7 +1296,7 @@ public class Model extends Drawable {
     /**
      * Calculates this models axis-aligned bounding box (AABB) and stores it.
      */
-    public void calculateBoundsAABB() {
+    public void calc_bounds_box() {
         super.minY = 0;
         radius = 0;
         maxY = 0;
@@ -1830,7 +1830,7 @@ public class Model extends Drawable {
         if (applyLighting) {
             calc_bounds_cylinder();
         } else {
-            calculateBoundsAABB();
+            calc_bounds_box();
         }
     }
 
@@ -1905,11 +1905,11 @@ public class Model extends Drawable {
      * @param yaw      the model yaw.
      * @param roll     the model roll.
      * @param eyePitch the eye pitch.
-     * @param eyeX     the eye x.
-     * @param eyeY     the eye y.
-     * @param eyeZ     the eye z.
+     * @param relativeX     the eye x.
+     * @param relativeY     the eye y.
+     * @param relativeZ     the eye z.
      */
-    public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int eyeX, int eyeY, int eyeZ) {
+    public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int relativeX, int relativeY, int relativeZ) {
         int centerX = Draw3D.centerX;
         int centerY = Draw3D.centerY;
         int sinPitch = sin[pitch];
@@ -1920,7 +1920,7 @@ public class Model extends Drawable {
         int cosRoll = cos[roll];
         int sinEyePitch = sin[eyePitch];
         int cosEyePitch = cos[eyePitch];
-        int midZ = eyeY * sinEyePitch + eyeZ * cosEyePitch >> 16;
+        int midZ = relativeY * sinEyePitch + relativeZ * cosEyePitch >> 16;
 
         for (int v = 0; v < vertexCount; v++) {
             int x = vertexX[v];
@@ -1949,9 +1949,9 @@ public class Model extends Drawable {
 
             // Model Space -> View Space
 
-            x += eyeX;
-            y += eyeY;
-            z += eyeZ;
+            x += relativeX;
+            y += relativeY;
+            z += relativeZ;
 
             int y_ = y * cosEyePitch - z * sinEyePitch >> 16;
             z = y * sinEyePitch + z * cosEyePitch >> 16;

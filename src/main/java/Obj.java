@@ -372,7 +372,7 @@ public class Obj {
         return true;
     }
 
-    public Model getModel(int kind, int rotation, int y_sw, int y_se, int y_ne, int y_nw, int transform_id) {
+    public Model getModel(int kind, int transform_id, int rotation, int y_sw, int y_se, int y_ne, int y_nw) {
         Model model = getModel(kind, transform_id, rotation);
 
         if (model == null) {
