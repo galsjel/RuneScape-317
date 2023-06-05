@@ -1022,7 +1022,7 @@ public class Game extends GameShell {
 
                 Item[] items = new Item[Item.count];
                 for (int i = 0; i < Item.count; i++) {
-                    File file = new File(String.format("out/items/%d.png", i));
+                    File file = new File(String.format("out/items/%d_icon.png", i));
 
                     if (file.exists()) {
                         continue;
@@ -1055,10 +1055,10 @@ public class Game extends GameShell {
                     if (mdl != null) {
                         Draw2D.bind(pixels, 512, 512);
                         Arrays.fill(pixels, 0xFF000000);
-                        Draw3D.centerX = 256;
-                        Draw3D.centerY = 256;
+                        Draw3D.center_x = 256;
+                        Draw3D.center_y = 256;
 
-                        int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                        int midY = mdl.min_y + (mdl.maxY - mdl.min_y) / 2;
                         mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
 
                         for (int j = 0; j < 512 * 512; j++) {
@@ -1069,7 +1069,7 @@ public class Game extends GameShell {
                             }
                         }
 
-                        ImageIO.write(image, "png", file);
+                        ImageIO.write(image, "png", new File(String.format("out/items/%d.png", i)));
                         Files.writeString(Paths.get(String.format("out/items/%d.json", i)), all.toJson(mdl), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     }
                 }
@@ -1100,8 +1100,9 @@ public class Game extends GameShell {
 
                             Arrays.fill(pixels, 0xFF000000);
 
-                            int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
-                            mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
+                            int midY = mdl.min_y + (mdl.maxY - mdl.min_y) / 2;
+                            int distance = (mdl.max_depth * 196) >> 8;
+                            mdl.drawSimple(0, 512, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, distance + midY, distance);
 
                             for (int j = 0; j < 512 * 512; j++) {
                                 if (pixels[j] == 0xFF000000) {
@@ -1134,8 +1135,9 @@ public class Game extends GameShell {
 
                             Arrays.fill(pixels, 0xAA << 24);
 
-                            int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
-                            mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, mdl.max_depth + midY, mdl.max_depth);
+                            int midY = mdl.min_y + (mdl.maxY - mdl.min_y) / 2;
+                            int distance = (mdl.max_depth * 196) >> 8;
+                            mdl.drawSimple(0, 512, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, distance + midY, distance);
 
                             for (int j = 0; j < 512 * 512; j++) {
                                 if (pixels[j] == 0xAA << 24) {
@@ -1172,7 +1174,7 @@ public class Game extends GameShell {
                         System.out.println("NPC " + i);
                         Arrays.fill(pixels, 0xAA << 24);
 
-                        int midY = mdl.minY + (mdl.maxY - mdl.minY) / 2;
+                        int midY = mdl.min_y + (mdl.maxY - mdl.min_y) / 2;
                         int distance = (mdl.max_depth * 196) >> 8; // ~76% closer
                         mdl.drawSimple(0, 256, 0, 256, mdl.minX + (mdl.maxX - mdl.minX) / 2, distance + midY, distance);
 
@@ -1933,7 +1935,7 @@ public class Game extends GameShell {
 
             out.writeOp(0);
 
-            scene.setMinLevel(0);
+            scene.setMin_level(0);
 
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
@@ -2029,7 +2031,7 @@ public class Game extends GameShell {
                         if ((sceneMapIndex[i] != mapID) || (sceneMapLocData[i] == null)) {
                             continue;
                         }
-                        builder.readChunkLocs(level_collisions, scene, mapLevel, mapRotation, (mapX & 7) * 8, (mapZ & 7) * 8, chunkX * 8, chunkZ * 8, sceneMapLocData[i], level);
+                        builder.read_objects(level_collisions, scene, mapLevel, mapRotation, (mapX & 7) * 8, (mapZ & 7) * 8, chunkX * 8, chunkZ * 8, sceneMapLocData[i], level);
                         break;
                     }
                 }
@@ -2046,7 +2048,7 @@ public class Game extends GameShell {
             if (data != null) {
                 int originX = ((sceneMapIndex[i] >> 8) * 64) - sceneBaseTileX;
                 int originZ = ((sceneMapIndex[i] & 0xff) * 64) - sceneBaseTileZ;
-                builder.readTiles(data, originZ, originX, (sceneCenterZoneX - 6) * 8, (sceneCenterZoneZ - 6) * 8, level_collisions);
+                builder.read_tiles(data, originZ, originX, (sceneCenterZoneX - 6) * 8, (sceneCenterZoneZ - 6) * 8, level_collisions);
             }
         }
 
@@ -2183,7 +2185,7 @@ public class Game extends GameShell {
         DoublyLinkedList list = levelObjStacks[currentLevel][x][z];
 
         if (list == null) {
-            scene.removeObjStack(currentLevel, x, z);
+            scene.remove_item_stack_at(currentLevel, x, z);
             return;
         }
 
@@ -3672,7 +3674,7 @@ public class Game extends GameShell {
     }
 
     public void drawMinimapLoc(int tileZ, int wallRGB, int tileX, int doorRGB, int level) {
-        int bitset = scene.getWallBitset(level, tileX, tileZ);
+        int bitset = scene.wall_bitset_at(level, tileX, tileZ);
 
         if (bitset != 0) {
             int info = scene.getInfo(level, tileX, tileZ, bitset);
@@ -3758,7 +3760,7 @@ public class Game extends GameShell {
             }
         }
 
-        bitset = scene.getLocBitset(level, tileX, tileZ);
+        bitset = scene.bitset(level, tileX, tileZ);
 
         if (bitset != 0) {
             int info = scene.getInfo(level, tileX, tileZ, bitset);
@@ -4289,11 +4291,11 @@ public class Game extends GameShell {
 
         handleObjDragging();
 
-        if (Scene.clickTileX != -1) {
-            int x = Scene.clickTileX;
-            int z = Scene.clickTileZ;
+        if (Scene.input_tile_x != -1) {
+            int x = Scene.input_tile_x;
+            int z = Scene.input_tile_z;
             boolean success = tryMove(0, localPlayer.pathTileX[0], localPlayer.pathTileZ[0], x, z, 0, 0, 0, 0, 0, true);
-            Scene.clickTileX = -1;
+            Scene.input_tile_x = -1;
 
             if (success) {
                 crossX = super.mouseClickX;
@@ -7876,13 +7878,13 @@ public class Game extends GameShell {
         int kind = 0;
         int rotation = 0;
         if (loc.classID == 0) {
-            bitset = scene.getWallBitset(loc.level, loc.localX, loc.localZ);
+            bitset = scene.wall_bitset_at(loc.level, loc.localX, loc.localZ);
         }
         if (loc.classID == 1) {
-            bitset = scene.getWallDecorationBitset(loc.level, loc.localX, loc.localZ);
+            bitset = scene.wall_decoration_bitset_at(loc.level, loc.localX, loc.localZ);
         }
         if (loc.classID == 2) {
-            bitset = scene.getLocBitset(loc.level, loc.localX, loc.localZ);
+            bitset = scene.bitset(loc.level, loc.localX, loc.localZ);
         }
         if (loc.classID == 3) {
             bitset = scene.getGroundDecorationBitset(loc.level, loc.localX, loc.localZ);
@@ -9091,11 +9093,11 @@ public class Game extends GameShell {
     }
 
     private void drawInterfaceModel(int x, int y, Iface iface) {
-        int tmpX = Draw3D.centerX;
-        int tmpY = Draw3D.centerY;
+        int tmpX = Draw3D.center_x;
+        int tmpY = Draw3D.center_y;
 
-        Draw3D.centerX = x + (iface.width / 2);
-        Draw3D.centerY = y + (iface.height / 2);
+        Draw3D.center_x = x + (iface.width / 2);
+        Draw3D.center_y = y + (iface.height / 2);
 
         int eyeY = (Draw3D.sin[iface.modelPitch] * iface.modelZoom) >> 16;
         int eyeZ = (Draw3D.cos[iface.modelPitch] * iface.modelZoom) >> 16;
@@ -9122,8 +9124,8 @@ public class Game extends GameShell {
             model.drawSimple(0, iface.modelYaw, 0, iface.modelPitch, 0, eyeY, eyeZ);
         }
 
-        Draw3D.centerX = tmpX;
-        Draw3D.centerY = tmpY;
+        Draw3D.center_x = tmpX;
+        Draw3D.center_y = tmpY;
     }
 
     private static void drawInterfaceInventoryText(int x, int y, Iface iface) {
@@ -9316,12 +9318,12 @@ public class Game extends GameShell {
 
     private void drawDebug() {
         if (showOccluders) {
-            for (int i = 0; i < Scene.levelOccluderCount[Scene.topLevel]; i++) {
-                SceneOccluder occluder = Scene.levelOccluders[Scene.topLevel][i];
+            for (int i = 0; i < Scene.level_occluder_count[Scene.top_level]; i++) {
+                SceneOccluder occluder = Scene.level_occluders[Scene.top_level][i];
 
                 boolean active = false;
-                for (int j = 0; j < Scene.activeOccluderCount; j++) {
-                    if (occluder == Scene.activeOccluders[j]) {
+                for (int j = 0; j < Scene.occluders_active; j++) {
+                    if (occluder == Scene.active_occluders[j]) {
                         active = true;
                         break;
                     }
@@ -9340,48 +9342,48 @@ public class Game extends GameShell {
                 switch (occluder.type) {
                     case 1: {
                         color = 0x00FF00;
-                        project(occluder.minX, occluder.minY, occluder.minZ);
+                        project(occluder.min_x, occluder.min_y, occluder.min_z);
                         x0 = projectX;
                         y0 = projectY;
-                        project(occluder.minX, occluder.maxY, occluder.minZ);
+                        project(occluder.min_x, occluder.max_y, occluder.min_z);
                         x1 = projectX;
                         y1 = projectY;
-                        project(occluder.minX, occluder.minY, occluder.maxZ);
+                        project(occluder.min_x, occluder.min_y, occluder.max_z);
                         x2 = projectX;
                         y2 = projectY;
-                        project(occluder.minX, occluder.maxY, occluder.maxZ);
+                        project(occluder.min_x, occluder.max_y, occluder.max_z);
                         x3 = projectX;
                         y3 = projectY;
                         break;
                     }
                     case 2: {
                         color = 0x00FF00;
-                        project(occluder.minX, occluder.minY, occluder.minZ);
+                        project(occluder.min_x, occluder.min_y, occluder.min_z);
                         x0 = projectX;
                         y0 = projectY;
-                        project(occluder.maxX, occluder.minY, occluder.minZ);
+                        project(occluder.max_x, occluder.min_y, occluder.min_z);
                         x1 = projectX;
                         y1 = projectY;
-                        project(occluder.minX, occluder.maxY, occluder.minZ);
+                        project(occluder.min_x, occluder.max_y, occluder.min_z);
                         x2 = projectX;
                         y2 = projectY;
-                        project(occluder.maxX, occluder.maxY, occluder.minZ);
+                        project(occluder.max_x, occluder.max_y, occluder.min_z);
                         x3 = projectX;
                         y3 = projectY;
                         break;
                     }
                     case 4: {// Ground on XZ plane
                         color = 0xFFFF00;
-                        project(occluder.minX, occluder.minY, occluder.minZ);
+                        project(occluder.min_x, occluder.min_y, occluder.min_z);
                         x0 = projectX;
                         y0 = projectY;
-                        project(occluder.maxX, occluder.minY, occluder.minZ);
+                        project(occluder.max_x, occluder.min_y, occluder.min_z);
                         x1 = projectX;
                         y1 = projectY;
-                        project(occluder.minX, occluder.minY, occluder.maxZ);
+                        project(occluder.min_x, occluder.min_y, occluder.max_z);
                         x2 = projectX;
                         y2 = projectY;
-                        project(occluder.maxX, occluder.minY, occluder.maxZ);
+                        project(occluder.max_x, occluder.min_y, occluder.max_z);
                         x3 = projectX;
                         y3 = projectY;
                         break;
@@ -9444,7 +9446,7 @@ public class Game extends GameShell {
         }
 
         if (showOccluders) {
-            fontPlain11.drawStringRight(String.format("%d/%d occluders", Scene.activeOccluderCount, Scene.levelOccluderCount[Scene.topLevel]), x, y, 0xFFFF00);
+            fontPlain11.drawStringRight(String.format("%d/%d occluders", Scene.occluders_active, Scene.level_occluder_count[Scene.top_level]), x, y, 0xFFFF00);
         }
     }
 
@@ -10179,8 +10181,8 @@ public class Game extends GameShell {
         y = tmp;
 
         if (z >= 50) {
-            projectX = Draw3D.centerX + ((x << 9) / z);
-            projectY = Draw3D.centerY + ((y << 9) / z);
+            projectX = Draw3D.center_x + ((x << 9) / z);
+            projectY = Draw3D.center_y + ((y << 9) / z);
         } else {
             projectX = -1;
             projectY = -1;
@@ -10259,7 +10261,7 @@ public class Game extends GameShell {
             loc.localX = x;
             loc.localZ = z;
             storeLoc(loc);
-            temporaryLocs.pushBack(loc);
+            temporaryLocs.push_back(loc);
         }
         loc.id = id;
         loc.kind = kind;
@@ -10617,7 +10619,7 @@ public class Game extends GameShell {
             if (levelObjStacks[currentLevel][x][z] == null) {
                 levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
             }
-            levelObjStacks[currentLevel][x][z].pushBack(stack);
+            levelObjStacks[currentLevel][x][z].push_back(stack);
             sortObjStacks(x, z);
         }
     }
@@ -10636,7 +10638,7 @@ public class Game extends GameShell {
             if (levelObjStacks[currentLevel][x][z] == null) {
                 levelObjStacks[currentLevel][x][z] = new DoublyLinkedList();
             }
-            levelObjStacks[currentLevel][x][z].pushBack(obj);
+            levelObjStacks[currentLevel][x][z].push_back(obj);
             sortObjStacks(x, z);
         }
     }
@@ -10721,22 +10723,22 @@ public class Game extends GameShell {
         int heightmapNW = level_heightmap[currentLevel][x][z + 1];
 
         if (classID == 0) {
-            SceneWall wall = scene.getWall(currentLevel, x, z);
+            SceneWall wall = scene.wall_at(currentLevel, x, z);
 
             if (wall != null) {
                 int locID = (wall.bitset >> 14) & 0x7fff;
 
                 if (kind == 2) {
-                    wall.entityA = new SceneObject(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
-                    wall.entityB = new SceneObject(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                    wall.drawable_a = new SceneObject(locID, 4 + rotation, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                    wall.drawable_b = new SceneObject(locID, (rotation + 1) & 3, 2, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
                 } else {
-                    wall.entityA = new SceneObject(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
+                    wall.drawable_a = new SceneObject(locID, rotation, kind, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
                 }
             }
         }
 
         if (classID == 1) {
-            SceneWallDecoration deco = scene.getWallDecoration(currentLevel, x, z);
+            SceneWallDecoration deco = scene.wall_decoration_at(currentLevel, x, z);
 
             if (deco != null) {
                 deco.drawable = new SceneObject((deco.bitset >> 14) & 0x7fff, 0, 4, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
@@ -10744,7 +10746,7 @@ public class Game extends GameShell {
         }
 
         if (classID == 2) {
-            SceneDrawable generic = scene.getLoc(currentLevel, x, z);
+            SceneDrawable generic = scene.drawable_at(currentLevel, x, z);
 
             if (kind == 11) {
                 kind = 10;
@@ -10756,7 +10758,7 @@ public class Game extends GameShell {
         }
 
         if (classID == 3) {
-            SceneGroundDecoration deco = scene.getGroundDecoration(z, x, currentLevel);
+            SceneGroundDecoration deco = scene.ground_decoration_at(z, x, currentLevel);
 
             if (deco != null) {
                 deco.entity = new SceneObject((deco.bitset >> 14) & 0x7fff, rotation, 22, heightmapSE, heightmapNE, heightmapSW, heightmapNW, seqID, false);
@@ -10860,7 +10862,7 @@ public class Game extends GameShell {
             x = (x * 128) + 64;
             z = (z * 128) + 64;
             SceneSpotAnim anim = new SceneSpotAnim(currentLevel, loopCycle, delay, id, getHeightmapY(currentLevel, x, z) - y, z, x);
-            spotanims.pushBack(anim);
+            spotanims.push_back(anim);
         }
     }
 
@@ -10904,7 +10906,7 @@ public class Game extends GameShell {
             dstZ = (dstZ * 128) + 64;
             SceneProjectile projectile = new SceneProjectile(peakPitch, dstY, delay + loopCycle, duration + loopCycle, arcSize, currentLevel, getHeightmapY(currentLevel, srcX, srcZ) - srcY, srcZ, srcX, targetID, spotanimID);
             projectile.updateVelocity(delay + loopCycle, dstZ, getHeightmapY(currentLevel, dstX, dstZ) - dstY, dstX);
-            projectiles.pushBack(projectile);
+            projectiles.push_back(projectile);
         }
     }
 
@@ -11102,15 +11104,15 @@ public class Game extends GameShell {
         int bitset = 0;
 
         if (classID == 0) {
-            bitset = scene.getWallBitset(level, x, z);
+            bitset = scene.wall_bitset_at(level, x, z);
         }
 
         if (classID == 1) {
-            bitset = scene.getWallDecorationBitset(level, x, z);
+            bitset = scene.wall_decoration_bitset_at(level, x, z);
         }
 
         if (classID == 2) {
-            bitset = scene.getLocBitset(level, x, z);
+            bitset = scene.bitset(level, x, z);
         }
 
         if (classID == 3) {
@@ -11136,7 +11138,7 @@ public class Game extends GameShell {
             }
 
             if (classID == 2) {
-                scene.removeLoc(level, x, z);
+                scene.remove_centrepiece_at(level, x, z);
                 Obj type = Obj.get(otherID);
 
                 if (((x + type.width) > 103) || ((z + type.width) > 103) || ((x + type.length) > 103) || ((z + type.length) > 103)) {
@@ -11149,7 +11151,7 @@ public class Game extends GameShell {
             }
 
             if (classID == 3) {
-                scene.removeGroundDecoration(level, x, z);
+                scene.remove_ground_decoration_at(level, x, z);
                 Obj type = Obj.get(otherID);
 
                 if (type.block_entity && type.interactable) {
@@ -12615,7 +12617,7 @@ public class Game extends GameShell {
         Draw2D.clear();
 
         scene.draw(this.cameraX, this.cameraZ, this.cameraYaw, this.cameraY, topLevel, this.cameraPitch);
-        scene.clearTemporaryLocs();
+        scene.clear_temporary_drawables();
 
         draw2DEntityElements();
         drawChats();

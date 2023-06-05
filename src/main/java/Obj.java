@@ -560,7 +560,7 @@ public class Obj {
         modified.build(64 + _ambient, 768 + (_contrast * 5), -50, -10, -50, !dynamic);
 
         if (support_items) {
-            modified.objRaise = modified.minY;
+            modified.objRaise = modified.min_y;
         }
 
         modelCacheDynamic.put(bitset, modified);

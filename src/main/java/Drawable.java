@@ -5,7 +5,7 @@ public class Drawable extends DoublyLinkedList.Node {
     @SerializedName("normals")
     public Normal[] normals;
     @SerializedName("min_y")
-    public int minY = 1000;
+    public int min_y = 1000;
 
     public Drawable() {
     }
@@ -14,7 +14,7 @@ public class Drawable extends DoublyLinkedList.Node {
         Model model = getModel();
 
         if (model != null) {
-            minY = model.minY;
+            min_y = model.min_y;
             model.draw(yaw, sinEyePitch, cosEyePitch, sinEyeYaw, cosEyeYaw, relativeX, relativeY, relativeZ, bitset);
         }
     }

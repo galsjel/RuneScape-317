@@ -9,7 +9,7 @@ public class SceneTile extends DoublyLinkedList.Node {
     /**
      * Which level to sample when testing against this tile for occlusion.
      */
-    public final int occludeLevel;
+    public final int occlude_level;
     public final SceneDrawable[] drawables = new SceneDrawable[5];
     public final int[] drawable_span = new int[5];
     public int level;
@@ -38,15 +38,15 @@ public class SceneTile extends DoublyLinkedList.Node {
     public int draw_level;
     public boolean visible;
     public boolean update;
-    public boolean containsLocs;
-    public int checkLocSpans;
-    public int blockLocSpans;
-    public int inverseBlockLocSpans;
-    public int backWallTypes;
+    public boolean has_locs;
+    public int check_loc_spans;
+    public int block_loc_spans;
+    public int block_loc_spans_inverted;
+    public int back_wall_types;
     public SceneTile bridge;
 
     public SceneTile(int level, int x, int z) {
-        this.occludeLevel = this.level = level;
+        this.occlude_level = this.level = level;
         this.x = x;
         this.z = z;
     }

@@ -127,7 +127,7 @@ public class SceneBuilder {
         byte object_info = (byte) ((rotation << 6) + object_type);
 
         if (object_type == Obj.TYPE_GROUND_DECOR) {
-            set_ground_decoration(scene, rotation, z, collision, x, object_id, object_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
+            add_ground_decoration(scene, rotation, z, collision, x, object_id, object_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
         } else if ((object_type == Obj.TYPE_CENTREPIECE) || (object_type == Obj.TYPE_CENTREPIECE_DIAGONAL)) {
             add_centrepiece(scene, rotation, z, object_type, collision, x, object_id, object_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
         } else if (object_type >= Obj.TYPE_ROOF_STRAIGHT) {
@@ -167,28 +167,28 @@ public class SceneBuilder {
             }
 
             if (object_type == Obj.TYPE_WALLDECOR_STRAIGHT) {
-                set_wall_decoration(scene, Scene.ROTATION_WALL_TYPE[rotation], obj, object_id, bitset, object_info, object_level, x, z, rotation * 512, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, Scene.ROTATION_WALL_TYPE[rotation], obj, object_id, bitset, object_info, object_level, x, z, rotation * 512, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == Obj.TYPE_WALLDECOR_STRAIGHT_OFFSET) {
-                set_wall_decoration_offset(scene, rotation, z, x, object_id, object_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
+                add_wall_decoration_offset(scene, rotation, z, x, object_id, object_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
             } else if (object_type == Obj.TYPE_WALLDECOR_DIAGONAL_NOOFFSET) {
-                set_wall_decoration(scene, 0x100, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x100, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == Obj.TYPE_WALLDECOR_DIAGONAL_OFFSET) {
-                set_wall_decoration(scene, 0x200, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x200, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == Obj.TYPE_WALLDECOR_DIAGONAL_BOTH) {
-                set_wall_decoration(scene, 0x300, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x300, obj, object_id, bitset, object_info, object_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             }
         }
     }
 
-    private static void set_ground_decoration(Scene scene, int rotation, int z, CollisionMap collision, int x, int locID, int level, int y_sw, int y_se, int y_ne, int y_nw, int y, Obj object, int bitset, byte info) {
-        set_ground_decoration(scene, rotation, z, x, locID, level, y_sw, y_se, y_ne, y_nw, y, object, bitset, info);
+    private static void add_ground_decoration(Scene scene, int rotation, int z, CollisionMap collision, int x, int locID, int level, int y_sw, int y_se, int y_ne, int y_nw, int y, Obj object, int bitset, byte info) {
+        add_ground_decoration(scene, rotation, z, x, locID, level, y_sw, y_se, y_ne, y_nw, y, object, bitset, info);
 
         if (object.block_entity && object.interactable) {
             collision.set_solid(x, z);
         }
     }
 
-    private static void set_ground_decoration(Scene scene, int rotation, int z, int x, int locID, int level, int y_sw, int y_se, int y_ne, int y_nw, int y, Obj object, int bitset, byte info) {
+    private static void add_ground_decoration(Scene scene, int rotation, int z, int x, int locID, int level, int y_sw, int y_se, int y_ne, int y_nw, int y, Obj object, int bitset, byte info) {
         Drawable drawable;
 
         if ((object.animation == -1) && (object.overrides == null)) {
@@ -293,16 +293,16 @@ public class SceneBuilder {
         }
     }
 
-    private static void set_wall_decoration_offset(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, Obj loc, int bitset, byte info) {
+    private static void add_wall_decoration_offset(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, Obj loc, int bitset, byte info) {
         int offset = 16;
-        int wallBitset = scene.getWallBitset(level, x, z);
+        int wall_bitset = scene.wall_bitset_at(level, x, z);
 
-        if (wallBitset > 0) {
-            offset = Obj.get((wallBitset >> 14) & 0x7fff).wall_offset;
+        if (wall_bitset > 0) {
+            offset = Obj.get((wall_bitset >> 14) & 0x7fff).wall_offset;
         }
 
         Drawable drawable = make_wall_decoration(loc, locID, heightSW, heightSE, heightNE, heightNW);
-        scene.setWallDecoration(Scene.ROTATION_WALL_TYPE[rotation], drawable, level, x, z, y, rotation * 512, WALL_DECORATION_ROTATION_FORWARD_X[rotation] * offset, WALL_DECORATION_ROTATION_FORWARD_Z[rotation] * offset, bitset, info);
+        scene.set_wall_decoration(Scene.ROTATION_WALL_TYPE[rotation], drawable, level, x, z, y, rotation * 512, WALL_DECORATION_ROTATION_FORWARD_X[rotation] * offset, WALL_DECORATION_ROTATION_FORWARD_Z[rotation] * offset, bitset, info);
     }
 
     /**
@@ -374,27 +374,27 @@ public class SceneBuilder {
     public final int[] blendLuminance;
     public final int[] blendMagnitude;
     public final int[][][] level_heightmap;
-    public final byte[][][] levelTileOverlayIDs;
+    public final byte[][][] level_overlays;
     public final byte[][][] level_shademap;
     public final int[][][] level_occludemap;
-    public final byte[][][] levelTileOverlayShape;
+    public final byte[][][] level_overlay_shapes;
     public final int[][] levelLightmap;
-    public final byte[][][] levelTileUnderlayIDs;
+    public final byte[][][] level_underlays;
     public final int maxTileX;
     public final int maxTileZ;
-    public final byte[][][] levelTileOverlayRotation;
-    public final byte[][][] levelTileFlags;
+    public final byte[][][] level_overlay_rotations;
+    public final byte[][][] level_flags;
 
     public SceneBuilder(byte[][][] levelTileFlags, int maxTileZ, int maxTileX, int[][][] levelHeightmap) {
         minLevel = 99;
         this.maxTileX = maxTileX;
         this.maxTileZ = maxTileZ;
         this.level_heightmap = levelHeightmap;
-        this.levelTileFlags = levelTileFlags;
-        levelTileUnderlayIDs = new byte[4][this.maxTileX][this.maxTileZ];
-        levelTileOverlayIDs = new byte[4][this.maxTileX][this.maxTileZ];
-        levelTileOverlayShape = new byte[4][this.maxTileX][this.maxTileZ];
-        levelTileOverlayRotation = new byte[4][this.maxTileX][this.maxTileZ];
+        this.level_flags = levelTileFlags;
+        level_underlays = new byte[4][this.maxTileX][this.maxTileZ];
+        level_overlays = new byte[4][this.maxTileX][this.maxTileZ];
+        level_overlay_shapes = new byte[4][this.maxTileX][this.maxTileZ];
+        level_overlay_rotations = new byte[4][this.maxTileX][this.maxTileZ];
         level_occludemap = new int[4][this.maxTileX + 1][this.maxTileZ + 1];
         level_shademap = new byte[4][this.maxTileX + 1][this.maxTileZ + 1];
         levelLightmap = new int[this.maxTileX + 1][this.maxTileZ + 1];
@@ -426,11 +426,11 @@ public class SceneBuilder {
             for (int x = 0; x < 104; x++) {
                 for (int z = 0; z < 104; z++) {
                     // solid
-                    if ((levelTileFlags[level][x][z] & 0x1) == 1) {
+                    if ((level_flags[level][x][z] & 0x1) == 1) {
                         int trueLevel = level;
 
                         // bridge
-                        if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                        if ((level_flags[1][x][z] & 0x2) == 2) {
                             trueLevel--;
                         }
 
@@ -468,7 +468,7 @@ public class SceneBuilder {
     private void updateDrawLevels(Scene scene, int level) {
         for (int stz = 1; stz < (maxTileZ - 1); stz++) {
             for (int stx = 1; stx < (maxTileX - 1); stx++) {
-                scene.setDrawLevel(level, stx, stz, getDrawLevel(level, stx, stz));
+                scene.setDrawLevel(level, stx, stz, draw_level_at(level, stx, stz));
             }
         }
     }
@@ -487,7 +487,7 @@ public class SceneBuilder {
                 int x1 = x0 + 5;
 
                 if ((x1 >= 0) && (x1 < maxTileX)) {
-                    int floID = levelTileUnderlayIDs[level][x1][z0] & 0xff;
+                    int floID = level_underlays[level][x1][z0] & 0xff;
 
                     if (floID > 0) {
                         Flo flo = Flo.instances[floID - 1];
@@ -502,7 +502,7 @@ public class SceneBuilder {
                 int x2 = x0 - 5;
 
                 if ((x2 >= 0) && (x2 < maxTileX)) {
-                    int floID = levelTileUnderlayIDs[level][x2][z0] & 0xff;
+                    int floID = level_underlays[level][x2][z0] & 0xff;
 
                     if (floID > 0) {
                         Flo flo = Flo.instances[floID - 1];
@@ -551,8 +551,8 @@ public class SceneBuilder {
                         minLevel = level;
                     }
 
-                    int underlayID = levelTileUnderlayIDs[level][x0][z0] & 0xff;
-                    int overlayID = levelTileOverlayIDs[level][x0][z0] & 0xff;
+                    int underlayID = level_underlays[level][x0][z0] & 0xff;
+                    int overlayID = level_overlays[level][x0][z0] & 0xff;
 
                     if ((underlayID == 0) && (overlayID == 0)) {
                         continue;
@@ -591,7 +591,7 @@ public class SceneBuilder {
                     }
 
                     if (level > 0) {
-                        boolean occludes = (underlayID != 0) || (levelTileOverlayShape[level][x0][z0] == 0);
+                        boolean occludes = (underlayID != 0) || (level_overlay_shapes[level][x0][z0] == 0);
 
                         if ((overlayID > 0) && !Flo.instances[overlayID - 1].occlude) {
                             occludes = false;
@@ -612,8 +612,8 @@ public class SceneBuilder {
                     if (overlayID == 0) {
                         scene.setTile(level, x0, z0, 0, 0, -1, heightSW, heightSE, heightNE, heightNW, mulHSL(baseColor, lightSW), mulHSL(baseColor, lightSE), mulHSL(baseColor, lightNE), mulHSL(baseColor, lightNW), 0, 0, 0, 0, shadeColor, 0);
                     } else {
-                        int shape = levelTileOverlayShape[level][x0][z0] + 1;
-                        byte rotation = levelTileOverlayRotation[level][x0][z0];
+                        int shape = level_overlay_shapes[level][x0][z0] + 1;
+                        byte rotation = level_overlay_rotations[level][x0][z0];
                         Flo flo = Flo.instances[overlayID - 1];
                         int textureID = flo.texture;
                         int rgb;
@@ -665,7 +665,7 @@ public class SceneBuilder {
     private void buildBridges(Scene scene) {
         for (int x = 0; x < maxTileX; x++) {
             for (int z = 0; z < maxTileZ; z++) {
-                if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                if ((level_flags[1][x][z] & 0x2) == 2) {
                     scene.setBridge(x, z);
                 }
             }
@@ -910,7 +910,7 @@ public class SceneBuilder {
         byte object_info = (byte) ((rotation << 6) + object_type);
 
         if (object_type == 22) {
-            set_ground_decoration(scene, collision, object_id, rotation, tile_level, x, z, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
+            add_ground_decoration(scene, collision, object_id, rotation, tile_level, x, z, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
         } else if ((object_type == 10) || (object_type == 11)) {
             add_centrepiece(scene, collision, object_id, object_type, rotation, tile_level, x, z, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
         } else if (object_type >= 12) {
@@ -950,21 +950,21 @@ public class SceneBuilder {
             }
 
             if (object_type == 4) {
-                set_wall_decoration(scene, Scene.ROTATION_WALL_TYPE[rotation], obj, object_id, bitset, object_info, tile_level, x, z, rotation * 512, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, Scene.ROTATION_WALL_TYPE[rotation], obj, object_id, bitset, object_info, tile_level, x, z, rotation * 512, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == 5) {
-                set_wall_decoration_offset(scene, rotation, z, x, object_id, tile_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
+                add_wall_decoration_offset(scene, rotation, z, x, object_id, tile_level, y_sw, y_se, y_ne, y_nw, y_avg, obj, bitset, object_info);
             } else if (object_type == 6) {
-                set_wall_decoration(scene, 0x100, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x100, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == 7) {
-                set_wall_decoration(scene, 0x200, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x200, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             } else if (object_type == 8) {
-                set_wall_decoration(scene, 0x300, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
+                add_wall_decoration(scene, 0x300, obj, object_id, bitset, object_info, tile_level, x, z, rotation, y_sw, y_se, y_ne, y_nw, y_avg);
             }
         }
     }
 
-    private static void set_ground_decoration(Scene scene, CollisionMap collision, int locID, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, Obj type, int bitset, byte info) {
-        set_ground_decoration(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
+    private static void add_ground_decoration(Scene scene, CollisionMap collision, int locID, int rotation, int level, int x, int z, int heightmapSW, int heightmapSE, int heightmapNE, int heightmapNW, int heightmapAverage, Obj type, int bitset, byte info) {
+        add_ground_decoration(scene, rotation, z, x, locID, level, heightmapSW, heightmapSE, heightmapNE, heightmapNW, heightmapAverage, type, bitset, info);
 
         if (type.block_entity && type.interactable && (collision != null)) {
             collision.set_solid(x, z);
@@ -1101,7 +1101,7 @@ public class SceneBuilder {
         }
 
         if (type.wall_offset != 16) {
-            scene.setWallDecorationOffset(level, x, z, type.wall_offset);
+            scene.set_wall_decoration_offset(level, x, z, type.wall_offset);
         }
     }
 
@@ -1150,7 +1150,7 @@ public class SceneBuilder {
         }
 
         if (type.wall_offset != 16) {
-            scene.setWallDecorationOffset(level, x, z, type.wall_offset);
+            scene.set_wall_decoration_offset(level, x, z, type.wall_offset);
         }
     }
 
@@ -1203,9 +1203,9 @@ public class SceneBuilder {
         }
     }
 
-    private static void set_wall_decoration(Scene scene, int decoration_type, Obj object, int object_id, int object_bitset, byte object_info, int level, int x, int z, int rotation, int y_sw, int y_se, int y_ne, int y_nw, int y_avg) {
+    private static void add_wall_decoration(Scene scene, int decoration_type, Obj object, int object_id, int object_bitset, byte object_info, int level, int x, int z, int rotation, int y_sw, int y_se, int y_ne, int y_nw, int y_avg) {
         Drawable drawable = make_wall_decoration(object, object_id, y_sw, y_se, y_ne, y_nw);
-        scene.setWallDecoration(decoration_type, drawable, level, x, z, y_avg, rotation, 0, 0, object_bitset, object_info);
+        scene.set_wall_decoration(decoration_type, drawable, level, x, z, y_avg, rotation, 0, 0, object_bitset, object_info);
     }
 
     private static Drawable make_wall_decoration(Obj object, int object_id, int y_sw, int y_se, int y_ne, int y_nw) {
@@ -1231,21 +1231,21 @@ public class SceneBuilder {
             for (int x = 0; x < 64; x++) {
                 for (int z = 0; z < 64; z++) {
                     if ((l == mapLevel) && (x >= chunkX) && (x < (chunkX + 8)) && (z >= chunkZ) && (z < (chunkZ + 8))) {
-                        readTiles(in, 0, 0, level, originX + MapUtil.rotateX(x & 0x7, z & 0x7, chunkRotation), originZ + MapUtil.rotateZ(x & 0x7, z & 0x7, chunkRotation), chunkRotation);
+                        read_tile_data(in, 0, 0, level, originX + MapUtil.rotateX(x & 0x7, z & 0x7, chunkRotation), originZ + MapUtil.rotateZ(x & 0x7, z & 0x7, chunkRotation), chunkRotation);
                     } else {
-                        readTiles(in, 0, 0, 0, -1, -1, 0);
+                        read_tile_data(in, 0, 0, 0, -1, -1, 0);
                     }
                 }
             }
         }
     }
 
-    public void readTiles(byte[] data, int offsetZ, int offsetX, int originX, int originZ, CollisionMap[] collisionMaps) {
+    public void read_tiles(byte[] data, int dz, int dx, int base_x, int base_z, CollisionMap[] collisionMaps) {
         for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 64; x++) {
                 for (int z = 0; z < 64; z++) {
-                    if (((offsetX + x) > 0) && ((offsetX + x) < 103) && ((offsetZ + z) > 0) && ((offsetZ + z) < 103)) {
-                        collisionMaps[level].flags[offsetX + x][offsetZ + z] &= ~CollisionMap.FLAG_UNINITIALIZED;
+                    if (((dx + x) > 0) && ((dx + x) < 103) && ((dz + z) > 0) && ((dz + z) < 103)) {
+                        collisionMaps[level].flags[dx + x][dz + z] &= ~CollisionMap.FLAG_UNINITIALIZED;
                     }
                 }
             }
@@ -1255,22 +1255,36 @@ public class SceneBuilder {
         for (int level = 0; level < 4; level++) {
             for (int x = 0; x < 64; x++) {
                 for (int z = 0; z < 64; z++) {
-                    readTiles(in, originX, originZ, level, x + offsetX, z + offsetZ, 0);
+                    read_tile_data(in, base_x, base_z, level, x + dx, z + dz, 0);
                 }
             }
         }
     }
 
-    public void readTiles(Buffer in, int originX, int originZ, int level, int x, int z, int mapRotation) {
-        if ((x >= 0) && (x < 104) && (z >= 0) && (z < 104)) {
-            levelTileFlags[level][x][z] = (byte) 0;
+    public void read_tile_data(Buffer in, int base_x, int base_z, int level, int x, int z, int rotation) {
+        if ((x < 0) || (x >= 104) || (z < 0) || (z >= 104)) {
+            for (; ; ) {
+                int type = in.readU8();
+                if (type == 0) {
+                    break;
+                }
+                if (type == 1) {
+                    in.readU8();
+                    break;
+                }
+                if (type <= 49) {
+                    in.readU8();
+                }
+            }
+        } else {
+            level_flags[level][x][z] = (byte) 0;
 
             for (; ; ) {
                 int type = in.readU8();
 
                 if (type == 0) {
                     if (level == 0) {
-                        level_heightmap[0][x][z] = -perlin(932731 + x + originX, 556238 + z + originZ) * 8;
+                        level_heightmap[0][x][z] = -perlin(932731 + x + base_x, 556238 + z + base_z) * 8;
                     } else {
                         level_heightmap[level][x][z] = level_heightmap[level - 1][x][z] - 240;
                         break;
@@ -1295,43 +1309,29 @@ public class SceneBuilder {
                 }
 
                 if (type <= 49) {
-                    levelTileOverlayIDs[level][x][z] = in.read8();
-                    levelTileOverlayShape[level][x][z] = (byte) ((type - 2) / 4);
-                    levelTileOverlayRotation[level][x][z] = (byte) (((type - 2) + mapRotation) & 0x3);
+                    level_overlays[level][x][z] = in.read8();
+                    level_overlay_shapes[level][x][z] = (byte) ((type - 2) / 4);
+                    level_overlay_rotations[level][x][z] = (byte) (((type - 2) + rotation) & 0x3);
                 } else if (type <= 81) {
-                    levelTileFlags[level][x][z] = (byte) (type - 49);
+                    level_flags[level][x][z] = (byte) (type - 49);
                 } else {
-                    levelTileUnderlayIDs[level][x][z] = (byte) (type - 81);
-                }
-            }
-        } else {
-            for (; ; ) {
-                int type = in.readU8();
-                if (type == 0) {
-                    break;
-                }
-                if (type == 1) {
-                    in.readU8();
-                    break;
-                }
-                if (type <= 49) {
-                    in.readU8();
+                    level_underlays[level][x][z] = (byte) (type - 81);
                 }
             }
         }
     }
 
-    public int getDrawLevel(int level, int stx, int stz) {
-        if ((levelTileFlags[level][stx][stz] & 0x8) != 0) {
+    public int draw_level_at(int level, int stx, int stz) {
+        if ((level_flags[level][stx][stz] & 0x8) != 0) {
             return 0;
         }
-        if ((level > 0) && ((levelTileFlags[1][stx][stz] & 0x2) != 0)) {
+        if ((level > 0) && ((level_flags[1][stx][stz] & 0x2) != 0)) {
             return level - 1;
         }
         return level;
     }
 
-    public void readChunkLocs(CollisionMap[] collisionMaps, Scene scene, int mapLevel, int mapRotation, int mapChunkX, int mapChunkZ, int originX, int originZ, byte[] data, int level) {
+    public void read_objects(CollisionMap[] collisionMaps, Scene scene, int mapLevel, int mapRotation, int mapChunkX, int mapChunkZ, int originX, int originZ, byte[] data, int level) {
         Buffer in = new Buffer(data);
         int locID = -1;
 
@@ -1376,7 +1376,7 @@ public class SceneBuilder {
 
                 int collisionLevel = locLevel;
 
-                if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                if ((level_flags[1][x][z] & 0x2) == 2) {
                     collisionLevel--;
                 }
 
@@ -1452,7 +1452,7 @@ public class SceneBuilder {
                 if ((x > 0) && (z > 0) && (x < 103) && (z < 103)) {
                     int collisionLevel = locLevel;
 
-                    if ((levelTileFlags[1][x][z] & 0x2) == 2) {
+                    if ((level_flags[1][x][z] & 0x2) == 2) {
                         collisionLevel--;
                     }
 

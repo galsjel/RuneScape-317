@@ -7,10 +7,10 @@ public class SceneWall {
     public int y;
     public int x;
     public int z;
-    public int typeA;
-    public int typeB;
-    public Drawable entityA;
-    public Drawable entityB;
+    public int type_a;
+    public int type_b;
+    public Drawable drawable_a;
+    public Drawable drawable_b;
     public int bitset;
     public byte info;
 

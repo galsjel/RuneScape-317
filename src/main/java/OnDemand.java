@@ -90,7 +90,7 @@ public class OnDemand implements Runnable {
 
                         if (current.important) {
                             synchronized (completed) {
-                                completed.pushBack(current);
+                                completed.push_back(current);
                             }
                         } else {
                             current.unlink();
@@ -140,7 +140,7 @@ public class OnDemand implements Runnable {
 
                     if (current.important) {
                         synchronized (completed) {
-                            completed.pushBack(current);
+                            completed.push_back(current);
                         }
                     } else {
                         current.unlink();
@@ -341,7 +341,7 @@ public class OnDemand implements Runnable {
             request.file = file;
             request.important = true;
             synchronized (queue) {
-                queue.pushBack(request);
+                queue.push_back(request);
             }
             requests.addFirst(request);
         }
@@ -476,7 +476,7 @@ public class OnDemand implements Runnable {
         request.file = file;
         request.important = false;
         synchronized (prefetches) {
-            prefetches.pushBack(request);
+            prefetches.push_back(request);
         }
     }
 
@@ -580,7 +580,7 @@ public class OnDemand implements Runnable {
             }
 
             storeFilePriorities[request.store][request.file] = 0;
-            pending.pushBack(request);
+            pending.push_back(request);
             importantCount++;
             send(request);
             active = true;
@@ -609,11 +609,11 @@ public class OnDemand implements Runnable {
 
             synchronized (queue) {
                 if (data == null) {
-                    missing.pushBack(request);
+                    missing.push_back(request);
                 } else {
                     request.data = data;
                     synchronized (completed) {
-                        completed.pushBack(request);
+                        completed.push_back(request);
                     }
                 }
                 request = (OnDemandRequest) queue.pollFront();
@@ -636,7 +636,7 @@ public class OnDemand implements Runnable {
             while (extra != null) {
                 if (storeFilePriorities[extra.store][extra.file] != 0) {
                     storeFilePriorities[extra.store][extra.file] = 0;
-                    pending.pushBack(extra);
+                    pending.push_back(extra);
                     send(extra);
                     active = true;
 
@@ -669,7 +669,7 @@ public class OnDemand implements Runnable {
                     req.store = store;
                     req.file = file;
                     req.important = false;
-                    pending.pushBack(req);
+                    pending.push_back(req);
                     send(req);
                     active = true;
 

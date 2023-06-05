@@ -40,7 +40,7 @@ public class SceneNPC extends SceneCharacter {
             return null;
         }
 
-        super.height = model.minY;
+        super.height = model.min_y;
 
         if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
             SpotAnim spotanim = SpotAnim.instances[super.spotanimID];

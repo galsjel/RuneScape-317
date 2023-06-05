@@ -144,8 +144,8 @@ public class Item {
         Image24 icon = new Image24(32, 32);
 
         // store state
-        int _cx = Draw3D.centerX;
-        int _cy = Draw3D.centerY;
+        int _cx = Draw3D.center_x;
+        int _cy = Draw3D.center_y;
         int[] _loff = Draw3D.lineOffset;
         int[] _pix = Draw2D.pixels;
         int _w = Draw2D.width;
@@ -174,7 +174,7 @@ public class Item {
         int sinPitch = Draw3D.sin[type.iconPitch] * distance >> 16;
         int cosPitch = Draw3D.cos[type.iconPitch] * distance >> 16;
 
-        model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + model.minY / 2 + type.iconOffsetY, cosPitch + type.iconOffsetY);
+        model.drawSimple(0, type.iconYaw, type.iconRoll, type.iconPitch, type.iconOffsetX, sinPitch + model.min_y / 2 + type.iconOffsetY, cosPitch + type.iconOffsetY);
 
         // define outline
         for (int x = 31; x >= 0; x--) {
@@ -249,8 +249,8 @@ public class Item {
         // restore state
         Draw2D.bind(_pix, _w, _h);
         Draw2D.setBounds(_l, _t, _r, _b);
-        Draw3D.centerX = _cx;
-        Draw3D.centerY = _cy;
+        Draw3D.center_x = _cx;
+        Draw3D.center_y = _cy;
         Draw3D.lineOffset = _loff;
         Draw3D.jagged = true;
 

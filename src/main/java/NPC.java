@@ -260,7 +260,7 @@ public class NPC {
         if (overrides != null) {
             NPC npc = evaluate();
             if (npc == null) {
-                return null;
+                 return null;
             } else {
                 return npc.get_chat_model();
             }

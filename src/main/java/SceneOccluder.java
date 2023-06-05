@@ -17,24 +17,24 @@ public class SceneOccluder {
      */
     public static final int TYPE_GROUND = 4;
 
-    public int minTileX;
-    public int maxTileX;
-    public int minTileZ;
-    public int maxTileZ;
+    public int min_tile_x;
+    public int max_tile_x;
+    public int min_tile_z;
+    public int max_tile_z;
     public int type;
-    public int minX;
-    public int maxX;
-    public int minZ;
-    public int maxZ;
-    public int minY;
-    public int maxY;
+    public int min_x;
+    public int max_x;
+    public int min_z;
+    public int max_z;
+    public int min_y;
+    public int max_y;
     public int mode;
-    public int minDeltaX;
-    public int maxDeltaX;
-    public int minDeltaZ;
-    public int maxDeltaZ;
-    public int minDeltaY;
-    public int maxDeltaY;
+    public int min_delta_x;
+    public int max_delta_x;
+    public int min_delta_z;
+    public int max_delta_z;
+    public int min_delta_y;
+    public int max_delta_y;
 
     public SceneOccluder() {
     }

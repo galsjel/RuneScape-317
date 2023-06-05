@@ -41,8 +41,8 @@ public class Draw3D {
      */
     public static boolean jagged = true;
     public static int transparency;
-    public static int centerX;
-    public static int centerY;
+    public static int center_x;
+    public static int center_y;
     /**
      * A lookup table for the sine function using 16.16 fixed integers. The unit of measurement for angles using this
      * table are [0...2047], 1024 being pi.
@@ -110,7 +110,7 @@ public class Draw3D {
     }
 
     /**
-     * Instantiates {@link #lineOffset} and sets {@link #centerX} and {@link #centerY} using the width and height values
+     * Instantiates {@link #lineOffset} and sets {@link #center_x} and {@link #center_y} using the width and height values
      * stored in {@link Draw2D}.
      */
     public static void init2D() {
@@ -118,12 +118,12 @@ public class Draw3D {
         for (int y = 0; y < Draw2D.height; y++) {
             Draw3D.lineOffset[y] = Draw2D.width * y;
         }
-        Draw3D.centerX = Draw2D.width / 2;
-        Draw3D.centerY = Draw2D.height / 2;
+        Draw3D.center_x = Draw2D.width / 2;
+        Draw3D.center_y = Draw2D.height / 2;
     }
 
     /**
-     * Instantiates {@link #lineOffset} and sets {@link #centerX} and {@link #centerY} using the width and height values
+     * Instantiates {@link #lineOffset} and sets {@link #center_x} and {@link #center_y} using the width and height values
      * provided.
      *
      * @param width  the width.
@@ -134,8 +134,8 @@ public class Draw3D {
         for (int y = 0; y < height; y++) {
             Draw3D.lineOffset[y] = width * y;
         }
-        Draw3D.centerX = width / 2;
-        Draw3D.centerY = height / 2;
+        Draw3D.center_x = width / 2;
+        Draw3D.center_y = height / 2;
     }
 
     /**
@@ -1592,7 +1592,7 @@ public class Draw3D {
             y1 = 0;
         }
 
-        int dy = y0 - centerY;
+        int dy = y0 - center_y;
 
         u += u_step_y * dy;
         v += v_step_y * dy;
@@ -1677,7 +1677,7 @@ public class Draw3D {
 
         offset += x0;
 
-        int dx = x0 - centerX;
+        int dx = x0 - center_x;
 
         u += uStep * dx;
         v += vStep * dx;

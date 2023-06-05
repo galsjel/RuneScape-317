@@ -25,7 +25,7 @@ public class DoublyLinkedList {
         head.next = head;
     }
 
-    public void pushBack(Node node) {
+    public void push_back(Node node) {
         if (node.next != null) {
             node.unlink();
         }

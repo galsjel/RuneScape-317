@@ -35,33 +35,33 @@ public class SceneTileOverlay {
             {1, 0, 5, 4, 1, 0, 1, 5, 0, 0, 4, 3, 0, 4, 5, 3, 0, 5, 2, 3, 0, 1, 2, 5},
     };
 
-    public static final int[] tmpScreenX = new int[6];
-    public static final int[] tmpScreenY = new int[6];
-    public static final int[] tmpViewspaceX = new int[6];
-    public static final int[] tmpViewspaceY = new int[6];
-    public static final int[] tmpViewspaceZ = new int[6];
-    public final int[] vertexX;
-    public final int[] vertexY;
-    public final int[] vertexZ;
-    public final int[] triangleColorA;
-    public final int[] triangleColorB;
-    public final int[] triangleColorC;
-    public final int[] triangleVertexA;
-    public final int[] triangleVertexB;
-    public final int[] triangleVertexC;
+    public static final int[] px = new int[6];
+    public static final int[] py = new int[6];
+    public static final int[] vx = new int[6];
+    public static final int[] vy = new int[6];
+    public static final int[] vz = new int[6];
+    public final int[] x;
+    public final int[] y;
+    public final int[] z;
+    public final int[] face_colors_a;
+    public final int[] face_colors_b;
+    public final int[] face_colors_c;
+    public final int[] face_a;
+    public final int[] face_b;
+    public final int[] face_c;
     public final boolean flat;
     public final int shape;
     public final int rotation;
-    public final int backgroundRGB;
-    public final int foregroundRGB;
-    public int[] triangleTextureIDs;
+    public final int background_rgb;
+    public final int foreground_rgb;
+    public int[] face_texture;
 
     public SceneTileOverlay(int tileZ, int southwestColor2, int northwestColor1, int northeastY, int textureID, int northeastColor2, int rotation, int southwestColor1, int backgroundRGB, int northeastColor1, int northwestY, int southeastY, int southwestY, int shape, int northwestColor2, int southeastColor2, int southeastColor1, int tileX, int foregroundRGB) {
         flat = (southwestY == southeastY) && (southwestY == northeastY) && (southwestY == northwestY);
         this.shape = shape;
         this.rotation = rotation;
-        this.backgroundRGB = backgroundRGB;
-        this.foregroundRGB = foregroundRGB;
+        this.background_rgb = backgroundRGB;
+        this.foreground_rgb = foregroundRGB;
 
         final int ONE = 128;
         final int HALF = ONE / 2;
@@ -70,9 +70,9 @@ public class SceneTileOverlay {
 
         int[] points = SHAPE_POINTS[shape];
         int vertexCount = points.length;
-        vertexX = new int[vertexCount];
-        vertexY = new int[vertexCount];
-        vertexZ = new int[vertexCount];
+        x = new int[vertexCount];
+        y = new int[vertexCount];
+        z = new int[vertexCount];
         int[] primaryColors = new int[vertexCount];
         int[] secondaryColors = new int[vertexCount];
 
@@ -196,24 +196,24 @@ public class SceneTileOverlay {
                 color1 = northwestColor1;
                 color2 = northwestColor2;
             }
-            vertexX[v] = x;
-            vertexY[v] = y;
-            vertexZ[v] = z;
+            this.x[v] = x;
+            this.y[v] = y;
+            this.z[v] = z;
             primaryColors[v] = color1;
             secondaryColors[v] = color2;
         }
 
         int[] paths = SHAPE_PATHS[shape];
         int triangleCount = paths.length / 4;
-        triangleVertexA = new int[triangleCount];
-        triangleVertexB = new int[triangleCount];
-        triangleVertexC = new int[triangleCount];
-        triangleColorA = new int[triangleCount];
-        triangleColorB = new int[triangleCount];
-        triangleColorC = new int[triangleCount];
+        face_a = new int[triangleCount];
+        face_b = new int[triangleCount];
+        face_c = new int[triangleCount];
+        face_colors_a = new int[triangleCount];
+        face_colors_b = new int[triangleCount];
+        face_colors_c = new int[triangleCount];
 
         if (textureID != -1) {
-            triangleTextureIDs = new int[triangleCount];
+            face_texture = new int[triangleCount];
         }
 
         int index = 0;
@@ -237,23 +237,23 @@ public class SceneTileOverlay {
                 c = (c - rotation) & 3;
             }
 
-            triangleVertexA[i] = a;
-            triangleVertexB[i] = b;
-            triangleVertexC[i] = c;
+            face_a[i] = a;
+            face_b[i] = b;
+            face_c[i] = c;
 
             if (color == 0) {
-                triangleColorA[i] = primaryColors[a];
-                triangleColorB[i] = primaryColors[b];
-                triangleColorC[i] = primaryColors[c];
-                if (triangleTextureIDs != null) {
-                    triangleTextureIDs[i] = -1;
+                face_colors_a[i] = primaryColors[a];
+                face_colors_b[i] = primaryColors[b];
+                face_colors_c[i] = primaryColors[c];
+                if (face_texture != null) {
+                    face_texture[i] = -1;
                 }
             } else {
-                triangleColorA[i] = secondaryColors[a];
-                triangleColorB[i] = secondaryColors[b];
-                triangleColorC[i] = secondaryColors[c];
-                if (triangleTextureIDs != null) {
-                    triangleTextureIDs[i] = textureID;
+                face_colors_a[i] = secondaryColors[a];
+                face_colors_b[i] = secondaryColors[b];
+                face_colors_c[i] = secondaryColors[c];
+                if (face_texture != null) {
+                    face_texture[i] = textureID;
                 }
             }
         }

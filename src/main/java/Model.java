@@ -1139,7 +1139,7 @@ public class Model extends Drawable {
         texturedVertexA = model.texturedVertexA;
         texturedVertexB = model.texturedVertexB;
         texturedVertexC = model.texturedVertexC;
-        super.minY = model.minY;
+        super.min_y = model.min_y;
         maxY = model.maxY;
         radius = model.radius;
         min_depth = model.min_depth;
@@ -1248,18 +1248,18 @@ public class Model extends Drawable {
     }
 
     /**
-     * Calculates {@link #minY}, {@link #maxY}, {@link #radius}, {@link #min_depth} and {@link #max_depth}.
+     * Calculates {@link #min_y}, {@link #maxY}, {@link #radius}, {@link #min_depth} and {@link #max_depth}.
      */
     public void calc_bounds_cylinder() {
-        super.minY = 0;
+        super.min_y = 0;
         radius = 0;
         maxY = 0;
         for (int i = 0; i < vertexCount; i++) {
             int x = vertexX[i];
             int y = vertexY[i];
             int z = vertexZ[i];
-            if (-y > super.minY) {
-                super.minY = -y;
+            if (-y > super.min_y) {
+                super.min_y = -y;
             }
             if (y > maxY) {
                 maxY = y;
@@ -1270,26 +1270,26 @@ public class Model extends Drawable {
             }
         }
         radius = (int) (Math.sqrt(radius) + 0.99);
-        min_depth = (int) (Math.sqrt(radius * radius + super.minY * super.minY) + 0.99);
+        min_depth = (int) (Math.sqrt(radius * radius + super.min_y * super.min_y) + 0.99);
         max_depth = min_depth + (int) (Math.sqrt(radius * radius + maxY * maxY) + 0.99);
     }
 
     /**
-     * Calculates {@link #minY}, {@link #maxY}, {@link #min_depth} and {@link #max_depth}.
+     * Calculates {@link #min_y}, {@link #maxY}, {@link #min_depth} and {@link #max_depth}.
      */
     public void calculateBoundsY() {
-        super.minY = 0;
+        super.min_y = 0;
         maxY = 0;
         for (int i = 0; i < vertexCount; i++) {
             int y = vertexY[i];
-            if (-y > super.minY) {
-                super.minY = -y;
+            if (-y > super.min_y) {
+                super.min_y = -y;
             }
             if (y > maxY) {
                 maxY = y;
             }
         }
-        min_depth = (int) (Math.sqrt(radius * radius + super.minY * super.minY) + 0.99);
+        min_depth = (int) (Math.sqrt(radius * radius + super.min_y * super.min_y) + 0.99);
         max_depth = min_depth + (int) (Math.sqrt(radius * radius + maxY * maxY) + 0.99);
     }
 
@@ -1297,7 +1297,7 @@ public class Model extends Drawable {
      * Calculates this models axis-aligned bounding box (AABB) and stores it.
      */
     public void calc_bounds_box() {
-        super.minY = 0;
+        super.min_y = 0;
         radius = 0;
         maxY = 0;
         minX = 999999;
@@ -1320,8 +1320,8 @@ public class Model extends Drawable {
             if (z > maxZ) {
                 maxZ = z;
             }
-            if (-y > super.minY) {
-                super.minY = -y;
+            if (-y > super.min_y) {
+                super.min_y = -y;
             }
             if (y > maxY) {
                 maxY = y;
@@ -1332,7 +1332,7 @@ public class Model extends Drawable {
             }
         }
         radius = (int) Math.sqrt(radius);
-        min_depth = (int) Math.sqrt(radius * radius + super.minY * super.minY);
+        min_depth = (int) Math.sqrt(radius * radius + super.min_y * super.min_y);
         max_depth = min_depth + (int) Math.sqrt(radius * radius + maxY * maxY);
     }
 
@@ -1910,8 +1910,8 @@ public class Model extends Drawable {
      * @param relativeZ     the eye z.
      */
     public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int relativeX, int relativeY, int relativeZ) {
-        int centerX = Draw3D.centerX;
-        int centerY = Draw3D.centerY;
+        int centerX = Draw3D.center_x;
+        int centerY = Draw3D.center_y;
         int sinPitch = sin[pitch];
         int cosPitch = cos[pitch];
         int sinYaw = sin[yaw];
@@ -2048,7 +2048,7 @@ public class Model extends Drawable {
         }
 
         // y' = (radius * sin(eyePitch)) + (minY * cos(eyePitch))
-        int yPrime = radiusSinEyePitch + (super.minY * cosEyePitch >> 16);
+        int yPrime = radiusSinEyePitch + (super.min_y * cosEyePitch >> 16);
 
         // calculate top boundary
         int topY = midY - yPrime << 9;
@@ -2059,7 +2059,7 @@ public class Model extends Drawable {
         }
 
         // (minY * sin(eyePitch)) + (radius * cos(eyePitch))
-        int radiusZ = (super.minY * sinEyePitch >> 16) + radiusCosEyePitch;
+        int radiusZ = (super.min_y * sinEyePitch >> 16) + radiusCosEyePitch;
 
         boolean clipped = midZ - radiusZ <= 50;
         boolean picking = false;
@@ -2087,8 +2087,8 @@ public class Model extends Drawable {
                 topY /= z;
             }
 
-            int mouseX = Model.mouseX - Draw3D.centerX;
-            int mouseY = Model.mouseY - Draw3D.centerY;
+            int mouseX = Model.mouseX - Draw3D.center_x;
+            int mouseY = Model.mouseY - Draw3D.center_y;
 
             if (mouseX > leftX && mouseX < rightX && mouseY > topY && mouseY < bottomY) {
                 if (pickable) {
@@ -2099,8 +2099,8 @@ public class Model extends Drawable {
             }
         }
 
-        int centerX = Draw3D.centerX;
-        int centerY = Draw3D.centerY;
+        int centerX = Draw3D.center_x;
+        int centerY = Draw3D.center_y;
         int sinYaw = 0;
         int cosYaw = 0;
 
@@ -2380,7 +2380,9 @@ public class Model extends Drawable {
         }
     }
 
-    public static int face_counter = 0;
+    public static int flat_counter = 0;
+    public static int shaded_counter =0 ;
+    public static int textured_counter = 0;
 
     /**
      * Draws the provided face id.
@@ -2388,8 +2390,6 @@ public class Model extends Drawable {
      * @param face the face id.
      */
     public void draw_face(int face) {
-        face_counter++;
-
         if (faceNearClipped[face]) {
             drawNearClippedFace(face);
             return;
@@ -2415,16 +2415,20 @@ public class Model extends Drawable {
         }
 
         if (type == 0) {
+            shaded_counter++;
             Draw3D.fillGouraudTriangle(px[a], py[a], px[b], py[b], px[c], py[c], faceColorA[face], faceColorB[face], faceColorC[face]);
         } else if (type == 1) {
+            flat_counter++;
             Draw3D.fillTriangle(py[a], py[b], py[c], px[a], px[b], px[c], palette[faceColorA[face]]);
         } else if (type == 2) {
+            textured_counter++;
             int texturedFace = ftype[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
             int tc = texturedVertexC[texturedFace];
             Draw3D.fillTexturedTriangle(py[a], py[b], py[c], px[a], px[b], px[c], faceColorA[face], faceColorB[face], faceColorC[face], vertexViewSpaceX[ta], vertexViewSpaceX[tb], vertexViewSpaceX[tc], vertexViewSpaceY[ta], vertexViewSpaceY[tb], vertexViewSpaceY[tc], vertexViewSpaceZ[ta], vertexViewSpaceZ[tb], vertexViewSpaceZ[tc], faceColor[face]);
         } else {
+            textured_counter++;
             int texturedFace = ftype[face] >> 2;
             int ta = texturedVertexA[texturedFace];
             int tb = texturedVertexB[texturedFace];
@@ -2439,8 +2443,8 @@ public class Model extends Drawable {
      * @param face the face id.
      */
     public void drawNearClippedFace(int face) {
-        int centerX = Draw3D.centerX;
-        int centerY = Draw3D.centerY;
+        int centerX = Draw3D.center_x;
+        int centerY = Draw3D.center_y;
         int elements = 0;
 
         int a = faceVertexA[face];

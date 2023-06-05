@@ -57,7 +57,7 @@ public class ScenePlayer extends SceneCharacter {
             return null;
         }
 
-        super.height = model.minY;
+        super.height = model.min_y;
         model.pickable = true;
 
         if ((super.spotanimID != -1) && (super.spotanimFrame != -1)) {
@@ -85,8 +85,8 @@ public class ScenePlayer extends SceneCharacter {
                     int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
 
-                    int _cx = Draw3D.centerX;
-                    int _cy = Draw3D.centerY;
+                    int _cx = Draw3D.center_x;
+                    int _cy = Draw3D.center_y;
                     int[] _loff = Draw3D.lineOffset;
                     int[] _pix = Draw2D.pixels;
                     int _w = Draw2D.width;
@@ -105,8 +105,8 @@ public class ScenePlayer extends SceneCharacter {
                     // restore state
                     Draw2D.bind(_pix, _w, _h);
                     Draw2D.setBounds(_l, _t, _r, _b);
-                    Draw3D.centerX = _cx;
-                    Draw3D.centerY = _cy;
+                    Draw3D.center_x = _cx;
+                    Draw3D.center_y = _cy;
                     Draw3D.lineOffset = _loff;
                     Draw3D.jagged = true;
 
