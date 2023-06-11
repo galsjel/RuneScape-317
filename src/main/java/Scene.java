@@ -2,6 +2,10 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class Scene {
@@ -126,7 +130,7 @@ public class Scene {
     /**
      * Used to track locs being sorted for drawing on a per-tile basis.
      */
-    public static SceneDrawable[] drawable_buffer = new SceneDrawable[100];
+    public static SceneEntity[] drawable_buffer = new SceneEntity[100];
     public static boolean accept_input;
     public static int mouseX;
     public static int mouseY;
@@ -173,6 +177,10 @@ public class Scene {
         level_occluders[level][level_occluder_count[level]++] = occluder;
     }
 
+    public static void main(String[] args) {
+        init(512,334);
+    }
+
     public static void init(int viewportWidth, int viewportHeight) {
         viewportLeft = 0;
         viewportTop = 0;
@@ -181,6 +189,23 @@ public class Scene {
         viewportCenterX = viewportWidth / 2;
         viewportCenterY = viewportHeight / 2;
         initVisibilityMatrix();
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("visibility_matrix.csv"))) {
+            writer.write("pitch,yaw,x,z,visible");
+            writer.newLine();
+            for (int pitch = 0; pitch < visibility_matrix.length; pitch++) {
+                for (int yaw = 0; yaw < visibility_matrix[pitch].length; yaw++) {
+                    for (int x = 0; x < visibility_matrix[pitch][yaw].length; x++) {
+                        for (int z = 0; z < visibility_matrix[pitch][yaw][x].length; z++) {
+                            writer.write(String.format("%d,%d,%d,%d,%d",pitch,yaw,x,z,visibility_matrix[pitch][yaw][x][z] ? 1 : 0));
+                            writer.newLine();
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -274,14 +299,14 @@ public class Scene {
     public final int max_tile_z;
     public final int[][][] level_heightmaps;
     public final SceneTile[][][] level_tiles;
-    public final SceneDrawable[] temporary_drawables = new SceneDrawable[5000];
+    public final SceneEntity[] temporary_entities = new SceneEntity[5000];
     public final int[][][] level_occlusion_cycles;
     public final int[] mergeIndexA = new int[10000];
     public final int[] mergeIndexB = new int[10000];
     public final int[][] MINIMAP_TILE_MASK = {new int[16], {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1}, {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1}};
     public final int[][] MINIMAP_TILE_ROTATION_MAP = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3}, {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12}};
     public int min_level;
-    public int temporary_counter;
+    public int temporary_entity_count;
     public int tmpMergeIndex;
 
     public Scene(int max_tile_z, int max_tile_x, int[][][] levelHeightmaps, int max_level) {
@@ -310,15 +335,15 @@ public class Scene {
             level_occluder_count[l] = 0;
         }
 
-        for (int i = 0; i < temporary_counter; i++) {
-            temporary_drawables[i] = null;
+        for (int i = 0; i < temporary_entity_count; i++) {
+            temporary_entities[i] = null;
         }
 
-        temporary_counter = 0;
+        temporary_entity_count = 0;
         Arrays.fill(drawable_buffer, null);
     }
 
-    public void setMin_level(int level) {
+    public void set_min_level(int level) {
         min_level = level;
         for (int stx = 0; stx < max_tile_x; stx++) {
             for (int stz = 0; stz < max_tile_z; stz++) {
@@ -341,8 +366,8 @@ public class Scene {
 
             above.level--;
 
-            for (int i = 0; i < above.drawable_count; i++) {
-                SceneDrawable generic = above.drawables[i];
+            for (int i = 0; i < above.entity_count; i++) {
+                SceneEntity generic = above.entities[i];
 
                 if ((generic.bitset >> 29 & 3) == 2 && generic.min_tile_x == stx && generic.min_tile_z == stz) {
                     generic.level--;
@@ -425,11 +450,11 @@ public class Scene {
         SceneTile tile = level_tiles[level][tx][tz];
 
         if (tile != null) {
-            for (int l = 0; l < tile.drawable_count; l++) {
-                if (!(tile.drawables[l].drawable instanceof Model)) {
+            for (int l = 0; l < tile.entity_count; l++) {
+                if (!(tile.entities[l].drawable instanceof Model)) {
                     continue;
                 }
-                int height = ((Model) tile.drawables[l].drawable).objRaise;
+                int height = ((Model) tile.entities[l].drawable).objRaise;
                 if (height > offset) {
                     offset = height;
                 }
@@ -530,32 +555,32 @@ public class Scene {
         return push(entity, level, x0, z0, x1 - x0 + 1, z1 - z0 + 1, x, z, y, yaw, bitset, (byte) 0, true);
     }
 
-    public boolean push(Drawable d, int level, int tx, int tz, int width, int length, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
+    public boolean push(Drawable drawable, int level, int tx, int tz, int width, int length, int x, int z, int y, int yaw, int bitset, byte info, boolean temporary) {
         for (int i = tx; i < tx + width; i++) {
             for (int j = tz; j < tz + length; j++) {
                 if (i < 0 || j < 0 || i >= max_tile_x || j >= max_tile_z) {
                     return false;
                 }
                 SceneTile tile = level_tiles[level][i][j];
-                if (tile != null && tile.drawable_count >= 5) {
+                if (tile != null && tile.entity_count >= 5) {
                     return false;
                 }
             }
         }
 
-        SceneDrawable drawable = new SceneDrawable();
-        drawable.bitset = bitset;
-        drawable.info = info;
-        drawable.level = level;
-        drawable.x = x;
-        drawable.z = z;
-        drawable.y = y;
-        drawable.drawable = d;
-        drawable.yaw = yaw;
-        drawable.min_tile_x = tx;
-        drawable.min_tile_z = tz;
-        drawable.max_tile_x = tx + width - 1;
-        drawable.max_tile_z = tz + length - 1;
+        SceneEntity entity = new SceneEntity();
+        entity.bitset = bitset;
+        entity.info = info;
+        entity.level = level;
+        entity.x = x;
+        entity.z = z;
+        entity.y = y;
+        entity.drawable = drawable;
+        entity.yaw = yaw;
+        entity.min_tile_x = tx;
+        entity.min_tile_z = tz;
+        entity.max_tile_x = tx + width - 1;
+        entity.max_tile_z = tz + length - 1;
 
         for (int i = tx; i < tx + width; i++) {
             for (int j = tz; j < tz + length; j++) {
@@ -584,57 +609,57 @@ public class Scene {
                 }
 
                 SceneTile tile = level_tiles[level][i][j];
-                tile.drawables[tile.drawable_count] = drawable;
-                tile.drawable_span[tile.drawable_count] = spans;
-                tile.drawable_spans |= spans;
-                tile.drawable_count++;
+                tile.entities[tile.entity_count] = entity;
+                tile.entity_spans[tile.entity_count] = spans;
+                tile.entity_span |= spans;
+                tile.entity_count++;
             }
         }
 
         if (temporary) {
-            temporary_drawables[temporary_counter++] = drawable;
+            temporary_entities[temporary_entity_count++] = entity;
         }
 
         return true;
     }
 
-    public void clear_temporary_drawables() {
-        for (int i = 0; i < temporary_counter; i++) {
-            SceneDrawable drawable = temporary_drawables[i];
-            remove_drawable(drawable);
-            temporary_drawables[i] = null;
+    public void clear_temporary_entities() {
+        for (int i = 0; i < temporary_entity_count; i++) {
+            SceneEntity drawable = temporary_entities[i];
+            remove_entity(drawable);
+            temporary_entities[i] = null;
         }
-        temporary_counter = 0;
+        temporary_entity_count = 0;
     }
 
-    public void remove_drawable(SceneDrawable loc) {
-        for (int tx = loc.min_tile_x; tx <= loc.max_tile_x; tx++) {
-            for (int tz = loc.min_tile_z; tz <= loc.max_tile_z; tz++) {
-                SceneTile tile = level_tiles[loc.level][tx][tz];
+    public void remove_entity(SceneEntity entity) {
+        for (int tx = entity.min_tile_x; tx <= entity.max_tile_x; tx++) {
+            for (int tz = entity.min_tile_z; tz <= entity.max_tile_z; tz++) {
+                SceneTile tile = level_tiles[entity.level][tx][tz];
 
                 if (tile == null) {
                     continue;
                 }
 
-                for (int i = 0; i < tile.drawable_count; i++) {
-                    if (tile.drawables[i] != loc) {
+                for (int i = 0; i < tile.entity_count; i++) {
+                    if (tile.entities[i] != entity) {
                         continue;
                     }
 
-                    tile.drawable_count--;
+                    tile.entity_count--;
 
-                    for (int j = i; j < tile.drawable_count; j++) {
-                        tile.drawables[j] = tile.drawables[j + 1];
-                        tile.drawable_span[j] = tile.drawable_span[j + 1];
+                    for (int j = i; j < tile.entity_count; j++) {
+                        tile.entities[j] = tile.entities[j + 1];
+                        tile.entity_spans[j] = tile.entity_spans[j + 1];
                     }
-                    tile.drawables[tile.drawable_count] = null;
+                    tile.entities[tile.entity_count] = null;
                     break;
                 }
 
-                tile.drawable_spans = 0;
+                tile.entity_span = 0;
 
-                for (int i = 0; i < tile.drawable_count; i++) {
-                    tile.drawable_spans |= tile.drawable_span[i];
+                for (int i = 0; i < tile.entity_count; i++) {
+                    tile.entity_span |= tile.entity_spans[i];
                 }
             }
         }
@@ -674,10 +699,10 @@ public class Scene {
         if (tile == null) {
             return;
         }
-        for (int i = 0; i < tile.drawable_count; i++) {
-            SceneDrawable drawable = tile.drawables[i];
+        for (int i = 0; i < tile.entity_count; i++) {
+            SceneEntity drawable = tile.entities[i];
             if ((drawable.bitset >> 29 & 3) == 2 && drawable.min_tile_x == x && drawable.min_tile_z == z) {
-                remove_drawable(drawable);
+                remove_entity(drawable);
                 return;
             }
         }
@@ -715,13 +740,13 @@ public class Scene {
         }
     }
 
-    public SceneDrawable drawable_at(int level, int x, int z) {
+    public SceneEntity drawable_at(int level, int x, int z) {
         SceneTile tile = level_tiles[level][x][z];
         if (tile == null) {
             return null;
         }
-        for (int l = 0; l < tile.drawable_count; l++) {
-            SceneDrawable loc = tile.drawables[l];
+        for (int l = 0; l < tile.entity_count; l++) {
+            SceneEntity loc = tile.entities[l];
             if ((loc.bitset >> 29 & 3) == 2 && loc.min_tile_x == x && loc.min_tile_z == z) {
                 return loc;
             }
@@ -738,7 +763,7 @@ public class Scene {
         }
     }
 
-    public int wall_bitset_at(int level, int x, int z) {
+    public int wall_uid_at(int level, int x, int z) {
         SceneTile tile = level_tiles[level][x][z];
         if (tile != null && tile.wall != null) {
             return tile.wall.bitset;
@@ -747,7 +772,7 @@ public class Scene {
         }
     }
 
-    public int wall_decoration_bitset_at(int level, int x, int z) {
+    public int wall_decoration_uid_at(int level, int x, int z) {
         SceneTile tile = level_tiles[level][x][z];
         if (tile == null || tile.wall_decoration == null) {
             return 0;
@@ -756,13 +781,13 @@ public class Scene {
         }
     }
 
-    public int bitset(int level, int x, int z) {
+    public int centrepiece_uid_at(int level, int x, int z) {
         SceneTile tile = level_tiles[level][x][z];
         if (tile == null) {
             return 0;
         }
-        for (int l = 0; l < tile.drawable_count; l++) {
-            SceneDrawable loc = tile.drawables[l];
+        for (int l = 0; l < tile.entity_count; l++) {
+            SceneEntity loc = tile.entities[l];
             if ((loc.bitset >> 29 & 3) == 2 && loc.min_tile_x == x && loc.min_tile_z == z) {
                 return loc.bitset;
             }
@@ -770,7 +795,7 @@ public class Scene {
         return 0;
     }
 
-    public int getGroundDecorationBitset(int level, int x, int z) {
+    public int ground_decoration_uid_at(int level, int x, int z) {
         SceneTile tile = level_tiles[level][x][z];
         if (tile == null || tile.ground_decoration == null) {
             return 0;
@@ -779,7 +804,7 @@ public class Scene {
         }
     }
 
-    public int getInfo(int level, int x, int z, int bitset) {
+    public int find_info(int level, int x, int z, int bitset) {
         SceneTile tile = level_tiles[level][x][z];
 
         if (tile == null) {
@@ -798,9 +823,9 @@ public class Scene {
             return tile.ground_decoration.info & 0xff;
         }
 
-        for (int i = 0; i < tile.drawable_count; i++) {
-            if (tile.drawables[i].bitset == bitset) {
-                return tile.drawables[i].info & 0xff;
+        for (int i = 0; i < tile.entity_count; i++) {
+            if (tile.entities[i].bitset == bitset) {
+                return tile.entities[i].info & 0xff;
             }
         }
         return -1;
@@ -835,8 +860,8 @@ public class Scene {
                         ((Model) wall.drawable_a).buildLighting(lightAmbient, attenuation, lightSrcX, lightSrcY, lightSrcZ);
                     }
 
-                    for (int i = 0; i < tile.drawable_count; i++) {
-                        SceneDrawable loc = tile.drawables[i];
+                    for (int i = 0; i < tile.entity_count; i++) {
+                        SceneEntity loc = tile.entities[i];
 
                         if (loc != null && loc.drawable != null && loc.drawable.normals != null) {
                             mergeLocNormals(level, loc.max_tile_x - loc.min_tile_x + 1, loc.max_tile_z - loc.min_tile_z + 1, tileX, tileZ, (Model) loc.drawable);
@@ -926,8 +951,8 @@ public class Scene {
                         mergeNormals(model, (Model) wall.drawable_b, offsetX, offsetY, offsetZ, allowFaceRemoval);
                     }
 
-                    for (int i = 0; i < tile.drawable_count; i++) {
-                        SceneDrawable loc = tile.drawables[i];
+                    for (int i = 0; i < tile.entity_count; i++) {
+                        SceneEntity loc = tile.entities[i];
 
                         if (loc != null && loc.drawable != null && loc.drawable.normals != null) {
                             int locTileSizeX = loc.max_tile_x - loc.min_tile_x + 1;
@@ -1156,11 +1181,11 @@ public class Scene {
                     if (tile.draw_level > top_level || !visibility_map[x - eye_tile_x + 25][z - eye_tile_z + 25] && level_heightmaps[level][x][z] - eye_y < 2000) {
                         tile.visible = false;
                         tile.update = false;
-                        tile.check_loc_spans = 0;
+                        tile.check_entity_spans = 0;
                     } else {
                         tile.visible = true;
                         tile.update = true;
-                        tile.has_locs = tile.drawable_count > 0;
+                        tile.should_draw_entities = tile.entity_count > 0;
                         remaining_tiles++;
                     }
                 }
@@ -1326,11 +1351,11 @@ public class Scene {
 
             try_draw_wall(tile, tile_x, tile_z, tile_occlude_level);
 
-            if (try_draw_locs(tile, tile_x, tile_z, tile_occlude_level, tiles)) {
+            if (try_draw_entities(tile, tile_x, tile_z, tile_occlude_level, tiles)) {
                 continue;
             }
 
-            if (tile.update && tile.check_loc_spans == 0) {
+            if (tile.update && tile.check_entity_spans == 0) {
                 if (closer_tile_has_update(tile_x, tile_z, tiles)) {
                     continue;
                 }
@@ -1345,12 +1370,12 @@ public class Scene {
     }
 
     private void try_draw_wall(SceneTile tile, int tile_x, int tile_z, int tile_occlude_level) {
-        if (tile.check_loc_spans == 0) {
+        if (tile.check_entity_spans == 0) {
             return;
         }
 
-        for (int i = 0; i < tile.drawable_count; i++) {
-            if (!tile.drawables[i].drawn() && (tile.drawable_span[i] & tile.check_loc_spans) == tile.block_loc_spans) {
+        for (int i = 0; i < tile.entity_count; i++) {
+            if (!tile.entities[i].drawn() && (tile.entity_spans[i] & tile.check_entity_spans) == tile.block_entity_spans) {
                 return;
             }
         }
@@ -1361,7 +1386,7 @@ public class Scene {
             wall.drawable_a.draw(0, sin_eye_pitch, cos_eye_pitch, sin_eye_yaw, cos_eye_yaw, wall.x - eye_x, wall.y - eye_y, wall.z - eye_z, wall.bitset);
         }
 
-        tile.check_loc_spans = 0;
+        tile.check_entity_spans = 0;
     }
 
     private static void try_draw_item_stack(SceneTile tile) {
@@ -1461,19 +1486,19 @@ public class Scene {
         return false;
     }
 
-    private boolean try_draw_locs(SceneTile tile, int tile_x, int tile_z, int tile_occlude_level, SceneTile[][] tiles) {
-        if (!tile.has_locs) {
+    private boolean try_draw_entities(SceneTile tile, int tile_x, int tile_z, int tile_occlude_level, SceneTile[][] tiles) {
+        if (!tile.should_draw_entities) {
             return false;
         }
 
         try {
-            int count = tile.drawable_count;
-            tile.has_locs = false;
+            int count = tile.entity_count;
+            tile.should_draw_entities = false;
             int drawable_buffer_queued = 0;
 
             iterate_locs:
             for (int i = 0; i < count; i++) {
-                SceneDrawable loc = tile.drawables[i];
+                SceneEntity loc = tile.entities[i];
 
                 if (loc.drawn()) {
                     continue;
@@ -1484,7 +1509,7 @@ public class Scene {
                         SceneTile other = tiles[x][z];
 
                         if (!other.visible) {
-                            if (other.check_loc_spans == 0) {
+                            if (other.check_entity_spans == 0) {
                                 continue;
                             }
 
@@ -1506,12 +1531,12 @@ public class Scene {
                                 spans |= 0b0010;
                             }
 
-                            if ((spans & other.check_loc_spans) != tile.block_loc_spans_inverted) {
+                            if ((spans & other.check_entity_spans) != tile.block_entity_spans_inverted) {
                                 continue;
                             }
                         }
 
-                        tile.has_locs = true;
+                        tile.should_draw_entities = true;
                         continue iterate_locs;
                     }
                 }
@@ -1540,7 +1565,7 @@ public class Scene {
                 int farthest_index = -1;
 
                 for (int index = 0; index < drawable_buffer_queued; index++) {
-                    SceneDrawable loc = drawable_buffer[index];
+                    SceneEntity loc = drawable_buffer[index];
 
                     if (!loc.drawn()) {
                         if (loc.distance > farthest_distance) {
@@ -1563,7 +1588,7 @@ public class Scene {
                     break;
                 }
 
-                SceneDrawable farthest = drawable_buffer[farthest_index];
+                SceneEntity farthest = drawable_buffer[farthest_index];
                 farthest.draw_cycle = cycle;
 
                 if (area_visible(tile_occlude_level, farthest.min_tile_x, farthest.max_tile_x, farthest.min_tile_z, farthest.max_tile_z, farthest.drawable.min_y)) {
@@ -1574,7 +1599,7 @@ public class Scene {
                     for (int z = farthest.min_tile_z; z <= farthest.max_tile_z; z++) {
                         SceneTile occupied = tiles[x][z];
 
-                        if (occupied.check_loc_spans != 0) {
+                        if (occupied.check_entity_spans != 0) {
                             draw_tile_queue.push_back(occupied);
                         } else if ((x != tile_x || z != tile_z) && occupied.update) {
                             draw_tile_queue.push_back(occupied);
@@ -1583,18 +1608,18 @@ public class Scene {
                 }
             }
 
-            if (tile.has_locs) {
+            if (tile.should_draw_entities) {
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            tile.has_locs = false;
+            tile.should_draw_entities = false;
         }
         return false;
     }
 
     private static void enqueue_affected_tiles(SceneTile tile, int tile_x, int tile_z, SceneTile[][] tiles) {
-        int spans = tile.drawable_spans;
+        int spans = tile.entity_span;
 
         if (spans == 0) {
             return;
@@ -1690,28 +1715,28 @@ public class Scene {
         if ((wall.type_a & DIRECTION_ALLOW_WALL_CORNER_TYPE[direction]) != 0) {
             switch (wall.type_a) {
                 case 16 -> {
-                    tile.check_loc_spans = 0b0011;
-                    tile.block_loc_spans = WALL_CORNER_TYPE_16_BLOCK_LOC_SPANS[direction];
-                    tile.block_loc_spans_inverted = 0b0011 - tile.block_loc_spans;
+                    tile.check_entity_spans = 0b0011;
+                    tile.block_entity_spans = WALL_CORNER_TYPE_16_BLOCK_LOC_SPANS[direction];
+                    tile.block_entity_spans_inverted = 0b0011 - tile.block_entity_spans;
                 }
                 case 32 -> {
-                    tile.check_loc_spans = 0b0110;
-                    tile.block_loc_spans = WALL_CORNER_TYPE_32_BLOCK_LOC_SPANS[direction];
-                    tile.block_loc_spans_inverted = 0b0110 - tile.block_loc_spans;
+                    tile.check_entity_spans = 0b0110;
+                    tile.block_entity_spans = WALL_CORNER_TYPE_32_BLOCK_LOC_SPANS[direction];
+                    tile.block_entity_spans_inverted = 0b0110 - tile.block_entity_spans;
                 }
                 case 64 -> {
-                    tile.check_loc_spans = 0b1100;
-                    tile.block_loc_spans = WALL_CORNER_TYPE_64_BLOCK_LOC_SPANS[direction];
-                    tile.block_loc_spans_inverted = 0b1100 - tile.block_loc_spans;
+                    tile.check_entity_spans = 0b1100;
+                    tile.block_entity_spans = WALL_CORNER_TYPE_64_BLOCK_LOC_SPANS[direction];
+                    tile.block_entity_spans_inverted = 0b1100 - tile.block_entity_spans;
                 }
                 case 128 -> {
-                    tile.check_loc_spans = 0b1001;
-                    tile.block_loc_spans = WALL_CORNER_TYPE_128_BLOCK_LOC_SPANS[direction];
-                    tile.block_loc_spans_inverted = 0b1001 - tile.block_loc_spans;
+                    tile.check_entity_spans = 0b1001;
+                    tile.block_entity_spans = WALL_CORNER_TYPE_128_BLOCK_LOC_SPANS[direction];
+                    tile.block_entity_spans_inverted = 0b1001 - tile.block_entity_spans;
                 }
             }
         } else {
-            tile.check_loc_spans = 0;
+            tile.check_entity_spans = 0;
         }
     }
 
@@ -1727,7 +1752,7 @@ public class Scene {
         if (tile_x <= eye_tile_x && tile_x > min_draw_tile_x) {
             SceneTile adjacent = tiles[tile_x - 1][tile_z];
 
-            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.drawable_spans & 1) == 0)) {
+            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.entity_span & 1) == 0)) {
                 return true;
             }
         }
@@ -1735,7 +1760,7 @@ public class Scene {
         if (tile_x >= eye_tile_x && tile_x < max_draw_tile_x - 1) {
             SceneTile adjacent = tiles[tile_x + 1][tile_z];
 
-            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.drawable_spans & 4) == 0)) {
+            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.entity_span & 4) == 0)) {
                 return true;
             }
         }
@@ -1743,7 +1768,7 @@ public class Scene {
         if (tile_z <= eye_tile_z && tile_z > min_draw_tile_z) {
             SceneTile adjacent = tiles[tile_x][tile_z - 1];
 
-            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.drawable_spans & 8) == 0)) {
+            if (adjacent != null && adjacent.update && (adjacent.visible || (tile.entity_span & 8) == 0)) {
                 return true;
             }
         }
@@ -1751,7 +1776,7 @@ public class Scene {
         if (tile_z >= eye_tile_z && tile_z < max_draw_tile_z - 1) {
             SceneTile other = tiles[tile_x][tile_z + 1];
 
-            return other != null && other.update && (other.visible || (tile.drawable_spans & 2) == 0);
+            return other != null && other.update && (other.visible || (tile.entity_span & 2) == 0);
         }
         return false;
     }
@@ -1848,8 +1873,8 @@ public class Scene {
             wall.drawable_a.draw(0, sin_eye_pitch, cos_eye_pitch, sin_eye_yaw, cos_eye_yaw, wall.x - eye_x, wall.y - eye_y, wall.z - eye_z, wall.bitset);
         }
 
-        for (int i = 0; i < bridge.drawable_count; i++) {
-            SceneDrawable loc = bridge.drawables[i];
+        for (int i = 0; i < bridge.entity_count; i++) {
+            SceneEntity loc = bridge.entities[i];
 
             if (loc != null) {
                 loc.drawable.draw(loc.yaw, sin_eye_pitch, cos_eye_pitch, sin_eye_yaw, cos_eye_yaw, loc.x - eye_x, loc.y - eye_y, loc.z - eye_z, loc.bitset);

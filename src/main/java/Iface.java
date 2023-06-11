@@ -383,7 +383,7 @@ public class Iface {
         } else if (category == MODEL_TYPE_NPC) {
             model = NPC.get(id).get_chat_model();
         } else if (category == MODEL_TYPE_PLAYER) {
-            model = Game.localPlayer.getHeadModel();
+            model = Game.local_player.getHeadModel();
         } else if (category == MODEL_TYPE_OBJ) {
             model = Item.get(id).getInterfaceModel(50);
         }

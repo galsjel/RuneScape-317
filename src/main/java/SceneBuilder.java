@@ -295,7 +295,7 @@ public class SceneBuilder {
 
     private static void add_wall_decoration_offset(Scene scene, int rotation, int z, int x, int locID, int level, int heightSW, int heightSE, int heightNE, int heightNW, int y, Obj loc, int bitset, byte info) {
         int offset = 16;
-        int wall_bitset = scene.wall_bitset_at(level, x, z);
+        int wall_bitset = scene.wall_uid_at(level, x, z);
 
         if (wall_bitset > 0) {
             offset = Obj.get((wall_bitset >> 14) & 0x7fff).wall_offset;

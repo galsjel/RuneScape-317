@@ -4,14 +4,14 @@
 
 public class SceneTemporaryObject extends DoublyLinkedList.Node {
 
-    public int id;
     public int rotation;
+    public int id;
     public int kind;
     public int duration;
     public int level;
-    public int classID;
-    public int localX;
-    public int localZ;
+    public int category;
+    public int tile_x;
+    public int tile_z;
     public int previousLocID;
     public int previousRotation;
     public int previousKind;

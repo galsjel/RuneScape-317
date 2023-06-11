@@ -10,8 +10,8 @@ public class SceneTile extends DoublyLinkedList.Node {
      * Which level to sample when testing against this tile for occlusion.
      */
     public final int occlude_level;
-    public final SceneDrawable[] drawables = new SceneDrawable[5];
-    public final int[] drawable_span = new int[5];
+    public final SceneEntity[] entities = new SceneEntity[5];
+    public final int[] entity_spans = new int[5];
     public int level;
     public SceneTileUnderlay underlay;
     public SceneTileOverlay overlay;
@@ -19,7 +19,7 @@ public class SceneTile extends DoublyLinkedList.Node {
     public SceneWallDecoration wall_decoration;
     public SceneGroundDecoration ground_decoration;
     public SceneItemStack item_stack;
-    public int drawable_count;
+    public int entity_count;
     /**
      * When larger than 1x1 locs reside on a tile, we have to know which part of it might be on this tile to properly
      * cull it.
@@ -29,7 +29,7 @@ public class SceneTile extends DoublyLinkedList.Node {
      * 0b0100 = x < loc.maxSceneTileX
      * 0b1000 = z > loc.minSceneTileZ
      */
-    public int drawable_spans;
+    public int entity_span;
     /**
      * Used as a short circuit to prevent drawing tiles above the top level. Mostly applies to lowmem.
      *
@@ -38,10 +38,10 @@ public class SceneTile extends DoublyLinkedList.Node {
     public int draw_level;
     public boolean visible;
     public boolean update;
-    public boolean has_locs;
-    public int check_loc_spans;
-    public int block_loc_spans;
-    public int block_loc_spans_inverted;
+    public boolean should_draw_entities;
+    public int check_entity_spans;
+    public int block_entity_spans;
+    public int block_entity_spans_inverted;
     public int back_wall_types;
     public SceneTile bridge;
 

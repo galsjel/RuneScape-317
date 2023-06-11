@@ -77,7 +77,7 @@ public class ScenePlayer extends SceneCharacter {
                 spotModel2.build(64 + spot.lightAmbient, 850 + spot.lightContrast, -30, -50, -30, true);
                 model = Model.join_lit(2, -819, new Model[]{model, spotModel2});
 
-                if (this == Game.localPlayer && spotanimFrame > max_animated_frame) {
+                if (this == Game.local_player && spotanimFrame > max_animated_frame) {
                     System.out.println("spotanimFrame = " + spotanimFrame + ", offset: " + -super.spotanimOffset);
                     System.out.println("primarySeqFrame = " + primarySeqFrame);
 
@@ -298,12 +298,12 @@ public class ScenePlayer extends SceneCharacter {
                 secondaryTransformID = Animation.instances[super.secondarySeqID].primary_transforms[super.secondarySeqFrame];
             }
 
-            if (type.rightHandOverride >= 0) {
+            if (type.rightHandOverride != null && type.rightHandOverride >= 0) {
                 rightHandValue = type.rightHandOverride;
                 hashCode += ((long) rightHandValue - appearances[5]) << 8;
             }
 
-            if (type.leftHandOverride >= 0) {
+            if (type.leftHandOverride != null && type.leftHandOverride >= 0) {
                 leftHandValue = type.leftHandOverride;
                 hashCode += ((long) leftHandValue - appearances[3]) << 16;
             }
