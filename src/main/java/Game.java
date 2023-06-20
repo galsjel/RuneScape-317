@@ -189,7 +189,7 @@ public class Game extends GameShell {
     public final String[] playerOptions = new String[5];
     public final boolean[] playerOptionPushDown = new boolean[5];
     public final int[][][] levelChunkBitset = new int[4][13][13];
-    public final int[] tabInterfaceID = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    public final int[] sidebar_tab_interface = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
     public final int[] cameraModifierWobbleScale = new int[5];
     public final int[] waveIDs = new int[50];
     public final Image8[] imageModIcons = new Image8[2];
@@ -222,7 +222,7 @@ public class Game extends GameShell {
      * @see #addMessage(int, String, String)
      */
     public String modalMessage;
-    public int privateChatSetting;
+    public int private_chat_setting;
     public Buffer login = new Buffer(1024);
     public boolean waveEnabled = true;
     public int[] flameGradient;
@@ -357,7 +357,7 @@ public class Game extends GameShell {
     public int scene_status;
     public Image8 imageScrollbar0;
     public Image8 imageScrollbar1;
-    public int viewportHoveredInterfaceID;
+    public int hovered_viewport_interface;
     public Image8 imageBackbase1;
     public Image8 imageBackbase2;
     public Image8 imageBackhmid1;
@@ -368,7 +368,7 @@ public class Game extends GameShell {
     public int scenePrevBaseTileX;
     public int scenePrevBaseTileZ;
     public int loginAttempts;
-    public int chatHoveredInterfaceID;
+    public int hovered_chat_interface;
     public int flameGradientCycle0;
     public int flameGradientCycle1;
     /**
@@ -377,7 +377,7 @@ public class Game extends GameShell {
     public int chat_interface_sticky = -1;
     public int isMember;
     public boolean designGenderMale = true;
-    public int sidebarHoveredInterfaceID;
+    public int hovered_sidebar_interface;
     public String lastProgressMessage;
     public FileArchive archiveTitle;
     public int flashingTab = -1;
@@ -481,7 +481,7 @@ public class Game extends GameShell {
     public Image24[] imageCrosses = new Image24[8];
     public boolean midiEnabled = true;
     public Image8[] imageRunes;
-    public boolean redrawSidebar = false;
+    public boolean redraw_sidebar = false;
     public int unreadMessages;
     public boolean ingame = false;
     public boolean reportAbuseMuteOption = false;
@@ -592,7 +592,7 @@ public class Game extends GameShell {
     public int song;
     public boolean songFading = true;
     public CollisionMap[] level_collisions = new CollisionMap[4];
-    public boolean redrawPrivacySettings = false;
+    public boolean redraw_chat_filter = false;
     public int[] sceneMapIndex;
     public int[] sceneMapLandFile;
     public int[] sceneMapLocFile;
@@ -604,7 +604,7 @@ public class Game extends GameShell {
     public int actionSlot;
     public int actionArea;
     public byte[][] sceneMapLocData;
-    public int tradeChatSetting;
+    public int trade_chat_setting;
     public int chatEffects;
     /**
      * No effect when set to <code>0</code>, otherwise block chats.
@@ -647,7 +647,7 @@ public class Game extends GameShell {
     public int selectedObjInterfaceID;
     public int selectedObjID;
     public String selectedObjName;
-    public int publicChatSetting;
+    public int public_chat_setting;
     public int lastWaveLoops = -1;
 
     public Game() {
@@ -1216,6 +1216,14 @@ public class Game extends GameShell {
             drawProgress(95, "Unpacking interfaces");
             Iface.unpack(archiveInterface, new BitmapFont[]{fontPlain11, fontPlain12, fontBold12, fontQuill8}, archiveMedia);
 
+            try {
+                Gson exposed = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
+
+                Files.writeString(Paths.get("out/interfaces.json"), exposed.toJson(Iface.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             drawProgress(100, "Preparing game engine");
 
             for (int y = 0; y < 33; y++) {
@@ -1665,7 +1673,7 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if (((type == 1) || (type == 2)) && ((type == 1) || (publicChatSetting == 0) || ((publicChatSetting == 1) && isFriend(sender)))) {
+            if (((type == 1) || (type == 2)) && ((type == 1) || (public_chat_setting == 0) || ((public_chat_setting == 1) && isFriend(sender)))) {
                 if ((y > 0) && (y < 110)) {
                     int x = 4;
 
@@ -1687,7 +1695,7 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if (((type == 3) || (type == 7)) && (splitPrivateChat == 0) && ((type == 7) || (privateChatSetting == 0) || ((privateChatSetting == 1) && isFriend(sender)))) {
+            if (((type == 3) || (type == 7)) && (splitPrivateChat == 0) && ((type == 7) || (private_chat_setting == 0) || ((private_chat_setting == 1) && isFriend(sender)))) {
                 if ((y > 0) && (y < 110)) {
                     int x = 4;
 
@@ -1712,21 +1720,21 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if ((type == 4) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(sender)))) {
+            if ((type == 4) && ((trade_chat_setting == 0) || ((trade_chat_setting == 1) && isFriend(sender)))) {
                 if ((y > 0) && (y < 110)) {
                     font.drawString(sender + " " + message_text[i], 4, y, 0x800080);
                 }
                 line++;
             }
 
-            if ((type == 5) && (splitPrivateChat == 0) && (privateChatSetting < 2)) {
+            if ((type == 5) && (splitPrivateChat == 0) && (private_chat_setting < 2)) {
                 if ((y > 0) && (y < 110)) {
                     font.drawString(message_text[i], 4, y, 0x800000);
                 }
                 line++;
             }
 
-            if ((type == 6) && (splitPrivateChat == 0) && (privateChatSetting < 2)) {
+            if ((type == 6) && (splitPrivateChat == 0) && (private_chat_setting < 2)) {
                 if ((y > 0) && (y < 110)) {
                     font.drawString("To " + sender + ":", 4, y, 0);
                     font.drawString(message_text[i], 12 + font.stringWidthTaggable("To " + sender), y, 0x800000);
@@ -1734,7 +1742,7 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if ((type == 8) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(sender)))) {
+            if ((type == 8) && ((trade_chat_setting == 0) || ((trade_chat_setting == 1) && isFriend(sender)))) {
                 if ((y > 0) && (y < 110)) {
                     font.drawString(sender + " " + message_text[i], 4, y, 0x7e3200);
                 }
@@ -1804,7 +1812,7 @@ public class Game extends GameShell {
                         int interfaceID = menuParamB[menu_size - 1];
                         Iface iface = Iface.instances[interfaceID];
 
-                        if (iface.inventoryDraggable || iface.inventoryMoveReplaces) {
+                        if (iface.inv_draggable || iface.inv_move_replaces) {
                             objGrabThreshold = false;
                             objDragCycles = 0;
                             objDragInterfaceID = interfaceID;
@@ -1812,10 +1820,10 @@ public class Game extends GameShell {
                             objDragArea = 2;
                             objGrabX = super.mouseClickX;
                             objGrabY = super.mouseClickY;
-                            if (Iface.instances[interfaceID].parentID == viewport_interface) {
+                            if (Iface.instances[interfaceID].parent == viewport_interface) {
                                 objDragArea = 1;
                             }
-                            if (Iface.instances[interfaceID].parentID == chat_interface) {
+                            if (Iface.instances[interfaceID].parent == chat_interface) {
                                 objDragArea = 3;
                             }
                             return;
@@ -1858,7 +1866,7 @@ public class Game extends GameShell {
             if ((mouseX < (menuX - 10)) || (mouseX > (menuX + menuWidth + 10)) || (mouseY < (menuY - 10)) || (mouseY > (menuY + menuHeight + 10))) {
                 menu_visible = false;
                 if (menuArea == 1) {
-                    redrawSidebar = true;
+                    redraw_sidebar = true;
                 }
                 if (menuArea == 2) {
                     redraw_chatback = true;
@@ -1900,7 +1908,7 @@ public class Game extends GameShell {
             menu_visible = false;
 
             if (menuArea == 1) {
-                redrawSidebar = true;
+                redraw_sidebar = true;
             } else if (menuArea == 2) {
                 redraw_chatback = true;
             }
@@ -2276,7 +2284,7 @@ public class Game extends GameShell {
         int mx = super.mouseX;
         int my = super.mouseY;
 
-        if ((parent.type != Iface.TYPE_PARENT) || (parent.childID == null) || parent.hide) {
+        if ((parent._type != Iface.TYPE_LAYER) || (parent.child_id == null) || Boolean.TRUE.equals(parent.hide)) {
             return;
         }
 
@@ -2284,31 +2292,31 @@ public class Game extends GameShell {
             return;
         }
 
-        int childCount = parent.childID.length;
+        int childCount = parent.child_id.length;
 
         for (int i = 0; i < childCount; i++) {
-            int childX = parent.childX[i] + x;
-            int childZ = (parent.childY[i] + y) - scrollPosition;
-            Iface child = Iface.instances[parent.childID[i]];
+            int childX = parent.child_x[i] + x;
+            int childZ = (parent.child_y[i] + y) - scrollPosition;
+            Iface child = Iface.instances[parent.child_id[i]];
 
-            childX += child.x;
-            childZ += child.y;
+            childX += child.offset_x;
+            childZ += child.offset_y;
 
-            if (((child.delegateHover >= 0) || (child.hoverColor != 0)) && (mx >= childX) && (my >= childZ) && (mx < (childX + child.width)) && (my < (childZ + child.height))) {
-                if (child.delegateHover >= 0) {
-                    lastHoveredInterfaceID = child.delegateHover;
+            if (((child.hover_delegate != null) || (child.hover_color != null)) && (mx >= childX) && (my >= childZ) && (mx < (childX + child.width)) && (my < (childZ + child.height))) {
+                if (child.hover_delegate != null) {
+                    lastHoveredInterfaceID = child.hover_delegate;
                 } else {
                     lastHoveredInterfaceID = child.id;
                 }
             }
 
-            if (child.type == Iface.TYPE_PARENT) {
-                handleInterfaceInput(child, childX, childZ, child.scrollPosition);
+            if (child._type == Iface.TYPE_LAYER) {
+                handleInterfaceInput(child, childX, childZ, child.scroll_pos);
 
-                if (child.scrollableHeight > child.height) {
-                    handleScrollInput(childX + child.width, child.height, mx, my, child, childZ, true, child.scrollableHeight);
+                if (child.scroll_height > child.height) {
+                    handleScrollInput(childX + child.width, child.height, mx, my, child, childZ, true, child.scroll_height);
                 }
-            } else if (child.type == Iface.TYPE_INVENTORY) {
+            } else if (child._type == Iface.TYPE_INVENTORY) {
                 handleInterfaceInventoryInput(childX, childZ, child);
             } else if ((mx >= childX) && (my >= childZ) && (mx < (childX + child.width)) && (my < (childZ + child.height))) {
                 handleInterfaceOptionInput(child);
@@ -2317,31 +2325,31 @@ public class Game extends GameShell {
     }
 
     private void handleInterfaceOptionInput(Iface child) {
-        if (child.optionType == Iface.OPTION_TYPE_STANDARD) {
+        if (child._option_type == Iface.OPTION_TYPE_OK) {
             boolean override = false;
 
-            if (child.contentType != 0) {
+            if (child.content_type != null) {
                 override = handleSocialMenuOption(child);
             }
 
             if (!override) {
                 addMenuOption(child.option, 315, 0, child.id, 0);
             }
-        } else if (child.optionType == Iface.OPTION_TYPE_SPELL) {
+        } else if (child._option_type == Iface.OPTION_TYPE_SPELL) {
             if (spell_selected == 0) {
-                String prefix = child.spellAction;
+                String prefix = child.spell_action;
                 if (prefix.contains(" ")) {
                     prefix = prefix.substring(0, prefix.indexOf(" "));
                 }
-                addMenuOption(prefix + " @gre@" + child.spellName, 626, 0, child.id, 0);
+                addMenuOption(prefix + " @gre@" + child.spell_name, 626, 0, child.id, 0);
             }
-        } else if (child.optionType == Iface.OPTION_TYPE_CLOSE) {
+        } else if (child._option_type == Iface.OPTION_TYPE_CLOSE) {
             addMenuOption("Close", 200, 0, child.id, 0);
-        } else if (child.optionType == Iface.OPTION_TYPE_TOGGLE) {
+        } else if (child._option_type == Iface.OPTION_TYPE_TOGGLE) {
             addMenuOption(child.option, 169, 0, child.id, 0);
-        } else if (child.optionType == Iface.OPTION_TYPE_SELECT) {
+        } else if (child._option_type == Iface.OPTION_TYPE_SELECT) {
             addMenuOption(child.option, 646, 0, child.id, 0);
-        } else if (child.optionType == Iface.OPTION_TYPE_CONTINUE) {
+        } else if (child._option_type == Iface.OPTION_TYPE_CONTINUE) {
             if (!input_continue) {
                 addMenuOption(child.option, 679, 0, child.id, 0);
             }
@@ -2353,12 +2361,12 @@ public class Game extends GameShell {
 
         for (int row = 0; row < iface.height; row++) {
             for (int col = 0; col < iface.width; col++) {
-                int slotX = x + (col * (32 + iface.inventoryMarginX));
-                int slotY = y + (row * (32 + iface.inventoryMarginY));
+                int slotX = x + (col * (32 + iface.inv_margin_x));
+                int slotY = y + (row * (32 + iface.inv_margin_y));
 
                 if (slot < 20) {
-                    slotX += iface.inventorySlotOffsetX[slot];
-                    slotY += iface.inventorySlotOffsetY[slot];
+                    slotX += iface.inv_slot_offset_x[slot];
+                    slotY += iface.inv_slot_offset_y[slot];
                 }
 
                 if ((super.mouseX < slotX) || (super.mouseY < slotY) || (super.mouseX >= (slotX + 32)) || (super.mouseY >= (slotY + 32))) {
@@ -2369,23 +2377,23 @@ public class Game extends GameShell {
                 hoveredSlot = slot;
                 hoveredSlotParentID = iface.id;
 
-                if (iface.inventorySlotObjID[slot] <= 0) {
+                if (iface.inv_slot_item_id[slot] <= 0) {
                     slot++;
                     continue;
                 }
 
-                Item obj = Item.get(iface.inventorySlotObjID[slot] - 1);
+                Item obj = Item.get(iface.inv_slot_item_id[slot] - 1);
 
-                if ((item_selected == 1) && iface.inventoryInteractable) {
+                if ((item_selected == 1) && iface.inv_interactable) {
                     if ((iface.id != selectedObjInterfaceID) || (slot != selectedObjSlot)) {
                         addMenuOption("Use " + selectedObjName + " with @lre@" + obj.name, 870, slot, iface.id, obj.id);
                     }
-                } else if ((spell_selected == 1) && iface.inventoryInteractable) {
+                } else if ((spell_selected == 1) && iface.inv_interactable) {
                     if ((activeSpellFlags & 0x10) == 0x10) {
                         addMenuOption(spellCaption + " @lre@" + obj.name, 543, slot, iface.id, obj.id);
                     }
                 } else {
-                    if (iface.inventoryInteractable) {
+                    if (iface.inv_interactable) {
                         for (int op = 4; op >= 3; op--) {
                             if ((obj.inventoryOptions != null) && (obj.inventoryOptions[op] != null)) {
                                 addMenuOption(obj.inventoryOptions[op] + " @lre@" + obj.name, OBJ_IOP_ACTION[op], slot, iface.id, obj.id);
@@ -2395,11 +2403,11 @@ public class Game extends GameShell {
                         }
                     }
 
-                    if (iface.inventoryUsable) {
+                    if (iface.inv_usable) {
                         addMenuOption("Use @lre@" + obj.name, 447, slot, iface.id, obj.id);
                     }
 
-                    if (iface.inventoryInteractable && (obj.inventoryOptions != null)) {
+                    if (iface.inv_interactable && (obj.inventoryOptions != null)) {
                         for (int op = 2; op >= 0; op--) {
                             if (obj.inventoryOptions[op] != null) {
                                 addMenuOption(obj.inventoryOptions[op] + " @lre@" + obj.name, OBJ_IOP_ACTION[op], slot, iface.id, obj.id);
@@ -2407,10 +2415,10 @@ public class Game extends GameShell {
                         }
                     }
 
-                    if (iface.inventoryOptions != null) {
+                    if (iface.inv_options != null) {
                         for (int op = 4; op >= 0; op--) {
-                            if (iface.inventoryOptions[op] != null) {
-                                addMenuOption(iface.inventoryOptions[op] + " @lre@" + obj.name, INV_OP_ACTION[op], slot, iface.id, obj.id);
+                            if (iface.inv_options[op] != null) {
+                                addMenuOption(iface.inv_options[op] + " @lre@" + obj.name, INV_OP_ACTION[op], slot, iface.id, obj.id);
                             }
                         }
                     }
@@ -2488,31 +2496,31 @@ public class Game extends GameShell {
     public void handleChatSettingsInput() {
         if (super.mouseClickButton == 1) {
             if ((super.mouseClickX >= 6) && (super.mouseClickX <= 106) && (super.mouseClickY >= 467) && (super.mouseClickY <= 499)) {
-                publicChatSetting = (publicChatSetting + 1) % 4;
-                redrawPrivacySettings = true;
+                public_chat_setting = (public_chat_setting + 1) % 4;
+                redraw_chat_filter = true;
                 redraw_chatback = true;
                 out.writeOp(95);
-                out.write8(publicChatSetting);
-                out.write8(privateChatSetting);
-                out.write8(tradeChatSetting);
+                out.write8(public_chat_setting);
+                out.write8(private_chat_setting);
+                out.write8(trade_chat_setting);
             }
             if ((super.mouseClickX >= 135) && (super.mouseClickX <= 235) && (super.mouseClickY >= 467) && (super.mouseClickY <= 499)) {
-                privateChatSetting = (privateChatSetting + 1) % 3;
-                redrawPrivacySettings = true;
+                private_chat_setting = (private_chat_setting + 1) % 3;
+                redraw_chat_filter = true;
                 redraw_chatback = true;
                 out.writeOp(95);
-                out.write8(publicChatSetting);
-                out.write8(privateChatSetting);
-                out.write8(tradeChatSetting);
+                out.write8(public_chat_setting);
+                out.write8(private_chat_setting);
+                out.write8(trade_chat_setting);
             }
             if ((super.mouseClickX >= 273) && (super.mouseClickX <= 373) && (super.mouseClickY >= 467) && (super.mouseClickY <= 499)) {
-                tradeChatSetting = (tradeChatSetting + 1) % 3;
-                redrawPrivacySettings = true;
+                trade_chat_setting = (trade_chat_setting + 1) % 3;
+                redraw_chat_filter = true;
                 redraw_chatback = true;
                 out.writeOp(95);
-                out.write8(publicChatSetting);
-                out.write8(privateChatSetting);
-                out.write8(tradeChatSetting);
+                out.write8(public_chat_setting);
+                out.write8(private_chat_setting);
+                out.write8(trade_chat_setting);
             }
             if ((super.mouseClickX >= 412) && (super.mouseClickX <= 512) && (super.mouseClickY >= 467) && (super.mouseClickY <= 499)) {
                 useReportAbuseOption("");
@@ -2699,7 +2707,7 @@ public class Game extends GameShell {
                 }
             }
 
-            if ((entity.chat != null) && ((index >= scene_player_count) || (publicChatSetting == 0) || (publicChatSetting == 3) || ((publicChatSetting == 1) && isFriend(((ScenePlayer) entity).name)))) {
+            if ((entity.chat != null) && ((index >= scene_player_count) || (public_chat_setting == 0) || (public_chat_setting == 3) || ((public_chat_setting == 1) && isFriend(((ScenePlayer) entity).name)))) {
                 projectFromGround(entity, entity.height);
 
                 if ((projectX > -1) && (chatCount < MAX_CHATS)) {
@@ -2912,7 +2920,7 @@ public class Game extends GameShell {
                 continue;
             }
             friend_count--;
-            redrawSidebar = true;
+            redraw_sidebar = true;
             for (int j = i; j < friend_count; j++) {
                 friendName[j] = friendName[j + 1];
                 friendWorld[j] = friendWorld[j + 1];
@@ -2931,8 +2939,8 @@ public class Game extends GameShell {
 
         if (sidebar_interface != -1) {
             drawParentInterface(Iface.instances[sidebar_interface], 0, 0, 0);
-        } else if (tabInterfaceID[input_tab] != -1) {
-            drawParentInterface(Iface.instances[tabInterfaceID[input_tab]], 0, 0, 0);
+        } else if (sidebar_tab_interface[input_tab] != -1) {
+            drawParentInterface(Iface.instances[sidebar_tab_interface[input_tab]], 0, 0, 0);
         }
 
         if (menu_visible && (menuArea == 1)) {
@@ -3198,7 +3206,7 @@ public class Game extends GameShell {
             friendName37[friend_count] = name37;
             friendWorld[friend_count] = 0;
             friend_count++;
-            redrawSidebar = true;
+            redraw_sidebar = true;
             out.writeOp(188);
             out.write64(name37);
         }
@@ -3367,7 +3375,11 @@ public class Game extends GameShell {
      * @return <code>false</code> to suppress packet 185.
      */
     public boolean handleInterfaceAction(Iface iface) {
-        int type = iface.contentType;
+        if (iface.content_type == null) {
+            return false;
+        }
+
+        int type = iface.content_type;
 
         if (friends_status == 2) {
             if (type == 201) {
@@ -4095,7 +4107,7 @@ public class Game extends GameShell {
                 Model.unpack(request.data, request.file);
 
                 if ((ondemand.getModelFlags(request.file) & 0x62) != 0) {
-                    redrawSidebar = true;
+                    redraw_sidebar = true;
                     if (chat_interface != -1) {
                         redraw_chatback = true;
                     }
@@ -4218,19 +4230,19 @@ public class Game extends GameShell {
     public void resetInterfaceAnimation(int interfaceID) {
         Iface iface = Iface.instances[interfaceID];
 
-        for (int i = 0; i < iface.childID.length; i++) {
-            if (iface.childID[i] == -1) {
+        for (int i = 0; i < iface.child_id.length; i++) {
+            if (iface.child_id[i] == -1) {
                 break;
             }
 
-            Iface child = Iface.instances[iface.childID[i]];
+            Iface child = Iface.instances[iface.child_id[i]];
 
-            if (child.type == Iface.TYPE_UNUSED) {
+            if (child._type == Iface.TYPE_UNUSED) {
                 resetInterfaceAnimation(child.id);
             }
 
-            child.seqFrame = 0;
-            child.seqCycle = 0;
+            child.animation_frame = 0;
+            child.animation_cycle = 0;
         }
     }
 
@@ -4288,7 +4300,7 @@ public class Game extends GameShell {
             actionCycles++;
             if (actionCycles >= 15) {
                 if (actionArea == 2) {
-                    redrawSidebar = true;
+                    redraw_sidebar = true;
                 }
                 if (actionArea == 3) {
                     redraw_chatback = true;
@@ -4387,7 +4399,7 @@ public class Game extends GameShell {
         }
 
         if (objDragArea == 2) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
 
         if (objDragArea == 3) {
@@ -4408,21 +4420,21 @@ public class Game extends GameShell {
                 // mode 1 = insert
                 int mode = 0;
 
-                if ((bankArrangeMode == 1) && (iface.contentType == 206)) {
+                if ((bankArrangeMode == 1) && (iface.content_type == 206)) {
                     mode = 1;
                 }
 
-                if (iface.inventorySlotObjID[hoveredSlot] <= 0) {
+                if (iface.inv_slot_item_id[hoveredSlot] <= 0) {
                     mode = 0;
                 }
 
-                if (iface.inventoryMoveReplaces) {
+                if (iface.inv_move_replaces) {
                     int src = objDragSlot;
                     int dst = hoveredSlot;
-                    iface.inventorySlotObjID[dst] = iface.inventorySlotObjID[src];
-                    iface.inventorySlotObjCount[dst] = iface.inventorySlotObjCount[src];
-                    iface.inventorySlotObjID[src] = -1;
-                    iface.inventorySlotObjCount[src] = 0;
+                    iface.inv_slot_item_id[dst] = iface.inv_slot_item_id[src];
+                    iface.inv_slot_item_count[dst] = iface.inv_slot_item_count[src];
+                    iface.inv_slot_item_id[src] = -1;
+                    iface.inv_slot_item_count[src] = 0;
                 } else if (mode == 1) {
                     int src = objDragSlot;
                     for (int dst = hoveredSlot; src != dst; ) {
@@ -4662,14 +4674,14 @@ public class Game extends GameShell {
         scrollGrabbed = false;
 
         if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= top) && (mouseY < (top + 16))) {
-            iface.scrollPosition -= dragCycles * 4;
+            iface.scroll_pos -= dragCycles * 4;
             if (redraw) {
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
         } else if ((mouseX >= left) && (mouseX < (left + 16)) && (mouseY >= ((top + height) - 16)) && (mouseY < (top + height))) {
-            iface.scrollPosition += dragCycles * 4;
+            iface.scroll_pos += dragCycles * 4;
             if (redraw) {
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
         } else if ((mouseX >= (left - scrollInputPadding)) && (mouseX < (left + 16 + scrollInputPadding)) && (mouseY >= (top + 16)) && (mouseY < ((top + height) - 16)) && (dragCycles > 0)) {
             int gripSize = ((height - 32) * height) / scrollableHeight;
@@ -4678,9 +4690,9 @@ public class Game extends GameShell {
             }
             int gripY = mouseY - top - 16 - (gripSize / 2);
             int maxY = height - 32 - gripSize;
-            iface.scrollPosition = ((scrollableHeight - height) * gripY) / maxY;
+            iface.scroll_pos = ((scrollableHeight - height) * gripY) / maxY;
             if (redraw) {
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
             scrollGrabbed = true;
         }
@@ -5125,7 +5137,7 @@ public class Game extends GameShell {
 
         item_selected = 0;
         spell_selected = 0;
-        redrawSidebar = true;
+        redraw_sidebar = true;
     }
 
     private void useGroundObjOption2(int tileX, int tileZ, int objID) {
@@ -5180,10 +5192,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5191,7 +5203,7 @@ public class Game extends GameShell {
     private void useButton(int b) {
         Iface iface = Iface.instances[b];
         boolean notify = true;
-        if (iface.contentType > 0) {
+        if (iface.content_type != null) {
             notify = handleInterfaceAction(iface);
         }
         if (notify) {
@@ -5267,10 +5279,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5284,10 +5296,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = a;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5301,10 +5313,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5353,10 +5365,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5370,10 +5382,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5382,26 +5394,26 @@ public class Game extends GameShell {
         Iface iface = Iface.instances[interfaceID];
         spell_selected = 1;
         activeSpellID = interfaceID;
-        activeSpellFlags = iface.spellFlags;
+        activeSpellFlags = iface._spell_targets;
         item_selected = 0;
-        redrawSidebar = true;
+        redraw_sidebar = true;
 
-        String prefix = iface.spellAction;
+        String prefix = iface.spell_action;
 
         if (prefix.contains(" ")) {
             prefix = prefix.substring(0, prefix.indexOf(" "));
         }
 
-        String suffix = iface.spellAction;
+        String suffix = iface.spell_action;
 
         if (suffix.contains(" ")) {
             suffix = suffix.substring(suffix.indexOf(" ") + 1);
         }
 
-        spellCaption = prefix + " " + iface.spellName + " " + suffix;
+        spellCaption = prefix + " " + iface.spell_name + " " + suffix;
 
         if (activeSpellFlags == 0x10) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
             input_tab = 3;
             redrawSideicons = true;
         }
@@ -5416,10 +5428,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5462,10 +5474,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5479,10 +5491,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5522,12 +5534,12 @@ public class Game extends GameShell {
         out.writeOp(185);
         out.write16(interfaceID);
         Iface iface = Iface.instances[interfaceID];
-        if ((iface.scripts != null) && (iface.scripts[0][0] == 5)) {
-            int varpID = iface.scripts[0][1];
-            if (varps[varpID] != iface.scriptOperand[0]) {
-                varps[varpID] = iface.scriptOperand[0];
+        if ((iface._script_code != null) && (iface._script_code[0][0] == 5)) {
+            int varpID = iface._script_code[0][1];
+            if (varps[varpID] != iface._script_operand[0]) {
+                varps[varpID] = iface._script_operand[0];
                 updateVarp(varpID);
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
         }
     }
@@ -5698,10 +5710,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5716,10 +5728,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5730,10 +5742,10 @@ public class Game extends GameShell {
             reportAbuseInput = input;
             reportAbuseMuteOption = false;
             for (int i = 0; i < Iface.instances.length; i++) {
-                if ((Iface.instances[i] == null) || (Iface.instances[i].contentType != 327)) {
+                if ((Iface.instances[i] == null) || (Iface.instances[i].content_type != 327)) {
                     continue;
                 }
-                reportAbuseInterfaceID = viewport_interface = Iface.instances[i].parentID;
+                reportAbuseInterfaceID = viewport_interface = Iface.instances[i].parent;
                 break;
             }
         } else {
@@ -5788,10 +5800,10 @@ public class Game extends GameShell {
         actionInterfaceID = interfaceID;
         actionSlot = slot;
         actionArea = 2;
-        if (Iface.instances[interfaceID].parentID == viewport_interface) {
+        if (Iface.instances[interfaceID].parent == viewport_interface) {
             actionArea = 1;
         }
-        if (Iface.instances[interfaceID].parentID == chat_interface) {
+        if (Iface.instances[interfaceID].parent == chat_interface) {
             actionArea = 3;
         }
     }
@@ -5838,8 +5850,8 @@ public class Game extends GameShell {
         Item type = Item.get(objID);
         Iface iface = Iface.instances[interfaceID];
         String message;
-        if ((iface != null) && (iface.inventorySlotObjCount[slot] >= 0x186a0)) {
-            message = iface.inventorySlotObjCount[slot] + " x " + type.name;
+        if ((iface != null) && (iface.inv_slot_item_count[slot] >= 0x186a0)) {
+            message = iface.inv_slot_item_count[slot] + " x " + type.name;
         } else if (type.examine != null) {
             message = type.examine;
         } else {
@@ -5853,11 +5865,11 @@ public class Game extends GameShell {
         out.write16(interfaceID);
         Iface iface = Iface.instances[interfaceID];
 
-        if ((iface.scripts != null) && (iface.scripts[0][0] == 5)) {
-            int varpID = iface.scripts[0][1];
+        if ((iface._script_code != null) && (iface._script_code[0][0] == 5)) {
+            int varpID = iface._script_code[0][1];
             varps[varpID] = 1 - varps[varpID];
             updateVarp(varpID);
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
     }
 
@@ -5868,7 +5880,7 @@ public class Game extends GameShell {
         selectedObjID = objID;
         selectedObjName = Item.get(objID).name;
         spell_selected = 0;
-        redrawSidebar = true;
+        redraw_sidebar = true;
     }
 
     private void examineLoc(int bitset) {
@@ -6246,13 +6258,13 @@ public class Game extends GameShell {
                 out.writeString(chatTyped);
                 out.writeSize(out.position - start);
 
-                if (publicChatSetting == 2) {
-                    publicChatSetting = 3;
-                    redrawPrivacySettings = true;
+                if (public_chat_setting == 2) {
+                    public_chat_setting = 3;
+                    redraw_chat_filter = true;
                     out.writeOp(95);
-                    out.write8(publicChatSetting);
-                    out.write8(privateChatSetting);
-                    out.write8(tradeChatSetting);
+                    out.write8(public_chat_setting);
+                    out.write8(private_chat_setting);
+                    out.write8(trade_chat_setting);
                 }
             }
             chatTyped = "";
@@ -6337,13 +6349,13 @@ public class Game extends GameShell {
                 out.writeString(input_message_value);
                 out.writeSize(out.position - start);
                 addMessage(6, StringUtil.formatName(StringUtil.fromBase37(inputFriendName37)), input_message_value);
-                if (privateChatSetting == 2) {
-                    privateChatSetting = 1;
-                    redrawPrivacySettings = true;
+                if (private_chat_setting == 2) {
+                    private_chat_setting = 1;
+                    redraw_chat_filter = true;
                     out.writeOp(95);
-                    out.write8(publicChatSetting);
-                    out.write8(privateChatSetting);
-                    out.write8(tradeChatSetting);
+                    out.write8(public_chat_setting);
+                    out.write8(private_chat_setting);
+                    out.write8(trade_chat_setting);
                 }
             }
 
@@ -6395,7 +6407,7 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if (((type == 1) || (type == 2)) && ((type == 1) || (publicChatSetting == 0) || ((publicChatSetting == 1) && isFriend(s)))) {
+            if (((type == 1) || (type == 2)) && ((type == 1) || (public_chat_setting == 0) || ((public_chat_setting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y) && !s.equals(local_player.name)) {
                     if (rights >= 1) {
                         addMenuOption("Report abuse @whi@" + s, 606);
@@ -6406,7 +6418,7 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if (((type == 3) || (type == 7)) && (splitPrivateChat == 0) && ((type == 7) || (privateChatSetting == 0) || ((privateChatSetting == 1) && isFriend(s)))) {
+            if (((type == 3) || (type == 7)) && (splitPrivateChat == 0) && ((type == 7) || (private_chat_setting == 0) || ((private_chat_setting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
                     if (rights >= 1) {
                         addMenuOption("Report abuse @whi@" + s, 606);
@@ -6417,18 +6429,18 @@ public class Game extends GameShell {
                 line++;
             }
 
-            if ((type == 4) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(s)))) {
+            if ((type == 4) && ((trade_chat_setting == 0) || ((trade_chat_setting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
                     addMenuOption("Accept trade @whi@" + s, 484);
                 }
                 line++;
             }
 
-            if (((type == 5) || (type == 6)) && (splitPrivateChat == 0) && (privateChatSetting < 2)) {
+            if (((type == 5) || (type == 6)) && (splitPrivateChat == 0) && (private_chat_setting < 2)) {
                 line++;
             }
 
-            if ((type == 8) && ((tradeChatSetting == 0) || ((tradeChatSetting == 1) && isFriend(s)))) {
+            if ((type == 8) && ((trade_chat_setting == 0) || ((trade_chat_setting == 1) && isFriend(s)))) {
                 if ((mouseY > (y - 14)) && (mouseY <= y)) {
                     addMenuOption("Accept challenge @whi@" + s, 6);
                 }
@@ -6438,24 +6450,24 @@ public class Game extends GameShell {
     }
 
     public void updateInterfaceContent(Iface iface) {
-        int type = iface.contentType;
+        int type = iface.content_type;
 
         if (((type >= 1) && (type <= 100)) || ((type >= 701) && (type <= 800))) {
             if ((type == 1) && (friends_status == 0)) {
                 iface.text = "Loading friend list";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
             if ((type == 1) && (friends_status == 1)) {
                 iface.text = "Connecting to friendserver";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
             if ((type == 2) && (friends_status != 2)) {
                 iface.text = "Please wait...";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
@@ -6473,10 +6485,10 @@ public class Game extends GameShell {
 
             if (type >= count) {
                 iface.text = "";
-                iface.optionType = 0;
+                iface._option_type = 0;
             } else {
                 iface.text = friendName[type];
-                iface.optionType = 1;
+                iface._option_type = 1;
             }
             return;
         }
@@ -6496,7 +6508,7 @@ public class Game extends GameShell {
 
             if (type >= count) {
                 iface.text = "";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
@@ -6508,7 +6520,7 @@ public class Game extends GameShell {
                 iface.text = "@yel@World-" + (friendWorld[type] - 9);
             }
 
-            iface.optionType = 1;
+            iface._option_type = 1;
             return;
         }
 
@@ -6519,10 +6531,10 @@ public class Game extends GameShell {
                 count = 0;
             }
 
-            iface.scrollableHeight = (count * 15) + 20;
+            iface.scroll_height = (count * 15) + 20;
 
-            if (iface.scrollableHeight <= iface.height) {
-                iface.scrollableHeight = iface.height + 1;
+            if (iface.scroll_height <= iface.height) {
+                iface.scroll_height = iface.height + 1;
             }
             return;
         }
@@ -6530,13 +6542,13 @@ public class Game extends GameShell {
         if ((type >= 401) && (type <= 500)) {
             if ((((type -= 401)) == 0) && (friends_status == 0)) {
                 iface.text = "Loading ignore list";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
             if ((type == 1) && (friends_status == 0)) {
                 iface.text = "Please wait...";
-                iface.optionType = 0;
+                iface._option_type = 0;
                 return;
             }
 
@@ -6548,26 +6560,26 @@ public class Game extends GameShell {
 
             if (type >= count) {
                 iface.text = "";
-                iface.optionType = 0;
+                iface._option_type = 0;
             } else {
                 iface.text = StringUtil.formatName(StringUtil.fromBase37(ignoreName37[type]));
-                iface.optionType = Iface.OPTION_TYPE_STANDARD;
+                iface._option_type = Iface.OPTION_TYPE_OK;
             }
             return;
         }
 
         if (type == 503) {
-            iface.scrollableHeight = (ignoreCount * 15) + 20;
+            iface.scroll_height = (ignoreCount * 15) + 20;
 
-            if (iface.scrollableHeight <= iface.height) {
-                iface.scrollableHeight = iface.height + 1;
+            if (iface.scroll_height <= iface.height) {
+                iface.scroll_height = iface.height + 1;
             }
             return;
         }
 
         if (type == 327) {
-            iface.modelPitch = 150;
-            iface.modelYaw = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
+            iface.model_pitch = 150;
+            iface.model_yaw = (int) (Math.sin((double) loopCycle / 40D) * 256D) & 0x7ff;
 
             if (updateDesignModel) {
                 for (int part = 0; part < 7; part++) {
@@ -6602,8 +6614,8 @@ public class Game extends GameShell {
                 model.transform(Animation.instances[local_player.seqStandID].primary_transforms[0]);
                 model.build(64, 850, -30, -50, -30, true);
 
-                iface.modelType = Iface.MODEL_TYPE_PLAYER_DESIGN;
-                iface.modelID = 0;
+                iface._model_type = Iface.MODEL_TYPE_PLAYER_DESIGN;
+                iface.model = 0;
 
                 Iface.cacheModel(0, Iface.MODEL_TYPE_PLAYER_DESIGN, model);
             }
@@ -6612,26 +6624,26 @@ public class Game extends GameShell {
 
         if (type == 324) {
             if (genderButtonImage0 == null) {
-                genderButtonImage0 = iface.image;
-                genderButtonImage1 = iface.activeImage;
+                genderButtonImage0 = iface._image;
+                genderButtonImage1 = iface._active_image;
             }
             if (designGenderMale) {
-                iface.image = genderButtonImage1;
+                iface._image = genderButtonImage1;
             } else {
-                iface.image = genderButtonImage0;
+                iface._image = genderButtonImage0;
             }
             return;
         }
 
         if (type == 325) {
             if (genderButtonImage0 == null) {
-                genderButtonImage0 = iface.image;
-                genderButtonImage1 = iface.activeImage;
+                genderButtonImage0 = iface._image;
+                genderButtonImage1 = iface._active_image;
             }
             if (designGenderMale) {
-                iface.image = genderButtonImage0;
+                iface._image = genderButtonImage0;
             } else {
-                iface.image = genderButtonImage1;
+                iface._image = genderButtonImage1;
             }
             return;
         }
@@ -6771,7 +6783,7 @@ public class Game extends GameShell {
                     s = s.substring(5);
                     byte1 = 2;
                 }
-                if (((k == 3) || (k == 7)) && ((k == 7) || (privateChatSetting == 0) || ((privateChatSetting == 1) && isFriend(s)))) {
+                if (((k == 3) || (k == 7)) && ((k == 7) || (private_chat_setting == 0) || ((private_chat_setting == 1) && isFriend(s)))) {
                     int l = 329 - (i * 13);
                     int k1 = 4;
                     font.drawString("From", k1, l, 0);
@@ -6791,7 +6803,7 @@ public class Game extends GameShell {
                         return;
                     }
                 }
-                if ((k == 5) && (privateChatSetting < 2)) {
+                if ((k == 5) && (private_chat_setting < 2)) {
                     int i1 = 329 - (i * 13);
                     font.drawString(message_text[j], 4, i1, 0);
                     font.drawString(message_text[j], 4, i1 - 1, 65535);
@@ -6799,7 +6811,7 @@ public class Game extends GameShell {
                         return;
                     }
                 }
-                if ((k == 6) && (privateChatSetting < 2)) {
+                if ((k == 6) && (private_chat_setting < 2)) {
                     int y = 329 - (i * 13);
                     font.drawString("To " + s + ": " + message_text[j], 4, y, 0);
                     font.drawString("To " + s + ": " + message_text[j], 4, y - 1, 65535);
@@ -6834,73 +6846,73 @@ public class Game extends GameShell {
 
     public void handleTabInput() {
         if (super.mouseClickButton == 1) {
-            if ((super.mouseClickX >= 539) && (super.mouseClickX <= 573) && (super.mouseClickY >= 169) && (super.mouseClickY < 205) && (tabInterfaceID[0] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 539) && (super.mouseClickX <= 573) && (super.mouseClickY >= 169) && (super.mouseClickY < 205) && (sidebar_tab_interface[0] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 0;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 569) && (super.mouseClickX <= 599) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (tabInterfaceID[1] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 569) && (super.mouseClickX <= 599) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (sidebar_tab_interface[1] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 1;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 597) && (super.mouseClickX <= 627) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (tabInterfaceID[2] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 597) && (super.mouseClickX <= 627) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (sidebar_tab_interface[2] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 2;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 625) && (super.mouseClickX <= 669) && (super.mouseClickY >= 168) && (super.mouseClickY < 203) && (tabInterfaceID[3] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 625) && (super.mouseClickX <= 669) && (super.mouseClickY >= 168) && (super.mouseClickY < 203) && (sidebar_tab_interface[3] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 3;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 666) && (super.mouseClickX <= 696) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (tabInterfaceID[4] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 666) && (super.mouseClickX <= 696) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (sidebar_tab_interface[4] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 4;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 694) && (super.mouseClickX <= 724) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (tabInterfaceID[5] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 694) && (super.mouseClickX <= 724) && (super.mouseClickY >= 168) && (super.mouseClickY < 205) && (sidebar_tab_interface[5] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 5;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 722) && (super.mouseClickX <= 756) && (super.mouseClickY >= 169) && (super.mouseClickY < 205) && (tabInterfaceID[6] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 722) && (super.mouseClickX <= 756) && (super.mouseClickY >= 169) && (super.mouseClickY < 205) && (sidebar_tab_interface[6] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 6;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 540) && (super.mouseClickX <= 574) && (super.mouseClickY >= 466) && (super.mouseClickY < 502) && (tabInterfaceID[7] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 540) && (super.mouseClickX <= 574) && (super.mouseClickY >= 466) && (super.mouseClickY < 502) && (sidebar_tab_interface[7] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 7;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 572) && (super.mouseClickX <= 602) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (tabInterfaceID[8] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 572) && (super.mouseClickX <= 602) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (sidebar_tab_interface[8] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 8;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 599) && (super.mouseClickX <= 629) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (tabInterfaceID[9] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 599) && (super.mouseClickX <= 629) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (sidebar_tab_interface[9] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 9;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 627) && (super.mouseClickX <= 671) && (super.mouseClickY >= 467) && (super.mouseClickY < 502) && (tabInterfaceID[10] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 627) && (super.mouseClickX <= 671) && (super.mouseClickY >= 467) && (super.mouseClickY < 502) && (sidebar_tab_interface[10] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 10;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 669) && (super.mouseClickX <= 699) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (tabInterfaceID[11] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 669) && (super.mouseClickX <= 699) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (sidebar_tab_interface[11] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 11;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 696) && (super.mouseClickX <= 726) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (tabInterfaceID[12] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 696) && (super.mouseClickX <= 726) && (super.mouseClickY >= 466) && (super.mouseClickY < 503) && (sidebar_tab_interface[12] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 12;
                 redrawSideicons = true;
             }
-            if ((super.mouseClickX >= 724) && (super.mouseClickX <= 758) && (super.mouseClickY >= 466) && (super.mouseClickY < 502) && (tabInterfaceID[13] != -1)) {
-                redrawSidebar = true;
+            if ((super.mouseClickX >= 724) && (super.mouseClickX <= 758) && (super.mouseClickY >= 466) && (super.mouseClickY < 502) && (sidebar_tab_interface[13] != -1)) {
+                redraw_sidebar = true;
                 input_tab = 13;
                 redrawSideicons = true;
             }
@@ -6982,9 +6994,9 @@ public class Game extends GameShell {
             }
         }
 
-        if ((chat_interface != -1) && (lastHoveredInterfaceID != chatHoveredInterfaceID)) {
+        if ((chat_interface != -1) && (lastHoveredInterfaceID != hovered_chat_interface)) {
             redraw_chatback = true;
-            chatHoveredInterfaceID = lastHoveredInterfaceID;
+            hovered_chat_interface = lastHoveredInterfaceID;
         }
     }
 
@@ -6999,8 +7011,8 @@ public class Game extends GameShell {
             }
         }
 
-        if (lastHoveredInterfaceID != viewportHoveredInterfaceID) {
-            viewportHoveredInterfaceID = lastHoveredInterfaceID;
+        if (lastHoveredInterfaceID != hovered_viewport_interface) {
+            hovered_viewport_interface = lastHoveredInterfaceID;
         }
     }
 
@@ -7010,14 +7022,14 @@ public class Game extends GameShell {
         if ((super.mouseX > 553) && (super.mouseY > 205) && (super.mouseX < 743) && (super.mouseY < 466)) {
             if (sidebar_interface != -1) {
                 handleInterfaceInput(Iface.instances[sidebar_interface], 553, 205, 0);
-            } else if (tabInterfaceID[input_tab] != -1) {
-                handleInterfaceInput(Iface.instances[tabInterfaceID[input_tab]], 553, 205, 0);
+            } else if (sidebar_tab_interface[input_tab] != -1) {
+                handleInterfaceInput(Iface.instances[sidebar_tab_interface[input_tab]], 553, 205, 0);
             }
         }
 
-        if (lastHoveredInterfaceID != sidebarHoveredInterfaceID) {
-            redrawSidebar = true;
-            sidebarHoveredInterfaceID = lastHoveredInterfaceID;
+        if (lastHoveredInterfaceID != hovered_sidebar_interface) {
+            redraw_sidebar = true;
+            hovered_sidebar_interface = lastHoveredInterfaceID;
         }
     }
 
@@ -8528,10 +8540,10 @@ public class Game extends GameShell {
             areaBackvmid2.draw(super.graphics, 516, 205);
             areaBackvmid3.draw(super.graphics, 496, 357);
             areaBackhmid2.draw(super.graphics, 0, 338);
-            redrawSidebar = true;
+            redraw_sidebar = true;
             redraw_chatback = true;
             redrawSideicons = true;
-            redrawPrivacySettings = true;
+            redraw_chat_filter = true;
             if (scene_status != 2) {
                 areaViewport.draw(super.graphics, 4, 4);
                 areaMapback.draw(super.graphics, 550, 4);
@@ -8543,36 +8555,36 @@ public class Game extends GameShell {
         }
 
         if (menu_visible && (menuArea == 1)) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
 
         if (sidebar_interface != -1) {
             if (updateInterfaceAnimation(delta, sidebar_interface)) {
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
         }
 
         if (actionArea == 2) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
 
         if (objDragArea == 2) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
 
-        if (redrawSidebar) {
+        if (redraw_sidebar) {
             drawSidebar();
-            redrawSidebar = false;
+            redraw_sidebar = false;
         }
 
         if (chat_interface == -1) {
-            chatInterface.scrollPosition = chatScrollHeight - chatScrollOffset - 77;
+            chatInterface.scroll_pos = chatScrollHeight - chatScrollOffset - 77;
 
             if ((super.mouseX > 448) && (super.mouseX < 560) && (super.mouseY > 332)) {
                 handleScrollInput(463, 77, super.mouseX - 17, super.mouseY - 357, chatInterface, 0, false, chatScrollHeight);
             }
 
-            int offset = chatScrollHeight - 77 - chatInterface.scrollPosition;
+            int offset = chatScrollHeight - 77 - chatInterface.scroll_pos;
 
             if (offset < 0) {
                 offset = 0;
@@ -8642,7 +8654,7 @@ public class Game extends GameShell {
         areaBackhmid1.bind();
         imageBackhmid1.blit(0, 0);
         if (sidebar_interface == -1) {
-            if (tabInterfaceID[input_tab] != -1) {
+            if (sidebar_tab_interface[input_tab] != -1) {
                 if (input_tab == 0) {
                     imageRedstone1.blit(22, 10);
                 }
@@ -8665,25 +8677,25 @@ public class Game extends GameShell {
                     imageRedstone1h.blit(209, 9);
                 }
             }
-            if ((tabInterfaceID[0] != -1) && ((flashingTab != 0) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[0] != -1) && ((flashingTab != 0) || ((loopCycle % 20) < 10))) {
                 imageSideicons[0].blit(29, 13);
             }
-            if ((tabInterfaceID[1] != -1) && ((flashingTab != 1) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[1] != -1) && ((flashingTab != 1) || ((loopCycle % 20) < 10))) {
                 imageSideicons[1].blit(53, 11);
             }
-            if ((tabInterfaceID[2] != -1) && ((flashingTab != 2) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[2] != -1) && ((flashingTab != 2) || ((loopCycle % 20) < 10))) {
                 imageSideicons[2].blit(82, 11);
             }
-            if ((tabInterfaceID[3] != -1) && ((flashingTab != 3) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[3] != -1) && ((flashingTab != 3) || ((loopCycle % 20) < 10))) {
                 imageSideicons[3].blit(115, 12);
             }
-            if ((tabInterfaceID[4] != -1) && ((flashingTab != 4) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[4] != -1) && ((flashingTab != 4) || ((loopCycle % 20) < 10))) {
                 imageSideicons[4].blit(153, 13);
             }
-            if ((tabInterfaceID[5] != -1) && ((flashingTab != 5) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[5] != -1) && ((flashingTab != 5) || ((loopCycle % 20) < 10))) {
                 imageSideicons[5].blit(180, 11);
             }
-            if ((tabInterfaceID[6] != -1) && ((flashingTab != 6) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[6] != -1) && ((flashingTab != 6) || ((loopCycle % 20) < 10))) {
                 imageSideicons[6].blit(208, 13);
             }
         }
@@ -8691,7 +8703,7 @@ public class Game extends GameShell {
         areaBackbase2.bind();
         imageBackbase2.blit(0, 0);
         if (sidebar_interface == -1) {
-            if (tabInterfaceID[input_tab] != -1) {
+            if (sidebar_tab_interface[input_tab] != -1) {
                 if (input_tab == 7) {
                     imageRedstone1v.blit(42, 0);
                 }
@@ -8714,22 +8726,22 @@ public class Game extends GameShell {
                     imageRedstone1hv.blit(229, 0);
                 }
             }
-            if ((tabInterfaceID[8] != -1) && ((flashingTab != 8) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[8] != -1) && ((flashingTab != 8) || ((loopCycle % 20) < 10))) {
                 imageSideicons[7].blit(74, 2);
             }
-            if ((tabInterfaceID[9] != -1) && ((flashingTab != 9) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[9] != -1) && ((flashingTab != 9) || ((loopCycle % 20) < 10))) {
                 imageSideicons[8].blit(102, 3);
             }
-            if ((tabInterfaceID[10] != -1) && ((flashingTab != 10) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[10] != -1) && ((flashingTab != 10) || ((loopCycle % 20) < 10))) {
                 imageSideicons[9].blit(137, 4);
             }
-            if ((tabInterfaceID[11] != -1) && ((flashingTab != 11) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[11] != -1) && ((flashingTab != 11) || ((loopCycle % 20) < 10))) {
                 imageSideicons[10].blit(174, 2);
             }
-            if ((tabInterfaceID[12] != -1) && ((flashingTab != 12) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[12] != -1) && ((flashingTab != 12) || ((loopCycle % 20) < 10))) {
                 imageSideicons[11].blit(201, 2);
             }
-            if ((tabInterfaceID[13] != -1) && ((flashingTab != 13) || ((loopCycle % 20) < 10))) {
+            if ((sidebar_tab_interface[13] != -1) && ((flashingTab != 13) || ((loopCycle % 20) < 10))) {
                 imageSideicons[12].blit(226, 2);
             }
         }
@@ -8738,43 +8750,43 @@ public class Game extends GameShell {
     }
 
     private void drawPrivacySettings() {
-        if (!redrawPrivacySettings) {
+        if (!redraw_chat_filter) {
             return;
         }
-        redrawPrivacySettings = false;
+        redraw_chat_filter = false;
         areaBackbase1.bind();
         imageBackbase1.blit(0, 0);
         fontPlain12.drawStringTaggableCenter("Public chat", 55, 28, 0xffffff, true);
-        if (publicChatSetting == 0) {
+        if (public_chat_setting == 0) {
             fontPlain12.drawStringTaggableCenter("On", 55, 41, 65280, true);
         }
-        if (publicChatSetting == 1) {
+        if (public_chat_setting == 1) {
             fontPlain12.drawStringTaggableCenter("Friends", 55, 41, 0xffff00, true);
         }
-        if (publicChatSetting == 2) {
+        if (public_chat_setting == 2) {
             fontPlain12.drawStringTaggableCenter("Off", 55, 41, 0xff0000, true);
         }
-        if (publicChatSetting == 3) {
+        if (public_chat_setting == 3) {
             fontPlain12.drawStringTaggableCenter("Hide", 55, 41, 65535, true);
         }
         fontPlain12.drawStringTaggableCenter("Private chat", 184, 28, 0xffffff, true);
-        if (privateChatSetting == 0) {
+        if (private_chat_setting == 0) {
             fontPlain12.drawStringTaggableCenter("On", 184, 41, 65280, true);
         }
-        if (privateChatSetting == 1) {
+        if (private_chat_setting == 1) {
             fontPlain12.drawStringTaggableCenter("Friends", 184, 41, 0xffff00, true);
         }
-        if (privateChatSetting == 2) {
+        if (private_chat_setting == 2) {
             fontPlain12.drawStringTaggableCenter("Off", 184, 41, 0xff0000, true);
         }
         fontPlain12.drawStringTaggableCenter("Trade/compete", 324, 28, 0xffffff, true);
-        if (tradeChatSetting == 0) {
+        if (trade_chat_setting == 0) {
             fontPlain12.drawStringTaggableCenter("On", 324, 41, 65280, true);
         }
-        if (tradeChatSetting == 1) {
+        if (trade_chat_setting == 1) {
             fontPlain12.drawStringTaggableCenter("Friends", 324, 41, 0xffff00, true);
         }
-        if (tradeChatSetting == 2) {
+        if (trade_chat_setting == 2) {
             fontPlain12.drawStringTaggableCenter("Off", 324, 41, 0xff0000, true);
         }
         fontPlain12.drawStringTaggableCenter("Report abuse", 458, 33, 0xffffff, true);
@@ -8783,7 +8795,7 @@ public class Game extends GameShell {
     }
 
     public boolean handleSocialMenuOption(Iface iface) {
-        int type = iface.contentType;
+        int type = iface.content_type;
         if (((type >= 1) && (type <= 200)) || ((type >= 701) && (type <= 900))) {
             if (type >= 801) {
                 type -= 701;
@@ -8824,11 +8836,11 @@ public class Game extends GameShell {
     }
 
     public void drawParentInterface(Iface parent, int px, int py, int scrollY) {
-        if ((parent.type != Iface.TYPE_PARENT) || (parent.childID == null)) {
+        if ((parent._type != Iface.TYPE_LAYER) || (parent.child_id == null)) {
             return;
         }
 
-        if (parent.hide && (viewportHoveredInterfaceID != parent.id) && (sidebarHoveredInterfaceID != parent.id) && (chatHoveredInterfaceID != parent.id)) {
+        if ( Boolean.TRUE.equals(parent.hide) && (hovered_viewport_interface != parent.id) && (hovered_sidebar_interface != parent.id) && (hovered_chat_interface != parent.id)) {
             return;
         }
 
@@ -8839,44 +8851,44 @@ public class Game extends GameShell {
 
         Draw2D.setBounds(px, py, px + parent.width, py + parent.height);
 
-        for (int i = 0; i < parent.childID.length; i++) {
-            int x = parent.childX[i] + px;
-            int y = (parent.childY[i] + py) - scrollY;
+        for (int i = 0; i < parent.child_id.length; i++) {
+            int x = parent.child_x[i] + px;
+            int y = (parent.child_y[i] + py) - scrollY;
 
-            Iface child = Iface.instances[parent.childID[i]];
+            Iface child = Iface.instances[parent.child_id[i]];
 
-            x += child.x;
-            y += child.y;
+            x += child.offset_x;
+            y += child.offset_y;
 
-            if (child.contentType > 0) {
+            if (child.content_type != null) {
                 updateInterfaceContent(child);
             }
 
-            if (child.type == Iface.TYPE_PARENT) {
-                if (child.scrollPosition > (child.scrollableHeight - child.height)) {
-                    child.scrollPosition = child.scrollableHeight - child.height;
+            if (child._type == Iface.TYPE_LAYER) {
+                if (child.scroll_pos > (child.scroll_height - child.height)) {
+                    child.scroll_pos = child.scroll_height - child.height;
                 }
 
-                if (child.scrollPosition < 0) {
-                    child.scrollPosition = 0;
+                if (child.scroll_pos < 0) {
+                    child.scroll_pos = 0;
                 }
 
-                drawParentInterface(child, x, y, child.scrollPosition);
+                drawParentInterface(child, x, y, child.scroll_pos);
 
-                if (child.scrollableHeight > child.height) {
-                    drawScrollbar(x + child.width, y, child.height, child.scrollableHeight, child.scrollPosition);
+                if (child.scroll_height > child.height) {
+                    drawScrollbar(x + child.width, y, child.height, child.scroll_height, child.scroll_pos);
                 }
-            } else if (child.type == Iface.TYPE_INVENTORY) {
+            } else if (child._type == Iface.TYPE_INVENTORY) {
                 drawInterfaceInventory(parent, x, y, child);
-            } else if (child.type == Iface.TYPE_RECT) {
+            } else if (child._type == Iface.TYPE_RECT) {
                 drawInterfaceRect(x, y, child);
-            } else if (child.type == Iface.TYPE_TEXT) {
+            } else if (child._type == Iface.TYPE_TEXT) {
                 drawInterfaceText(x, y, child);
-            } else if (child.type == Iface.TYPE_IMAGE) {
+            } else if (child._type == Iface.TYPE_IMAGE) {
                 drawInterfaceImage(x, y, child);
-            } else if (child.type == Iface.TYPE_MODEL) {
+            } else if (child._type == Iface.TYPE_MODEL) {
                 drawInterfaceModel(x, y, child);
-            } else if (child.type == Iface.TYPE_INVENTORY_TEXT) {
+            } else if (child._type == Iface.TYPE_INVENTORY_TEXT) {
                 drawInterfaceInventoryText(x, y, child);
             }
         }
@@ -8887,18 +8899,18 @@ public class Game extends GameShell {
         int slot = 0;
         for (int row = 0; row < iface.height; row++) {
             for (int column = 0; column < iface.width; column++) {
-                int slotX = x + (column * (32 + iface.inventoryMarginX));
-                int slotY = y + (row * (32 + iface.inventoryMarginY));
+                int slotX = x + (column * (32 + iface.inv_margin_x));
+                int slotY = y + (row * (32 + iface.inv_margin_y));
 
                 if (slot < 20) {
-                    slotX += iface.inventorySlotOffsetX[slot];
-                    slotY += iface.inventorySlotOffsetY[slot];
+                    slotX += iface.inv_slot_offset_x[slot];
+                    slotY += iface.inv_slot_offset_y[slot];
                 }
 
-                if (iface.inventorySlotObjID[slot] > 0) {
+                if (iface.inv_slot_item_id[slot] > 0) {
                     int dx = 0;
                     int dy = 0;
-                    int objID = iface.inventorySlotObjID[slot] - 1;
+                    int objID = iface.inv_slot_item_id[slot] - 1;
 
                     if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((objDragArea != 0) && (objDragSlot == slot))) {
                         int outlineColor = 0;
@@ -8907,7 +8919,7 @@ public class Game extends GameShell {
                             outlineColor = 0xffffff;
                         }
 
-                        Image24 icon = Item.getIcon(objID, iface.inventorySlotObjCount[slot], outlineColor);
+                        Image24 icon = Item.getIcon(objID, iface.inv_slot_item_count[slot], outlineColor);
 
                         if (icon != null) {
                             if ((objDragArea != 0) && (objDragSlot == slot) && (objDragInterfaceID == iface.id)) {
@@ -8930,32 +8942,32 @@ public class Game extends GameShell {
                                 icon.draw(slotX + dx, slotY + dy, 128);
 
                                 // scroll component up if dragging obj near the top
-                                if (((slotY + dy) < Draw2D.top) && (parent.scrollPosition > 0)) {
+                                if (((slotY + dy) < Draw2D.top) && (parent.scroll_pos > 0)) {
                                     int scroll = (delta * (Draw2D.top - slotY - dy)) / 3;
 
                                     if (scroll > (delta * 10)) {
                                         scroll = delta * 10;
                                     }
 
-                                    if (scroll > parent.scrollPosition) {
-                                        scroll = parent.scrollPosition;
+                                    if (scroll > parent.scroll_pos) {
+                                        scroll = parent.scroll_pos;
                                     }
-                                    parent.scrollPosition -= scroll;
+                                    parent.scroll_pos -= scroll;
                                     objGrabY += scroll;
                                 }
 
                                 // scroll component down if dragging obj near the bottom
-                                if (((slotY + dy + 32) > Draw2D.bottom) && (parent.scrollPosition < (parent.scrollableHeight - parent.height))) {
+                                if (((slotY + dy + 32) > Draw2D.bottom) && (parent.scroll_pos < (parent.scroll_height - parent.height))) {
                                     int scroll = (delta * ((slotY + dy + 32) - Draw2D.bottom)) / 3;
 
                                     if (scroll > (delta * 10)) {
                                         scroll = delta * 10;
                                     }
 
-                                    if (scroll > (parent.scrollableHeight - parent.height - parent.scrollPosition)) {
-                                        scroll = parent.scrollableHeight - parent.height - parent.scrollPosition;
+                                    if (scroll > (parent.scroll_height - parent.height - parent.scroll_pos)) {
+                                        scroll = parent.scroll_height - parent.height - parent.scroll_pos;
                                     }
-                                    parent.scrollPosition += scroll;
+                                    parent.scroll_pos += scroll;
                                     objGrabY -= scroll;
                                 }
                             } else if ((actionArea != 0) && (actionSlot == slot) && (actionInterfaceID == iface.id)) {
@@ -8964,15 +8976,15 @@ public class Game extends GameShell {
                                 icon.draw(slotX, slotY);
                             }
 
-                            if ((icon.cropW == 33) || (iface.inventorySlotObjCount[slot] != 1)) {
-                                int count = iface.inventorySlotObjCount[slot];
+                            if ((icon.cropW == 33) || (iface.inv_slot_item_count[slot] != 1)) {
+                                int count = iface.inv_slot_item_count[slot];
                                 fontPlain11.drawString(formatObjCount(count), slotX + 1 + dx, slotY + 10 + dy, 0);
                                 fontPlain11.drawString(formatObjCount(count), slotX + dx, slotY + 9 + dy, 0xffff00);
                             }
                         }
                     }
-                } else if ((iface.inventorySlotImage != null) && (slot < 20)) {
-                    Image24 image = iface.inventorySlotImage[slot];
+                } else if ((iface._inv_slot_image != null) && (slot < 20)) {
+                    Image24 image = iface._inv_slot_image[slot];
 
                     if (image != null) {
                         image.draw(slotX, slotY);
@@ -8984,59 +8996,67 @@ public class Game extends GameShell {
     }
 
     private void drawInterfaceRect(int x, int y, Iface child) {
-        boolean hovered = (chatHoveredInterfaceID == child.id) || (sidebarHoveredInterfaceID == child.id) || (viewportHoveredInterfaceID == child.id);
+        boolean hovered = (hovered_chat_interface == child.id) || (hovered_sidebar_interface == child.id) || (hovered_viewport_interface == child.id);
         int rgb;
 
         if (executeInterfaceScript(child)) {
-            rgb = child.activeColor;
-            if (hovered && (child.activeHoverColor != 0)) {
-                rgb = child.activeHoverColor;
+            rgb = child.active_color;
+            if (hovered && (child.active_hover_color != null)) {
+                rgb = child.active_hover_color;
             }
         } else {
             rgb = child.color;
-            if (hovered && (child.hoverColor != 0)) {
-                rgb = child.hoverColor;
+            if (hovered && (child.hover_color != null)) {
+                rgb = child.hover_color;
             }
         }
 
-        if (child.transparency == 0) {
-            if (child.fill) {
+        int transparency = 0;
+
+        if (child.transparency != null) {
+            transparency = child.transparency;
+        }
+
+        boolean fill = Boolean.TRUE.equals(child.fill);
+
+        if (transparency == 0) {
+            if (fill) {
                 Draw2D.fillRect(x, y, child.width, child.height, rgb);
             } else {
                 Draw2D.drawRect(x, y, child.width, child.height, rgb);
             }
-        } else if (child.fill) {
-            Draw2D.fillRect(x, y, child.width, child.height, rgb, 256 - (child.transparency & 0xff));
+        } else if (fill) {
+            Draw2D.fillRect(x, y, child.width, child.height, rgb, 256 - (transparency & 0xff));
         } else {
-            Draw2D.drawRect(x, y, child.width, child.height, rgb, 256 - (child.transparency & 0xff));
+            Draw2D.drawRect(x, y, child.width, child.height, rgb, 256 - (transparency & 0xff));
         }
     }
 
     private void drawInterfaceText(int x, int y, Iface iface) {
-        BitmapFont font = iface.font;
+        BitmapFont font = iface._font;
         String text = iface.text;
-        boolean hovered = (chatHoveredInterfaceID == iface.id) || (sidebarHoveredInterfaceID == iface.id) || (viewportHoveredInterfaceID == iface.id);
+        boolean hovered = (hovered_chat_interface == iface.id) || (hovered_sidebar_interface == iface.id) || (hovered_viewport_interface == iface.id);
 
         int rgb;
         if (executeInterfaceScript(iface)) {
-            rgb = iface.activeColor;
+            rgb = iface.active_color;
 
-            if (hovered && (iface.activeHoverColor != 0)) {
-                rgb = iface.activeHoverColor;
+            if (hovered && (iface.active_hover_color != 0)) {
+                rgb = iface.active_hover_color;
             }
 
-            if (iface.activeText.length() > 0) {
-                text = iface.activeText;
+            if (iface.active_text.length() > 0) {
+                text = iface.active_text;
             }
         } else {
             rgb = iface.color;
 
-            if (hovered && (iface.hoverColor != 0)) {
-                rgb = iface.hoverColor;
+            if (hovered && (iface.hover_color != 0)) {
+                rgb = iface.hover_color;
             }
         }
 
-        if ((iface.optionType == Iface.OPTION_TYPE_CONTINUE) && input_continue) {
+        if ((iface._option_type == Iface.OPTION_TYPE_CONTINUE) && input_continue) {
             text = "Please wait...";
             rgb = iface.color;
         }
@@ -9099,10 +9119,10 @@ public class Game extends GameShell {
                 text = "";
             }
 
-            if (iface.center) {
-                font.drawStringTaggableCenter(split, x + (iface.width / 2), lineY, rgb, iface.shadow);
+            if (Boolean.TRUE.equals(iface.center)) {
+                font.drawStringTaggableCenter(split, x + (iface.width / 2), lineY, rgb, Boolean.TRUE.equals(iface.shadow));
             } else {
-                font.drawStringTaggable(split, x, lineY, rgb, iface.shadow);
+                font.drawStringTaggable(split, x, lineY, rgb, Boolean.TRUE.equals(iface.shadow));
             }
         }
     }
@@ -9110,9 +9130,9 @@ public class Game extends GameShell {
     private void drawInterfaceImage(int x, int y, Iface iface) {
         Image24 image;
         if (executeInterfaceScript(iface)) {
-            image = iface.activeImage;
+            image = iface._active_image;
         } else {
-            image = iface.image;
+            image = iface._image;
         }
         if (image != null) {
             image.draw(x, y);
@@ -9126,16 +9146,16 @@ public class Game extends GameShell {
         Draw3D.center_x = x + (iface.width / 2);
         Draw3D.center_y = y + (iface.height / 2);
 
-        int eyeY = (Draw3D.sin[iface.modelPitch] * iface.modelZoom) >> 16;
-        int eyeZ = (Draw3D.cos[iface.modelPitch] * iface.modelZoom) >> 16;
+        int eyeY = (Draw3D.sin[iface.model_pitch] * iface.model_zoom) >> 16;
+        int eyeZ = (Draw3D.cos[iface.model_pitch] * iface.model_zoom) >> 16;
 
         boolean active = executeInterfaceScript(iface);
-        int seqID;
+        int seqID = -1;
 
-        if (active) {
-            seqID = iface.activeSeqID;
-        } else {
-            seqID = iface.seqID;
+        if (active && iface.active_animation != null) {
+            seqID = iface.active_animation;
+        } else if (iface.animation != null){
+            seqID = iface.animation;
         }
 
         Model model;
@@ -9144,11 +9164,11 @@ public class Game extends GameShell {
             model = iface.getModel(-1, -1, active);
         } else {
             Animation type = Animation.instances[seqID];
-            model = iface.getModel(type.primary_transforms[iface.seqFrame], type.secondary_transforms[iface.seqFrame], active);
+            model = iface.getModel(type.primary_transforms[iface.animation_frame], type.secondary_transforms[iface.animation_frame], active);
         }
 
         if (model != null) {
-            model.drawSimple(0, iface.modelYaw, 0, iface.modelPitch, 0, eyeY, eyeZ);
+            model.drawSimple(0, iface.model_yaw, 0, iface.model_pitch, 0, eyeY, eyeZ);
         }
 
         Draw3D.center_x = tmpX;
@@ -9156,20 +9176,20 @@ public class Game extends GameShell {
     }
 
     private static void drawInterfaceInventoryText(int x, int y, Iface iface) {
-        BitmapFont font = iface.font;
+        BitmapFont font = iface._font;
         int slot = 0;
         for (int row = 0; row < iface.height; row++) {
             for (int column = 0; column < iface.width; column++) {
-                if (iface.inventorySlotObjID[slot] > 0) {
-                    Item type = Item.get(iface.inventorySlotObjID[slot] - 1);
+                if (iface.inv_slot_item_id[slot] > 0) {
+                    Item type = Item.get(iface.inv_slot_item_id[slot] - 1);
                     String text = type.name;
 
-                    if (type.stackable || (iface.inventorySlotObjCount[slot] != 1)) {
-                        text = text + " x" + formatObjCountTagged(iface.inventorySlotObjCount[slot]);
+                    if (type.stackable || (iface.inv_slot_item_count[slot] != 1)) {
+                        text = text + " x" + formatObjCountTagged(iface.inv_slot_item_count[slot]);
                     }
 
-                    int textX = x + (column * (115 + iface.inventoryMarginX));
-                    int textY = y + (row * (12 + iface.inventoryMarginY));
+                    int textX = x + (column * (115 + iface.inv_margin_x));
+                    int textY = y + (row * (12 + iface.inv_margin_y));
 
                     if (iface.center) {
                         font.drawStringTaggableCenter(text, textX + (iface.width / 2), textY, iface.color, iface.shadow);
@@ -9512,7 +9532,7 @@ public class Game extends GameShell {
             }
         }
         ignoreName37[ignoreCount++] = name37;
-        redrawSidebar = true;
+        redraw_sidebar = true;
         out.writeOp(133);
         out.write64(name37);
     }
@@ -9709,36 +9729,36 @@ public class Game extends GameShell {
         boolean updated = false;
         Iface parent = Iface.instances[id];
 
-        for (int k = 0; k < parent.childID.length; k++) {
-            if (parent.childID[k] == -1) {
+        for (int k = 0; k < parent.child_id.length; k++) {
+            if (parent.child_id[k] == -1) {
                 break;
             }
 
-            Iface child = Iface.instances[parent.childID[k]];
+            Iface child = Iface.instances[parent.child_id[k]];
 
-            if (child.type == Iface.TYPE_UNUSED) {
+            if (child._type == Iface.TYPE_UNUSED) {
                 updated |= updateInterfaceAnimation(delta, child.id);
             }
 
-            if ((child.type == Iface.TYPE_MODEL) && ((child.seqID != -1) || (child.activeSeqID != -1))) {
+            if ((child._type == Iface.TYPE_MODEL) && ((child.animation != 0) || (child.active_animation != 0))) {
                 boolean active = executeInterfaceScript(child);
                 int seqID;
 
                 if (active) {
-                    seqID = child.activeSeqID;
+                    seqID = child.active_animation;
                 } else {
-                    seqID = child.seqID;
+                    seqID = child.animation;
                 }
 
                 if (seqID != -1) {
                     Animation type = Animation.instances[seqID];
-                    for (child.seqCycle += delta; child.seqCycle > type.getFrameDuration(child.seqFrame); ) {
-                        child.seqCycle -= type.getFrameDuration(child.seqFrame) + 1;
-                        child.seqFrame++;
-                        if (child.seqFrame >= type.frameCount) {
-                            child.seqFrame -= type.loopFrameCount;
-                            if ((child.seqFrame < 0) || (child.seqFrame >= type.frameCount)) {
-                                child.seqFrame = 0;
+                    for (child.animation_cycle += delta; child.animation_cycle > type.getFrameDuration(child.animation_frame); ) {
+                        child.animation_cycle -= type.getFrameDuration(child.animation_frame) + 1;
+                        child.animation_frame++;
+                        if (child.animation_frame >= type.frameCount) {
+                            child.animation_frame -= type.loopFrameCount;
+                            if ((child.animation_frame < 0) || (child.animation_frame >= type.frameCount)) {
+                                child.animation_frame = 0;
                             }
                         }
                         updated = true;
@@ -9867,7 +9887,7 @@ public class Game extends GameShell {
         for (int j = 0; j < ignoreCount; j++) {
             if (ignoreName37[j] == name37) {
                 ignoreCount--;
-                redrawSidebar = true;
+                redraw_sidebar = true;
                 for (int k = j; k < ignoreCount; k++) {
                     ignoreName37[k] = ignoreName37[k + 1];
                 }
@@ -9886,11 +9906,11 @@ public class Game extends GameShell {
     }
 
     public int executeClientscript1(Iface iface, int scriptId) {
-        if ((iface.scripts == null) || (scriptId >= iface.scripts.length)) {
+        if ((iface._script_code == null) || (scriptId >= iface._script_code.length)) {
             return -2;
         }
         try {
-            int[] script = iface.scripts[scriptId];
+            int[] script = iface._script_code[scriptId];
             int acc = 0;
             int pos = 0;
             int arith = 0;
@@ -9912,9 +9932,9 @@ public class Game extends GameShell {
                     Iface inventory = Iface.instances[script[pos++]];
                     int objID = script[pos++];
                     if ((objID >= 0) && (objID < Item.count) && (!Item.get(objID).members || members)) {
-                        for (int slot = 0; slot < inventory.inventorySlotObjID.length; slot++) {
-                            if (inventory.inventorySlotObjID[slot] == (objID + 1)) {
-                                register += inventory.inventorySlotObjCount[slot];
+                        for (int slot = 0; slot < inventory.inv_slot_item_id.length; slot++) {
+                            if (inventory.inv_slot_item_id[slot] == (objID + 1)) {
+                                register += inventory.inv_slot_item_count[slot];
                             }
                         }
                     }
@@ -9936,8 +9956,8 @@ public class Game extends GameShell {
                     Iface c = Iface.instances[script[pos++]];
                     int objID = script[pos++] + 1;
                     if ((objID >= 0) && (objID < Item.count) && (!Item.get(objID).members || members)) {
-                        for (int slot = 0; slot < c.inventorySlotObjID.length; slot++) {
-                            if (c.inventorySlotObjID[slot] != objID) {
+                        for (int slot = 0; slot < c.inv_slot_item_id.length; slot++) {
+                            if (c.inv_slot_item_id[slot] != objID) {
                                 continue;
                             }
                             register = 999999999;
@@ -10243,7 +10263,7 @@ public class Game extends GameShell {
                 sender = sender.substring(5);
             }
 
-            if (((type == 3) || (type == 7)) && ((type == 7) || (privateChatSetting == 0) || ((privateChatSetting == 1) && isFriend(sender)))) {
+            if (((type == 3) || (type == 7)) && ((type == 7) || (private_chat_setting == 0) || ((private_chat_setting == 1) && isFriend(sender)))) {
                 int y = 329 - (count * 13);
 
                 if ((super.mouseX > 4) && ((super.mouseY - 4) > (y - 10)) && ((super.mouseY - 4) <= (y + 3))) {
@@ -10266,7 +10286,7 @@ public class Game extends GameShell {
                 }
             }
 
-            if (((type == 5) || (type == 6)) && (privateChatSetting < 2) && (++count >= 5)) {
+            if (((type == 5) || (type == 6)) && (private_chat_setting < 2) && (++count >= 5)) {
                 return;
             }
         }
@@ -10304,22 +10324,22 @@ public class Game extends GameShell {
      * @return the state.
      */
     public boolean executeInterfaceScript(Iface iface) {
-        if (iface.scriptComparator == null) {
+        if (iface._script_comparator == null) {
             return false;
         }
-        for (int i = 0; i < iface.scriptComparator.length; i++) {
+        for (int i = 0; i < iface._script_comparator.length; i++) {
             int value = executeClientscript1(iface, i);
-            int operand = iface.scriptOperand[i];
+            int operand = iface._script_operand[i];
 
-            if (iface.scriptComparator[i] == 2) {
+            if (iface._script_comparator[i] == 2) {
                 if (value >= operand) {
                     return false;
                 }
-            } else if (iface.scriptComparator[i] == 3) {
+            } else if (iface._script_comparator[i] == 3) {
                 if (value <= operand) {
                     return false;
                 }
-            } else if (iface.scriptComparator[i] == 4) {
+            } else if (iface._script_comparator[i] == 4) {
                 if (value == operand) {
                     return false;
                 }
@@ -11504,7 +11524,7 @@ public class Game extends GameShell {
 
                 case PacketIn.FRIENDLIST_LOADED:
                     friends_status = in.readU8();
-                    redrawSidebar = true;
+                    redraw_sidebar = true;
                     break;
 
                 case PacketIn.LOCAL_PLAYER:
@@ -11622,10 +11642,10 @@ public class Game extends GameShell {
             reportAbuseMuteOption = false;
 
             for (int i = 0; i < Iface.instances.length; i++) {
-                if ((Iface.instances[i] == null) || (Iface.instances[i].contentType != reportAbuseContentType)) {
+                if ((Iface.instances[i] == null) || (Iface.instances[i].content_type != reportAbuseContentType)) {
                     continue;
                 }
-                viewport_interface = Iface.instances[i].parentID;
+                viewport_interface = Iface.instances[i].parent;
                 break;
             }
         }
@@ -11652,12 +11672,12 @@ public class Game extends GameShell {
     private void readIfSetPlayerHead() {
         int interfaceID = in.readU16LEA();
         Iface iface = Iface.instances[interfaceID];
-        iface.modelType = Iface.MODEL_TYPE_PLAYER;
+        iface._model_type = Iface.MODEL_TYPE_PLAYER;
 
         if (local_player.transmogrify == null) {
-            iface.modelID = (local_player.colors[0] << 25) + (local_player.colors[4] << 20) + (local_player.appearances[0] << 15) + (local_player.appearances[8] << 10) + (local_player.appearances[11] << 5) + local_player.appearances[1];
+            iface.model = (local_player.colors[0] << 25) + (local_player.colors[4] << 20) + (local_player.appearances[0] << 15) + (local_player.appearances[8] << 10) + (local_player.appearances[11] << 5) + local_player.appearances[1];
         } else {
-            iface.modelID = (int) (0x12345678L + local_player.transmogrify.id);
+            iface.model = (int) (0x12345678L + local_player.transmogrify.id);
         }
     }
 
@@ -11671,9 +11691,9 @@ public class Game extends GameShell {
     private void readInventoryClear() {
         int interfaceID = in.readU16LE();
         Iface iface = Iface.instances[interfaceID];
-        for (int slot = 0; slot < iface.inventorySlotObjID.length; slot++) {
-            iface.inventorySlotObjID[slot] = -1;
-            iface.inventorySlotObjID[slot] = 0;
+        for (int slot = 0; slot < iface.inv_slot_item_id.length; slot++) {
+            iface.inv_slot_item_id[slot] = -1;
+            iface.inv_slot_item_id[slot] = 0;
         }
     }
 
@@ -11727,7 +11747,7 @@ public class Game extends GameShell {
     }
 
     private void readUpdateStat() {
-        redrawSidebar = true;
+        redraw_sidebar = true;
         int skill = in.readU8();
         int experience = in.read32();
         int level = in.readU8();
@@ -11748,8 +11768,8 @@ public class Game extends GameShell {
         if (interfaceID == 65535) {
             interfaceID = -1;
         }
-        tabInterfaceID[tab] = interfaceID;
-        redrawSidebar = true;
+        sidebar_tab_interface[tab] = interfaceID;
+        redraw_sidebar = true;
         redrawSideicons = true;
     }
 
@@ -11783,8 +11803,8 @@ public class Game extends GameShell {
         int y = in.read16LE();
         int interfaceID = in.readU16LE();
         Iface iface = Iface.instances[interfaceID];
-        iface.x = x;
-        iface.y = y;
+        iface.offset_x = x;
+        iface.offset_y = y;
     }
 
     private void readRebuildRegion() {
@@ -12046,8 +12066,8 @@ public class Game extends GameShell {
         int npcID = in.readU16();
         int interfaceID = in.readU16();
         System.out.println("extra data: " + in.readU16());
-        Iface.instances[interfaceID].modelType = Iface.MODEL_TYPE_NPC;
-        Iface.instances[interfaceID].modelID = npcID;
+        Iface.instances[interfaceID]._model_type = Iface.MODEL_TYPE_NPC;
+        Iface.instances[interfaceID].model = npcID;
     }
 
     private void readZoneUpdate() {
@@ -12174,7 +12194,7 @@ public class Game extends GameShell {
             }
             if (friendWorld[i] != world) {
                 friendWorld[i] = world;
-                redrawSidebar = true;
+                redraw_sidebar = true;
                 if (world > 0) {
                     addMessage(5, "", name + " has logged in.");
                 }
@@ -12191,7 +12211,7 @@ public class Game extends GameShell {
             friendName[friend_count] = name;
             friendWorld[friend_count] = world;
             friend_count++;
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
 
         for (boolean sorted = false; !sorted; ) {
@@ -12209,7 +12229,7 @@ public class Game extends GameShell {
                     long tmp2 = friendName37[i];
                     friendName37[i] = friendName37[i + 1];
                     friendName37[i + 1] = tmp2;
-                    redrawSidebar = true;
+                    redraw_sidebar = true;
                     sorted = false;
                 }
             }
@@ -12218,7 +12238,7 @@ public class Game extends GameShell {
 
     private void readUpdateRunEnergy() {
         if (input_tab == 12) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
         energy = in.readU8();
     }
@@ -12278,7 +12298,7 @@ public class Game extends GameShell {
 
         this.viewport_interface = viewportInterfaceID;
         this.sidebar_interface = sidebarInterfaceID;
-        redrawSidebar = true;
+        redraw_sidebar = true;
         redrawSideicons = true;
         input_continue = false;
     }
@@ -12287,14 +12307,14 @@ public class Game extends GameShell {
         int interfaceID = in.readU16LE();
         int scrollPos = in.readU16A();
         Iface iface = Iface.instances[interfaceID];
-        if ((iface != null) && (iface.type == Iface.TYPE_PARENT)) {
+        if ((iface != null) && (iface._type == Iface.TYPE_LAYER)) {
             if (scrollPos < 0) {
                 scrollPos = 0;
             }
-            if (scrollPos > (iface.scrollableHeight - iface.height)) {
-                scrollPos = iface.scrollableHeight - iface.height;
+            if (scrollPos > (iface.scroll_height - iface.height)) {
+                scrollPos = iface.scroll_height - iface.height;
             }
-            iface.scrollPosition = scrollPos;
+            iface.scroll_pos = scrollPos;
         }
     }
 
@@ -12303,7 +12323,7 @@ public class Game extends GameShell {
             if (varps[id] != varCache[id]) {
                 varps[id] = varCache[id];
                 updateVarp(id);
-                redrawSidebar = true;
+                redraw_sidebar = true;
             }
         }
     }
@@ -12356,7 +12376,7 @@ public class Game extends GameShell {
             } else {
                 input_tab = 3;
             }
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
     }
 
@@ -12368,13 +12388,13 @@ public class Game extends GameShell {
         if (objID != 65535) {
             Item type = Item.get(objID);
             Iface iface = Iface.instances[interfaceID];
-            iface.modelType = Iface.MODEL_TYPE_OBJ;
-            iface.modelID = objID;
-            iface.modelPitch = type.iconPitch;
-            iface.modelYaw = type.iconYaw;
-            iface.modelZoom = (type.iconDistance * 100) / zoom;
+            iface._model_type = Iface.MODEL_TYPE_ITEM;
+            iface.model = objID;
+            iface.model_pitch = type.iconPitch;
+            iface.model_yaw = type.iconYaw;
+            iface.model_zoom = (type.iconDistance * 100) / zoom;
         } else {
-            Iface.instances[interfaceID].modelType = Iface.MODEL_TYPE_NONE;
+            Iface.instances[interfaceID]._model_type = Iface.MODEL_TYPE_NONE;
         }
     }
 
@@ -12396,7 +12416,7 @@ public class Game extends GameShell {
             redraw_chatback = true;
         }
         sidebar_interface = interfaceID;
-        redrawSidebar = true;
+        redraw_sidebar = true;
         redrawSideicons = true;
         viewport_interface = -1;
         input_continue = false;
@@ -12409,24 +12429,24 @@ public class Game extends GameShell {
             Iface iface = Iface.instances[interfaceID];
             if (iface != null) {
                 iface.text = text;
-                if (iface.parentID == tabInterfaceID[input_tab]) {
-                    redrawSidebar = true;
+                if (iface.parent == sidebar_tab_interface[input_tab]) {
+                    redraw_sidebar = true;
                 }
             }
         }
     }
 
     private void readChatFilterSettings() {
-        publicChatSetting = in.readU8();
-        privateChatSetting = in.readU8();
-        tradeChatSetting = in.readU8();
-        redrawPrivacySettings = true;
+        public_chat_setting = in.readU8();
+        private_chat_setting = in.readU8();
+        trade_chat_setting = in.readU8();
+        redraw_chat_filter = true;
         redraw_chatback = true;
     }
 
     private void readUpdateRunWeight() {
         if (input_tab == 12) {
-            redrawSidebar = true;
+            redraw_sidebar = true;
         }
         weightCarried = in.read16();
     }
@@ -12434,8 +12454,8 @@ public class Game extends GameShell {
     private void readIfSetModel() {
         int interfaceID = in.readU16LEA();
         int modelID = in.readU16();
-        Iface.instances[interfaceID].modelType = Iface.MODEL_TYPE_NORMAL;
-        Iface.instances[interfaceID].modelID = modelID;
+        Iface.instances[interfaceID]._model_type = Iface.MODEL_TYPE_NORMAL;
+        Iface.instances[interfaceID].model = modelID;
     }
 
     private void readIfSetColor() {
@@ -12448,7 +12468,7 @@ public class Game extends GameShell {
     }
 
     private void readUpdateInvFull() {
-        redrawSidebar = true;
+        redraw_sidebar = true;
         int interfaceID = in.readU16();
         Iface iface = Iface.instances[interfaceID];
         int lastSlot = in.readU16();
@@ -12460,18 +12480,18 @@ public class Game extends GameShell {
                 objCount = in.read32ME();
             }
 
-            if (slot >= iface.inventorySlotObjID.length) {
+            if (slot >= iface.inv_slot_item_id.length) {
                 in.readU16LEA();
             } else {
-                iface.inventorySlotObjID[slot] = in.readU16LEA();
-                iface.inventorySlotObjCount[slot] = objCount;
+                iface.inv_slot_item_id[slot] = in.readU16LEA();
+                iface.inv_slot_item_count[slot] = objCount;
             }
         }
 
         // clear remaining slots
-        for (int slot = lastSlot; slot < iface.inventorySlotObjID.length; slot++) {
-            iface.inventorySlotObjID[slot] = 0;
-            iface.inventorySlotObjCount[slot] = 0;
+        for (int slot = lastSlot; slot < iface.inv_slot_item_id.length; slot++) {
+            iface.inv_slot_item_id[slot] = 0;
+            iface.inv_slot_item_count[slot] = 0;
         }
     }
 
@@ -12480,9 +12500,9 @@ public class Game extends GameShell {
         int interfaceID = in.readU16();
         int pitch = in.readU16();
         int yaw = in.readU16LEA();
-        Iface.instances[interfaceID].modelPitch = pitch;
-        Iface.instances[interfaceID].modelYaw = yaw;
-        Iface.instances[interfaceID].modelZoom = zoom;
+        Iface.instances[interfaceID].model_pitch = pitch;
+        Iface.instances[interfaceID].model_yaw = yaw;
+        Iface.instances[interfaceID].model_zoom = zoom;
     }
 
     private void openChatInput(int type) {
@@ -12495,7 +12515,7 @@ public class Game extends GameShell {
     private void openViewportInterface(int interfaceID) {
         if (sidebar_interface != -1) {
             sidebar_interface = -1;
-            redrawSidebar = true;
+            redraw_sidebar = true;
             redrawSideicons = true;
         }
         if (chat_interface != -1) {
@@ -12524,7 +12544,7 @@ public class Game extends GameShell {
         if (varps[varpID] != value) {
             varps[varpID] = value;
             updateVarp(varpID);
-            redrawSidebar = true;
+            redraw_sidebar = true;
             if (chat_interface_sticky != -1) {
                 redraw_chatback = true;
             }
@@ -12539,7 +12559,7 @@ public class Game extends GameShell {
         if (varps[varpID] != value) {
             varps[varpID] = value;
             updateVarp(varpID);
-            redrawSidebar = true;
+            redraw_sidebar = true;
             if (chat_interface_sticky != -1) {
                 redraw_chatback = true;
             }
@@ -12550,15 +12570,15 @@ public class Game extends GameShell {
         int interfaceID = in.readU16();
         int seqID = in.read16();
         Iface iface = Iface.instances[interfaceID];
-        iface.seqID = seqID;
+        iface.animation = seqID;
         if (seqID == -1) {
-            iface.seqFrame = 0;
-            iface.seqCycle = 0;
+            iface.animation_frame = 0;
+            iface.animation_cycle = 0;
         }
     }
 
     private void readUpdateInvPartial() {
-        redrawSidebar = true;
+        redraw_sidebar = true;
         int interfaceID = in.readU16();
         Iface iface = Iface.instances[interfaceID];
 
@@ -12569,16 +12589,16 @@ public class Game extends GameShell {
             if (objCount == 255) {
                 objCount = in.read32();
             }
-            if ((slot >= 0) && (slot < iface.inventorySlotObjID.length)) {
-                iface.inventorySlotObjID[slot] = objID;
-                iface.inventorySlotObjCount[slot] = objCount;
+            if ((slot >= 0) && (slot < iface.inv_slot_item_id.length)) {
+                iface.inv_slot_item_id[slot] = objID;
+                iface.inv_slot_item_count[slot] = objCount;
             }
         }
     }
 
     private void readTabSelected() {
         input_tab = in.readU8C();
-        redrawSidebar = true;
+        redraw_sidebar = true;
         redrawSideicons = true;
     }
 
@@ -12587,7 +12607,7 @@ public class Game extends GameShell {
         resetInterfaceAnimation(interfaceID);
         if (sidebar_interface != -1) {
             sidebar_interface = -1;
-            redrawSidebar = true;
+            redraw_sidebar = true;
             redrawSideicons = true;
         }
         chat_interface = interfaceID;
@@ -12715,7 +12735,7 @@ public class Game extends GameShell {
         out.writeOp(130);
         if (sidebar_interface != -1) {
             sidebar_interface = -1;
-            redrawSidebar = true;
+            redraw_sidebar = true;
             input_continue = false;
             redrawSideicons = true;
         }
