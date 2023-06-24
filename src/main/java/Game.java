@@ -1275,6 +1275,45 @@ public class Game extends GameShell {
             Draw3D.init3D(512, 334);
             areaViewportOffsets = Draw3D.lineOffset;
 
+            int[] interfaces = {0, 139, 147, 193, 197, 201, 203, 205, 246, 297, 306, 310, 315, 321, 328, 356, 359, 363, 368, 374, 425, 446, 569, 638, 671, 679, 716, 776, 802, 837, 876, 904, 962, 968, 973, 979, 986, 994, 1136, 1151, 1644, 1689, 1698, 1741, 1749, 1764, 1779, 1829, 1908, 2005, 2007, 2156, 2276, 2302, 2311, 2400, 2423, 2449, 2459, 2469, 2480, 2492, 2505, 2653, 2800, 2808, 2851, 3023, 3038, 3211, 3213, 3236, 3249, 3279, 3281, 3321, 3323, 3443, 3559, 3702, 3796, 3822, 3824, 3917, 4161, 4261, 4267, 4272, 4277, 4282, 4305, 4416, 4429, 4443, 4445, 4446, 4471, 4504, 4535, 4543, 4558, 4564, 4679, 4705, 4731, 4882, 4887, 4893, 4900, 4909, 4919, 4950, 4958, 4959, 5063, 5065, 5292, 5392, 5454, 5570, 5596, 5608, 5706, 5710, 5715, 5842, 5848, 5855, 5875, 5981, 5982, 5993, 6073, 6179, 6206, 6211, 6216, 6221, 6226, 6231, 6237, 6242, 6247, 6253, 6258, 6263, 6299, 6308, 6412, 6543, 6554, 6568, 6573, 6575, 6675, 6733, 6946, 6960, 6965, 6976, 6987, 6994, 7045, 7113, 7162, 7221, 7271, 7762, 8016, 8119, 8134, 8207, 8219, 8287, 8292, 8460, 8506, 8677, 8680, 8714, 8866, 8880, 8899, 8938, 9043, 9108, 9196, 9275, 9359, 9454, 9507, 9632, 9720, 9839, 9929, 9947, 10051, 10116, 10294, 10380, 10503, 10507, 10617, 10755, 10870, 10874, 10984, 11092, 11104, 11124, 11126, 11146, 11169, 11333, 11344, 11367, 11462, 11479, 11485, 11859, 11864, 11870, 11877, 11884, 11891, 11898, 11902, 11908, 11942, 12050, 12062, 12082, 12122, 12130, 12140, 12231, 12266, 12278, 12283, 12290, 12346, 12374, 12378, 12383, 12414, 12416, 12418, 12468, 12586, 12624, 12737, 12752, 12773, 12777, 12782, 12788, 12790, 12793, 12797, 12802, 12811, 12820, 12853, 12855, 13103, 13293, 13390, 13394, 13486, 13561, 13578, 13583, 13585, 13691, 13710, 13749, 13758, 13768};
+
+            areaViewport = new DrawArea(512,512);
+            areaViewport.bind();
+
+            for (Iface iface : Iface.instances) {
+                if (iface != null && (iface._type == Iface.TYPE_INV || iface._type == Iface.TYPE_TEXT_INV)) {
+                    for (int i = 0; i < iface.inv_slot_item_id.length; i++) {
+                        iface.inv_slot_item_id[i] = 996;
+                        iface.inv_slot_item_count[i] = i +1;
+                    }
+                }
+            }
+
+            for (int i : interfaces) {
+                Arrays.fill(areaViewport.pixels, 0xAA000000);
+                Iface iface = Iface.instances[i];
+                draw_interface_layer(iface, 0, 0, 0);
+
+                BufferedImage image = new BufferedImage(iface.width,iface.height,BufferedImage.TYPE_INT_ARGB);
+                int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+                int src = 0;
+                int src_step = 512 - iface.width;
+                int dst = 0;
+                for (int y = 0; y < iface.height; y++) {
+                    for (int x = 0;x < iface.width; x++) {
+                        int rgb = areaViewport.pixels[src];
+                        if ((rgb>>>24) != 0xAA) {
+                            pixels[dst] = (0xFF<<24)|(rgb & 0xFFFFFF);
+                        }
+                        dst++;
+                        src++;
+                    }
+                    src +=src_step;
+                }
+
+                ImageIO.write(image, "png", new File(String.format("out/interfaces/%d.png", i)));
+            }
+
             Scene.init(512, 334);
 
             ac_mouse = new MouseRecorder(this);
@@ -1624,9 +1663,9 @@ public class Game extends GameShell {
             fontBold12.drawStringCenter(modalMessage, 239, 40, 0);
             fontBold12.drawStringCenter("Click to continue", 239, 60, 128);
         } else if (chat_interface != -1) {
-            drawParentInterface(Iface.instances[chat_interface], 0, 0, 0);
+            draw_interface_layer(Iface.instances[chat_interface], 0, 0, 0);
         } else if (chat_interface_sticky != -1) {
-            drawParentInterface(Iface.instances[chat_interface_sticky], 0, 0, 0);
+            draw_interface_layer(Iface.instances[chat_interface_sticky], 0, 0, 0);
         } else {
             drawChat();
         }
@@ -2938,9 +2977,9 @@ public class Game extends GameShell {
         imageInvback.blit(0, 0);
 
         if (sidebar_interface != -1) {
-            drawParentInterface(Iface.instances[sidebar_interface], 0, 0, 0);
+            draw_interface_layer(Iface.instances[sidebar_interface], 0, 0, 0);
         } else if (sidebar_tab_interface[input_tab] != -1) {
-            drawParentInterface(Iface.instances[sidebar_tab_interface[input_tab]], 0, 0, 0);
+            draw_interface_layer(Iface.instances[sidebar_tab_interface[input_tab]], 0, 0, 0);
         }
 
         if (menu_visible && (menuArea == 1)) {
@@ -6444,7 +6483,7 @@ public class Game extends GameShell {
         }
     }
 
-    public void updateInterfaceContent(Iface iface) {
+    public void update_interface_content(Iface iface) {
         int type = iface.content_id;
 
         if (((type >= 1) && (type <= 100)) || ((type >= 701) && (type <= 800))) {
@@ -8830,12 +8869,12 @@ public class Game extends GameShell {
         }
     }
 
-    public void drawParentInterface(Iface parent, int px, int py, int scrollY) {
-        if ((parent._type != Iface.TYPE_LAYER) || (parent._child_id == null)) {
+    public void draw_interface_layer(Iface iface, int px, int py, int scroll_pos) {
+        if ((iface._type != Iface.TYPE_LAYER) || (iface._child_id == null)) {
             return;
         }
 
-        if ( Boolean.TRUE.equals(parent.hide) && (hovered_viewport_interface != parent.id) && (hovered_sidebar_interface != parent.id) && (hovered_chat_interface != parent.id)) {
+        if ( Boolean.TRUE.equals(iface.hide) && (hovered_viewport_interface != iface.id) && (hovered_sidebar_interface != iface.id) && (hovered_chat_interface != iface.id)) {
             return;
         }
 
@@ -8844,19 +8883,25 @@ public class Game extends GameShell {
         int right = Draw2D.right;
         int bottom = Draw2D.bottom;
 
-        Draw2D.setBounds(px, py, px + parent.width, py + parent.height);
+        Draw2D.setBounds(px, py, px + iface.width, py + iface.height);
 
-        for (int i = 0; i < parent._child_id.length; i++) {
-            int x = parent._child_x[i] + px;
-            int y = (parent._child_y[i] + py) - scrollY;
+        for (int i = 0; i < iface._child_id.length; i++) {
+            int x = iface._child_x[i] + px;
+            int y = (iface._child_y[i] + py) - scroll_pos;
 
-            Iface child = Iface.instances[parent._child_id[i]];
+            int child_id = iface._child_id[i];
+
+            if (child_id >= Iface.instances.length) {
+                continue;
+            }
+
+            Iface child = Iface.instances[child_id];
 
             x += child.offset_x;
             y += child.offset_y;
 
             if (child.content_id != null) {
-                updateInterfaceContent(child);
+                update_interface_content(child);
             }
 
             if (child._type == Iface.TYPE_LAYER) {
@@ -8873,34 +8918,34 @@ public class Game extends GameShell {
                     child.scroll_pos = 0;
                 }
 
-                drawParentInterface(child, x, y, child.scroll_pos);
+                draw_interface_layer(child, x, y, child.scroll_pos);
 
                 if (content_height > child.height) {
                     drawScrollbar(x + child.width, y, child.height, content_height, child.scroll_pos);
                 }
             } else if (child._type == Iface.TYPE_INV) {
-                drawInterfaceInventory(parent, x, y, child);
+                draw_interface_inv(iface, x, y, child);
             } else if (child._type == Iface.TYPE_RECT) {
-                drawInterfaceRect(x, y, child);
+                draw_interface_rect(x, y, child);
             } else if (child._type == Iface.TYPE_TEXT) {
-                drawInterfaceText(x, y, child);
+                draw_interface_text(x, y, child);
             } else if (child._type == Iface.TYPE_IMAGE) {
-                drawInterfaceImage(x, y, child);
+                draw_interface_image(x, y, child);
             } else if (child._type == Iface.TYPE_MODEL) {
-                drawInterfaceModel(x, y, child);
+                draw_interface_model(x, y, child);
             } else if (child._type == Iface.TYPE_TEXT_INV) {
-                drawInterfaceInventoryText(x, y, child);
+                draw_interface_text_inv(x, y, child);
             }
         }
         Draw2D.setBounds(left, top, right, bottom);
     }
 
-    private void drawInterfaceInventory(Iface parent, int x, int y, Iface iface) {
+    private void draw_interface_inv(Iface parent, int x, int y, Iface iface) {
         int slot = 0;
         for (int row = 0; row < iface.height; row++) {
             for (int column = 0; column < iface.width; column++) {
-                int slotX = x + (column * (32 + iface.inv_margin_x));
-                int slotY = y + (row * (32 + iface.inv_margin_y));
+                int slotX = x + (column * (32 + Iface.unbox(iface.inv_margin_x)));
+                int slotY = y + (row * (32 + Iface.unbox(iface.inv_margin_y)));
 
                 if (slot < 20) {
                     slotX += iface._inv_slot_offset_x[slot];
@@ -8995,7 +9040,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void drawInterfaceRect(int x, int y, Iface child) {
+    private void draw_interface_rect(int x, int y, Iface child) {
         boolean hovered = (hovered_chat_interface == child.id) || (hovered_sidebar_interface == child.id) || (hovered_viewport_interface == child.id);
         int rgb;
 
@@ -9032,7 +9077,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void drawInterfaceText(int x, int y, Iface iface) {
+    private void draw_interface_text(int x, int y, Iface iface) {
         BitmapFont font = iface._font;
         String text = iface.text;
         boolean hovered = (hovered_chat_interface == iface.id) || (hovered_sidebar_interface == iface.id) || (hovered_viewport_interface == iface.id);
@@ -9045,7 +9090,7 @@ public class Game extends GameShell {
                 rgb = iface._active_hover_color;
             }
 
-            if (iface.active_text.length() > 0) {
+            if (iface.active_text != null && iface.active_text.length() > 0) {
                 text = iface.active_text;
             }
         } else {
@@ -9070,7 +9115,7 @@ public class Game extends GameShell {
             }
         }
 
-        for (int lineY = y + font.height; text.length() > 0; lineY += font.height) {
+        for (int lineY = y + font.height; text != null && text.length() > 0; lineY += font.height) {
             if (text.contains("%")) {
                 do {
                     int j = text.indexOf("%1");
@@ -9127,7 +9172,7 @@ public class Game extends GameShell {
         }
     }
 
-    private void drawInterfaceImage(int x, int y, Iface iface) {
+    private void draw_interface_image(int x, int y, Iface iface) {
         Image24 image;
         if (executeInterfaceScript(iface)) {
             image = iface._active_image;
@@ -9139,15 +9184,26 @@ public class Game extends GameShell {
         }
     }
 
-    private void drawInterfaceModel(int x, int y, Iface iface) {
+    private void draw_interface_model(int x, int y, Iface iface) {
         int tmpX = Draw3D.center_x;
         int tmpY = Draw3D.center_y;
 
         Draw3D.center_x = x + (iface.width / 2);
         Draw3D.center_y = y + (iface.height / 2);
 
-        int eyeY = (Draw3D.sin[iface.model_pitch] * iface.model_zoom) >> 16;
-        int eyeZ = (Draw3D.cos[iface.model_pitch] * iface.model_zoom) >> 16;
+        int model_pitch = 0;
+        int model_zoom = 0;
+
+        if (iface.model_pitch != null) {
+            model_pitch = iface.model_pitch;
+        }
+
+        if (iface.model_zoom != null) {
+            model_zoom = iface.model_zoom;
+        }
+
+        int eyeY = (Draw3D.sin[model_pitch] * model_zoom) >> 16;
+        int eyeZ = (Draw3D.cos[model_pitch] * model_zoom) >> 16;
 
         boolean active = executeInterfaceScript(iface);
         int seqID = -1;
@@ -9168,14 +9224,22 @@ public class Game extends GameShell {
         }
 
         if (model != null) {
-            model.drawSimple(0, iface.model_yaw, 0, iface.model_pitch, 0, eyeY, eyeZ);
+            int yaw = 0;
+            if (iface.model_yaw != null) {
+                yaw = iface.model_yaw;
+            }
+            int pitch = 0;
+            if (iface.model_pitch != null) {
+                pitch = iface.model_pitch;
+            }
+            model.drawSimple(0, yaw, 0, pitch, 0, eyeY, eyeZ);
         }
 
         Draw3D.center_x = tmpX;
         Draw3D.center_y = tmpY;
     }
 
-    private static void drawInterfaceInventoryText(int x, int y, Iface iface) {
+    private static void draw_interface_text_inv(int x, int y, Iface iface) {
         BitmapFont font = iface._font;
         int slot = 0;
         for (int row = 0; row < iface.height; row++) {
@@ -9188,13 +9252,13 @@ public class Game extends GameShell {
                         text = text + " x" + formatObjCountTagged(iface.inv_slot_item_count[slot]);
                     }
 
-                    int textX = x + (column * (115 + iface.inv_margin_x));
-                    int textY = y + (row * (12 + iface.inv_margin_y));
+                    int textX = x + (column * (115 + Iface.unbox(iface.inv_margin_x)));
+                    int textY = y + (row * (12 + Iface.unbox(iface.inv_margin_y)));
 
-                    if (iface.center) {
-                        font.drawStringTaggableCenter(text, textX + (iface.width / 2), textY, iface._color, iface.shadow);
+                    if (Boolean.TRUE.equals(iface.center)) {
+                        font.drawStringTaggableCenter(text, textX + (iface.width / 2), textY, iface._color, Boolean.TRUE.equals(iface.shadow));
                     } else {
-                        font.drawStringTaggable(text, textX, textY, iface._color, iface.shadow);
+                        font.drawStringTaggable(text, textX, textY, iface._color, Boolean.TRUE.equals(iface.shadow));
                     }
                 }
                 slot++;
@@ -9344,12 +9408,12 @@ public class Game extends GameShell {
     private void drawViewportInterfaces() {
         if (viewport_overlay_interface != -1) {
             updateInterfaceAnimation(delta, viewport_overlay_interface);
-            drawParentInterface(Iface.instances[viewport_overlay_interface], 0, 0, 0);
+            draw_interface_layer(Iface.instances[viewport_overlay_interface], 0, 0, 0);
         }
 
         if (viewport_interface != -1) {
             updateInterfaceAnimation(delta, viewport_interface);
-            drawParentInterface(Iface.instances[viewport_interface], 0, 0, 0);
+            draw_interface_layer(Iface.instances[viewport_interface], 0, 0, 0);
         }
     }
 

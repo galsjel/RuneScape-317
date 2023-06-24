@@ -733,13 +733,19 @@ public class Iface {
         return model;
     }
 
+    public static int unbox(Integer i) {
+        if (i == null) {
+            return 0;
+        }
+        return i;
+    }
     public Model getModel(int primaryTransformID, int secondaryTransformID, boolean active) {
         Model model;
 
         if (active) {
-            model = getModel(_active_model_type, active_model);
+            model = getModel(unbox(_active_model_type), unbox(active_model));
         } else {
-            model = getModel(_model_type, this.model);
+            model = getModel(unbox(_model_type), unbox(this.model));
         }
 
         if (model == null) {

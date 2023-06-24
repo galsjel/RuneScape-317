@@ -44,7 +44,7 @@ public class Animation {
     public int[] primary_transforms;
 
     /**
-     * Auxiliary transform indices appear to only be used by a {@link Iface} of type <code>6</code> as seen in {@link Game#drawParentInterface(Iface, int, int, int)}.
+     * Auxiliary transform indices appear to only be used by a {@link Iface} of type <code>6</code> as seen in {@link Game#draw_interface_layer(Iface, int, int, int)}.
      */
     @Expose
     @SerializedName("secondary_transforms")
