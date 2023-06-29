@@ -59,6 +59,8 @@ public class Game extends GameShell {
             level_experience[i] = acc / 4;
         }
 
+        System.out.println("level_experience = " + Arrays.toString(level_experience));
+
         BITMASK = new int[32];
         acc = 2;
         for (int k = 0; k < 32; k++) {
@@ -419,26 +421,26 @@ public class Game extends GameShell {
     /**
      * The interface id of the container that the obj being dragged belongs to.
      */
-    public int objDragInterfaceID;
+    public int item_grab_interface;
     /**
      * The slot the obj being dragged resides.
      */
-    public int objDragSlot;
+    public int item_drag_slot;
     /**
      * The area the object being dragged resides.
      * 1 = Viewport
      * 2 = Sidebar
      * 3 = Chatback
      */
-    public int objDragArea;
+    public int item_drag_area;
     /**
      * The mouse x when an obj was pressed in a container.
      */
-    public int objGrabX;
+    public int item_grab_x;
     /**
      * The mouse y when an obj was pressed in a container.
      */
-    public int objGrabY;
+    public int item_grab_y;
     public int chatScrollOffset;
     public int[] menuParamA = new int[500];
     public int[] menuParamB = new int[500];
@@ -643,8 +645,8 @@ public class Game extends GameShell {
     public int[] bfsStepX = new int[4000];
     public int[] bfsStepZ = new int[4000];
     public int item_selected;
-    public int selectedObjSlot;
-    public int selectedObjInterfaceID;
+    public int selected_item_slot;
+    public int selected_item_interface;
     public int selectedObjID;
     public String selectedObjName;
     public int public_chat_setting;
@@ -1218,7 +1220,26 @@ public class Game extends GameShell {
 
             try {
                 Gson exposed = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
-
+                for (Iface iface : Iface.instances) {
+                    if (iface != null && iface.children != null) {
+                        for (Iface.Child child : iface.children) {
+                            if (child.id >= Iface.instances.length) {
+                                continue;
+                            }
+                            Iface iface_child = Iface.instances[child.id];
+                            if (iface_child._image != null) {
+                                if (child.x == null) {
+                                    child.x = 0;
+                                }
+                                if (child.y == null) {
+                                    child.y = 0;
+                                }
+                                child.x += iface_child._image.cropX;
+                                child.y += iface_child._image.cropY;
+                            }
+                        }
+                    }
+                }
                 Files.writeString(Paths.get("out/interfaces.json"), exposed.toJson(Iface.instances), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -1819,7 +1840,7 @@ public class Game extends GameShell {
     }
 
     public void handleMouseInput() {
-        if (objDragArea != 0) {
+        if (item_drag_area != 0) {
             return;
         }
 
@@ -1854,16 +1875,16 @@ public class Game extends GameShell {
                         if (iface.inv_draggable || iface.inv_move_replaces) {
                             objGrabThreshold = false;
                             objDragCycles = 0;
-                            objDragInterfaceID = interfaceID;
-                            objDragSlot = objSlot;
-                            objDragArea = 2;
-                            objGrabX = super.mouseClickX;
-                            objGrabY = super.mouseClickY;
+                            item_grab_interface = interfaceID;
+                            item_drag_slot = objSlot;
+                            item_drag_area = 2;
+                            item_grab_x = super.mouseClickX;
+                            item_grab_y = super.mouseClickY;
                             if (Iface.instances[interfaceID].parent == viewport_interface) {
-                                objDragArea = 1;
+                                item_drag_area = 1;
                             }
                             if (Iface.instances[interfaceID].parent == chat_interface) {
-                                objDragArea = 3;
+                                item_drag_area = 3;
                             }
                             return;
                         }
@@ -2424,7 +2445,7 @@ public class Game extends GameShell {
                 Item obj = Item.get(iface.inv_slot_item_id[slot] - 1);
 
                 if ((item_selected == 1) && iface.inv_interactable) {
-                    if ((iface.id != selectedObjInterfaceID) || (slot != selectedObjSlot)) {
+                    if ((iface.id != selected_item_interface) || (slot != selected_item_slot)) {
                         addMenuOption("Use " + selectedObjName + " with @lre@" + obj.name, 870, slot, iface.id, obj.id);
                     }
                 } else if ((action_selected == 1) && iface.inv_interactable) {
@@ -4418,14 +4439,14 @@ public class Game extends GameShell {
     }
 
     private void handleObjDragging() {
-        if (objDragArea == 0) {
+        if (item_drag_area == 0) {
             return;
         }
 
         objDragCycles++;
 
         // mouse is greater than 5px from grab point in any direction, trigger treshold
-        if ((super.mouseX > (objGrabX + 5)) || (super.mouseX < (objGrabX - 5)) || (super.mouseY > (objGrabY + 5)) || (super.mouseY < (objGrabY - 5))) {
+        if ((super.mouseX > (item_grab_x + 5)) || (super.mouseX < (item_grab_x - 5)) || (super.mouseY > (item_grab_y + 5)) || (super.mouseY < (item_grab_y - 5))) {
             objGrabThreshold = true;
         }
 
@@ -4433,23 +4454,23 @@ public class Game extends GameShell {
             return;
         }
 
-        if (objDragArea == 2) {
+        if (item_drag_area == 2) {
             redraw_sidebar = true;
         }
 
-        if (objDragArea == 3) {
+        if (item_drag_area == 3) {
             redraw_chatback = true;
         }
 
-        objDragArea = 0;
+        item_drag_area = 0;
 
         // mouse moved at least 5px and have been holding obj for 100ms or longer
         if (objGrabThreshold && (objDragCycles >= 5)) {
             hoveredSlotParentID = -1;
             handleInput();
 
-            if ((hoveredSlotParentID == objDragInterfaceID) && (hoveredSlot != objDragSlot)) {
-                Iface iface = Iface.instances[objDragInterfaceID];
+            if ((hoveredSlotParentID == item_grab_interface) && (hoveredSlot != item_drag_slot)) {
+                Iface iface = Iface.instances[item_grab_interface];
 
                 // mode 0 = swap
                 // mode 1 = insert
@@ -4464,14 +4485,14 @@ public class Game extends GameShell {
                 }
 
                 if (iface.inv_move_replaces) {
-                    int src = objDragSlot;
+                    int src = item_drag_slot;
                     int dst = hoveredSlot;
                     iface.inv_slot_item_id[dst] = iface.inv_slot_item_id[src];
                     iface.inv_slot_item_count[dst] = iface.inv_slot_item_count[src];
                     iface.inv_slot_item_id[src] = -1;
                     iface.inv_slot_item_count[src] = 0;
                 } else if (mode == 1) {
-                    int src = objDragSlot;
+                    int src = item_drag_slot;
                     for (int dst = hoveredSlot; src != dst; ) {
                         if (src > dst) {
                             iface.inventorySwap(src, src - 1);
@@ -4482,12 +4503,12 @@ public class Game extends GameShell {
                         }
                     }
                 } else {
-                    iface.inventorySwap(objDragSlot, hoveredSlot);
+                    iface.inventorySwap(item_drag_slot, hoveredSlot);
                 }
                 out.writeOp(214);
-                out.write16LEA(objDragInterfaceID);
+                out.write16LEA(item_grab_interface);
                 out.write8C(mode);
-                out.write16LEA(objDragSlot);
+                out.write16LEA(item_drag_slot);
                 out.write16LE(hoveredSlot);
             }
         } else if (((mouseButtonsOption == 1) || isAddFriendOption(menu_size - 1)) && (menu_size > 2)) {
@@ -5192,10 +5213,10 @@ public class Game extends GameShell {
 
     private void useObjOnLoc(int tileX, int tileZ, int locBitset) {
         out.writeOp(192);
-        out.write16(selectedObjInterfaceID);
+        out.write16(selected_item_interface);
         out.write16LE((locBitset >> 14) & 0x7fff);
         out.write16LEA(tileZ + scene_base_tile_z);
-        out.write16LE(selectedObjSlot);
+        out.write16LE(selected_item_slot);
         out.write16LEA(tileX + scene_base_tile_x);
         out.write16(selectedObjID);
     }
@@ -5210,11 +5231,11 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(25);
-        out.write16LE(selectedObjInterfaceID);
+        out.write16LE(selected_item_interface);
         out.write16A(selectedObjID);
         out.write16(groundObjID);
         out.write16A(tileZ + scene_base_tile_z);
-        out.write16LEA(selectedObjSlot);
+        out.write16LEA(selected_item_slot);
         out.write16(tileX + scene_base_tile_x);
     }
 
@@ -5391,9 +5412,9 @@ public class Game extends GameShell {
     private void useObjOnObj(int slot, int interfaceID, int objID) {
         out.writeOp(53);
         out.write16(slot);
-        out.write16A(selectedObjSlot);
+        out.write16A(selected_item_slot);
         out.write16LEA(objID);
-        out.write16(selectedObjInterfaceID);
+        out.write16(selected_item_interface);
         out.write16LE(selectedObjID);
         out.write16(interfaceID);
         actionCycles = 0;
@@ -5798,10 +5819,10 @@ public class Game extends GameShell {
         crossMode = 2;
         crossCycle = 0;
         out.writeOp(14);
-        out.write16A(selectedObjInterfaceID);
+        out.write16A(selected_item_interface);
         out.write16(playerID);
         out.write16(selectedObjID);
-        out.write16LE(selectedObjSlot);
+        out.write16LE(selected_item_slot);
     }
 
     private void promptMessageFriend(long name37) {
@@ -5909,8 +5930,8 @@ public class Game extends GameShell {
 
     private void selectObj(int slot, int interfaceID, int objID) {
         item_selected = 1;
-        selectedObjSlot = slot;
-        selectedObjInterfaceID = interfaceID;
+        selected_item_slot = slot;
+        selected_item_interface = interfaceID;
         selectedObjID = objID;
         selectedObjName = Item.get(objID).name;
         action_selected = 0;
@@ -5968,8 +5989,8 @@ public class Game extends GameShell {
         out.writeOp(57);
         out.write16A(selectedObjID);
         out.write16A(npcID);
-        out.write16LE(selectedObjSlot);
-        out.write16A(selectedObjInterfaceID);
+        out.write16LE(selected_item_slot);
+        out.write16A(selected_item_interface);
     }
 
     public void updateChatOverride() {
@@ -7001,7 +7022,7 @@ public class Game extends GameShell {
     }
 
     public void handleInput() {
-        if (objDragArea != 0) {
+        if (item_drag_area != 0) {
             return;
         }
 
@@ -8602,7 +8623,7 @@ public class Game extends GameShell {
             redraw_sidebar = true;
         }
 
-        if (objDragArea == 2) {
+        if (item_drag_area == 2) {
             redraw_sidebar = true;
         }
 
@@ -8643,7 +8664,7 @@ public class Game extends GameShell {
             redraw_chatback = true;
         }
 
-        if (objDragArea == 3) {
+        if (item_drag_area == 3) {
             redraw_chatback = true;
         }
 
@@ -8952,24 +8973,32 @@ public class Game extends GameShell {
                     slotY += iface._inv_slot_offset_y[slot];
                 }
 
-                if (iface.inv_slot_item_id[slot] > 0) {
+                if (iface.inv_slot_item_id[slot] <= 0) {
+                    if ((iface._inv_slot_image != null) && (slot < 20)) {
+                        Image24 image = iface._inv_slot_image[slot];
+
+                        if (image != null) {
+                            image.draw(slotX, slotY);
+                        }
+                    }
+                } else {
                     int dx = 0;
                     int dy = 0;
                     int objID = iface.inv_slot_item_id[slot] - 1;
 
-                    if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((objDragArea != 0) && (objDragSlot == slot))) {
+                    if (((slotX > (Draw2D.left - 32)) && (slotX < Draw2D.right) && (slotY > (Draw2D.top - 32)) && (slotY < Draw2D.bottom)) || ((item_drag_area != 0) && (item_drag_slot == slot))) {
                         int outlineColor = 0;
 
-                        if ((item_selected == 1) && (selectedObjSlot == slot) && (selectedObjInterfaceID == iface.id)) {
+                        if ((item_selected == 1) && (selected_item_slot == slot) && (selected_item_interface == iface.id)) {
                             outlineColor = 0xffffff;
                         }
 
                         Image24 icon = Item.getIcon(objID, iface.inv_slot_item_count[slot], outlineColor);
 
                         if (icon != null) {
-                            if ((objDragArea != 0) && (objDragSlot == slot) && (objDragInterfaceID == iface.id)) {
-                                dx = super.mouseX - objGrabX;
-                                dy = super.mouseY - objGrabY;
+                            if ((item_drag_area != 0) && (item_drag_slot == slot) && (item_grab_interface == iface.id)) {
+                                dx = super.mouseX - item_grab_x;
+                                dy = super.mouseY - item_grab_y;
 
                                 if ((dx < 5) && (dx > -5)) {
                                     dx = 0;
@@ -8998,7 +9027,7 @@ public class Game extends GameShell {
                                         scroll = parent.scroll_pos;
                                     }
                                     parent.scroll_pos -= scroll;
-                                    objGrabY += scroll;
+                                    item_grab_y += scroll;
                                 }
 
                                 // scroll component down if dragging obj near the bottom
@@ -9013,7 +9042,7 @@ public class Game extends GameShell {
                                         scroll = parent.content_height - parent.height - parent.scroll_pos;
                                     }
                                     parent.scroll_pos += scroll;
-                                    objGrabY -= scroll;
+                                    item_grab_y -= scroll;
                                 }
                             } else if ((actionArea != 0) && (actionSlot == slot) && (actionInterfaceID == iface.id)) {
                                 icon.draw(slotX, slotY, 128);
@@ -9027,12 +9056,6 @@ public class Game extends GameShell {
                                 fontPlain11.drawString(formatObjCount(count), slotX + dx, slotY + 9 + dy, 0xffff00);
                             }
                         }
-                    }
-                } else if ((iface._inv_slot_image != null) && (slot < 20)) {
-                    Image24 image = iface._inv_slot_image[slot];
-
-                    if (image != null) {
-                        image.draw(slotX, slotY);
                     }
                 }
                 slot++;

@@ -424,7 +424,7 @@ public class Iface {
         }
         switch (_type) {
             case TYPE_LAYER -> type = "layer";
-            case TYPE_INV -> type = "inventory";
+            case TYPE_INV -> type = "inv";
             case TYPE_RECT -> type = "rect";
             case TYPE_TEXT -> type = "text";
             case TYPE_IMAGE -> type = "image";
