@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.zip.CRC32;
@@ -684,9 +684,9 @@ public class Game extends GameShell {
         }
     }
 
-    public URL getCodeBase() {
+    public URI getCodeBase() {
         try {
-            return new URL("http://" + server + ":" + (80 + portOffset));
+            return new URI("http://" + server + ":" + (80 + portOffset));
         } catch (Exception ignored) {
         }
         return null;
@@ -10184,7 +10184,7 @@ public class Game extends GameShell {
 
     public DataInputStream openURL(String s) throws IOException {
         if (!jaggrabEnabled) {
-            return new DataInputStream(new URL(getCodeBase(), s).openStream());
+            return new DataInputStream(getCodeBase().resolve(s).toURL().openStream());
         }
 
         if (jaggrabSocket != null) {
