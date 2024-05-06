@@ -98,6 +98,7 @@ public class Game extends GameShell {
     }
 
     public static void main(String[] args) throws UnknownHostException {
+        System.setProperty("java.net.preferIPv6Addresses", "true");
         System.out.println("RS2 user client - release #" + 317);
 
         if (args.length != 5) {
@@ -1578,7 +1579,7 @@ public class Game extends GameShell {
         Draw2D.drawLineX(0, 77, 479, 0);
     }
 
-    static String server = "0.0.0.0";
+    static String server = "";
 
     public Socket openSocket(int port) throws IOException {
         return new Socket(InetAddress.getByName(server), port);
