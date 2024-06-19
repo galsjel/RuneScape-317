@@ -7581,14 +7581,14 @@ public class Game extends GameShell {
         if ((seqID == npc.primarySeqID) && (seqID != -1)) {
             int style = SeqType.instances[seqID].replayStyle;
 
-            if (style == 0) {
+            if (style == 1) {
                 npc.primarySeqFrame = 0;
                 npc.primarySeqCycle = 0;
                 npc.primarySeqDelay = delay;
                 npc.primarySeqLoop = 0;
             }
 
-            if (style == 1) {
+            if (style == 2) {
                 npc.primarySeqLoop = 0;
             }
         } else if ((seqID == -1) || (npc.primarySeqID == -1) || (SeqType.instances[seqID].priority >= SeqType.instances[npc.primarySeqID].priority)) {

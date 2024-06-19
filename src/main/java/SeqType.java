@@ -108,8 +108,8 @@ public class SeqType {
     public int idleStyle = -1;
 
     /**
-     * If 0, restarts the sequence if already playing
-     * If 1, does not restart if already playing
+     * If 1, restarts the sequence if already playing
+     * If 2, does not restart if already playing
      *
      * @see Game#readNPCUpdates()
      */
