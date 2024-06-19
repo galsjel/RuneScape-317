@@ -42,12 +42,12 @@ public class LocType {
     /**
      * This is where dynamically generated models go.
      */
-    public static LRUMap<Long, Model> modelCacheDynamic = new LRUMap(30);
+    public static LRUMap<Long, Model> modelCacheDynamic = new LRUMap<>(30);
     public static LocType[] cache;
     /**
      * This is where basic models go.
      */
-    public static LRUMap<Long, Model> modelCacheStatic = new LRUMap(500);
+    public static LRUMap<Long, Model> modelCacheStatic = new LRUMap<>(500);
 
     public static LocType get(int locID) {
         if (locID >= count) {
@@ -296,7 +296,7 @@ public class LocType {
                     modelID += 0x10000;
                 }
 
-                model = modelCacheStatic.get(modelID);
+                model = modelCacheStatic.get((long) modelID);
                 if (model == null) {
                     model = Model.tryGet(modelID & 0xffff);
                     if (model == null) {
@@ -346,7 +346,7 @@ public class LocType {
                 modelID += 0x10000;
             }
 
-            model = modelCacheStatic.get(modelID);
+            model = modelCacheStatic.get((long) modelID);
 
             if (model == null) {
                 model = Model.tryGet(modelID & 0xffff);

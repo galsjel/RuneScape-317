@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.zip.CRC32;
@@ -22,9 +22,9 @@ public class Game extends GameShell {
 
     public static final int[][] designPartColor = {{6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193}, {8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239}, {25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003}, {4626, 11146, 6439, 12, 4758, 10270}, {4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574}};
     public static final int[] designHairColor = {9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457, 16565, 34991, 25486};
-    public static final BigInteger RSA_MODULUS = new BigInteger("150437374157649496260907284144944613391868328356428312785170855566836496148649769873303054925785940753587048471819630374797613652942136320599534564023031743563833250113572385619350489566973866283982326500382760586083379242813677444239924493338426453599564333273724064297982529208425077775100347146662074078333");
+    public static final BigInteger RSA_MODULUS = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
     public static final int[] levelExperience;
-    public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
+    public static final BigInteger RSA_EXPONENT = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
     public static final String VALID_CHAT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
     public static final int[] BITMASK;
     public static final int MAX_PLAYER_COUNT = 2048;
@@ -98,6 +98,7 @@ public class Game extends GameShell {
     }
 
     public static void main(String[] args) throws UnknownHostException {
+        System.setProperty("java.net.preferIPv6Addresses", "true");
         System.out.println("RS2 user client - release #" + 317);
 
         if (args.length != 5) {
@@ -684,9 +685,9 @@ public class Game extends GameShell {
         }
     }
 
-    public URL getCodeBase() {
+    public URI getCodeBase() {
         try {
-            return new URL("http://" + server + ":" + (80 + portOffset));
+            return new URI("http://" + server + ":" + (80 + portOffset));
         } catch (Exception ignored) {
         }
         return null;
@@ -1578,7 +1579,7 @@ public class Game extends GameShell {
         Draw2D.drawLineX(0, 77, 479, 0);
     }
 
-    static String server = "0.0.0.0";
+    static String server = "";
 
     public Socket openSocket(int port) throws IOException {
         return new Socket(InetAddress.getByName(server), port);
@@ -10184,7 +10185,7 @@ public class Game extends GameShell {
 
     public DataInputStream openURL(String s) throws IOException {
         if (!jaggrabEnabled) {
-            return new DataInputStream(new URL(getCodeBase(), s).openStream());
+            return new DataInputStream(getCodeBase().resolve(s).toURL().openStream());
         }
 
         if (jaggrabSocket != null) {

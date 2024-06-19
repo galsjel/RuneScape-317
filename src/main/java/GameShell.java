@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 
-public abstract class GameShell extends JComponent implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
+public abstract class GameShell extends Canvas implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
 
     public final long[] otim = new long[10];
     public final double[] frameTime = new double[100];
@@ -48,6 +48,7 @@ public abstract class GameShell extends JComponent implements Runnable, MouseLis
         graphics = this.getGraphics();
         startThread(this, 1);
         requestFocus();
+        setFocusTraversalKeysEnabled(false);
     }
 
     public void initApplet(int width, int height) {
